@@ -170,6 +170,7 @@ Gyr.</P>
 <br/>
 <H3>Habitable Zone</H3>
 <img src="tmp/HZ-$suffix.png"><br/>
+<img src="tmp/HZevol-$suffix.png"><br/>
 <a href=?back&$qstring>Back</a> - <a href=?$qreload>Reload</a>
 CONTENT;
 
@@ -228,7 +229,7 @@ a<sub>p</sub> : <input type="text" name="ap" value="$ap"> AU<br/>
 <H3>Planetary System (optional)</H3>
 
 &tau; : <input type="text" name="tau" value="$tau"> Gyr<br/>
-<i style="font-size:12px">Age of the system.  Values must be between 0.01 and 13.0 Gyr</i><br/><br/>
+<i style="font-size:12px">Age of the system.  Values must be between 0.01 and 12.5 Gyr</i><br/><br/>
 
 <input type="submit" name="submit" value="submit">
 
@@ -237,7 +238,7 @@ a<sub>p</sub> : <input type="text" name="ap" value="$ap"> AU<br/>
 Integrate:<input type="checkbox" name="qintegration"><br/>
 
 Total integration time : <input type="text" name="tautot" value="$tautot"> Gyr<br/>
-<i style="font-size:12px">Values must be between 0.01 and 13.0 Gyr</i><br/><br/>
+<i style="font-size:12px">Values must be between 0.01 and 12.5 Gyr</i><br/><br/>
 
 <H3>Behavior</H3>
 
