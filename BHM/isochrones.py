@@ -82,10 +82,10 @@ def StellarProperty(prop,Z,Ms,tau):
         #exit(1)
     return val
 
-def loadIsochroneSet(Zs=ZSVEC,
+def loadIsochroneSet(Zs=ZSVEC_full,
                      verbose=False):
     global SMset,Zset
-    Zset=ZSVEC
+    Zset=Zs
 
     if verbose:print "Loading isochrone set..."
     iiso=0
@@ -239,7 +239,7 @@ def minmaxRadius(Z,M,tmin=0.01,tmax=1.0):
     return Rmin,Rmax
 
 if __name__=="__main__":
-    num=loadIsochroneSet(verbose=True)
+    num=loadIsochroneSet(Zs=ZSVEC_siblings,verbose=True)
 
     Ms=1.0
     tau=TAGE

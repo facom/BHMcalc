@@ -291,7 +291,7 @@ def Seff2013(Teff,crits=['recent venus'],Tsun=TSUN):
             S=0.3207
             a=5.4471E-5;b=1.5275E-9;c=-2.1709E-12;d=-3.8282E-16
         else:
-            Seff=-1
+            S=a=b=c=d=Tst=-1
         Seffs+=[S+a*Tst+b*Tst**2+c*Tst**3+d*Tst**4]
         
     if len(Seffs)==1:return Seffs[0]

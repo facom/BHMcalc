@@ -168,6 +168,8 @@ Gyr.</P>
   <tr><td>HZ:</td><td>[$lin2,$aE2 ($aHZ2),$lout2] AU</td></tr>
 </table>
 <br/>
+<H3>Habitable Zone</H3>
+<img src="tmp/HZ-$suffix.png"><br/>
 <a href=?back&$qstring>Back</a> - <a href=?$qreload>Reload</a>
 CONTENT;
 
@@ -175,7 +177,7 @@ if($qintegration){
 $suffix1=sprintf("%.2f",$M1);
 $suffix2=sprintf("%.2f",$M2);
 echo<<<CONTENT
-<H3>Plots</H3>
+<H3>Evolution Plots</H3>
 <img src="tmp/PeriodFit-$suffix1.png"><br/>
 <img src="tmp/PeriodFit-$suffix2.png"><br/>
 <img src="tmp/PeriodEvolution-$suffix.png"><br/>
