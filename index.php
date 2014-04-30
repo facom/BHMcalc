@@ -76,9 +76,13 @@ if(isset($submit) and !isset($back)){
   $qstring=$_SERVER["QUERY_STRING"];
   if(!preg_match("/\w/",$qintegration)){$qintegration=0;}
   else{$qintegration=1;}
+  if(!preg_match("/\w/",$qchz)){$qchz=0;}
+  else{$qchz=1;}
+  if($qintegration){$qchz=1;}
+
   if(!isset($stat) and !isset($back)){access("run");}
   if(!isset($reload)){
-  $cmd="$PYTHONCMD BHMcalc.py $Z $M1 $M2 $e $Pbin $tau $Mp $ap $tautot $qintegration $sessid $zsvec &> tmp/fulloutput-$sessid.log";
+  $cmd="$PYTHONCMD BHMcalc.py $Z $M1 $M2 $e $Pbin $tau $Mp $ap $tautot $qintegration $sessid $zsvec $qchz &> tmp/fulloutput-$sessid.log";
   shell_exec($cmd);
   $qreload="reload&$qstring";
   }else{
@@ -108,7 +112,6 @@ if(isset($submit) and !isset($back)){
   $abin=$parts[$i++];$acrit=$parts[$i++];$nsync=$parts[$i++];$Psync=$parts[$i++];
   $lin=$parts[$i++];$aE=$parts[$i++];$aHZ=$parts[$i++];$lout=$parts[$i++];
   $tsync1=$parts[$i++];$tsync2=$parts[$i++];
-  $tsys=$parts[$i++];$lincont=$parts[$i++];$loutcont=$parts[$i++];
 
   $q=$M2/$M1;
   /*
@@ -141,8 +144,6 @@ echo<<<CONTENT
   <tr><td>a<sub>in</sub>:</td><td>$lin AU</td></tr>
   <tr><td>a<sub>HZ</sub>:</td><td>$aHZ AU</td></tr>
   <tr><td>a<sub>out</sub>:</td><td>$lout AU</td></tr>
-  <tr><td>&tau;<sub>sys</sub>:</td><td>$tsys Gyr</td></tr>
-  <tr><td>CHZ:</td><td>[$lincont,$loutcont] AU</td></tr>
   <tr><td>t<sub>sync1</sub>:</td><td>$tsync1 Gyr</td></tr>
   <tr><td>t<sub>sync2</sub>:</td><td>$tsync2 Gyr</td></tr>
 </table>
@@ -173,10 +174,19 @@ Gyr.</P>
 <br/>
 <H3>Habitable Zone</H3>
 <img src="tmp/HZ-$suffix.png"><br/>
-<img src="tmp/HZevol-$suffix.png"><br/>
-<a href=?back&$qstring>Back</a> - <a href=?$qreload>Reload</a>
 CONTENT;
 
+if($qchz){
+$tsys=$parts[$i++];$lincont=$parts[$i++];$loutcont=$parts[$i++];
+echo<<<CONTENT
+<H3>Continuous Habitable Zone</H3>
+<table>
+  <tr><td>&tau;<sub>sys</sub>:</td><td>$tsys Gyr</td></tr>
+  <tr><td>CHZ:</td><td>[$lincont,$loutcont] AU</td></tr>
+</table>
+<img src="tmp/HZevol-$suffix.png"><br/>
+CONTENT;
+}
 if($qintegration){
 $suffix1=sprintf("%.2f",$M1);
 $suffix2=sprintf("%.2f",$M2);
@@ -190,6 +200,11 @@ echo<<<CONTENT
 <img src="tmp/FluxSW-$suffix.png"><br/>
 CONTENT;
 }
+
+echo<<<CONTENT
+<a href=?back&$qstring>Back</a> - <a href=?$qreload>Reload</a>
+CONTENT;
+
  }else{
 
 //////////////////////////////////////////////////////////////////////////////////
@@ -199,6 +214,8 @@ CONTENT;
 
 echo<<<CONTENT
 <H2>Input Data</H2>
+
+<input type="submit" name="submit" value="submit">
 
 <H3>Binary System</H3>
 
@@ -217,8 +234,6 @@ P<sub>bin</sub> : <input type="text" name="Pbin" value="$Pbin"> days<br/>
 e : <input type="text" name="e" value="$e"><br/>
 <i style="font-size:12px">Binary eccentricity.</i><br/><br/>
 
-<input type="submit" name="submit" value="submit">
-
 <H3>Planet (optional)</H3>
 
 M<sub>p</sub> : <input type="text" name="Mp" value="$Mp"> M<sub>Earth</sub><br/>
@@ -227,14 +242,14 @@ M<sub>p</sub> : <input type="text" name="Mp" value="$Mp"> M<sub>Earth</sub><br/>
 a<sub>p</sub> : <input type="text" name="ap" value="$ap"> AU<br/>
 <i style="font-size:12px">Semimajor axis of planet</i><br/><br/>
 
-<input type="submit" name="submit" value="submit">
-
 <H3>Planetary System (optional)</H3>
 
 &tau; : <input type="text" name="tau" value="$tau"> Gyr<br/>
 <i style="font-size:12px">Age of the system.  Values must be between 0.01 and 12.5 Gyr</i><br/><br/>
 
-<input type="submit" name="submit" value="submit">
+<H3>Continuous Habitable Zone (CHZ, Optional)</H3>
+
+Compute the continuous HZ:<input type="checkbox" name="qchz"><br/>
 
 <H3>Integration (optional)</H3>
 
@@ -252,6 +267,8 @@ Set of isochrones :
 <option value="ZSVEC_siblings" selected>Close to solar (3 values, 0.01-0.02)</option>
 </select><br/>
 <i style="font-size:12px">It could reduce considerably the execution time.</i><br/><br/>
+
+<input type="submit" name="submit" value="submit">
 
 CONTENT;
  }
