@@ -314,6 +314,7 @@ def Run():
     fig=plt.figure()
     plt.axhline(loutcont,color='k',linewidth=3)
     plt.plot([],[],'k-',linewidth=3,label='Optimum distance')
+
     plt.axhspan(lincont,loutcont,color='k',alpha=0.3)
 
     plt.text(tauvec[-1]/2,1.02*lincont,'Continuous Habitable Zone',
@@ -336,12 +337,13 @@ def Run():
     plt.plot(tauvec,louts,'b-',linewidth=2,label='Early Mars')
     plt.plot(tauvec,slins,'r--',linewidth=2)
     plt.plot(tauvec,slouts,'b--',linewidth=2)
-    plt.plot([0],[0],'k--',label='Single primary HZ limits')
+    plt.plot([],[],'k--',linewidth=3,label='Single primary HZ limits')
+
     plt.yscale('log')
     logTickLabels(plt.gca(),-1,2,(1,),frm='%.1f',axis='y',notation='normal',fontsize=12)
     plt.ylim((min(lins),max(louts)))
     plt.xlim((tauvec[0],tauvec[-1]))
-    plt.legend(loc='best')
+    plt.legend(loc='upper right',prop={'size':10})
     plt.title(r"$M_1=%.3f$, $M_2=%.3f$, $a_{\rm bin}=%.3f$ AU, $e=%.3f$, $P_{\rm bin}=%.3f$ days"%(M1,M2,abin,e,Pbin),position=(0.5,1.02),fontsize=16)
     plt.savefig(TMPDIR+"/HZevol-%s.png"%suffix)
     
