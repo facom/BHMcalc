@@ -78,7 +78,7 @@ def StellarProperty(prop,Z,Ms,tau):
         val=func(Z)
     except:
         #print "Metallicity Z = %f is out of range"%Z
-        val=-1
+        val=-1.2345
         #exit(1)
     return val
 
@@ -223,10 +223,16 @@ def StellarRadius(Ms,gs):
     return Rs
 
 def StellarGTRL(Z,M,t):
-    g=10**StellarProperty('logGravitation',Z,M,t)/100
+    logg=StellarProperty('logGravitation',Z,M,t)
+    g=10**logg/100
     R=StellarRadius(M,g)
-    T=10**StellarProperty('logTemperature',Z,M,t)
-    L=10**StellarProperty('logLuminosity',Z,M,t)
+    logT=StellarProperty('logTemperature',Z,M,t)
+    T=10**logT
+    logL=StellarProperty('logLuminosity',Z,M,t)
+    L=10**logL
+    if logg==-1.2345:g=-1
+    if logT==-1.2345:T=-1
+    if logL==-1.2345:L=-1
     return g,T,R,L
 
 def minmaxRadius(Z,M,tmin=0.01,tmax=1.0):

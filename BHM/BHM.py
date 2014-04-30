@@ -303,6 +303,8 @@ def HZ2013(Ls,Teff,lin='recent venus',lout='early mars'):
     Ls: In solar Units
     Teff: In K
     """
+    if Ls<0 or Teff<0:
+        raise Exception("Negative value in stellar properties")
     Seffin,Seffout=Seff2013(Teff,crits=[lin,lout])
     Seffsun=1.0
     lin=(Ls/Seffin)**0.5
@@ -336,11 +338,11 @@ def HZbin4(q,Ls1,Ls2,Teffbin,abin,crits=['recent venus','early mars']):
 
     #INNER LIMIT
     AF=lambda x:AverageFlux(x,**args)-Seffin
-    lin=bisectFunction(AF,1E-4,3)
+    lin=bisectFunction(AF,1E-4,20)
 
     #OUTER LIMIT
     AF=lambda x:AverageFlux(x,**args)-Seffout
-    lout=bisectFunction(AF,1E-4,3)
+    lout=bisectFunction(AF,1E-4,20)
 
     aHZ=(lin+lout)/2
 

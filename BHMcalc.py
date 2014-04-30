@@ -36,9 +36,7 @@ plt.close("all")
 ############################################################
 #LOAD DATA
 ############################################################
-#loadData(True)
 exec("num=loadIsochroneSet(verbose=True,Zs=%s)"%zsvec)
-
 
 ############################################################
 #ROUTINES
@@ -61,6 +59,7 @@ def Run():
 
     #BIRTH AGE
     tau0=0.01
+    tauM=12.5
     
     #INITIAL PERIOD OF ROTATION ABOVE DISRUPTION
     PFAC=2
@@ -189,6 +188,90 @@ def Run():
     #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     #FIND OPTIMUM POINT INSIDE HABITABLE ZONE
     #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    tauvec=np.linspace(0.1,tauM,200)
+    lins=[]
+    louts=[]
+    slins=[]
+    slouts=[]
+    i=0
+    for tau in tauvec:
+        #print "Time: %e"%tau
+        g1e,T1e,R1e,L1e=StellarGTRL(Z,M1,tau)
+        #print "\tStar 1: g,T,R,L=",g1,T1,R1,L1
+        g2e,T2e,R2e,L2e=StellarGTRL(Z,M2,tau)
+        #print "\tStar 2: g,T,R,L=",g2,T2,R2,L2
+        try:
+            lin1e,aE1e,lout1e=HZ2013(L1e,T1e)
+            #print "\tPrimary HZ=",lin1,aE1,lout1
+        except:
+            #print "The most massive star has passed away at tau = %e"%tau
+            break
+        line,aEe,loute=HZbin4(M2/M1,L1e,L2e,T1e,abin)
+        tausys=tau
+        lins+=[line]
+        louts+=[loute]
+        slins+=[lin1e]
+        slouts+=[lout1e]
+        i+=1
+    tauvec=tauvec[:i]
+    lins=np.array(lins)
+    louts=np.array(louts)
+    print "Maximum age of the system: %.3f"%(tausys)
+ 
+    #FIND CONTINUOUS HABITABLE ZONE
+    dlins=np.log10(lins[1::])-np.log10(lins[:-1:])
+    dlins=np.append([0],dlins)
+    imax=-1
+    epsmax=0
+    dlinold=dlins[-1]
+    for i in arange(10,len(dlins))[::-3]:
+        eps=2*abs(dlins[i]-dlinold)/(dlins[i]+dlinold)
+        #print tauvec[i],eps,epsmax
+        if eps>epsmax:
+            imax=i
+            epsmax=eps
+        dlinold=dlins[i]
+        if tauvec[i]<tausys/2:break
+    lincont=lins[imax]
+    loutcont=min(louts)
+
+    print "Continuous HZ: ",lincont,loutcont
+
+    #PLOT HABITABLE ZONE
+    fig=plt.figure()
+    plt.axhline(loutcont,color='k',linewidth=3)
+    plt.plot([],[],'k-',linewidth=3,label='Optimum distance')
+    plt.axhspan(lincont,loutcont,color='k',alpha=0.3)
+
+    plt.text(tauvec[-1]/2,1.02*lincont,'Continuous Habitable Zone',
+             horizontalalignment='center',fontsize=18)
+
+    plt.text(1.05*tauvec[0],0.98*loutcont,'%.2f AU'%loutcont,
+             horizontalalignment='left',
+             verticalalignment='top',
+             fontsize=12)
+    plt.text(1.05*tauvec[0],1.02*lincont,'%.2f AU'%lincont,
+             horizontalalignment='left',
+             verticalalignment='bottom',
+             fontsize=12)
+
+    plt.xlabel(r"$\tau$ (Gyr)")
+    plt.xlabel(r"$a$ (AU)")
+
+    plt.fill_between(tauvec,lins,louts,color='g',alpha=0.3)
+    plt.plot(tauvec,lins,'r-',linewidth=2,label='Recent Venus')
+    plt.plot(tauvec,louts,'b-',linewidth=2,label='Early Mars')
+    plt.plot(tauvec,slins,'r--',linewidth=2)
+    plt.plot(tauvec,slouts,'b--',linewidth=2)
+    plt.yscale('log')
+    logTickLabels(plt.gca(),-1,2,(1,),frm='%.1f',axis='y',notation='normal',fontsize=12)
+    plt.ylim((min(lins),max(louts)))
+    plt.xlim((tauvec[0],tauvec[-1]))
+    plt.legend(loc='upper left')
+    plt.title(r"$M_1=%.3f$, $M_2=%.3f$, $a_{\rm bin}=%.3f$ AU, $e=%.3f$, $P_{\rm bin}=%.3f$ days"%(M1,M2,abin,e,Pbin),position=(0.5,1.02),fontsize=16)
+    plt.savefig(TMPDIR+"/HZevol-%s.png"%suffix)
+    
+    print>>fout,tausys,lincont,loutcont
 
     #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     #PLOT HABITABLE ZONE AND BINARY ORBIT
