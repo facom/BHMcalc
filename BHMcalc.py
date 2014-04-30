@@ -336,6 +336,7 @@ def Run():
     plt.plot(tauvec,louts,'b-',linewidth=2,label='Early Mars')
     plt.plot(tauvec,slins,'r--',linewidth=2)
     plt.plot(tauvec,slouts,'b--',linewidth=2)
+    plt.plot([],[],'k--',label='Single primary HZ limits')
     plt.yscale('log')
     logTickLabels(plt.gca(),-1,2,(1,),frm='%.1f',axis='y',notation='normal',fontsize=12)
     plt.ylim((min(lins),max(louts)))
