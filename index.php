@@ -120,6 +120,7 @@ if(isset($submit) and !isset($back)){
 echo<<<CONTENT
 <H2>Input</H2>
 <table>
+  <tr><td>Z:</td><td>$Z</td></tr>
   <tr><td>M<sub>1</sub>:</td><td>$M1 M<sub>Sun</sub></td></tr>
   <tr><td>M<sub>2</sub>:</td><td>$M2 M<sub>Sun</sub></td></tr>
   <tr><td>q:</td><td>$q</td></tr>
