@@ -189,8 +189,16 @@ CONTENT;
 //INPUT
 //////////////////////////////////////////////////////////////////////////////////
    if(!isset($stat) and !isset($back)){access("access");}
+
 echo<<<CONTENT
 <H2>Input Data</H2>
+
+<H3>Integration (optional)</H3>
+
+Integrate:<input type="checkbox" name="qintegration" checked><br/>
+
+Total integration time : <input type="text" name="tautot" value="$tautot"> Gyr<br/>
+<i style="font-size:12px">Values must be between 0.01 and 13.0 Gyr</i><br/><br/>
 
 <H3>Binary System</H3>
 
@@ -225,13 +233,6 @@ a<sub>p</sub> : <input type="text" name="ap" value="$ap"> AU<br/>
 
 &tau; : <input type="text" name="tau" value="$tau"> Gyr<br/>
 <i style="font-size:12px">Age of the system.  Values must be between 0.01 and 13.0 Gyr</i><br/><br/>
-
-<H3>Integration (optional)</H3>
-
-Integrate:<input type="checkbox" name="qintegration" checked><br/>
-
-Total integration time : <input type="text" name="tautot" value="$tautot"> Gyr<br/>
-<i style="font-size:12px">Values must be between 0.01 and 13.0 Gyr</i><br/><br/>
 
 <input type="submit" name="submit" value="submit">
 CONTENT;
