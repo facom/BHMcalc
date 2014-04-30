@@ -35,7 +35,7 @@ plt.close("all")
 #LOAD DATA
 ############################################################
 #loadData(True)
-num=loadIsochroneSet(verbose=True)
+num=loadIsochroneSet(verbose=True,Zs=ZSVEC_siblings)
 
 ############################################################
 #ROUTINES
@@ -126,6 +126,7 @@ def Run():
     print d,"P = %f days"%Pbin
     print d,"n = %f rad/day"%nbin
     print d,"Psync = %f days"%Psync
+    print d,"tau = %f Gyr"%TAU
     print d,"HZ = ",lin,aE,aHZ,lout
 
     print d,"Main component:"
@@ -182,9 +183,76 @@ def Run():
 
     print>>fout,tsync1,tsync2
 
+    #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    #FIND OPTIMUM POINT INSIDE HABITABLE ZONE
+    #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+    #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    #PLOT HABITABLE ZONE AND BINARY ORBIT
+    #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    rang=1.2*lout
+    fig=plt.figure(figsize=(8,8))
+    ax=fig.add_axes([0.01,0.01,0.98,0.98],xlim=(-rang,rang),ylim=(-rang,rang))
+    ax.set_xticklabels([])
+    ax.set_yticklabels([])
+
+    #CENTER
+    #ax.plot([0],[0],'k+',ms=10,zorder=100)
+
+    #ORBIT
+    MTOT=M1+M2
+    f=np.linspace(0,2*pi,100)
+    r=abin*(1-e**2)/(1+e*cos(f))
+    x2=-M1/MTOT*r*cos(f)
+    y2=-M1/MTOT*r*sin(f)
+    x1=M2/MTOT*r*cos(f)
+    y1=M2/MTOT*r*sin(f)
+    ax.plot(x1,y1,'k-',linewidth=1,zorder=20)
+    ax.plot(x2,y2,'k-',linewidth=1,zorder=20)
+    C1=Circle((x1[0],y1[0]),rang/90,
+              facecolor='k',alpha=1.0,linewidth=0,zorder=50)
+    C2=Circle((x2[0],y2[0]),rang/90,
+              facecolor='k',alpha=1.0,linewidth=0,zorder=50)
+    ax.add_patch(C1)
+    ax.add_patch(C2)
+
+    #CRITICAL ORBIT
+    aCR=Circle((0,0),acrit,facecolor='none',edgecolor='k',
+                linewidth=2,linestyle='dashed',zorder=20)
+    ax.add_patch(aCR)
+
+    #INNER
+    lini,aEi,louti=HZbin4(M2/M1,LZ1,LZ2,TZ1,abin,
+                          crits=['runaway greenhouse','maximum greenhouse'])
+    aHZi=(lini+louti)/2
+    outHZ=Circle((0,0),louti,facecolor='g',alpha=0.3,linewidth=2)
+    ax.add_patch(outHZ)
+    inHZ=Circle((0,0),lini,facecolor='r',edgecolor='r',alpha=0.2,
+                linewidth=2,zorder=10)
+    ax.add_patch(inHZ)
+
+    #OUTER
+    lino,aEo,louto=HZbin4(M2/M1,LZ1,LZ2,TZ1,abin,
+                       crits=['recent venus','early mars'])
+    aHZo=(lino+louto)/2
+    outHZ=Circle((0,0),louto,facecolor='g',alpha=0.3,linewidth=2)
+    ax.add_patch(outHZ)
+    inHZ=Circle((0,0),lino,facecolor='w',edgecolor='r',
+                linewidth=2,zorder=10)
+    ax.add_patch(inHZ)
+
+    #TITLE
+    ax.set_title(r"$M_1=%.3f$, $M_2=%.3f$, $a_{\rm bin}=%.3f$ AU, $e=%.3f$, $P_{\rm bin}=%.3f$ days"%(M1,M2,abin,e,Pbin),position=(0.5,0.95),fontsize=16)
+    ax.text(0.5,0.02,r"$a_{\rm crit}=%.2f$ AU, $l_{\rm in,RV}$=%.2f AU, $l_{\rm in,RG}$=%.2f AU, $l_{\rm out,MG}$=%.2f AU, $l_{\rm in,EM}$=%.2f AU"%(acrit,lino,lini,louti,louto),transform=ax.transAxes,horizontalalignment='center',fontsize=14)
+    plt.savefig(TMPDIR+"/HZ-%s.png"%suffix)
+
+    #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    #CHECK IF INTEGRATION IS REQUIRED
+    #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     if not qintegration:
         fout.close()
         exit(0)
+
     #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     #INTEGRATION RANGE
     #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
