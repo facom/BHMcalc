@@ -93,7 +93,7 @@ if(isset($submit) and !isset($back)){
   $parts=preg_split("/\s+/",$result);
   echo "<a href=?back&$qstring>Back</a> - ";
   echo "<a href=?$qreload>Reload</a>";
-  echo "<P><a href=tmp/fulloutput-$sessid.log>Full Output</a></P>";
+  echo "<P><a href=tmp/fulloutput-$sessid.log target=_blank>Full Output</a></P>";
 
   //print_r($parts);
 
