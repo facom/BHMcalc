@@ -196,7 +196,7 @@ echo<<<CONTENT
 
 <H3>Integration (optional)</H3>
 
-Integrate:<input type="checkbox" name="qintegration" checked><br/>
+Integrate:<input type="checkbox" name="qintegration"><br/>
 
 Total integration time : <input type="text" name="tautot" value="$tautot"> Gyr<br/>
 <i style="font-size:12px">Values must be between 0.01 and 13.0 Gyr</i><br/><br/>
