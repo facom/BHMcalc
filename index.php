@@ -2,6 +2,10 @@
 //////////////////////////////////////////////////////////////////////////////////
 //STATISTICS
 //////////////////////////////////////////////////////////////////////////////////
+if(!isset($_SESSION)){session_start();}
+$sessid=session_id();
+echo "<P STYLE=font-size:12px>Session $sessid</P>";
+
 $PYTHONCMD="MPLCONFIGDIR=/tmp python";
 $WEBDIR="facom/pages/binary-habitability.rs/files/binary-habitabilitygovwk/.Interactive/BHM-Calculator";
 $DIR="/websites/sitios/$WEBDIR";
@@ -37,8 +41,7 @@ function access($referer){
 echo<<<CONTENT
 <HTML>
 <BODY>
-<H1>Binary Habitability
-Calculator<SUP style='color:red;font-size:18px'>v2.0</SUP></H1>
+<H1><A HREF="?">Binary Habitability Calculator</A><SUP style='color:red;font-size:18px'>v2.0</SUP></H1>
 
 <form>
 CONTENT;
@@ -71,15 +74,17 @@ foreach(array_keys($_POST) as $field){
 //////////////////////////////////////////////////////////////////////////////////
 if(isset($submit) and !isset($back)){
   $qstring=$_SERVER["QUERY_STRING"];
+  if(!preg_match("/\w/",$qintegration)){$qintegration=0;}
+  else{$qintegration=1;}
   if(!isset($stat) and !isset($back)){access("run");}
   if(!isset($reload)){
-  $cmd="$PYTHONCMD BHMcalc.py $Z $M1 $M2 $e $Pbin $tau $Mp $ap $tautot > tmp/fulloutput.log";
+  $cmd="$PYTHONCMD BHMcalc.py $Z $M1 $M2 $e $Pbin $tau $Mp $ap $tautot $qintegration $sessid &> tmp/fulloutput-$sessid.log";
   shell_exec($cmd);
   $qreload="reload&$qstring";
   }else{
     $qreload=$qstring;
   }
-  $result=shell_exec("cat tmp/output.log");
+  $result=shell_exec("cat tmp/output-$sessid.log");
   /*
   echo "Executing: $cmd<br/>";
   echo "<pre>$result</pre>";
@@ -88,7 +93,7 @@ if(isset($submit) and !isset($back)){
   $parts=preg_split("/\s+/",$result);
   echo "<a href=?back&$qstring>Back</a> - ";
   echo "<a href=?$qreload>Reload</a>";
-  echo "<P><a href=tmp/fulloutput.log>Full Output</a></P>";
+  echo "<P><a href=tmp/fulloutput-$sessid.log>Full Output</a></P>";
 
   //print_r($parts);
 
@@ -105,15 +110,16 @@ if(isset($submit) and !isset($back)){
   $tsync1=$parts[$i++];$tsync2=$parts[$i++];
 
   $q=$M2/$M1;
+  /*
   if($q>0){$type="Binary";}
   else{$type="Single star";}
+  */
 	
-  $suffix=sprintf("%.2f%.2f%.3f%.2f",$M1,$M2,$e,$Pbin);
+  $suffix=sprintf("%.2f%.2f%.3f%.2f-%s",$M1,$M2,$e,$Pbin,$sessid);
 
 echo<<<CONTENT
 <H2>Input</H2>
 <table>
-  <tr><td>Type:</td><td>$type</td></tr>
   <tr><td>M<sub>1</sub>:</td><td>$M1 M<sub>Sun</sub></td></tr>
   <tr><td>M<sub>2</sub>:</td><td>$M2 M<sub>Sun</sub></td></tr>
   <tr><td>q:</td><td>$q</td></tr>
@@ -162,12 +168,21 @@ Gyr.</P>
 </table>
 <br/>
 <a href=?back&$qstring>Back</a> - <a href=?$qreload>Reload</a>
+CONTENT;
+
+if($qintegration){
+$suffix1=sprintf("%.2f",$M1);
+$suffix2=sprintf("%.2f",$M2);
+echo<<<CONTENT
 <H3>Plots</H3>
+<img src="tmp/PeriodFit-$suffix1.png"><br/>
+<img src="tmp/PeriodFit-$suffix2.png"><br/>
 <img src="tmp/PeriodEvolution-$suffix.png"><br/>
 <img src="tmp/AccelerationEvolution-$suffix.png"><br/>
 <img src="tmp/FluxXUV-$suffix.png"><br/>
 <img src="tmp/FluxSW-$suffix.png"><br/>
 CONTENT;
+}
  }else{
 
 //////////////////////////////////////////////////////////////////////////////////
@@ -212,6 +227,8 @@ a<sub>p</sub> : <input type="text" name="ap" value="$ap"> AU<br/>
 <i style="font-size:12px">Age of the system.  Values must be between 0.01 and 13.0 Gyr</i><br/><br/>
 
 <H3>Integration (optional)</H3>
+
+Integrate:<input type="checkbox" name="qintegration" checked><br/>
 
 Total integration time : <input type="text" name="tautot" value="$tautot"> Gyr<br/>
 <i style="font-size:12px">Values must be between 0.01 and 13.0 Gyr</i><br/><br/>

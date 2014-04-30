@@ -12,7 +12,6 @@ TMPDIR="tmp/"
 ############################################################
 #INPUT PARAMETERS
 ############################################################
-fout=open(TMPDIR+"output.log","w")
 Z=float(argv[1])
 M1=float(argv[2])
 M2=float(argv[3])
@@ -22,7 +21,10 @@ TAU=float(argv[6])
 Mp=float(argv[7])
 ap=float(argv[8])
 tau1=float(argv[9])
-suffix="%.2f%.2f%.3f%.2f"%(M1,M2,e,Pbin)
+qintegration=int(argv[10])
+sessid=argv[11]
+suffix="%.2f%.2f%.3f%.2f-%s"%(M1,M2,e,Pbin,sessid)
+fout=open(TMPDIR+"output-%s.log"%sessid,"w")
 
 ############################################################
 #PREPARATION
@@ -33,7 +35,7 @@ plt.close("all")
 #LOAD DATA
 ############################################################
 #loadData(True)
-num=loadIsochroneSet(verbose=False)
+num=loadIsochroneSet(verbose=True)
 
 ############################################################
 #ROUTINES
@@ -177,6 +179,10 @@ def Run():
     print 
 
     print>>fout,tsync1,tsync2
+
+    if not qintegration:
+        fout.close()
+        exit(0)
     #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     #INTEGRATION RANGE
     #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -188,8 +194,8 @@ def Run():
     #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     #MASSLOSS FIT
     #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    suffix1="%.2f"%M1
-    suffix2="%.2f"%M1
+    suffix1="%.2f"%(M1)
+    suffix2="%.2f"%(M2)
     ffit1=TMPDIR+"solution-%s.txt"%(suffix1)
     ffit2=TMPDIR+"solution-%s.txt"%(suffix2)
 
@@ -212,6 +218,15 @@ def Run():
             np.savetxt(ffit1,x)
             return chisquare
         xfit1=minimize(chiSquare,[1,1.0,1.0]).x
+        plt.figure()
+        plt.plot(data1[:,0],data1[:,1],'bo')
+        plt.plot(data1[:,0],theoProt(data1[:,0],xfit1),'b-')
+        plt.xscale("log")
+        plt.yscale("log")
+        plt.xlabel(r"$\tau$")
+        plt.ylabel(r"$P_{\rm rot}$")
+        plt.title(r"$M_1$ = %.2f $M_{\rm sun}$"%M1)
+        plt.savefig(TMPDIR+"/PeriodFit-%s.png"%suffix1)
     else:
         xfit1=np.loadtxt(ffit1)
         
@@ -232,6 +247,15 @@ def Run():
             np.savetxt(ffit2,x)
             return chisquare
         xfit2=minimize(chiSquare,[1,1.0,1.0]).x
+        plt.figure()
+        plt.plot(data2[:,0],data2[:,1],'bo')
+        plt.plot(data2[:,0],theoProt(data2[:,0],xfit2),'b-')
+        plt.xscale("log")
+        plt.yscale("log")
+        plt.xlabel(r"$\tau$")
+        plt.ylabel(r"$P_{\rm rot}$")
+        plt.title(r"$M_1$ = %.2f $M_{\rm sun}$"%M2)
+        plt.savefig(TMPDIR+"/PeriodFit-%s.png"%suffix2)
     else:
         xfit2=np.loadtxt(ffit2)
 
