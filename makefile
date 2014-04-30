@@ -11,3 +11,10 @@ reset:
 permissions:
 	chown -R $(USER):$(GROUP) .
 	chmod -R g+w .
+
+commit:
+	git commit -am "Commit"
+	git push origin master
+
+pull:
+	git pull
