@@ -78,7 +78,7 @@ if(isset($submit) and !isset($back)){
   else{$qintegration=1;}
   if(!isset($stat) and !isset($back)){access("run");}
   if(!isset($reload)){
-  $cmd="$PYTHONCMD BHMcalc.py $Z $M1 $M2 $e $Pbin $tau $Mp $ap $tautot $qintegration $sessid &> tmp/fulloutput-$sessid.log";
+  $cmd="$PYTHONCMD BHMcalc.py $Z $M1 $M2 $e $Pbin $tau $Mp $ap $tautot $qintegration $sessid $zsvec &> tmp/fulloutput-$sessid.log";
   shell_exec($cmd);
   $qreload="reload&$qstring";
   }else{
@@ -196,13 +196,6 @@ CONTENT;
 echo<<<CONTENT
 <H2>Input Data</H2>
 
-<H3>Integration (optional)</H3>
-
-Integrate:<input type="checkbox" name="qintegration"><br/>
-
-Total integration time : <input type="text" name="tautot" value="$tautot"> Gyr<br/>
-<i style="font-size:12px">Values must be between 0.01 and 13.0 Gyr</i><br/><br/>
-
 <H3>Binary System</H3>
 
 Z : <input type="text" name="Z" value="$Z"><br/>
@@ -238,6 +231,24 @@ a<sub>p</sub> : <input type="text" name="ap" value="$ap"> AU<br/>
 <i style="font-size:12px">Age of the system.  Values must be between 0.01 and 13.0 Gyr</i><br/><br/>
 
 <input type="submit" name="submit" value="submit">
+
+<H3>Integration (optional)</H3>
+
+Integrate:<input type="checkbox" name="qintegration"><br/>
+
+Total integration time : <input type="text" name="tautot" value="$tautot"> Gyr<br/>
+<i style="font-size:12px">Values must be between 0.01 and 13.0 Gyr</i><br/><br/>
+
+<H3>Behavior</H3>
+
+Set of isochrones : 
+<select name="zsvec">
+<option value="ZSVEC_full">Full (35 metallicities, 0.0001-0.06)</option>
+<option value="ZSVEC_coarse">Coarse (10 values, 0.0001-0.06)</option>
+<option value="ZSVEC_siblings" selected>Close to solar (3 values, 0.01-0.02)</option>
+</select><br/>
+<i style="font-size:12px">It could reduce considerably the execution time.</i><br/><br/>
+
 CONTENT;
  }
 
