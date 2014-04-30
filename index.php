@@ -108,6 +108,7 @@ if(isset($submit) and !isset($back)){
   $abin=$parts[$i++];$acrit=$parts[$i++];$nsync=$parts[$i++];$Psync=$parts[$i++];
   $lin=$parts[$i++];$aE=$parts[$i++];$aHZ=$parts[$i++];$lout=$parts[$i++];
   $tsync1=$parts[$i++];$tsync2=$parts[$i++];
+  $tsys=$parts[$i++];$lincont=$parts[$i++];$loutcont=$parts[$i++];
 
   $q=$M2/$M1;
   /*
@@ -140,6 +141,8 @@ echo<<<CONTENT
   <tr><td>a<sub>in</sub>:</td><td>$lin AU</td></tr>
   <tr><td>a<sub>HZ</sub>:</td><td>$aHZ AU</td></tr>
   <tr><td>a<sub>out</sub>:</td><td>$lout AU</td></tr>
+  <tr><td>&tau;<sub>sys</sub>:</td><td>$tsys Gyr</td></tr>
+  <tr><td>CHZ:</td><td>[$lincont,$loutcont] AU</td></tr>
   <tr><td>t<sub>sync1</sub>:</td><td>$tsync1 Gyr</td></tr>
   <tr><td>t<sub>sync2</sub>:</td><td>$tsync2 Gyr</td></tr>
 </table>
