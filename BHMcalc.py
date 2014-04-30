@@ -23,6 +23,8 @@ ap=float(argv[8])
 tau1=float(argv[9])
 qintegration=int(argv[10])
 sessid=argv[11]
+zsvec=argv[12]
+
 suffix="%.2f%.2f%.3f%.2f-%s"%(M1,M2,e,Pbin,sessid)
 fout=open(TMPDIR+"output-%s.log"%sessid,"w")
 
@@ -35,7 +37,8 @@ plt.close("all")
 #LOAD DATA
 ############################################################
 #loadData(True)
-num=loadIsochroneSet(verbose=True,Zs=ZSVEC_full)
+exec("num=loadIsochroneSet(verbose=True,Zs=%s)"%zsvec)
+
 
 ############################################################
 #ROUTINES
