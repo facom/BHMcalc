@@ -130,6 +130,7 @@ def Run():
 
     print d,"Main component:"
     d="\t"*2
+    print d,"Z = %f"%Z
     print d,"M = %f Msun"%M1
     print d,"T = %f K"%T1
     print d,"R = %f Rsun"%R1
@@ -143,6 +144,7 @@ def Run():
     d="\t"*1
     print d,"Secondary component:"
     d="\t"*2
+    print d,"Z = %f"%Z
     print d,"M = %f Msun"%M2
     print d,"T = %f K"%T2
     print d,"R = %f Rsun"%R2
