@@ -340,7 +340,7 @@ def Run():
     logTickLabels(plt.gca(),-1,2,(1,),frm='%.1f',axis='y',notation='normal',fontsize=12)
     plt.ylim((min(lins),max(louts)))
     plt.xlim((tauvec[0],tauvec[-1]))
-    plt.legend(loc='upper left')
+    plt.legend(loc='best')
     plt.title(r"$M_1=%.3f$, $M_2=%.3f$, $a_{\rm bin}=%.3f$ AU, $e=%.3f$, $P_{\rm bin}=%.3f$ days"%(M1,M2,abin,e,Pbin),position=(0.5,1.02),fontsize=16)
     plt.savefig(TMPDIR+"/HZevol-%s.png"%suffix)
     
