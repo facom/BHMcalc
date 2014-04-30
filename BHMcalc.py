@@ -343,6 +343,7 @@ def Run():
         fout.close()
         exit(0)
 
+    tau1=min(tau1,tausys)
     #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     #INTEGRATION RANGE
     #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
