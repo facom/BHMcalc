@@ -57,7 +57,7 @@ $e=0.0;
 $Mp=1.0;
 $ap=1.5;
 $tau=1.0;
-$tautot=4.6;
+$tautot=2.0;
 
 //////////////////////////////////////////////////////////////////////////////////
 //COMMON
@@ -192,12 +192,43 @@ $suffix1=sprintf("%.2f",$M1);
 $suffix2=sprintf("%.2f",$M2);
 echo<<<CONTENT
 <H3>Evolution Plots</H3>
+
+Evolution of rotational periods with (solid) and without (dashed)
+tidal interaction:
+
+<img src="tmp/PeriodEvolution-$suffix.png"><br/>
+
+Evolution of XUV and stellar wind flux within the continuous habitable
+zone in Binary with BHM (solid), no BHM (dash-dotted) and
+single-primary (dotted): 
+
+<img src="tmp/FluxXUV-$suffix.png"><br/> 
+
+<img src="tmp/FluxSW-$suffix.png"><br/>
+
+Ratio of XUV and stellar wind flux in Binaries with BHM, without BHM
+and around single-primary systems:
+
+<img src="tmp/RatiosFluxXUV-$suffix.png"><br/> 
+
+<img src="tmp/RatiosFluxSW-$suffix.png"><br/>
+
+Integrated XUV and stellar wind fluxes:
+
+<img src="tmp/IntFXUV-$suffix.png"><br/>
+<img src="tmp/IntFSW-$suffix.png"><br/>
+
+Mass-loss as a function of planetary mass at the inner edge of the
+continuous habitable zone:
+
+<img src="tmp/MassLoss-$suffix.png"><br/>
+
+<!--DEPRECATED
 <img src="tmp/PeriodFit-$suffix1.png"><br/>
 <img src="tmp/PeriodFit-$suffix2.png"><br/>
-<img src="tmp/PeriodEvolution-$suffix.png"><br/>
 <img src="tmp/AccelerationEvolution-$suffix.png"><br/>
-<img src="tmp/FluxXUV-$suffix.png"><br/>
-<img src="tmp/FluxSW-$suffix.png"><br/>
+-->
+
 CONTENT;
 }
 

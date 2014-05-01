@@ -182,7 +182,7 @@ def vnGreissmeier(d,t,M,R):
     dMsun=4*PI*AU**2*nref*vref*MP #Eq. 10
 
     #SCALED STELLAR MASS LOSS RATE AT t
-    dMstar=scaleProp(R,dMsun,2.0) # Eq.11
+    dMstar=scaleProp(R/RSUN,dMsun,2.0) # Eq.11
 
     #CORONAL TEMPERATURE AT t (ISOTHERMAL MODEL)
     Tc=Tcorona(t,M)
