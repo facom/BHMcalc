@@ -8,6 +8,8 @@ from numpy import *
 #CONFIGURATION
 ############################################################
 TMPDIR="tmp/"
+ALPHA=0.3 #Entrapment Factor (Zendejas et al., 2010) 
+MUATM=44.0 #MEAN 
 
 ############################################################
 #INPUT PARAMETERS
@@ -30,6 +32,26 @@ if qintegration:qchz=1
 suffix="%.2f%.2f%.3f%.2f-%s"%(M1,M2,e,Pbin,sessid)
 fout=open(TMPDIR+"output-%s.log"%sessid,"w")
 
+
+############################################################
+#PLANET PROPERTIES
+############################################################
+#RADIUS
+Rp=Mp**0.25
+gp=GCONST*(Mp*MEARTH)/(Rp*Rp_E)**2
+
+#CROSS SECTIONAL AREA
+Ap=2*PI*(Rp*Rp_E)**2 #m^2
+
+#ATMOSPHERIC MASS
+Pp=1.0*BAR
+Matm=4*PI*Pp*(Rp*Rp_E)**2/gp
+
+#ATMOSPHERIC NUMBER OF MOLECULES
+muatm=44 #CO_2 Rich atmosphere
+muatm=29 #N_2 Rich atmosphere
+Natm=Matm/(muatm*MP)
+
 ############################################################
 #PREPARATION
 ############################################################
@@ -49,18 +71,13 @@ def Run():
     #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     #CONSTANT PROPERTIES
     #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    qtid=1
-    qML=1
-
     #VERBOSITY
     verbose=False
-
-    #PAUSE CALCULATION
+    #verbose=True
     pause=False
+    #pause=True
 
-    #STELLAR METALLICITY
-
-    #BIRTH AGE
+    #ISOCHRONE LIMITS
     tau0=0.01
     tauM=12.5
     
@@ -71,8 +88,12 @@ def Run():
     tauHZ=TAU
 
     #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    #BINARY PROPERTIES
+    #COMPONENT STARS PROPERTIES
     #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+    #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+    #MAIN COMPONENT
+    #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
     g1,T1,R1,L1=StellarGTRL(Z,M1,TAU)
     Rmin1,Rmax1=minmaxRadius(Z,M1,tmax=TAU)
     Pmax1=maxPeriod(M1,R1)
@@ -90,6 +111,9 @@ def Run():
 
     print>>fout,lin1,aE1,aHZ1,lout1
 
+    #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+    #SECONDARY COMPONENT
+    #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
     g2,T2,R2,L2=StellarGTRL(Z,M2,TAU)
     Rmin2,Rmax2=minmaxRadius(Z,M2,tmax=TAU)
     Pmax2=maxPeriod(M2,R2)
@@ -106,7 +130,10 @@ def Run():
     aHZ2=(lin2+lout2)/2
 
     print>>fout,lin2,aE2,aHZ2,lout2
-    
+
+    #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    #BINARY PROPERTIES
+    #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     nbin=2*np.pi/Pbin
     abin=aKepler(Pbin,M1,M2)
     mu=M2/(M1+M2)
@@ -160,15 +187,19 @@ def Run():
     print d,"Pini = %f days"%Pini2
     print d,"Omega_ini = %f rad/day"%W2o
     print d,"Prot = %f days"%Prot2
+    print d,"HZ = ",lin2,aE2,aHZ2,lout2
     print
+    titlebin=r"$M_1=%.3f$, $M_2=%.3f$, $a_{\rm bin}=%.3f$ AU, $e=%.3f$, $P_{\rm bin}=%.3f$ days"%(M1,M2,abin,e,Pbin)
 
     #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     #ESTIMATED SYNC. TIME
     #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     #NOTE: TO CONVER W TO SI YOU SHOULD DIVIDE BY DAYS
+    g1i,T1i,R1i,L1i=StellarGTRL(Z,M1,0.1)
     acc1=tidalAcceleration(M1,R1i,L1i,M2,abin,e,nbin/DAY,W1o/DAY)
     tsync1=-(W1o/DAY)/acc1/GYR
     
+    g2i,T2i,R2i,L2i=StellarGTRL(Z,M2,0.1)
     acc2=tidalAcceleration(M2,R2i,L2i,M1,abin,e,nbin/DAY,W2o/DAY)
     tsync2=-(W2o/DAY)/acc1/GYR
 
@@ -243,7 +274,7 @@ def Run():
     ax.add_patch(inHZ)
 
     #TITLE
-    ax.set_title(r"$M_1=%.3f$, $M_2=%.3f$, $a_{\rm bin}=%.3f$ AU, $e=%.3f$, $P_{\rm bin}=%.3f$ days"%(M1,M2,abin,e,Pbin),position=(0.5,0.95),fontsize=16)
+    ax.set_title(titlebin,position=(0.5,0.95),fontsize=16)
     ax.text(0.5,0.02,r"$a_{\rm crit}=%.2f$ AU, $l_{\rm in,RV}$=%.2f AU, $l_{\rm in,RG}$=%.2f AU, $l_{\rm out,MG}$=%.2f AU, $l_{\rm out,EM}$=%.2f AU"%(acrit,lino,lini,louti,louto),transform=ax.transAxes,horizontalalignment='center',fontsize=14)
 
     ax.set_xlim((-rang,rang))
@@ -291,7 +322,7 @@ def Run():
     louts=np.array(louts)
     print "Maximum age of the system: %.3f"%(tausys)
  
-    #FIND CONTINUOUS HABITABLE ZONE
+    #FIND BINARY CONTINUOUS HABITABLE ZONE
     dlins=np.log10(lins[1::])-np.log10(lins[:-1:])
     dlins=np.append([0],dlins)
     imax=-1
@@ -307,8 +338,25 @@ def Run():
         if tauvec[i]<tausys/2:break
     lincont=lins[imax]
     loutcont=min(louts)
+    print "Continuous Binary HZ: ",lincont,loutcont
 
-    print "Continuous HZ: ",lincont,loutcont
+    #FIND SINGLE PRIMARY CONTINUOUS HABITABLE ZONE
+    dslins=np.log10(slins[1::])-np.log10(slins[:-1:])
+    dslins=np.append([0],dslins)
+    imax=-1
+    epsmax=0
+    dlinold=dslins[-1]
+    for i in arange(10,len(dslins))[::-3]:
+        eps=2*abs(dslins[i]-dlinold)/(dslins[i]+dlinold)
+        #print tauvec[i],eps,epsmax
+        if eps>epsmax:
+            imax=i
+            epsmax=eps
+        dlinold=dslins[i]
+        if tauvec[i]<tausys/2:break
+    slincont=slins[imax]
+    sloutcont=min(slouts)
+    print "Continuous Single Primary HZ: ",slincont,sloutcont
 
     #PLOT HABITABLE ZONE
     fig=plt.figure()
@@ -341,16 +389,18 @@ def Run():
 
     plt.yscale('log')
     logTickLabels(plt.gca(),-1,2,(1,),frm='%.1f',axis='y',notation='normal',fontsize=12)
-    plt.ylim((min(lins),max(louts)))
+
+    plt.ylim((min(slins),max(louts)))
     plt.xlim((tauvec[0],tauvec[-1]))
+
     plt.legend(loc='upper left',prop={'size':10})
-    plt.title(r"$M_1=%.3f$, $M_2=%.3f$, $a_{\rm bin}=%.3f$ AU, $e=%.3f$, $P_{\rm bin}=%.3f$ days"%(M1,M2,abin,e,Pbin),position=(0.5,1.02),fontsize=16)
+    plt.title(titlebin,position=(0.5,1.02),fontsize=16)
     plt.savefig(TMPDIR+"/HZevol-%s.png"%suffix)
     
-    print>>fout,tausys,lincont,loutcont
+    print>>fout,tausys,lincont,loutcont,slincont,sloutcont
 
     #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    #CHECK IF INTEGRATION IS REQUIRED
+    #CHECK IF INTEGRATION IS REQUESTED
     #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     if not qintegration:
         fout.close()
@@ -363,13 +413,17 @@ def Run():
     #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     #INTEGRATION RANGE
     #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    dt=min(1E-3,min(tsync1,tsync2)/10)
+    dt=min(1E-3,min(abs(tsync1),abs(tsync2))/10)
     nmax=tau1/dt
     tau_vec=np.arange(tau0+dt,tau1,dt)
     ntau=len(tau_vec)
 
+    rate_Flux_integrate=50
+    Dt=dt*rate_Flux_integrate*GYR
+    tvec=tau_vec[::ntau/50]
+    
     #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    #MASSLOSS FIT
+    #STELLAR MASSLOSS FIT
     #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     suffix1="%.2f"%(M1)
     suffix2="%.2f"%(M2)
@@ -377,8 +431,6 @@ def Run():
     ffit2=TMPDIR+"solution-%s.txt"%(suffix2)
 
     if not fileexists(ffit1):
-        Prot_vec=[]
-        tvec=tau_vec[::ntau/50]
         ncomp=1
         data1=[]
         for tau in tvec:
@@ -451,7 +503,6 @@ def Run():
         print d,"Time step: %e Gyr (%e s)"%(dt,dt*GYR)
         print d,"Initial conditions: W: ",W1*DAY,W2*DAY
         print d,"Initial conditions: P: ",P1/DAY,P2/DAY
-        if pause:raw_input()
 
     i=0
     iper=int(nmax/10)
@@ -472,23 +523,25 @@ def Run():
     acc1_vec=[]
     acc2_vec=[]
 
-    RXUVout_vec=[]
-    RXUVcen_vec=[]
-    RXUVin_vec=[]
+    FXUVopt_vec=[]
+    FXUVp_vec=[]
+    FXUVin_vec=[]
+    ntFXUVopt_vec=[]
+    ntFXUVp_vec=[]
+    ntFXUVin_vec=[]
+    sFXUVopt_vec=[]
+    sFXUVin_vec=[]
 
-    RSWout_vec=[]
-    RSWcen_vec=[]
-    RSWin_vec=[]
-
-    intFXUVout=0
-    intFXUVcen=0
-    intFXUVin=0
-    intFXUVout_sing=0
-    intFXUVcen_sing=0
-    intFXUVin_sing=0
+    FSWopt_vec=[]
+    FSWp_vec=[]
+    FSWin_vec=[]
+    ntFSWopt_vec=[]
+    ntFSWp_vec=[]
+    ntFSWin_vec=[]
+    sFSWopt_vec=[]
+    sFSWin_vec=[]
 
     tau_rep=tau_vec[0]
-
     q1sync=False
     q2sync=False
     tvecX=[]
@@ -506,16 +559,12 @@ def Run():
             d="\t"*2
             print d,"Stellar radius: ",R1,R2
             print d,"Stellar luminosity: ",L1,L2
-            if pause:raw_input()
 
         #==============================
         #TIDAL ACCELERATION
         #==============================
-        if qtid:
-            acc1_tid=tidalAcceleration(M1,R1,L1,M2,abin,e,nbin/DAY,W1)
-            acc2_tid=tidalAcceleration(M2,R2,L2,M1,abin,e,nbin/DAY,W2)
-        else:
-            acc1_tid=acc2_tid=0
+        acc1_tid=tidalAcceleration(M1,R1,L1,M2,abin,e,nbin/DAY,W1)
+        acc2_tid=tidalAcceleration(M2,R2,L2,M1,abin,e,nbin/DAY,W2)
 
         acc1_tid_vec+=[acc1_tid]
         acc2_tid_vec+=[acc2_tid]
@@ -526,21 +575,17 @@ def Run():
             d="\t"*3
             print d,"Main: ",acc1_tid
             print d,"Secondary: ",acc2_tid
-            if pause:raw_input()
         
         #==============================
         #MASS-LOSS ACCELERATION
         #==============================
         #COMPUTE THE EFFECTIVE AGE
-        if qML:
-            tau_rot1=tfromProt(P1/DAY,xfit1)
-            tau_rot2=tfromProt(P1/DAY,xfit1)
-            dProtdt1=dtheoProt(tau_rot1,xfit1)*DAY/GYR
-            dProtdt2=dtheoProt(tau_rot2,xfit2)*DAY/GYR
-            acc1_ML=-2*np.pi/P1**2*dProtdt1
-            acc2_ML=-2*np.pi/P2**2*dProtdt2
-        else:
-            acc1_ML=acc2_ML=0
+        tau_rot1=tfromProt(P1/DAY,xfit1)
+        tau_rot2=tfromProt(P2/DAY,xfit2)
+        dProtdt1=dtheoProt(tau_rot1,xfit1)*DAY/GYR
+        dProtdt2=dtheoProt(tau_rot2,xfit2)*DAY/GYR
+        acc1_ML=-2*np.pi/P1**2*dProtdt1
+        acc2_ML=-2*np.pi/P2**2*dProtdt2
 
         acc1_ML_vec+=[acc1_ML]
         acc2_ML_vec+=[acc2_ML]
@@ -565,88 +610,79 @@ def Run():
             print d,"Time step: %e Gyr (%e s)"%(dt,dt*GYR)
             print d,"Period derivative:",dProtdt2
             print d,"Frequency derivative:",acc2_ML
-            if pause:raw_input()
 
         #==============================
         #XUV & STELLAR WIND
         #==============================
-        if not (i%200):
-            #STELLAR XUV LUMINOSITY (INCLUDING TIDAL INTERACTION)
-            LXUV1=starLXUV(L1,tau_rot1)
-            LXUV2=starLXUV(L2,tau_rot2)
-            FXUVout=(LXUV1+LXUV2)/(4*np.pi*(lout*AU*1E2)**2)/PEL
-            FXUVcen=(LXUV1+LXUV2)/(4*np.pi*(aHZ*AU*1E2)**2)/PEL
-            FXUVin=(LXUV1+LXUV2)/(4*np.pi*(lin*AU*1E2)**2)/PEL
-            Pswout,Fswout=binaryWind(lout,tau_rot1,M1,R1,tau_rot2,M2,R2)
-            Pswcen,Fswcen=binaryWind(aHZ,tau_rot1,M1,R1,tau_rot2,M2,R2)
-            Pswin,Fswin=binaryWind(lin,tau_rot1,M1,R1,tau_rot2,M2,R2)
-
-            #STELLAR XUV LUMINOSITY (NO TIDAL)
-            LXUV1=starLXUV(L1,tau_rot1)
-            LXUV2=starLXUV(L2,tau_rot2)
-            FXUVout=(LXUV1+LXUV2)/(4*np.pi*(lout*AU*1E2)**2)/PEL
-            FXUVcen=(LXUV1+LXUV2)/(4*np.pi*(aHZ*AU*1E2)**2)/PEL
-            FXUVin=(LXUV1+LXUV2)/(4*np.pi*(lin*AU*1E2)**2)/PEL
-            Pswout,Fswout=binaryWind(lout,tau_rot1,M1,R1,tau_rot2,M2,R2)
-            Pswcen,Fswcen=binaryWind(aHZ,tau_rot1,M1,R1,tau_rot2,M2,R2)
-            Pswin,Fswin=binaryWind(lin,tau_rot1,M1,R1,tau_rot2,M2,R2)
-            
-            #STELLAR XUV LUMINOSITY (SINGLE STAR)
-            LXUV_sing=starLXUV(L1,tau)
-            FXUVout_sing=(LXUV_sing)/(4*np.pi*(lout1*AU*1E2)**2)/PEL
-            FXUVcen_sing=(LXUV_sing)/(4*np.pi*(aHZ1*AU*1E2)**2)/PEL
-            FXUVin_sing=(LXUV_sing)/(4*np.pi*(lin1*AU*1E2)**2)/PEL
-            Pswout_sing,Fswout_sing=binaryWind(lout1,tau,M1,R1,-1,-1,-1)
-            Pswcen_sing,Fswcen_sing=binaryWind(aHZ1,tau,M1,R1,-1,-1,-1)
-            Pswin_sing,Fswin_sing=binaryWind(lin1,tau,M1,R1,-1,-1,-1)
-
+        if not (i%rate_Flux_integrate):
             #TIME VECTOR
             tvecX+=[tau]
 
-            #RATIO
-            RXUVout=FXUVout/FXUVout_sing
-            RXUVcen=FXUVcen/FXUVcen_sing
-            RXUVin=FXUVin/FXUVin_sing
+            #FLUXES (INCLUDING TIDAL INTERACTION)
+            LXUV1=starLXUV(L1,tau_rot1)
+            LXUV2=starLXUV(L2,tau_rot2)
+            FXUVopt=(LXUV1+LXUV2)/(4*np.pi*(loutcont*AU*1E2)**2)/PEL
+            FXUVp=(LXUV1+LXUV2)/(4*np.pi*(ap*AU*1E2)**2)/PEL
+            FXUVin=(LXUV1+LXUV2)/(4*np.pi*(lincont*AU*1E2)**2)/PEL
+            Pswopt,FSWopt=binaryWind(loutcont,tau_rot1,M1,R1,tau_rot2,M2,R2)
+            Pswp,FSWp=binaryWind(ap,tau_rot1,M1,R1,tau_rot2,M2,R2)
+            Pswin,FSWin=binaryWind(lincont,tau_rot1,M1,R1,tau_rot2,M2,R2)
 
-            RFSWout=Fswout/Fswout_sing
-            RFSWcen=Fswcen/Fswcen_sing
-            RFSWin=Fswin/Fswin_sing
+            #FLUXES (NO TIDAL INTERACTION)
+            ntLXUV1=starLXUV(L1,tau)
+            ntLXUV2=starLXUV(L2,tau)
+            ntFXUVopt=(ntLXUV1+ntLXUV2)/(4*np.pi*(loutcont*AU*1E2)**2)/PEL
+            ntFXUVp=(ntLXUV1+ntLXUV2)/(4*np.pi*(ap*AU*1E2)**2)/PEL
+            ntFXUVin=(ntLXUV1+ntLXUV2)/(4*np.pi*(lincont*AU*1E2)**2)/PEL
+            ntPswopt,ntFSWopt=binaryWind(loutcont,tau,M1,R1,tau,M2,R2)
+            ntPswp,ntFSWp=binaryWind(ap,tau,M1,R1,tau,M2,R2)
+            ntPswin,ntFSWin=binaryWind(lincont,tau,M1,R1,tau,M2,R2)
 
-            RXUVout_vec+=[RXUVout]
-            RXUVcen_vec+=[RXUVcen]
-            RXUVin_vec+=[RXUVin]
+            #FLUXES (SINGLE STAR)
+            sLXUV=starLXUV(L1,tau)
+            sFXUVopt=(sLXUV)/(4*np.pi*(sloutcont*AU*1E2)**2)/PEL
+            sFXUVin=(sLXUV)/(4*np.pi*(slincont*AU*1E2)**2)/PEL
+            sPswopt,sFSWopt=binaryWind(sloutcont,tau,M1,R1,-1,-1,-1)
+            sPswin,sFSWin=binaryWind(slincont,tau,M1,R1,-1,-1,-1)
 
-            RSWout_vec+=[RFSWout]
-            RSWcen_vec+=[RFSWcen]
-            RSWin_vec+=[RFSWin]
+            #VECTORS
+            FXUVopt_vec+=[FXUVopt]
+            FXUVp_vec+=[FXUVp]
+            FXUVin_vec+=[FXUVin]
+            ntFXUVopt_vec+=[ntFXUVopt]
+            ntFXUVp_vec+=[ntFXUVp]
+            ntFXUVin_vec+=[ntFXUVin]
+            sFXUVopt_vec+=[sFXUVopt]
+            sFXUVin_vec+=[sFXUVin]
 
+            FSWopt_vec+=[FSWopt]
+            FSWp_vec+=[FSWp]
+            FSWin_vec+=[FSWin]
+            ntFSWopt_vec+=[ntFSWopt]
+            ntFSWp_vec+=[ntFSWp]
+            ntFSWin_vec+=[ntFSWin]
+            sFSWopt_vec+=[sFSWopt]
+            sFSWin_vec+=[sFSWin]
+            
             if verbose:
                 d="\t"*2
                 print d,"XUV Luminosity:"
                 d="\t"*3
                 print d,"Cmponent 1:",LXUV1
                 print d,"Cmponent 2:",LXUV2
-                print d,"Single Component 1:",LXUV_sing
+                print d,"Cmponent 1 (no tidal):",ntLXUV1
+                print d,"Cmponent 2 (no tidal):",ntLXUV2
+                print d,"Single Component 1:",sLXUV
                 d="\t"*2
                 print d,"XUV Flux:"
                 d="\t"*3
-                print d,"XUV at Earth-Distance: Binary = %e, Single = %e"%(FXUVcen,FXUVcen_sing)
-                print d,"XUV at Mars-Distance: Binary = %e, Single = %e"%(FXUVout,FXUVout_sing)
+                print d,"XUV at Inner CHZ: Binary = %e, Single = %e"%(FXUVopt,sFXUVopt)
                 d="\t"*2
                 print d,"Stellar wind flux:"
                 d="\t"*3
-                print d,"SW Flux at Earth-Distance: Binary = %e, Single = %e"%(Fswcen,Fswcen_sing)
-                print d,"SW Flux at Mars-Distance: Binary = %e, Single = %e"%(Fswout,Fswout_sing)
+                print d,"SW Flux at Optimal Distance: Binary = %e, Single = %e"%(FSWopt,sFSWopt)
 
-            #==============================
-            #INTEGRATING OUT XUV FLUX
-            #==============================
-            intFXUVout+=FXUVout*PELSI*dt
-            intFXUVcen+=FXUVcen*PELSI*dt
-            intFXUVin+=FXUVin*PELSI*dt
-            intFXUVout_sing+=FXUVout_sing*PELSI*dt
-            intFXUVcen_sing+=FXUVcen_sing*PELSI*dt
-            intFXUVin_sing+=FXUVin_sing*PELSI*dt
+            if pause:raw_input()
 
         #==============================
         #TOTAL ACCELERATION
@@ -660,7 +696,6 @@ def Run():
             d="\t"*3
             print d,"Main: ",acc1
             print d,"Secondary: ",acc2
-            if pause:raw_input()
         
         acc1_vec+=[acc1]
         acc2_vec+=[acc2]
@@ -674,7 +709,6 @@ def Run():
             d="\t"*3
             print d,"Main: ",dW1/W1
             print d,"Secondary: ",dW2/W2
-            if pause:raw_input()
             
         W1+=dW1
         W2+=dW2
@@ -692,7 +726,6 @@ def Run():
             d="\t"*3
             print d,"Main: ",P1/DAY
             print d,"Secondary: ",P2/DAY
-            if pause:raw_input()
 
         if not (i%iper):
             d="\t"*1
@@ -713,6 +746,216 @@ def Run():
     acc2_ML_vec=np.array(acc2_ML_vec)
     acc2_vec=np.array(acc2_vec)
 
+    FXUVopt_vec=np.array(FXUVopt_vec)
+    FXUVp_vec=np.array(FXUVp_vec)
+    FXUVin_vec=np.array(FXUVin_vec)
+    ntFXUVopt_vec=np.array(ntFXUVopt_vec)
+    ntFXUVp_vec=np.array(ntFXUVp_vec)
+    ntFXUVin_vec=np.array(ntFXUVin_vec)
+    sFXUVopt_vec=np.array(sFXUVopt_vec)
+    sFXUVin_vec=np.array(sFXUVin_vec)
+    
+    FSWopt_vec=np.array(FSWopt_vec)
+    FSWp_vec=np.array(FSWp_vec)
+    FSWin_vec=np.array(FSWin_vec)
+    ntFSWopt_vec=np.array(ntFSWopt_vec)
+    ntFSWp_vec=np.array(ntFSWp_vec)
+    ntFSWin_vec=np.array(ntFSWin_vec)
+    sFSWopt_vec=np.array(sFSWopt_vec)
+    sFSWin_vec=np.array(sFSWin_vec)
+
+    #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+    #PLOT XUV (PEL)
+    #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+    plt.figure()
+    plt.plot(tvecX,FXUVopt_vec,'b-',label='XUV w. BHM @ Optimum')
+    plt.plot(tvecX,FXUVp_vec,'k-',linewidth=2,label=r'XUV w. BHM @ $a = %.2f\,\rm{AU}$'%ap)
+    plt.plot(tvecX,FXUVin_vec,'r-',label='XUV w. BHM @ Inner CHZ')
+    plt.plot(tvecX,ntFXUVopt_vec,'b--')
+    plt.plot(tvecX,ntFXUVp_vec,'k--',linewidth=2)
+    plt.plot(tvecX,ntFXUVin_vec,'r--',linewidth=2)
+    plt.plot(tvecX,sFXUVopt_vec,'b:',linewidth=1)
+    plt.plot(tvecX,sFXUVin_vec,'r:',linewidth=1)
+    plt.plot([],[],'k--',label='No BHM')
+    plt.plot([],[],'k:',label='Single-primary')
+    #plt.xscale('log')
+    plt.yscale('log')
+    logTickLabels(plt.gca(),-3,3,(3,),frm='%.1f',axis='y',notation='normal',fontsize=12)
+    ymin=min(min(FXUVopt_vec),min(FXUVin_vec),min(FXUVp_vec),min(sFXUVopt_vec),min(sFXUVin_vec))
+    ymax=max(max(FXUVopt_vec),max(FXUVin_vec),max(FXUVp_vec),max(sFXUVopt_vec),max(sFXUVin_vec))
+    plt.ylim((ymin,ymax))
+    #plt.axhline(1,linestyle='--',color='k')
+    plt.xlabel(r"$t$ (Gyr)")
+    plt.ylabel(r"$F_{\rm XUV} ({\rm PEL})$")
+    plt.legend(loc='best',prop=dict(size=10))
+    plt.title(titlebin,position=(0.5,1.02))
+    plt.savefig(TMPDIR+"/FluxXUV-%s.png"%suffix)
+
+    #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+    #PLOT XUV (RATIOS)
+    #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+    plt.figure()
+    plt.plot(tvecX,FXUVopt_vec/ntFXUVopt_vec,'k-',label='BHM/no BHM')
+    plt.plot(tvecX,FXUVopt_vec/sFXUVopt_vec,'k--',label='BHM/Single')
+    plt.xlabel(r"$t$ (Gyr)")
+    plt.ylabel(r"$F_{\rm XUV,bin}/F_{\rm XUV,ref}$")
+    ymin,ymax=plt.ylim()
+    plt.axhspan(0.0,1.0,color='g',alpha=0.2)
+    plt.axhspan(1.0,max(1.0,ymax),color='r',alpha=0.2)
+    plt.ylim((0.0,max(1.0,ymax)))
+    plt.legend(loc='best',prop=dict(size=10))
+    plt.title(titlebin,position=(0.5,1.02))
+    plt.savefig(TMPDIR+"/RatiosFluxXUV-%s.png"%suffix)
+
+    #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+    #PLOT SW (SWPEL)
+    #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+    SWPEL=NSUN*VSUN
+    plt.figure()
+    plt.plot(tvecX,FSWopt_vec/SWPEL,'b-',label='XUV w. BHM @ Optimum')
+    plt.plot(tvecX,FSWp_vec/SWPEL,'k-',linewidth=2,label=r'XUV w. BHM @ $a = %.2f\,\rm{AU}$'%ap)
+    plt.plot(tvecX,FSWin_vec/SWPEL,'r-',label='XUV w. BHM @ Inner CHZ')
+    plt.plot(tvecX,ntFSWopt_vec/SWPEL,'b--')
+    plt.plot(tvecX,ntFSWp_vec/SWPEL,'k--',linewidth=2)
+    plt.plot(tvecX,ntFSWin_vec/SWPEL,'r--',linewidth=2)
+    plt.plot(tvecX,sFSWopt_vec/SWPEL,'b:',linewidth=1)
+    plt.plot(tvecX,sFSWin_vec/SWPEL,'r:',linewidth=1)
+    plt.plot([],[],'k--',label='No BHM')
+    plt.plot([],[],'k:',label='Single-primary')
+    #plt.xscale('log')
+    plt.yscale('log')
+    logTickLabels(plt.gca(),-3,3,(3,),frm='%.1f',axis='y',notation='normal',fontsize=12)
+    ymin=min(min(FSWopt_vec),min(FSWin_vec),min(FSWp_vec),min(sFSWopt_vec),min(sFSWin_vec))
+    ymax=max(max(FSWopt_vec),max(FSWin_vec),max(FSWp_vec),max(sFSWopt_vec),max(sFSWin_vec))
+    plt.ylim((ymin/SWPEL,ymax/SWPEL))
+    #plt.axhline(1,linestyle='--',color='k')
+    plt.xlabel(r"$t$ (Gyr)")
+    plt.ylabel(r"$F_{\rm SW} ({\rm SW.PEL})$")
+    plt.legend(loc='best',prop=dict(size=10))
+    plt.title(titlebin,position=(0.5,1.02))
+    plt.savefig(TMPDIR+"/FluxSW-%s.png"%suffix)
+
+    #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+    #PLOT SW (RATIOS)
+    #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+    plt.figure()
+    plt.plot(tvecX,FSWopt_vec/ntFSWopt_vec,'k-',label='BHM/no BHM')
+    plt.plot(tvecX,FSWopt_vec/sFSWopt_vec,'k--',label='BHM/Single')
+    plt.xlabel(r"$t$ (Gyr)")
+    plt.ylabel(r"$F_{\rm XUV,bin}/F_{\rm XUV,ref}$")
+    ymin,ymax=plt.ylim()
+    plt.axhspan(0.0,1.0,color='g',alpha=0.2)
+    plt.axhspan(1.0,max(1.0,ymax),color='r',alpha=0.2)
+    plt.ylim((0.0,max(1.0,ymax)))
+    plt.legend(loc='best',prop=dict(size=10))
+    plt.title(titlebin,position=(0.5,1.02))
+    plt.savefig(TMPDIR+"/RatiosFluxSW-%s.png"%suffix)
+
+    #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+    #INTEGRATE XUV FLUX
+    #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+    nX=len(tvecX)
+    plt.figure()
+    intFXUVopt=np.array([FXUVopt_vec[:i].sum() for i in xrange(nX)])*Dt
+    intFXUVin=np.array([FXUVin_vec[:i].sum() for i in xrange(nX)])*Dt
+    intFXUVp=np.array([FXUVp_vec[:i].sum() for i in xrange(nX)])*Dt
+    intntFXUVopt=np.array([ntFXUVopt_vec[:i].sum() for i in xrange(nX)])*Dt
+    intntFXUVin=np.array([ntFXUVin_vec[:i].sum() for i in xrange(nX)])*Dt
+    intntFXUVp=np.array([ntFXUVp_vec[:i].sum() for i in xrange(nX)])*Dt
+    intsFXUVopt=np.array([sFXUVopt_vec[:i].sum() for i in xrange(nX)])*Dt
+    intsFXUVin=np.array([sFXUVin_vec[:i].sum() for i in xrange(nX)])*Dt
+    logFXUV=int(np.log10(max(intFXUVopt)))
+    FXUVscale=10**logFXUV
+
+    plt.plot(tvecX,intFXUVopt/FXUVscale,'b-',label='Integrated XUV @ Optimum')
+    plt.plot(tvecX,intFXUVin/FXUVscale,'r-',label='Integrated XUV @ Inner CHZ')
+    plt.plot(tvecX,intFXUVp/FXUVscale,'k-',linewidth=2,label=r'Integrated XUV @ $a = %.2f\,\rm{AU}$'%ap)
+    plt.plot(tvecX,intntFXUVopt/FXUVscale,'b--')
+    plt.plot(tvecX,intntFXUVin/FXUVscale,'r--')
+    plt.plot(tvecX,intsFXUVopt/FXUVscale,'b:')
+    plt.plot(tvecX,intsFXUVin/FXUVscale,'r:')
+    plt.plot([],[],'k--',label='No BHM')
+    plt.plot([],[],'k:',label='Single-primary')
+
+    plt.xlabel(r"$t$ (Gyr)")
+    plt.ylabel(r"$\int_0^{t} F_{\rm XUV}(t')\,dt'$ ($\times 10^{%d}\,{\rm j/cm}^2$)"%logFXUV)
+    plt.legend(loc='upper left',prop=dict(size=10))
+    plt.title(titlebin,position=(0.5,1.02))
+    plt.savefig(TMPDIR+"/IntFXUV-%s.png"%suffix)
+
+    #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+    #INTEGRATED SW FLUX
+    #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+    nX=len(tvecX)
+    plt.figure()
+    intFSWopt=np.array([FSWopt_vec[:i].sum() for i in xrange(nX)])*Dt
+    intFSWin=np.array([FSWin_vec[:i].sum() for i in xrange(nX)])*Dt
+    intFSWp=np.array([FSWp_vec[:i].sum() for i in xrange(nX)])*Dt
+    intntFSWopt=np.array([ntFSWopt_vec[:i].sum() for i in xrange(nX)])*Dt
+    intntFSWin=np.array([ntFSWin_vec[:i].sum() for i in xrange(nX)])*Dt
+    intntFSWp=np.array([ntFSWp_vec[:i].sum() for i in xrange(nX)])*Dt
+    intsFSWopt=np.array([sFSWopt_vec[:i].sum() for i in xrange(nX)])*Dt
+    intsFSWin=np.array([sFSWin_vec[:i].sum() for i in xrange(nX)])*Dt
+    logFSW=int(np.log10(max(intFSWopt)))
+    FSWscale=10**logFSW
+
+    plt.plot(tvecX,intFSWopt/FSWscale,'b-',label='Integrated SW @ Optimum')
+    plt.plot(tvecX,intFSWin/FSWscale,'r-',label='Integrated SW @ Inner CHZ')
+    plt.plot(tvecX,intFSWp/FSWscale,'k-',linewidth=2,label=r'Integrated SW @ $a = %.2f\,\rm{AU}$'%ap)
+    plt.plot(tvecX,intntFSWopt/FSWscale,'b--')
+    plt.plot(tvecX,intntFSWin/FSWscale,'r--')
+    plt.plot(tvecX,intsFSWopt/FSWscale,'b:')
+    plt.plot(tvecX,intsFSWin/FSWscale,'r:')
+    plt.plot([],[],'k--',label='No BHM')
+    plt.plot([],[],'k:',label='Single-primary')
+
+    plt.xlabel(r"$t$ (Gyr)")
+    plt.ylabel(r"$\int_0^{t} n_{\rm SW}\,v_{\rm SW}\,dt'$ ($\times 10^{%d}\,{\rm ions/m}^2$)"%logFSW)
+    plt.legend(loc='upper left',prop=dict(size=10))
+    plt.title(titlebin,position=(0.5,1.02))
+    plt.savefig(TMPDIR+"/IntFSW-%s.png"%suffix)
+
+    #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+    #MASS-LOSS AT INNER CHZ VS. PLANET.MASS
+    #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+    plt.figure()
+    
+    Mpvec=linspace(0.1,10.0,100)
+    Pl=[]
+    ntPl=[]
+    sPl=[]
+    for Mp in Mpvec:
+
+        #PLANETARY PROPERTIES
+        Rp=Mp**0.25
+        gp=GCONST*(Mp*MEARTH)/(Rp*Rp_E)**2
+        Ap=2*PI*(Rp*Rp_E)**2 #m^2
+
+        #ACCUMULATED FLUX AT INNER CHZ
+        MLfac=intFSWin[-1]
+        ntMLfac=intntFSWin[-1]
+        sMLfac=intsFSWin[-1]
+
+        #MASS LOSS
+        Ml=ALPHA*MLfac*Ap*MUATM*MP
+        Pl+=[Ml*gp/(2*Ap)/1E5]
+
+        ntMl=ALPHA*ntMLfac*Ap*MUATM*MP
+        ntPl+=[ntMl*gp/(2*Ap)/1E5]
+
+        sMl=ALPHA*sMLfac*Ap*MUATM*MP
+        sPl+=[sMl*gp/(2*Ap)/1E5]
+
+    plt.plot(Mpvec,Pl,'k-',label='Mass loss w. BHM')
+    plt.plot(Mpvec,ntPl,'k--',label='Mass loss no BHM')
+    plt.plot(Mpvec,sPl,'k:',label='Mass loss single-primary')
+
+    plt.xlabel("$M_p/M_\oplus$")
+    plt.ylabel(r"$P_{\rm loss}\,({\rm bars})$")
+    plt.legend(loc='upper left',prop=dict(size=10))
+    plt.title(titlebin,position=(0.5,1.02))
+    plt.savefig(TMPDIR+"/MassLoss-%s.png"%suffix)
+
     #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
     #PLOT PERIOD
     #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
@@ -721,8 +964,6 @@ def Run():
     plt.plot(tvec,np.array(P2vec),'r-',label='Secondary')
     plt.plot(tvec,theoProt(tvec,xfit1),'b--',label='No tidal')
     plt.plot(tvec,theoProt(tvec,xfit2),'r--')
-
-    #plt.xscale('log')
     plt.grid()
     plt.xlabel(r"$t$ (Gyr)")
     plt.ylabel(r"$P$ (day)")
@@ -731,6 +972,7 @@ def Run():
     plt.axhline(Pbin/1.5,linestyle='--',color='c',label='3:2')
     plt.axhline(Pbin/2.0,linestyle='-.',color='c',label='2:1')
     plt.legend(loc='best',prop=dict(size=10))
+    plt.title(titlebin,position=(0.5,1.04))
     plt.savefig(TMPDIR+"/PeriodEvolution-%s.png"%suffix)
 
     #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
@@ -743,45 +985,13 @@ def Run():
     plt.plot(tvec,abs(acc2_ML_vec),'r-.')
     plt.plot(tvec,abs(acc1_vec),'b-',label='Total')
     plt.plot(tvec,abs(acc2_vec),'r-')
-
     plt.xscale('log')
     plt.yscale('log')
     plt.legend(loc='best',prop=dict(size=8))
     plt.xlabel(r"$t$ (Gyr)")
     plt.ylabel(r"$d\Omega/dt$ (rad/s)")
+    plt.title(titlebin,position=(0.5,1.02))
     plt.savefig(TMPDIR+"/AccelerationEvolution-%s.png"%suffix)
-
-    #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-    #PLOT XUV
-    #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-    plt.figure()
-    plt.plot(tvecX,RXUVout_vec,'b-',label='XUV @ Mars')
-    plt.plot(tvecX,RXUVcen_vec,'g-',label='XUV @ Earth')
-    plt.plot(tvecX,RXUVin_vec,'r-',label='XUV @ Venus')
-    #plt.xscale('log')
-    #plt.yscale('log')
-    plt.ylim((0,2))
-    plt.axhline(1,linestyle='--',color='k')
-    plt.legend(loc='best',prop=dict(size=8))
-    plt.xlabel(r"$t$ (Gyr)")
-    plt.ylabel(r"$F_{\rm XUV,bin}/F_{\rm XUV,sing}$")
-    plt.savefig(TMPDIR+"/FluxXUV-%s.png"%suffix)
-
-    #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-    #PLOT SW
-    #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-    plt.figure()
-    plt.plot(tvecX,RSWout_vec,'b-',label='XUV @ Mars')
-    plt.plot(tvecX,RSWcen_vec,'g-',label='XUV @ Earth')
-    plt.plot(tvecX,RSWin_vec,'r-',label='XUV @ Venus')
-    #plt.xscale('log')
-    #plt.yscale('log')
-    plt.ylim((0,2))
-    plt.axhline(1,linestyle='--',color='k')
-    plt.legend(loc='best',prop=dict(size=8))
-    plt.xlabel(r"$t$ (Gyr)")
-    plt.ylabel(r"$F_{\rm SW,bin}/F_{\rm SW,sing}$")
-    plt.savefig(TMPDIR+"/FluxSW-%s.png"%suffix)
 
 ############################################################
 #ROUTINES
