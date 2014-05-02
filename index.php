@@ -144,6 +144,7 @@ echo<<<CONTENT
   <tr><td>e:</td><td>$e</td></tr>
   <tr><td>M<sub>p</sub>:</td><td>$Mp M<sub>Earth</sub></td></tr>
   <tr><td>a<sub>p</sub>:</td><td>$ap AU</td></tr>
+  <tr><td>e<sub>p</sub>:</td><td>$e</td></tr>
   <tr><td>&tau;:</td><td>$tau Gyr</td></tr>
 </table>
 
@@ -297,7 +298,7 @@ M<sub>p</sub> : <input type="text" name="Mp" value="$Mp"> M<sub>Earth</sub><br/>
 a<sub>p</sub> : <input type="text" name="ap" value="$ap"> AU<br/>
 <i style="font-size:12px">Semimajor axis of planet</i><br/><br/>
 
-e<sub>p</sub> : <input type="text" name="ap" value="$ep"><br/>
+e<sub>p</sub> : <input type="text" name="ep" value="$ep"><br/>
 <i style="font-size:12px">Eccentricity of the planet</i><br/><br/>
 
 <H3>Planetary System (optional)</H3>
