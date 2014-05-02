@@ -79,6 +79,17 @@ foreach(array_keys($_POST) as $field){
 //////////////////////////////////////////////////////////////////////////////////
 if(isset($submit) and !isset($back)){
   $qstring=$_SERVER["QUERY_STRING"];
+
+  //SAVE CONFIGURATION
+  $fc=fopen("tmp/config-$sessid.log","w");
+  fwrite($fc,"URL: $qstring\n\n");
+  foreach(array_keys($_GET) as $field){
+    $$field=$_GET[$field];
+    $value=$$field;
+    fwrite($fc,"$field=$value\n");
+  }
+  fclose($fc);
+  
   if(!preg_match("/\w/",$qintegration)){$qintegration=0;}
   else{$qintegration=1;}
   if(!preg_match("/\w/",$qchz)){$qchz=0;}
@@ -87,8 +98,9 @@ if(isset($submit) and !isset($back)){
 
   if(!isset($stat) and !isset($back)){access("run");}
   if(!isset($reload)){
-  $cmd="$PYTHONCMD BHMcalc.py $Z $M1 $M2 $e $Pbin $tau $Mp $ap $tautot $qintegration $sessid $zsvec $qchz $earlywind $FeH $ep &> tmp/fulloutput-$sessid.log;echo $?";
+  $cmd="$PYTHONCMD BHMcalc.py $Z $M1 $M2 $e $Pbin $tau $Mp $ap $tautot $qintegration $sessid $zsvec $qchz $earlywind $FeH $ep &> tmp/fulloutput-$sessid.log";
   exec($cmd,$output,$status); 
+  shell_exec("echo '$cmd' > tmp/cmd-$sessid.log");
   $qreload="reload&$qstring";
   }else{
     $qreload=$qstring;
@@ -107,7 +119,7 @@ if(isset($submit) and !isset($back)){
   $parts=preg_split("/\s+/",$result);
   echo "<a href=?back&$qstring>Back</a> - ";
   echo "<a href=?$qreload>Reload</a>";
-  echo "<P><a href=tmp/fulloutput-$sessid.log target=_blank>Full Output</a></P>";
+  echo "<P><a href=tmp/fulloutput-$sessid.log target=_blank>Full Output</a> - <a href=tmp/config-$sessid.log target=_blank>Configuration</a> - <a href=tmp/cmd-$sessid.log target=_blank>Command</a></P>";
 
   //print_r($parts);
 

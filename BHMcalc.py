@@ -89,7 +89,7 @@ def Run():
     #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     #VERBOSITY
     verbose=False
-    #verbose=True
+    verbose=True
     pause=False
     #pause=True
 
@@ -218,11 +218,11 @@ def Run():
     #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     #NOTE: TO CONVER W TO SI YOU SHOULD DIVIDE BY DAYS
     g1i,T1i,R1i,L1i=StellarGTRL(Z,M1,0.1)
-    acc1=tidalAcceleration(M1,R1i,L1i,M2,abin,e,nbin/DAY,W1o/DAY)
+    acc1=tidalAcceleration(M1,R1i,L1i,M2,abin,e,nbin/DAY,W1o/DAY,verbose=verbose)
     tsync1=-(W1o/DAY)/acc1/GYR
     
     g2i,T2i,R2i,L2i=StellarGTRL(Z,M2,0.1)
-    acc2=tidalAcceleration(M2,R2i,L2i,M1,abin,e,nbin/DAY,W2o/DAY)
+    acc2=tidalAcceleration(M2,R2i,L2i,M1,abin,e,nbin/DAY,W2o/DAY,verbose=verbose)
     tsync2=-(W2o/DAY)/acc1/GYR
 
     d="\t"*0
