@@ -179,6 +179,10 @@ def Run():
     print d,"tau = %f Gyr"%TAU
     print d,"HZ = ",lin,aE,aHZ,lout
 
+    print "Test planet:"
+    print d,"ap = %f AU"%ap
+    print d,"ep = %f AU"%acrit
+
     print d,"Main component:"
     d="\t"*2
     print d,"Z = %f"%Z
