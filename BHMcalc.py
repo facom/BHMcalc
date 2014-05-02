@@ -181,7 +181,7 @@ def Run():
 
     print "Test planet:"
     print d,"ap = %f AU"%ap
-    print d,"ep = %f AU"%ep
+    print d,"ep = %f"%ep
 
     print d,"Main component:"
     d="\t"*2
