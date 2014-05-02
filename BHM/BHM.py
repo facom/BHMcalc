@@ -56,10 +56,15 @@ STELLAR_MOI=np.array([
         [1.259,0.224**2],
         ])
 
-"""
-type=Regression,Upper,Lower
-"""
 def stellarMoI(M,type="Regression"):
+    """
+    #type=Regression,Upper,Lower
+    plt.figure()
+    plt.plot(STELLAR_MOI[:,0],sqrt(STELLAR_MOI[:,1]))
+    plt.savefig("moi.png")
+    print sqrt(stellarMoI(1.5))
+    exit(0)
+    """    
     #Regression Coefficients (calculated at May.7/2013)
     a=-1.577705e-01
     b=2.339366e-01
@@ -77,6 +82,10 @@ def stellarMoI(M,type="Regression"):
         MoI=MoIup
     else:
         MoI=MoIlow
+
+    if M>STELLAR_MOI[-1,0]:
+        MoI=STELLAR_MOI[-1,-1]
+
     return MoI
 
 def XYfromZ(Z):
