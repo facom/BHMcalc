@@ -1,0 +1,10 @@
+BHM Calculator
+
+To Do List
+==========
+
+- Create a way to submit a set of calculations from the command line
+  without filling the whole form.
+
+- Submit results using AJAX.
+
