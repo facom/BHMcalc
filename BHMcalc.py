@@ -11,6 +11,17 @@ TMPDIR="tmp/"
 ALPHA=0.3 #Entrapment Factor (Zendejas et al., 2010) 
 MUATM=44.0 #MEAN 
 
+"""
+#Choose equivalent dex ranges
+FeH=FeHfromZ(0.06)
+print FeH
+Z,dZ=ZfromFHe(FeH)
+print Z
+Z,dZ=ZfromFHe(0.62)
+print Z
+exit(0)
+"""
+
 ############################################################
 #INPUT PARAMETERS
 ############################################################
@@ -28,11 +39,13 @@ sessid=argv[11]
 zsvec=argv[12]
 qchz=int(argv[13])
 EARLYWIND=argv[14]
+FeH=float(argv[15])
 if qintegration:qchz=1
+if Z==0:
+    Z,dZ=ZfromFHe(FeH)
 
 suffix="%.2f%.2f%.3f%.2f-%s"%(M1,M2,e,Pbin,sessid)
 fout=open(TMPDIR+"output-%s.log"%sessid,"w")
-
 
 ############################################################
 #PLANET PROPERTIES
@@ -96,6 +109,7 @@ def Run():
     #MAIN COMPONENT
     #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
     g1,T1,R1,L1=StellarGTRL(Z,M1,TAU)
+    if g1*T1*R1*L1<0:print>>fout,"ERROR: Bad Metallicity"
     Rmin1,Rmax1=minmaxRadius(Z,M1,tmax=TAU)
     Pmax1=maxPeriod(M1,R1)
     Pini1=10*Pmax1
@@ -116,6 +130,7 @@ def Run():
     #SECONDARY COMPONENT
     #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
     g2,T2,R2,L2=StellarGTRL(Z,M2,TAU)
+    if g2*T2*R2*L2<0:print>>fout,"ERROR: Bad Metallicity"
     Rmin2,Rmax2=minmaxRadius(Z,M2,tmax=TAU)
     Pmax2=maxPeriod(M2,R2)
     Pini2=10*Pmax2
@@ -219,6 +234,7 @@ def Run():
     print 
 
     print>>fout,tsync1,tsync2
+    print>>fout,Z
 
     #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     #PLOT HABITABLE ZONE AND BINARY ORBIT

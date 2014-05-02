@@ -41,7 +41,10 @@ function access($referer){
 echo<<<CONTENT
 <HTML>
 <BODY>
-<H1><A HREF="?">Binary Habitability Calculator</A><SUP style='color:red;font-size:18px'>v2.0</SUP></H1>
+<H1><A HREF="?">Binary Habitability Calculator</A><SUP style='color:red;font-size:18px'>v2.0</SUP>
+<br/>
+<a href=changeslog style=font-size:10px>Changeslog</a>
+</H1>
 
 <form>
 CONTENT;
@@ -49,7 +52,8 @@ CONTENT;
 //////////////////////////////////////////////////////////////////////////////////
 //DEFAULT VALUES
 //////////////////////////////////////////////////////////////////////////////////
-$Z=0.0152;
+$Z=0.0;
+$FeH=0.0;
 $M1=1.0;
 $M2=0.5;
 $Pbin=10.0;
@@ -82,17 +86,22 @@ if(isset($submit) and !isset($back)){
 
   if(!isset($stat) and !isset($back)){access("run");}
   if(!isset($reload)){
-  $cmd="$PYTHONCMD BHMcalc.py $Z $M1 $M2 $e $Pbin $tau $Mp $ap $tautot $qintegration $sessid $zsvec $qchz $earlywind &> tmp/fulloutput-$sessid.log";
-  shell_exec($cmd);
+  $cmd="$PYTHONCMD BHMcalc.py $Z $M1 $M2 $e $Pbin $tau $Mp $ap $tautot $qintegration $sessid $zsvec $qchz $earlywind $FeH &> tmp/fulloutput-$sessid.log;echo $?";
+  exec($cmd,$output,$status); 
   $qreload="reload&$qstring";
   }else{
     $qreload=$qstring;
   }
   $result=shell_exec("cat tmp/output-$sessid.log");
-  /*
-  echo "Executing: $cmd<br/>";
-  echo "<pre>$result</pre>";
-  //*/
+  
+  //ERROR
+  if(preg_match("/ERROR/",$result)){
+    echo "<P STYLE='color:red'>An error has occurred while executing the program</P>";
+    echo "Executing: $cmd<br/>";
+    echo "<pre style='background:yellow;padding:10px'>$result</pre>";
+    echo "<a href=?back&$qstring>Back</a>";
+    return;
+  }
 
   $parts=preg_split("/\s+/",$result);
   echo "<a href=?back&$qstring>Back</a> - ";
@@ -112,6 +121,7 @@ if(isset($submit) and !isset($back)){
   $abin=$parts[$i++];$acrit=$parts[$i++];$nsync=$parts[$i++];$Psync=$parts[$i++];
   $lin=$parts[$i++];$aE=$parts[$i++];$aHZ=$parts[$i++];$lout=$parts[$i++];
   $tsync1=$parts[$i++];$tsync2=$parts[$i++];
+  $Z=$parts[$i++];
 
   $q=$M2/$M1;
   /*
@@ -125,6 +135,7 @@ echo<<<CONTENT
 <H2>Input</H2>
 <table>
   <tr><td>Z:</td><td>$Z</td></tr>
+  <tr><td>[Fe/H]:</td><td>$FeH</td></tr>
   <tr><td>M<sub>1</sub>:</td><td>$M1 M<sub>Sun</sub></td></tr>
   <tr><td>M<sub>2</sub>:</td><td>$M2 M<sub>Sun</sub></td></tr>
   <tr><td>q:</td><td>$q</td></tr>
@@ -177,12 +188,15 @@ Gyr.</P>
 CONTENT;
 
 if($qchz){
-$tsys=$parts[$i++];$lincont=$parts[$i++];$loutcont=$parts[$i++];
+$tsys=$parts[$i++];
+$lincont=$parts[$i++];$loutcont=$parts[$i++];
+$slincont=$parts[$i++];$sloutcont=$parts[$i++];
 echo<<<CONTENT
 <H3>Continuous Habitable Zone</H3>
 <table>
   <tr><td>&tau;<sub>sys</sub>:</td><td>$tsys Gyr</td></tr>
   <tr><td>CHZ:</td><td>[$lincont,$loutcont] AU</td></tr>
+  <tr><td>CHZ single-primary:</td><td>[$lincont,$loutcont] AU</td></tr>
 </table>
 <img src="tmp/HZevol-$suffix.png"><br/>
 CONTENT;
@@ -250,8 +264,16 @@ echo<<<CONTENT
 
 <H3>Binary System</H3>
 
-Z : <input type="text" name="Z" value="$Z"><br/>
-<i style="font-size:12px">Metallicity of the system.  If unknown leave the solar metallicity Z = 0.0152.  Theoretical metallicities are in the range 0.0001 to 0.06</i><br/><br/>
+Z : <input type="text" name="Z" value="$Z"><br/> 
+
+<i style="font-size:12px">Metallicity of the system.  If unknown leave
+the solar metallicity Z = 0.0152.  Theoretical metallicities are in
+the range 0.0001 to 0.06.  If you only know [Fe/H] leave Z =
+0</i><br/><br/>
+
+[Fe/H] : <input type="text" name="FeH" value="$FeH"><br/> 
+
+<i style="font-size:12px">Metallicity in dex.</i><br/><br/>
 
 M<sub>1</sub> : <input type="text" name="M1" value="$M1"> M<sub>Sun</sub><br/>
 <i style="font-size:12px">Mass of the main component</i><br/><br/>
@@ -293,9 +315,9 @@ Total integration time : <input type="text" name="tautot" value="$tautot"> Gyr<b
 
 Set of isochrones : 
 <select name="zsvec">
-<option value="ZSVEC_full">Full (35 metallicities, 0.0001-0.06)</option>
-<option value="ZSVEC_coarse">Coarse (10 values, 0.0001-0.06)</option>
-<option value="ZSVEC_siblings" selected>Close to solar (3 values, 0.01-0.02)</option>
+  <option value="ZSVEC_full">Full (35 metallicities, 0.0001-0.06, [Fe/H] -2.30 to 0.62)</option>
+  <option value="ZSVEC_coarse">Coarse (10 values, 0.0001-0.06, [Fe/H] -2.30 to 0.62)</option>
+  <option value="ZSVEC_siblings" selected>Close to solar (3 values, 0.01-0.02, [Fe/H] -0.197 to 0.117)</option>
 </select><br/>
 <i style="font-size:12px">It could reduce considerably the execution time.</i><br/><br/>
 
