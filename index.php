@@ -317,7 +317,7 @@ Set of isochrones :
 <select name="zsvec">
   <option value="ZSVEC_full">Full (35 metallicities, 0.0001-0.06, [Fe/H] -2.30 to 0.62)</option>
   <option value="ZSVEC_coarse">Coarse (10 values, 0.0001-0.06, [Fe/H] -2.30 to 0.62)</option>
-  <option value="ZSVEC_siblings" selected>Close to solar (3 values, 0.01-0.02, [Fe/H] -0.197 to 0.117)</option>
+  <option value="ZSVEC_siblings" selected>Near solar (3 values, 0.01-0.02, [Fe/H] -0.197 to 0.117)</option>
 </select><br/>
 <i style="font-size:12px">It could reduce considerably the execution time.</i><br/><br/>
 
