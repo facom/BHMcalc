@@ -199,10 +199,55 @@ def vnGreissmeier(d,t,M,R):
 
     return v,n
 
-def binaryWind(a,tau1,M1,R1,tau2,M2,R2):
-    v1,n1=vnGreissmeier(a,tau1,M1,R1)
+def vnGreissmeier2(d,t,M,R,verbose=False,early='constant'):
+    """
+    Velocity and number density computed from Greissmeier model at G07
+    
+    Parameters:
+    d: distance in AU
+    t: time in Gyrs
+    M: Mass in Msun
+    R: Radius in Msun
+
+    Return:
+    v: Velocity in m/s
+    n: Number density in m^{-3}
+    """
+    if verbose:
+        print "Computing stellar wind properties at t=%e:Ms=%e Msun,Rs = %e Rsun,d=%e AU"%(t,M,R,d)
+    if t<0.7 and early=='constant':
+        print "\tSATURATION!"
+        t=0.7
+    #REFERENCE VELOCITY AND DENSITY
+    vref,nref=vn1AUeq(t*GIGA*YEAR)
+    if verbose:print "\tvref,nref = %e m/s,%e m^-3"%(vref,nref)
+    #SOLAR MASS LOSS RATE AT t
+    dMsun=4*np.pi*AU**2*nref*vref*MP #Eq. 10
+    if verbose:print "\tSolar mass loss: %e kg/s"%dMsun
+    #SCALED STELLAR MASS LOSS RATE AT t
+    dMstar=scaleProp(R,dMsun,2.0) # Eq.11
+    if verbose:print "\tStellar mass loss: %e kg/s (%e Mdot,sun)"%(dMstar,dMstar/dMsun)
+    #CORONAL TEMPERATURE AT t (ISOTHERMAL MODEL)
+    Tc=Tcorona(t,M)
+    if verbose:print "\tTc=%e MK"%(Tc/1E6)
+    #RADIAL VELOCITY
+    vr=VParker(d,M,Tc)
+    if verbose:print "\tvr = %e m/s"%(vr)
+    #NUMBER DENSITY
+    n=dMstar/(4*np.pi*(d*AU)**2*vr*MP)
+    #EFFECTIVE VELOCITY
+    vkep=np.sqrt(GCONST*M*MSUN/(d*AU))
+    if verbose:print "\tvkep = %e m/s"%(vkep)
+    v=np.sqrt(vr**2+vkep**2)
+    if verbose:print "\tn = %e m^-3"%(n)
+    if verbose:print "\tv = %e m/s"%(v)
+
+    return v,n
+
+def binaryWind(a,tau1,M1,R1,tau2,M2,R2,early='constant'):
+    v1,n1=vnGreissmeier2(a,tau1,M1,R1,early=early)
     if tau2>0:
-        v2,n2=vnGreissmeier(a,tau2,M2,R2)
+        v2,n2=vnGreissmeier2(a,tau2,M2,R2,early=early)
     else:v2=n2=0
     Psw=n1*v1**2+n2*v2**2
     Fsw=n1*v1+n2*v2

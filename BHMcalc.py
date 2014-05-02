@@ -27,6 +27,7 @@ qintegration=int(argv[10])
 sessid=argv[11]
 zsvec=argv[12]
 qchz=int(argv[13])
+EARLYWIND=argv[14]
 if qintegration:qchz=1
 
 suffix="%.2f%.2f%.3f%.2f-%s"%(M1,M2,e,Pbin,sessid)
@@ -624,9 +625,9 @@ def Run():
             FXUVopt=(LXUV1+LXUV2)/(4*np.pi*(loutcont*AU*1E2)**2)/PEL
             FXUVp=(LXUV1+LXUV2)/(4*np.pi*(ap*AU*1E2)**2)/PEL
             FXUVin=(LXUV1+LXUV2)/(4*np.pi*(lincont*AU*1E2)**2)/PEL
-            Pswopt,FSWopt=binaryWind(loutcont,tau_rot1,M1,R1,tau_rot2,M2,R2)
-            Pswp,FSWp=binaryWind(ap,tau_rot1,M1,R1,tau_rot2,M2,R2)
-            Pswin,FSWin=binaryWind(lincont,tau_rot1,M1,R1,tau_rot2,M2,R2)
+            Pswopt,FSWopt=binaryWind(loutcont,tau_rot1,M1,R1,tau_rot2,M2,R2,early=EARLYWIND)
+            Pswp,FSWp=binaryWind(ap,tau_rot1,M1,R1,tau_rot2,M2,R2,early=EARLYWIND)
+            Pswin,FSWin=binaryWind(lincont,tau_rot1,M1,R1,tau_rot2,M2,R2,early=EARLYWIND)
 
             #FLUXES (NO TIDAL INTERACTION)
             ntLXUV1=starLXUV(L1,tau)
@@ -634,16 +635,16 @@ def Run():
             ntFXUVopt=(ntLXUV1+ntLXUV2)/(4*np.pi*(loutcont*AU*1E2)**2)/PEL
             ntFXUVp=(ntLXUV1+ntLXUV2)/(4*np.pi*(ap*AU*1E2)**2)/PEL
             ntFXUVin=(ntLXUV1+ntLXUV2)/(4*np.pi*(lincont*AU*1E2)**2)/PEL
-            ntPswopt,ntFSWopt=binaryWind(loutcont,tau,M1,R1,tau,M2,R2)
-            ntPswp,ntFSWp=binaryWind(ap,tau,M1,R1,tau,M2,R2)
-            ntPswin,ntFSWin=binaryWind(lincont,tau,M1,R1,tau,M2,R2)
+            ntPswopt,ntFSWopt=binaryWind(loutcont,tau,M1,R1,tau,M2,R2,early=EARLYWIND)
+            ntPswp,ntFSWp=binaryWind(ap,tau,M1,R1,tau,M2,R2,early=EARLYWIND)
+            ntPswin,ntFSWin=binaryWind(lincont,tau,M1,R1,tau,M2,R2,early=EARLYWIND)
 
             #FLUXES (SINGLE STAR)
             sLXUV=starLXUV(L1,tau)
             sFXUVopt=(sLXUV)/(4*np.pi*(sloutcont*AU*1E2)**2)/PEL
             sFXUVin=(sLXUV)/(4*np.pi*(slincont*AU*1E2)**2)/PEL
-            sPswopt,sFSWopt=binaryWind(sloutcont,tau,M1,R1,-1,-1,-1)
-            sPswin,sFSWin=binaryWind(slincont,tau,M1,R1,-1,-1,-1)
+            sPswopt,sFSWopt=binaryWind(sloutcont,tau,M1,R1,-1,-1,-1,early=EARLYWIND)
+            sPswin,sFSWin=binaryWind(slincont,tau,M1,R1,-1,-1,-1,early=EARLYWIND)
 
             #VECTORS
             FXUVopt_vec+=[FXUVopt]

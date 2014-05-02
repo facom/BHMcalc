@@ -82,7 +82,7 @@ if(isset($submit) and !isset($back)){
 
   if(!isset($stat) and !isset($back)){access("run");}
   if(!isset($reload)){
-  $cmd="$PYTHONCMD BHMcalc.py $Z $M1 $M2 $e $Pbin $tau $Mp $ap $tautot $qintegration $sessid $zsvec $qchz &> tmp/fulloutput-$sessid.log";
+  $cmd="$PYTHONCMD BHMcalc.py $Z $M1 $M2 $e $Pbin $tau $Mp $ap $tautot $qintegration $sessid $zsvec $qchz $earlywind &> tmp/fulloutput-$sessid.log";
   shell_exec($cmd);
   $qreload="reload&$qstring";
   }else{
@@ -194,32 +194,32 @@ echo<<<CONTENT
 <H3>Evolution Plots</H3>
 
 Evolution of rotational periods with (solid) and without (dashed)
-tidal interaction:
+tidal interaction:<br/>
 
 <img src="tmp/PeriodEvolution-$suffix.png"><br/>
 
 Evolution of XUV and stellar wind flux within the continuous habitable
 zone in Binary with BHM (solid), no BHM (dash-dotted) and
-single-primary (dotted): 
+single-primary (dotted): <br/>
 
 <img src="tmp/FluxXUV-$suffix.png"><br/> 
 
 <img src="tmp/FluxSW-$suffix.png"><br/>
 
 Ratio of XUV and stellar wind flux in Binaries with BHM, without BHM
-and around single-primary systems:
+and around single-primary systems:<br/>
 
 <img src="tmp/RatiosFluxXUV-$suffix.png"><br/> 
 
 <img src="tmp/RatiosFluxSW-$suffix.png"><br/>
 
-Integrated XUV and stellar wind fluxes:
+Integrated XUV and stellar wind fluxes:<br/>
 
 <img src="tmp/IntFXUV-$suffix.png"><br/>
 <img src="tmp/IntFSW-$suffix.png"><br/>
 
 Mass-loss as a function of planetary mass at the inner edge of the
-continuous habitable zone:
+continuous habitable zone:<br/>
 
 <img src="tmp/MassLoss-$suffix.png"><br/>
 
@@ -298,6 +298,17 @@ Set of isochrones :
 <option value="ZSVEC_siblings" selected>Close to solar (3 values, 0.01-0.02)</option>
 </select><br/>
 <i style="font-size:12px">It could reduce considerably the execution time.</i><br/><br/>
+
+Type of early stellar wind : 
+<select name="earlywind">
+<option value="trend" selected>Trending</option>
+<option value="constant">Constant</option>
+</select><br/>
+
+<i style="font-size:12px">Observations does not provide us information
+about the stellar wind before &tau;<0.7 Gyr.  Some observations
+suggest there is a saturation on magnetic activity before that.
+Select which type of behavior do you want to simulate.</i><br/><br/>
 
 <input type="submit" name="submit" value="submit">
 
