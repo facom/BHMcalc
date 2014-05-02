@@ -14,10 +14,11 @@ Changes log:
 
   + New plot!: HZ including planetary orbit
 
-- 2 May 2014, 11:00:00 UTC-5: Jorge I. Zuluaga
+- 2 May 2014, 12:00:00 UTC-5: Jorge I. Zuluaga
 
   + Corrected a problem with the moment of inertia of stars larger
     than 1.2 solar masses.
 
   + Now you can access a summary of the configuration and the command
     line options of the script.
+
