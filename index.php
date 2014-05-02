@@ -144,7 +144,7 @@ echo<<<CONTENT
   <tr><td>e:</td><td>$e</td></tr>
   <tr><td>M<sub>p</sub>:</td><td>$Mp M<sub>Earth</sub></td></tr>
   <tr><td>a<sub>p</sub>:</td><td>$ap AU</td></tr>
-  <tr><td>e<sub>p</sub>:</td><td>$e</td></tr>
+  <tr><td>e<sub>p</sub>:</td><td>$ep</td></tr>
   <tr><td>&tau;:</td><td>$tau Gyr</td></tr>
 </table>
 
