@@ -7,7 +7,7 @@ $sessid=session_id();
 echo "<P STYLE=font-size:12px>Session $sessid</P>";
 
 $PYTHONCMD="MPLCONFIGDIR=/tmp python";
-$WEBDIR="facom/pages/binary-habitability.rs/files/binary-habitabilitygovwk/.Interactive/BHM-Calculator";
+$WEBDIR="facom/pages/binary-habitability.rs/files/binary-habitabilitygovwk/.Interactive/BHMcalc";
 $DIR="/websites/sitios/$WEBDIR";
 
 function access($referer){
