@@ -5,9 +5,19 @@ Changes log:
 - 2 May 2014, 10:00:00 UTC-5: Jorge I. Zuluaga
 
   + Constant early stellar wind
+
   + Metallicity can be given in dex
+
   + Error control for bad metallicity ranges
 
 - 2 May 2014, 11:00:00 UTC-5: Jorge I. Zuluaga
 
   + New plot!: HZ including planetary orbit
+
+- 2 May 2014, 11:00:00 UTC-5: Jorge I. Zuluaga
+
+  + Corrected a problem with the moment of inertia of stars larger
+    than 1.2 solar masses.
+
+  + Now you can access a summary of the configuration and the command
+    line options of the script.
