@@ -60,6 +60,7 @@ $Pbin=10.0;
 $e=0.0;
 $Mp=1.0;
 $ap=1.5;
+$ep=0.5;
 $tau=1.0;
 $tautot=2.0;
 
@@ -86,7 +87,7 @@ if(isset($submit) and !isset($back)){
 
   if(!isset($stat) and !isset($back)){access("run");}
   if(!isset($reload)){
-  $cmd="$PYTHONCMD BHMcalc.py $Z $M1 $M2 $e $Pbin $tau $Mp $ap $tautot $qintegration $sessid $zsvec $qchz $earlywind $FeH &> tmp/fulloutput-$sessid.log;echo $?";
+  $cmd="$PYTHONCMD BHMcalc.py $Z $M1 $M2 $e $Pbin $tau $Mp $ap $tautot $qintegration $sessid $zsvec $qchz $earlywind $FeH $ep &> tmp/fulloutput-$sessid.log;echo $?";
   exec($cmd,$output,$status); 
   $qreload="reload&$qstring";
   }else{
@@ -185,6 +186,7 @@ Gyr.</P>
 <br/>
 <H3>Habitable Zone</H3>
 <img src="tmp/HZ-$suffix.png"><br/>
+<img src="tmp/HZ+planet-$suffix.png"><br/>
 CONTENT;
 
 if($qchz){
@@ -294,6 +296,9 @@ M<sub>p</sub> : <input type="text" name="Mp" value="$Mp"> M<sub>Earth</sub><br/>
 
 a<sub>p</sub> : <input type="text" name="ap" value="$ap"> AU<br/>
 <i style="font-size:12px">Semimajor axis of planet</i><br/><br/>
+
+e<sub>p</sub> : <input type="text" name="ap" value="$ep"><br/>
+<i style="font-size:12px">Eccentricity of the planet</i><br/><br/>
 
 <H3>Planetary System (optional)</H3>
 
