@@ -79,6 +79,71 @@ def stellarMoI(M,type="Regression"):
         MoI=MoIlow
     return MoI
 
+def XYfromZ(Z):
+    """
+    See: http://stev.oapd.inaf.it/cgi-bin/cmd
+    """
+    Y=0.2485+1.78*Z
+    X=1-Y-Z
+    return X,Y
+
+XSUN,YSUN=XYfromZ(ZSUN)
+
+#METALLICITY FROM Z
+def FeH2Z(FeH,X=0.75,A=1.0):
+    """
+    Values at sun.txt
+    
+    Examples:
+    print FeH2Z(-0.5,X=0.75,A=0.9)
+    print FeH2Z(-0.5,X=0.70,A=1.0)
+    print FeH2Z(-0.5,X=0.75,A=1.0)
+    print FeH2Z(-0.5,X=0.70,A=0.9)
+    """
+    """
+    Wikipedia
+    XSun=0.7110
+    ZSun=0.0149
+    YSun=0.2741
+    """
+    Z=ZSUN*(X/XSUN)*10**(A*FeH)
+    return Z
+
+#CALCULATE Z FROM METALLICITY
+def ZfromFHe(FeH):
+    """
+    Example:
+    print ZfromFHe(-0.55)
+    print ZfromFHe(-0.40)
+    """
+    Xvec=np.linspace(0.700,0.739,100)
+    Avec=np.linspace(0.9,1.0,100)
+    Zvals=[]
+    for X in Xvec:
+        for A in Avec:
+            Zvals+=[FeH2Z(FeH,X=X,A=A)]
+    Z=np.mean(Zvals)
+    dZ=np.std(Zvals)
+    return Z,dZ
+
+def FeHfromZ(Z):
+    func=lambda FeH:ZfromFHe(FeH)[0]-Z
+    FeH=bisectFunction(func,-10.0,10.0)
+    return FeH
+
+def ZfromFHeError(FHe,dFHe):
+    Z1,dZ1=ZfromFHe(FHe-dFHe)
+    #print Z1,dZ1
+    Z2,dZ2=ZfromFHe(FHe+dFHe)
+    #print Z2,dZ2
+    Zmin=min(Z1-dZ1,Z2-dZ2)
+    Zmax=max(Z1+dZ1,Z2+dZ2)
+    #print Zmin,Zmax
+    Zmed=(Zmax+Zmin)/2
+    dZ=(Zmax-Zmin)/2
+    #print Zmed,dZ
+    return Zmed,dZ
+
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 #STELLAR WIND
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -216,7 +281,7 @@ def vnGreissmeier2(d,t,M,R,verbose=False,early='constant'):
     if verbose:
         print "Computing stellar wind properties at t=%e:Ms=%e Msun,Rs = %e Rsun,d=%e AU"%(t,M,R,d)
     if t<0.7 and early=='constant':
-        print "\tSATURATION!"
+        if verbose:print "\tSATURATION!"
         t=0.7
     #REFERENCE VELOCITY AND DENSITY
     vref,nref=vn1AUeq(t*GIGA*YEAR)

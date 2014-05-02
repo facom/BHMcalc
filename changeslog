@@ -1,0 +1,10 @@
+BHM Calculator
+
+Changes log:
+
+- 2 May 2014, 10:00:00 UTC-5: Jorge I. Zuluaga
+
+  + Constant early stellar wind
+  + Metallicity can be given in dex
+  + Error control for bad metallicity ranges
+
