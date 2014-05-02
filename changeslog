@@ -8,3 +8,6 @@ Changes log:
   + Metallicity can be given in dex
   + Error control for bad metallicity ranges
 
+- 2 May 2014, 11:00:00 UTC-5: Jorge I. Zuluaga
+
+  + New plot!: HZ including planetary orbit
