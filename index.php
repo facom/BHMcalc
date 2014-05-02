@@ -43,7 +43,7 @@ echo<<<CONTENT
 <BODY>
 <H1><A HREF="?">Binary Habitability Calculator</A><SUP style='color:red;font-size:18px'>v2.0</SUP>
 <br/>
-<a href=changeslog style=font-size:10px>Changeslog</a>
+<a href=changeslog style=font-size:10px>Changeslog/</a><a href=TODO style=font-size:10px>ToDo</a>
 </H1>
 
 <form>
