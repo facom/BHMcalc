@@ -266,9 +266,9 @@ echo<<<CONTENT
 
 Z : <input type="text" name="Z" value="$Z"><br/> 
 
-<i style="font-size:12px">Metallicity of the system.  If unknown leave
-the solar metallicity Z = 0.0152.  Theoretical metallicities are in
-the range 0.0001 to 0.06.  If you only know [Fe/H] leave Z =
+<i style="font-size:12px">Metallicity of the binary system.  If
+unknown leave [Fe/H] below in 0.  Theoretical metallicities are in the
+  range 0.0001 to 0.06 (see isochrone set in the behavior section).  If you only know [Fe/H] leave Z =
 0</i><br/><br/>
 
 [Fe/H] : <input type="text" name="FeH" value="$FeH"><br/> 
