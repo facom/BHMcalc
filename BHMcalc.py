@@ -40,6 +40,8 @@ zsvec=argv[12]
 qchz=int(argv[13])
 EARLYWIND=argv[14]
 FeH=float(argv[15])
+ep=float(argv[16])
+
 if qintegration:qchz=1
 if Z==0:
     Z,dZ=ZfromFHe(FeH)
@@ -286,9 +288,9 @@ def Run():
     aHZo=(lino+louto)/2
     outHZ=Circle((0,0),louto,facecolor='g',alpha=0.3,linewidth=2)
     ax.add_patch(outHZ)
-    inHZ=Circle((0,0),lino,facecolor='w',edgecolor='r',
+    outHZ=Circle((0,0),lino,facecolor='w',edgecolor='r',
                 linewidth=2,zorder=10)
-    ax.add_patch(inHZ)
+    ax.add_patch(outHZ)
 
     #TITLE
     ax.set_title(titlebin,position=(0.5,0.95),fontsize=16)
@@ -299,6 +301,55 @@ def Run():
 
     plt.savefig(TMPDIR+"/HZ-%s.png"%suffix)
 
+    #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    #HABITABLE ZONE WITH TEST PLANET
+    #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    rang=max(1.2*ap*(1+ep),1.2*lout)
+    fig=plt.figure(figsize=(8,8))
+    ax=fig.add_axes([0.01,0.01,0.98,0.98])
+    ax.set_xticklabels([])
+    ax.set_yticklabels([])
+
+    #STELLAR PROPERTIES
+    ax.plot(x1,y1,'k-',linewidth=1,zorder=20)
+    ax.plot(x2,y2,'k-',linewidth=1,zorder=20)
+    C1=Circle((x1[0],y1[0]),rang/90,
+              facecolor='k',alpha=1.0,linewidth=0,zorder=50)
+    C2=Circle((x2[0],y2[0]),rang/90,
+              facecolor='k',alpha=1.0,linewidth=0,zorder=50)
+    ax.add_patch(C1)
+    ax.add_patch(C2)
+    aCR=Circle((0,0),acrit,facecolor='none',edgecolor='k',
+                linewidth=2,linestyle='dashed',zorder=20)
+    ax.add_patch(aCR)
+
+    #HZ
+    outHZ=Circle((0,0),louti,facecolor='g',alpha=0.3,linewidth=2)
+    ax.add_patch(outHZ)
+    inHZ=Circle((0,0),lini,facecolor='r',edgecolor='r',alpha=0.2,
+                linewidth=2,zorder=10)
+    ax.add_patch(inHZ)
+    outHZ=Circle((0,0),louto,facecolor='g',alpha=0.3,linewidth=2)
+    ax.add_patch(outHZ)
+    outHZ=Circle((0,0),lino,facecolor='w',edgecolor='r',
+                linewidth=2,zorder=10)
+    ax.add_patch(outHZ)
+
+    #PLANETARY PROPERTIES
+    r=ap*(1-ep**2)/(1+ep*cos(f))
+    x=r*cos(f)
+    y=r*sin(f)
+    ax.plot(x,y,'k-',linewidth=2,zorder=100)
+
+    ax.set_title(titlebin,position=(0.5,0.95),fontsize=16)
+    ax.text(0.5,0.92,"Test planet: $a_p = %.2f$ AU, $e_p = %.3f$"%(ap,ep),
+            horizontalalignment='center',transform=ax.transAxes,
+            fontsize=14)
+    ax.text(0.5,0.02,r"$a_{\rm crit}=%.2f$ AU, $l_{\rm in,RV}$=%.2f AU, $l_{\rm in,RG}$=%.2f AU, $l_{\rm out,MG}$=%.2f AU, $l_{\rm out,EM}$=%.2f AU"%(acrit,lino,lini,louti,louto),transform=ax.transAxes,horizontalalignment='center',fontsize=14)
+    ax.set_xlim((-rang,rang))
+    ax.set_ylim((-rang,rang))
+    plt.savefig(TMPDIR+"/HZ+planet-%s.png"%suffix)
+    
     #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     #CHECK IF CONTINUOUS HABITABLE ZONE 
     #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
