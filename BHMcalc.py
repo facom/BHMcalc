@@ -89,7 +89,7 @@ def Run():
     #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     #VERBOSITY
     verbose=False
-    verbose=True
+    #verbose=True
     pause=False
     #pause=True
 
@@ -602,6 +602,7 @@ def Run():
     ntFXUVp_vec=[]
     ntFXUVin_vec=[]
     sFXUVopt_vec=[]
+    sFXUVp_vec=[]
     sFXUVin_vec=[]
 
     FSWopt_vec=[]
@@ -611,6 +612,7 @@ def Run():
     ntFSWp_vec=[]
     ntFSWin_vec=[]
     sFSWopt_vec=[]
+    sFSWp_vec=[]
     sFSWin_vec=[]
 
     tau_rep=tau_vec[0]
@@ -713,8 +715,10 @@ def Run():
             #FLUXES (SINGLE STAR)
             sLXUV=starLXUV(L1,tau)
             sFXUVopt=(sLXUV)/(4*np.pi*(sloutcont*AU*1E2)**2)/PEL
+            sFXUVp=(sLXUV)/(4*np.pi*(ap*AU*1E2)**2)/PEL
             sFXUVin=(sLXUV)/(4*np.pi*(slincont*AU*1E2)**2)/PEL
             sPswopt,sFSWopt=binaryWind(sloutcont,tau,M1,R1,-1,-1,-1,early=EARLYWIND)
+            sPswp,sFSWp=binaryWind(ap,tau,M1,R1,-1,-1,-1,early=EARLYWIND)
             sPswin,sFSWin=binaryWind(slincont,tau,M1,R1,-1,-1,-1,early=EARLYWIND)
 
             #VECTORS
@@ -725,6 +729,7 @@ def Run():
             ntFXUVp_vec+=[ntFXUVp]
             ntFXUVin_vec+=[ntFXUVin]
             sFXUVopt_vec+=[sFXUVopt]
+            sFXUVp_vec+=[sFXUVp]
             sFXUVin_vec+=[sFXUVin]
 
             FSWopt_vec+=[FSWopt]
@@ -734,6 +739,7 @@ def Run():
             ntFSWp_vec+=[ntFSWp]
             ntFSWin_vec+=[ntFSWin]
             sFSWopt_vec+=[sFSWopt]
+            sFSWp_vec+=[sFSWp]
             sFSWin_vec+=[sFSWin]
             
             if verbose:
@@ -825,6 +831,7 @@ def Run():
     ntFXUVp_vec=np.array(ntFXUVp_vec)
     ntFXUVin_vec=np.array(ntFXUVin_vec)
     sFXUVopt_vec=np.array(sFXUVopt_vec)
+    sFXUVp_vec=np.array(sFXUVp_vec)
     sFXUVin_vec=np.array(sFXUVin_vec)
     
     FSWopt_vec=np.array(FSWopt_vec)
@@ -834,6 +841,7 @@ def Run():
     ntFSWp_vec=np.array(ntFSWp_vec)
     ntFSWin_vec=np.array(ntFSWin_vec)
     sFSWopt_vec=np.array(sFSWopt_vec)
+    sFSWp_vec=np.array(sFSWp_vec)
     sFSWin_vec=np.array(sFSWin_vec)
 
     #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
@@ -884,9 +892,9 @@ def Run():
     #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
     SWPEL=NSUN*VSUN
     plt.figure()
-    plt.plot(tvecX,FSWopt_vec/SWPEL,'b-',label='XUV w. BHM @ Optimum')
-    plt.plot(tvecX,FSWp_vec/SWPEL,'k-',linewidth=2,label=r'XUV w. BHM @ $a = %.2f\,\rm{AU}$'%ap)
-    plt.plot(tvecX,FSWin_vec/SWPEL,'r-',label='XUV w. BHM @ Inner CHZ')
+    plt.plot(tvecX,FSWopt_vec/SWPEL,'b-',label='SW w. BHM @ Optimum')
+    plt.plot(tvecX,FSWp_vec/SWPEL,'k-',linewidth=2,label=r'SW w. BHM @ $a = %.2f\,\rm{AU}$'%ap)
+    plt.plot(tvecX,FSWin_vec/SWPEL,'r-',label='SW w. BHM @ Inner CHZ')
     plt.plot(tvecX,ntFSWopt_vec/SWPEL,'b--')
     plt.plot(tvecX,ntFSWp_vec/SWPEL,'k--',linewidth=2)
     plt.plot(tvecX,ntFSWin_vec/SWPEL,'r--',linewidth=2)
@@ -935,6 +943,7 @@ def Run():
     intntFXUVin=np.array([ntFXUVin_vec[:i].sum() for i in xrange(nX)])*Dt
     intntFXUVp=np.array([ntFXUVp_vec[:i].sum() for i in xrange(nX)])*Dt
     intsFXUVopt=np.array([sFXUVopt_vec[:i].sum() for i in xrange(nX)])*Dt
+    intsFXUVp=np.array([sFXUVp_vec[:i].sum() for i in xrange(nX)])*Dt
     intsFXUVin=np.array([sFXUVin_vec[:i].sum() for i in xrange(nX)])*Dt
     logFXUV=int(np.log10(max(intFXUVopt)))
     FXUVscale=10**logFXUV
@@ -967,6 +976,7 @@ def Run():
     intntFSWin=np.array([ntFSWin_vec[:i].sum() for i in xrange(nX)])*Dt
     intntFSWp=np.array([ntFSWp_vec[:i].sum() for i in xrange(nX)])*Dt
     intsFSWopt=np.array([sFSWopt_vec[:i].sum() for i in xrange(nX)])*Dt
+    intsFSWp=np.array([sFSWp_vec[:i].sum() for i in xrange(nX)])*Dt
     intsFSWin=np.array([sFSWin_vec[:i].sum() for i in xrange(nX)])*Dt
     logFSW=int(np.log10(max(intFSWopt)))
     FSWscale=10**logFSW
@@ -977,9 +987,11 @@ def Run():
     plt.plot(tvecX,intntFSWopt/FSWscale,'b--')
     plt.plot(tvecX,intntFSWin/FSWscale,'r--')
     plt.plot(tvecX,intsFSWopt/FSWscale,'b:')
+    plt.plot(tvecX,intsFSWp/FSWscale,'k-.')
     plt.plot(tvecX,intsFSWin/FSWscale,'r:')
     plt.plot([],[],'k--',label='No BHM')
     plt.plot([],[],'k:',label='Single-primary')
+    plt.plot([],[],'k-.',label='Single-primary on planet')
 
     plt.xlabel(r"$t$ (Gyr)")
     plt.ylabel(r"$\int_0^{t} n_{\rm SW}\,v_{\rm SW}\,dt'$ ($\times 10^{%d}\,{\rm ions/m}^2$)"%logFSW)
@@ -996,6 +1008,7 @@ def Run():
     Pl=[]
     ntPl=[]
     sPl=[]
+    sPlp=[]
     for Mp in Mpvec:
 
         #PLANETARY PROPERTIES
@@ -1007,6 +1020,7 @@ def Run():
         MLfac=intFSWin[-1]
         ntMLfac=intntFSWin[-1]
         sMLfac=intsFSWin[-1]
+        sMLfacp=intsFSWp[-1]
 
         #MASS LOSS
         Ml=ALPHA*MLfac*Ap*MUATM*MP
@@ -1018,9 +1032,13 @@ def Run():
         sMl=ALPHA*sMLfac*Ap*MUATM*MP
         sPl+=[sMl*gp/(2*Ap)/1E5]
 
+        sMlp=ALPHA*sMLfacp*Ap*MUATM*MP
+        sPlp+=[sMlp*gp/(2*Ap)/1E5]
+
     plt.plot(Mpvec,Pl,'k-',label='Mass loss w. BHM')
     plt.plot(Mpvec,ntPl,'k--',label='Mass loss no BHM')
     plt.plot(Mpvec,sPl,'k:',label='Mass loss single-primary')
+    plt.plot(Mpvec,sPlp,'k-.',label='Mass loss single-primary on planet')
 
     plt.xlabel("$M_p/M_\oplus$")
     plt.ylabel(r"$P_{\rm loss}\,({\rm bars})$")
