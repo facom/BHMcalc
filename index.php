@@ -198,8 +198,8 @@ Gyr.</P>
 </table>
 <br/>
 <H3>Habitable Zone</H3>
-<img src="tmp/HZ-$suffix.png"><br/>
-<img src="tmp/HZ+planet-$suffix.png"><br/>
+<a href="tmp/HZ-$suffix.png.txt" target="_blank"><img src="tmp/HZ-$suffix.png"></a><br/>
+<a href="tmp/HZ+planet-$suffix.png.txt" target="_blank"><img src="tmp/HZ+planet-$suffix.png"></a><br/>
 CONTENT;
 
 if($qchz){
@@ -213,7 +213,7 @@ echo<<<CONTENT
   <tr><td>CHZ:</td><td>[$lincont,$loutcont] AU</td></tr>
   <tr><td>CHZ single-primary:</td><td>[$lincont,$loutcont] AU</td></tr>
 </table>
-<img src="tmp/HZevol-$suffix.png"><br/>
+<a href="tmp/HZevol-$suffix.png.txt" target="_blank"><img src="tmp/HZevol-$suffix.png"></a><br/>
 CONTENT;
 }
 if($qintegration){
@@ -225,32 +225,32 @@ echo<<<CONTENT
 Evolution of rotational periods with (solid) and without (dashed)
 tidal interaction:<br/>
 
-<img src="tmp/PeriodEvolution-$suffix.png"><br/>
+<a href="tmp/PeriodEvolution-$suffix.png.txt" target="_blank"><img src="tmp/PeriodEvolution-$suffix.png"></a><br/>
 
 Evolution of XUV and stellar wind flux within the continuous habitable
 zone in Binary with BHM (solid), no BHM (dash-dotted) and
 single-primary (dotted): <br/>
 
-<img src="tmp/FluxXUV-$suffix.png"><br/> 
+<a href="tmp/FluxXUV-$suffix.png.txt" target="_blank"><img src="tmp/FluxXUV-$suffix.png"></a><br/> 
 
-<img src="tmp/FluxSW-$suffix.png"><br/>
+<a href="tmp/FluxSW-$suffix.png.txt" target="_blank"><img src="tmp/FluxSW-$suffix.png"></a><br/>
 
 Ratio of XUV and stellar wind flux in Binaries with BHM, without BHM
 and around single-primary systems:<br/>
 
-<img src="tmp/RatiosFluxXUV-$suffix.png"><br/> 
+<a href="tmp/RatiosFluxXUV-$suffix.png.txt" target="_blank"><img src="tmp/RatiosFluxXUV-$suffix.png"></a><br/> 
 
-<img src="tmp/RatiosFluxSW-$suffix.png"><br/>
+<a href="tmp/RatiosFluxSW-$suffix.png.txt" target="_blank"><img src="tmp/RatiosFluxSW-$suffix.png"></a><br/>
 
 Integrated XUV and stellar wind fluxes:<br/>
 
-<img src="tmp/IntFXUV-$suffix.png"><br/>
-<img src="tmp/IntFSW-$suffix.png"><br/>
+<a href="tmp/IntFXUV-$suffix.png.txt" target="_blank"><img src="tmp/IntFXUV-$suffix.png"></a><br/>
+<a href="tmp/IntFSW-$suffix.png.txt" target="_blank"><img src="tmp/IntFSW-$suffix.png"></a><br/>
 
 Mass-loss as a function of planetary mass at the inner edge of the
 continuous habitable zone:<br/>
 
-<img src="tmp/MassLoss-$suffix.png"><br/>
+<a href="tmp/MassLoss-$suffix.png.txt" target="_blank"><img src="tmp/MassLoss-$suffix.png"></a><br/>
 
 <!--DEPRECATED
 <img src="tmp/PeriodFit-$suffix1.png"><br/>

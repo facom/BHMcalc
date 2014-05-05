@@ -10,6 +10,7 @@ from numpy import *
 TMPDIR="tmp/"
 ALPHA=0.3 #Entrapment Factor (Zendejas et al., 2010) 
 MUATM=44.0 #MEAN 
+LINES=['']*100
 
 """
 #Choose equivalent dex ranges
@@ -247,12 +248,10 @@ def Run():
     #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     rang=1.2*lout
     fig=plt.figure(figsize=(8,8))
+    ifig=0
     ax=fig.add_axes([0.01,0.01,0.98,0.98])
     ax.set_xticklabels([])
     ax.set_yticklabels([])
-
-    #CENTER
-    #ax.plot([0],[0],'k+',ms=10,zorder=100)
 
     #ORBIT
     MTOT=M1+M2
@@ -303,13 +302,13 @@ def Run():
     ax.set_xlim((-rang,rang))
     ax.set_ylim((-rang,rang))
 
-    plt.savefig(TMPDIR+"/HZ-%s.png"%suffix)
+    saveFig(TMPDIR+"/HZ-%s.png"%suffix)
 
     #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     #HABITABLE ZONE WITH TEST PLANET
     #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     rang=max(1.2*ap*(1+ep),1.2*lout)
-    fig=plt.figure(figsize=(8,8))
+    fig=plt.figure(figsize=(8,8));ifig=0
     ax=fig.add_axes([0.01,0.01,0.98,0.98])
     ax.set_xticklabels([])
     ax.set_yticklabels([])
@@ -352,7 +351,7 @@ def Run():
     ax.text(0.5,0.02,r"$a_{\rm crit}=%.2f$ AU, $l_{\rm in,RV}$=%.2f AU, $l_{\rm in,RG}$=%.2f AU, $l_{\rm out,MG}$=%.2f AU, $l_{\rm out,EM}$=%.2f AU"%(acrit,lino,lini,louti,louto),transform=ax.transAxes,horizontalalignment='center',fontsize=14)
     ax.set_xlim((-rang,rang))
     ax.set_ylim((-rang,rang))
-    plt.savefig(TMPDIR+"/HZ+planet-%s.png"%suffix)
+    saveFig(TMPDIR+"/HZ+planet-%s.png"%suffix)
     
     #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     #CHECK IF CONTINUOUS HABITABLE ZONE 
@@ -431,7 +430,7 @@ def Run():
     print "Continuous Single Primary HZ: ",slincont,sloutcont
 
     #PLOT HABITABLE ZONE
-    fig=plt.figure()
+    fig=plt.figure();ifig=0
     plt.axhline(loutcont,color='k',linewidth=3)
     plt.plot([],[],'k-',linewidth=3,label='Optimum distance')
 
@@ -467,7 +466,7 @@ def Run():
 
     plt.legend(loc='upper left',prop={'size':10})
     plt.title(titlebin,position=(0.5,1.02),fontsize=16)
-    plt.savefig(TMPDIR+"/HZevol-%s.png"%suffix)
+    saveFig(TMPDIR+"/HZevol-%s.png"%suffix)
     
     print>>fout,tausys,lincont,loutcont,slincont,sloutcont
 
@@ -519,7 +518,7 @@ def Run():
             np.savetxt(ffit1,x)
             return chisquare
         xfit1=minimize(chiSquare,[1,1.0,1.0]).x
-        plt.figure()
+        plt.figure();ifig=0
         plt.plot(data1[:,0],data1[:,1],'bo')
         plt.plot(data1[:,0],theoProt(data1[:,0],xfit1),'b-')
         plt.xscale("log")
@@ -527,7 +526,7 @@ def Run():
         plt.xlabel(r"$\tau$")
         plt.ylabel(r"$P_{\rm rot}$")
         plt.title(r"$M_1$ = %.2f $M_{\rm sun}$"%M1)
-        plt.savefig(TMPDIR+"/PeriodFit-%s.png"%suffix1)
+        saveFig(TMPDIR+"/PeriodFit-%s.png"%suffix1)
     else:
         xfit1=np.loadtxt(ffit1)
         
@@ -548,7 +547,7 @@ def Run():
             np.savetxt(ffit2,x)
             return chisquare
         xfit2=minimize(chiSquare,[1,1.0,1.0]).x
-        plt.figure()
+        plt.figure();ifig=0
         plt.plot(data2[:,0],data2[:,1],'bo')
         plt.plot(data2[:,0],theoProt(data2[:,0],xfit2),'b-')
         plt.xscale("log")
@@ -556,7 +555,7 @@ def Run():
         plt.xlabel(r"$\tau$")
         plt.ylabel(r"$P_{\rm rot}$")
         plt.title(r"$M_1$ = %.2f $M_{\rm sun}$"%M2)
-        plt.savefig(TMPDIR+"/PeriodFit-%s.png"%suffix2)
+        saveFig(TMPDIR+"/PeriodFit-%s.png"%suffix2)
     else:
         xfit2=np.loadtxt(ffit2)
 
@@ -847,7 +846,7 @@ def Run():
     #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
     #PLOT XUV (PEL)
     #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-    plt.figure()
+    plt.figure();ifig=0
     plt.plot(tvecX,FXUVopt_vec,'b-',label='XUV w. BHM @ Optimum')
     plt.plot(tvecX,FXUVp_vec,'k-',linewidth=2,label=r'XUV w. BHM @ $a = %.2f\,\rm{AU}$'%ap)
     plt.plot(tvecX,FXUVin_vec,'r-',label='XUV w. BHM @ Inner CHZ')
@@ -869,12 +868,12 @@ def Run():
     plt.ylabel(r"$F_{\rm XUV} ({\rm PEL})$")
     plt.legend(loc='best',prop=dict(size=10))
     plt.title(titlebin,position=(0.5,1.02))
-    plt.savefig(TMPDIR+"/FluxXUV-%s.png"%suffix)
+    saveFig(TMPDIR+"/FluxXUV-%s.png"%suffix)
 
     #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
     #PLOT XUV (RATIOS)
     #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-    plt.figure()
+    plt.figure();ifig=0
     plt.plot(tvecX,FXUVopt_vec/ntFXUVopt_vec,'k-',label='BHM/no BHM')
     plt.plot(tvecX,FXUVopt_vec/sFXUVopt_vec,'k--',label='BHM/Single')
     plt.xlabel(r"$t$ (Gyr)")
@@ -885,13 +884,13 @@ def Run():
     plt.ylim((0.0,max(1.0,ymax)))
     plt.legend(loc='best',prop=dict(size=10))
     plt.title(titlebin,position=(0.5,1.02))
-    plt.savefig(TMPDIR+"/RatiosFluxXUV-%s.png"%suffix)
+    saveFig(TMPDIR+"/RatiosFluxXUV-%s.png"%suffix)
 
     #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
     #PLOT SW (SWPEL)
     #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
     SWPEL=NSUN*VSUN
-    plt.figure()
+    plt.figure();ifig=0
     plt.plot(tvecX,FSWopt_vec/SWPEL,'b-',label='SW w. BHM @ Optimum')
     plt.plot(tvecX,FSWp_vec/SWPEL,'k-',linewidth=2,label=r'SW w. BHM @ $a = %.2f\,\rm{AU}$'%ap)
     plt.plot(tvecX,FSWin_vec/SWPEL,'r-',label='SW w. BHM @ Inner CHZ')
@@ -913,12 +912,12 @@ def Run():
     plt.ylabel(r"$F_{\rm SW} ({\rm SW.PEL})$")
     plt.legend(loc='best',prop=dict(size=10))
     plt.title(titlebin,position=(0.5,1.02))
-    plt.savefig(TMPDIR+"/FluxSW-%s.png"%suffix)
+    saveFig(TMPDIR+"/FluxSW-%s.png"%suffix)
 
     #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
     #PLOT SW (RATIOS)
     #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-    plt.figure()
+    plt.figure();ifig=0
     plt.plot(tvecX,FSWopt_vec/ntFSWopt_vec,'k-',label='BHM/no BHM')
     plt.plot(tvecX,FSWopt_vec/sFSWopt_vec,'k--',label='BHM/Single')
     plt.xlabel(r"$t$ (Gyr)")
@@ -929,13 +928,13 @@ def Run():
     plt.ylim((0.0,max(1.0,ymax)))
     plt.legend(loc='best',prop=dict(size=10))
     plt.title(titlebin,position=(0.5,1.02))
-    plt.savefig(TMPDIR+"/RatiosFluxSW-%s.png"%suffix)
+    saveFig(TMPDIR+"/RatiosFluxSW-%s.png"%suffix)
 
     #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
     #INTEGRATE XUV FLUX
     #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
     nX=len(tvecX)
-    plt.figure()
+    plt.figure();ifig=0
     intFXUVopt=np.array([FXUVopt_vec[:i].sum() for i in xrange(nX)])*Dt
     intFXUVin=np.array([FXUVin_vec[:i].sum() for i in xrange(nX)])*Dt
     intFXUVp=np.array([FXUVp_vec[:i].sum() for i in xrange(nX)])*Dt
@@ -962,13 +961,13 @@ def Run():
     plt.ylabel(r"$\int_0^{t} F_{\rm XUV}(t')\,dt'$ ($\times 10^{%d}\,{\rm j/cm}^2$)"%logFXUV)
     plt.legend(loc='upper left',prop=dict(size=10))
     plt.title(titlebin,position=(0.5,1.02))
-    plt.savefig(TMPDIR+"/IntFXUV-%s.png"%suffix)
+    saveFig(TMPDIR+"/IntFXUV-%s.png"%suffix)
 
     #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
     #INTEGRATED SW FLUX
     #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
     nX=len(tvecX)
-    plt.figure()
+    plt.figure();ifig=0
     intFSWopt=np.array([FSWopt_vec[:i].sum() for i in xrange(nX)])*Dt
     intFSWin=np.array([FSWin_vec[:i].sum() for i in xrange(nX)])*Dt
     intFSWp=np.array([FSWp_vec[:i].sum() for i in xrange(nX)])*Dt
@@ -997,12 +996,12 @@ def Run():
     plt.ylabel(r"$\int_0^{t} n_{\rm SW}\,v_{\rm SW}\,dt'$ ($\times 10^{%d}\,{\rm ions/m}^2$)"%logFSW)
     plt.legend(loc='upper left',prop=dict(size=10))
     plt.title(titlebin,position=(0.5,1.02))
-    plt.savefig(TMPDIR+"/IntFSW-%s.png"%suffix)
+    saveFig(TMPDIR+"/IntFSW-%s.png"%suffix)
 
     #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
     #MASS-LOSS AT INNER CHZ VS. PLANET.MASS
     #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-    plt.figure()
+    plt.figure();ifig=0
     
     Mpvec=linspace(0.1,10.0,100)
     Pl=[]
@@ -1044,12 +1043,12 @@ def Run():
     plt.ylabel(r"$P_{\rm loss}\,({\rm bars})$")
     plt.legend(loc='upper left',prop=dict(size=10))
     plt.title(titlebin,position=(0.5,1.02))
-    plt.savefig(TMPDIR+"/MassLoss-%s.png"%suffix)
+    saveFig(TMPDIR+"/MassLoss-%s.png"%suffix)
 
     #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
     #PLOT PERIOD
     #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-    plt.figure()
+    plt.figure();ifig=0
     plt.plot(tvec,np.array(P1vec),'b-',label='Primary')
     plt.plot(tvec,np.array(P2vec),'r-',label='Secondary')
     plt.plot(tvec,theoProt(tvec,xfit1),'b--',label='No tidal')
@@ -1063,12 +1062,12 @@ def Run():
     plt.axhline(Pbin/2.0,linestyle='-.',color='c',label='2:1')
     plt.legend(loc='best',prop=dict(size=10))
     plt.title(titlebin,position=(0.5,1.04))
-    plt.savefig(TMPDIR+"/PeriodEvolution-%s.png"%suffix)
+    saveFig(TMPDIR+"/PeriodEvolution-%s.png"%suffix)
 
     #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
     #PLOT ACCELERATIONS
     #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-    plt.figure()
+    plt.figure();ifig=0
     plt.plot(tvec,abs(acc1_tid_vec),'b--',label='Tidal')
     plt.plot(tvec,abs(acc2_tid_vec),'r--')
     plt.plot(tvec,abs(acc1_ML_vec),'b-.',label='Mass')
@@ -1081,7 +1080,7 @@ def Run():
     plt.xlabel(r"$t$ (Gyr)")
     plt.ylabel(r"$d\Omega/dt$ (rad/s)")
     plt.title(titlebin,position=(0.5,1.02))
-    plt.savefig(TMPDIR+"/AccelerationEvolution-%s.png"%suffix)
+    saveFig(TMPDIR+"/AccelerationEvolution-%s.png"%suffix)
 
 ############################################################
 #ROUTINES
