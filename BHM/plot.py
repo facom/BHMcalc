@@ -61,3 +61,26 @@ def logTickLabels(ax,perini,perfin,nperper,
     else:
         ax.set_xticks(yt)
         ax.set_xticklabels(yl,fontsize=fontsize)
+
+def saveFig(filename):
+    """
+    Save figure with the respective data
+    """
+    plt.savefig(filename)
+    ax=plt.gca()
+    
+    #SAVE DATA
+    fdata=open(filename+".txt","w")
+    fdata.write("Plot: %s\n"%filename)
+    i=0
+    for line in ax.lines:
+        i+=1
+        label=line.get_label()
+        fdata.write("\nLine %d: %s\n"%(i,label))
+        x=line.get_data()[0]
+        y=line.get_data()[1]
+        ndata=len(x)
+        fdata.write("\n")
+        for n in xrange(ndata):
+            fdata.write("\t%25.17e\t%25.17e\n"%(x[n],y[n]))
+    fdata.close()

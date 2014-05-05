@@ -22,3 +22,9 @@ Changes log:
   + Now you can access a summary of the configuration and the command
     line options of the script.
 
+- 5 May 2014, 16:30:00 UTC-5: Jorge I. Zuluaga
+  
+  + In the XUV, SW and mass-loss curve I have added a curve
+    corresponding to the planet around the single-primary case.  This
+    is for comparison purposes with the Earth.
+
