@@ -63,6 +63,8 @@ $ap=1.5;
 $ep=0.5;
 $tau=1.0;
 $tautot=2.0;
+$incrit='recent venus';
+$outcrit='early mars';
 
 //////////////////////////////////////////////////////////////////////////////////
 //COMMON
@@ -98,7 +100,7 @@ if(isset($submit) and !isset($back)){
 
   if(!isset($stat) and !isset($back)){access("run");}
   if(!isset($reload)){
-  $cmd="$PYTHONCMD BHMcalc.py $Z $M1 $M2 $e $Pbin $tau $Mp $ap $tautot $qintegration $sessid $zsvec $qchz $earlywind $FeH $ep &> tmp/fulloutput-$sessid.log";
+  $cmd="$PYTHONCMD BHMcalc.py $Z $M1 $M2 $e $Pbin $tau $Mp $ap $tautot $qintegration $sessid $zsvec $qchz $earlywind $FeH $ep $incrit $outcrit &> tmp/fulloutput-$sessid.log";
   exec($cmd,$output,$status); 
   shell_exec("echo '$cmd' > tmp/cmd-$sessid.log");
   $qreload="reload&$qstring";
