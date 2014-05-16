@@ -446,6 +446,9 @@ def Run():
         if tauvec[i]<tausys/2:break
     lincont=lins[imax]
     loutcont=min(louts)
+    if lincont<acrit:
+        print "Inner edge of CHZ (%.3f) is inside critical distance (%.3f).  Changed."%(lincont,acrit)
+        lincont=acrit
     print "Continuous Binary HZ: ",lincont,loutcont
 
     #FIND SINGLE PRIMARY CONTINUOUS HABITABLE ZONE
