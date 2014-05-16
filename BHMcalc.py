@@ -4,6 +4,38 @@ from BHM.BHM import *
 from BHM.keplerbin import *
 from numpy import *
 
+"""
+Usage:
+
+  python BHMcalc.py Z M1 M2 e Pbin TAU Mp ap tau1 qintegration sessid zsvec qchz EARLYWIND FeH ep
+
+Where:
+
+  Z: System metallicity
+  M1: Primary mass
+  M2: Secondary mass
+  e: Binary eccentricity
+  Pbin: Binary period
+  TAU: Sampling time
+  Mp: Test planetary mass
+  ap: Test planet semimajor axis
+  tau1: Total time of integration
+  qintegration: Calculate integrated quantities
+  sessid: Session ID
+  zsvec: Set of isochrones (ZSVEC_full, ZSVEC_solar, ZSVEC_coarse, ZSVEC_siblings)
+  qchz: Calculate continuous habitable zone?
+  EARLYWIND: Early wind (trend, constant)
+  FeH: Metallicity in dex
+  ep: Test planet eccentricity
+  incrit: Criterium for inner edge ('recent venus', 'moist greenhouse', 'runaway greenhouse')
+  outcrit: Criterium for outer edge ('maximum greenhouse', 'early mars')
+
+Example:
+
+  BHMcalc.py 0 1 0.5 0 10 1 1 1.5 2 1 bqurr72q961bn3767ltm5pkir1 ZSVEC_siblings 0 trend 0 0.5 
+
+"""
+
 ############################################################
 #CONFIGURATION
 ############################################################
@@ -42,10 +74,15 @@ qchz=int(argv[13])
 EARLYWIND=argv[14]
 FeH=float(argv[15])
 ep=float(argv[16])
+incrit=argv[17]
+outcrit=argv[18]
 
 if qintegration:qchz=1
 if Z==0:
     Z,dZ=ZfromFHe(FeH)
+
+md5.update("%.4f%.4f%.4f%.4f%.4f%.4f%s%s%s"%(Z,FeH,M1,M2,Pbin,e,incrit,outcrit,zsvec))
+signature_HZ=md5.hexdigest()
 
 suffix="%.2f%.2f%.3f%.2f-%s"%(M1,M2,e,Pbin,sessid)
 fout=open(TMPDIR+"output-%s.log"%sessid,"w")
@@ -124,7 +161,7 @@ def Run():
     print>>fout,g1,T1,R1,L1,Rmin1,Rmax1,Pini1,Prot1
 
     gZ1,TZ1,RZ1,LZ1=StellarGTRL(Z,M1,tauHZ)
-    lin1,aE1,lout1=HZ2013(LZ1,TZ1)
+    lin1,aE1,lout1=HZ2013(LZ1,TZ1,lin=incrit,lout=outcrit)
     aHZ1=(lin1+lout1)/2
 
     print>>fout,lin1,aE1,aHZ1,lout1
@@ -145,7 +182,7 @@ def Run():
     print>>fout,g2,T2,R2,L2,Rmin2,Rmax2,Pini2,Prot2
 
     gZ2,TZ2,RZ2,LZ2=StellarGTRL(Z,M2,tauHZ)
-    lin2,aE2,lout2=HZ2013(LZ2,TZ2)
+    lin2,aE2,lout2=HZ2013(LZ2,TZ2,lin=incrit,lout=outcrit)
     aHZ2=(lin2+lout2)/2
 
     print>>fout,lin2,aE2,aHZ2,lout2
@@ -164,7 +201,7 @@ def Run():
 
     print>>fout,abin,acrit,nsync,Psync
 
-    lin,aE,lout=HZbin4(M2/M1,LZ1,LZ2,TZ1,abin)
+    lin,aE,lout=HZbin4(M2/M1,LZ1,LZ2,TZ1,abin,crits=[incrit,outcrit])
     aHZ=(lin+lout)/2
 
     print>>fout,lin,aE,aHZ,lout
@@ -376,12 +413,12 @@ def Run():
         g2e,T2e,R2e,L2e=StellarGTRL(Z,M2,tau)
         #print "\tStar 2: g,T,R,L=",g2,T2,R2,L2
         try:
-            lin1e,aE1e,lout1e=HZ2013(L1e,T1e)
+            lin1e,aE1e,lout1e=HZ2013(L1e,T1e,lin=incrit,lout=outcrit)
             #print "\tPrimary HZ=",lin1,aE1,lout1
         except:
             #print "The most massive star has passed away at tau = %e"%tau
             break
-        line,aEe,loute=HZbin4(M2/M1,L1e,L2e,T1e,abin)
+        line,aEe,loute=HZbin4(M2/M1,L1e,L2e,T1e,abin,crits=[incrit,outcrit])
         tausys=tau
         lins+=[line]
         louts+=[loute]
@@ -452,8 +489,8 @@ def Run():
     plt.ylabel(r"$a$ (AU)")
 
     plt.fill_between(tauvec,lins,louts,color='g',alpha=0.3)
-    plt.plot(tauvec,lins,'r-',linewidth=2,label='Recent Venus')
-    plt.plot(tauvec,louts,'b-',linewidth=2,label='Early Mars')
+    plt.plot(tauvec,lins,'r-',linewidth=2,label=incrit)
+    plt.plot(tauvec,louts,'b-',linewidth=2,label=outcrit)
     plt.plot(tauvec,slins,'r--',linewidth=2)
     plt.plot(tauvec,slouts,'b--',linewidth=2)
     plt.plot([],[],'k--',linewidth=3,label='Single primary HZ limits')
