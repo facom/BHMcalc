@@ -1,3 +1,4 @@
+import hashlib
 import numpy as np
 from sys import exit,stderr,stdout,argv
 from os import system,path
@@ -14,6 +15,7 @@ except:
 #MACROS
 ######################################################################
 fileexists=path.isfile
+md5=hashlib.md5()
 
 ######################################################################
 #UTILITY ROUTINES
