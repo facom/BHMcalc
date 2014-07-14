@@ -2,6 +2,7 @@ import hashlib
 import numpy as np
 from sys import exit,stderr,stdout,argv
 from os import system,path
+import commands
 try:
     from scipy.optimize import minimize
 except:
@@ -15,7 +16,10 @@ except:
 #MACROS
 ######################################################################
 fileexists=path.isfile
-md5=hashlib.md5()
+MD5=hashlib.md5()
+def md5str(str):
+    MD5.update(str)
+    return MD5.hexdigest()
 
 ######################################################################
 #UTILITY ROUTINES
@@ -78,3 +82,15 @@ def scaleProp(m,alpha,beta):
     Scaling function
     """
     return alpha*m**beta
+
+def System(cmd,out=False,sim=False):
+    """
+    Execute a command
+    """
+    if sim:return ""
+    if not out:
+        system(cmd)
+        output=""
+    else:
+        output=commands.getoutput(cmd)
+    return output

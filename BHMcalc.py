@@ -7,7 +7,7 @@ from numpy import *
 """
 Usage:
 
-  python BHMcalc.py Z M1 M2 e Pbin TAU Mp ap tau1 qintegration sessid zsvec qchz EARLYWIND FeH ep
+  python BHMcalc.py Z M1 M2 e Pbin TAU Mp ap tau1 qintegration sessid zsvec qchz EARLYWIND FeH ep incrit outcrit conf_name qsaved
 
 Where:
 
@@ -29,10 +29,12 @@ Where:
   ep: Test planet eccentricity
   incrit: Criterium for inner edge ('recent venus', 'moist greenhouse', 'runaway greenhouse')
   outcrit: Criterium for outer edge ('maximum greenhouse', 'early mars')
+  conf_name: Name of configuration
+  qsaved: Use saved configuration
 
 Example:
 
-  BHMcalc.py 0 1 0.5 0 10 1 1 1.5 2 1 bqurr72q961bn3767ltm5pkir1 ZSVEC_siblings 0 trend 0 0.5 
+  BHMcalc.py 0 1 0.5 0 10 1 1 1.5 2 1 bqurr72q961bn3767ltm5pkir1 ZSVEC_siblings 0 trend 0 0.5 'recent venus' 'early mars' 'niche1' 0
 
 """
 
@@ -43,21 +45,20 @@ TMPDIR="tmp/"
 ALPHA=0.3 #Entrapment Factor (Zendejas et al., 2010) 
 MUATM=44.0 #MEAN 
 LINES=['']*100
-
-"""
-#Choose equivalent dex ranges
-FeH=FeHfromZ(0.06)
-print FeH
-Z,dZ=ZfromFHe(FeH)
-print Z
-Z,dZ=ZfromFHe(0.62)
-print Z
-exit(0)
-"""
+LABEL_SIZE=20
 
 ############################################################
 #INPUT PARAMETERS
 ############################################################
+#NUMBER OF PARAMETERS
+NPARAM=19
+argvstr=""
+for i in xrange(1,NPARAM+1):argvstr+="%s"%argv[i]
+
+#INPUT MD5 STRING
+MD5IN=md5str(argvstr)
+
+#READ PARAMETERS
 Z=float(argv[1])
 M1=float(argv[2])
 M2=float(argv[3])
@@ -76,16 +77,31 @@ FeH=float(argv[15])
 ep=float(argv[16])
 incrit=argv[17]
 outcrit=argv[18]
+confname=argv[19]
+qsaved=int(argv[20])
 
 if qintegration:qchz=1
 if Z==0:
     Z,dZ=ZfromFHe(FeH)
 
-md5.update("%.4f%.4f%.4f%.4f%.4f%.4f%s%s%s"%(Z,FeH,M1,M2,Pbin,e,incrit,outcrit,zsvec))
-signature_HZ=md5.hexdigest()
+MD5.update("%.4f%.4f%.4f%.4f%.4f%.4f%s%s%s"%(Z,FeH,M1,M2,Pbin,e,incrit,outcrit,zsvec))
+signature_HZ=MD5.hexdigest()
 
 suffix="%.2f%.2f%.3f%.2f-%s"%(M1,M2,e,Pbin,sessid)
 fout=open(TMPDIR+"output-%s.log"%sessid,"w")
+
+SAVEDIR="%s%s/"%(TMPDIR,MD5IN)
+if not path.isdir(SAVEDIR):
+    System("mkdir -p %s;sleep 0.5"%SAVEDIR)
+    fl=open(SAVEDIR+"configuration","w")
+    for arg in argv:
+        fl.write(arg+"\n")
+    fl.close()
+
+if qsaved:
+    if ((not fileexists(SAVEDIR+"tauvec")) and qchz) or ((not fileexists(SAVEDIR+"tvec")) and qintegration):
+        print "Error: you have requested preconfigured results at '%s' that does not exist."%SAVEDIR
+        qsaved=0
 
 ############################################################
 #PLANET PROPERTIES
@@ -400,73 +416,91 @@ def Run():
     #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     #FIND OPTIMUM POINT INSIDE HABITABLE ZONE
     #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    tauvec=np.linspace(0.1,tauM,200)
-    lins=[]
-    louts=[]
-    slins=[]
-    slouts=[]
-    i=0
-    for tau in tauvec:
-        #print "Time: %e"%tau
-        g1e,T1e,R1e,L1e=StellarGTRL(Z,M1,tau)
-        #print "\tStar 1: g,T,R,L=",g1,T1,R1,L1
-        g2e,T2e,R2e,L2e=StellarGTRL(Z,M2,tau)
-        #print "\tStar 2: g,T,R,L=",g2,T2,R2,L2
-        try:
-            lin1e,aE1e,lout1e=HZ2013(L1e,T1e,lin=incrit,lout=outcrit)
-            #print "\tPrimary HZ=",lin1,aE1,lout1
-        except:
-            #print "The most massive star has passed away at tau = %e"%tau
-            break
-        line,aEe,loute=HZbin4(M2/M1,L1e,L2e,T1e,abin,crits=[incrit,outcrit])
-        tausys=tau
-        lins+=[line]
-        louts+=[loute]
-        slins+=[lin1e]
-        slouts+=[lout1e]
-        i+=1
-    tauvec=tauvec[:i]
-    lins=np.array(lins)
-    louts=np.array(louts)
-    print "Maximum age of the system: %.3f"%(tausys)
+    d=0*"\t"
+    print d,"Calculating the continuous Habitable Zone..."
+    if not qsaved:
+        d=1*"\t"
+        print d,"From scratch..."
+        tauvec=np.linspace(0.1,tauM,200)
+        lins=[]
+        louts=[]
+        slins=[]
+        slouts=[]
+        i=0
+        for tau in tauvec:
+            g1e,T1e,R1e,L1e=StellarGTRL(Z,M1,tau)
+            g2e,T2e,R2e,L2e=StellarGTRL(Z,M2,tau)
+            try:
+                lin1e,aE1e,lout1e=HZ2013(L1e,T1e,lin=incrit,lout=outcrit)
+            except:
+                break
+            line,aEe,loute=HZbin4(M2/M1,L1e,L2e,T1e,abin,crits=[incrit,outcrit])
+            tausys=tau
+            lins+=[line]
+            louts+=[loute]
+            slins+=[lin1e]
+            slouts+=[lout1e]
+            i+=1
+        tauvec=tauvec[:i]
+        lins=np.array(lins)
+        louts=np.array(louts)
+        print "Maximum age of the system: %.3f"%(tausys)
  
-    #FIND BINARY CONTINUOUS HABITABLE ZONE
-    dlins=np.log10(lins[1::])-np.log10(lins[:-1:])
-    dlins=np.append([0],dlins)
-    imax=-1
-    epsmax=0
-    dlinold=dlins[-1]
-    for i in arange(10,len(dlins))[::-3]:
-        eps=2*abs(dlins[i]-dlinold)/(dlins[i]+dlinold)
-        #print tauvec[i],eps,epsmax
-        if eps>epsmax:
-            imax=i
-            epsmax=eps
-        dlinold=dlins[i]
-        if tauvec[i]<tausys/2:break
-    lincont=lins[imax]
-    loutcont=min(louts)
+        #FIND BINARY CONTINUOUS HABITABLE ZONE
+        dlins=np.log10(lins[1::])-np.log10(lins[:-1:])
+        dlins=np.append([0],dlins)
+        imax=-1
+        epsmax=0
+        dlinold=dlins[-1]
+        for i in arange(10,len(dlins))[::-3]:
+            eps=2*abs(dlins[i]-dlinold)/(dlins[i]+dlinold)
+            #print tauvec[i],eps,epsmax
+            if eps>epsmax:
+                imax=i
+                epsmax=eps
+            dlinold=dlins[i]
+            if tauvec[i]<tausys/2:break
+        lincont=lins[imax]
+        loutcont=min(louts)
+
+        #FIND SINGLE PRIMARY CONTINUOUS HABITABLE ZONE
+        dslins=np.log10(slins[1::])-np.log10(slins[:-1:])
+        dslins=np.append([0],dslins)
+        imax=-1
+        epsmax=0
+        dlinold=dslins[-1]
+        for i in arange(10,len(dslins))[::-3]:
+            eps=2*abs(dslins[i]-dlinold)/(dslins[i]+dlinold)
+            #print tauvec[i],eps,epsmax
+            if eps>epsmax:
+                imax=i
+                epsmax=eps
+            dlinold=dslins[i]
+            if tauvec[i]<tausys/2:break
+        slincont=slins[imax]
+        sloutcont=min(slouts)
+        
+        #SAVING
+        savetxt(SAVEDIR+"tauvec",tauvec)
+        savetxt(SAVEDIR+"lins",lins)
+        savetxt(SAVEDIR+"louts",louts)
+        savetxt(SAVEDIR+"slins",slins)
+        savetxt(SAVEDIR+"slouts",slouts)
+        savetxt(SAVEDIR+"chz",[tausys,lincont,loutcont,slincont,sloutcont])
+    else:
+        d=1*"\t"
+        print d,"Loading from a saved state..."
+        tauvec=loadtxt(SAVEDIR+"tauvec")
+        lins=loadtxt(SAVEDIR+"lins")
+        louts=loadtxt(SAVEDIR+"louts")
+        slins=loadtxt(SAVEDIR+"slins")
+        slouts=loadtxt(SAVEDIR+"slouts")
+        tausys,lincont,loutcont,slincont,sloutcont=loadtxt(SAVEDIR+"chz")
+
     if lincont<acrit:
         print "Inner edge of CHZ (%.3f) is inside critical distance (%.3f).  Changed."%(lincont,acrit)
         lincont=acrit
     print "Continuous Binary HZ: ",lincont,loutcont
-
-    #FIND SINGLE PRIMARY CONTINUOUS HABITABLE ZONE
-    dslins=np.log10(slins[1::])-np.log10(slins[:-1:])
-    dslins=np.append([0],dslins)
-    imax=-1
-    epsmax=0
-    dlinold=dslins[-1]
-    for i in arange(10,len(dslins))[::-3]:
-        eps=2*abs(dslins[i]-dlinold)/(dslins[i]+dlinold)
-        #print tauvec[i],eps,epsmax
-        if eps>epsmax:
-            imax=i
-            epsmax=eps
-        dlinold=dslins[i]
-        if tauvec[i]<tausys/2:break
-    slincont=slins[imax]
-    sloutcont=min(slouts)
     print "Continuous Single Primary HZ: ",slincont,sloutcont
 
     #PLOT HABITABLE ZONE
@@ -606,14 +640,6 @@ def Run():
     W2=W2o/DAY
     P1=2*pi/W1
     P2=2*pi/W2
-    d="\t"*0
-    print d,"Tidal integration:"
-    if verbose:
-        d="\t"*1
-        print d,"Times: ",tau0,tau1
-        print d,"Time step: %e Gyr (%e s)"%(dt,dt*GYR)
-        print d,"Initial conditions: W: ",W1*DAY,W2*DAY
-        print d,"Initial conditions: P: ",P1/DAY,P2/DAY
 
     i=0
     iper=int(nmax/10)
@@ -658,231 +684,303 @@ def Run():
     q1sync=False
     q2sync=False
     tvecX=[]
-    for tau in tau_vec:
+    
+    d="\t"*0
+    print d,"Tidal integration:"
+    if verbose:
+        d="\t"*1
+        print d,"Times: ",tau0,tau1
+        print d,"Time step: %e Gyr (%e s)"%(dt,dt*GYR)
+        print d,"Initial conditions: W: ",W1*DAY,W2*DAY
+        print d,"Initial conditions: P: ",P1/DAY,P2/DAY
+    if not qsaved:
+        d="\t"*1
+        print d,"Computing from scratch..."
+        for tau in tau_vec:
+            
+            #==============================
+            #INSTANTANEOUS PROPERTIES
+            #==============================
+            g1,T1,R1,L1=StellarGTRL(Z,M1,tau)
+            g2,T2,R2,L2=StellarGTRL(Z,M2,tau)
+            
+            if verbose:
+                d="\t"*1
+                print d,"Tau:",tau
+                d="\t"*2
+                print d,"Stellar radius: ",R1,R2
+                print d,"Stellar luminosity: ",L1,L2
+                
+            #==============================
+            #TIDAL ACCELERATION
+            #==============================
+            acc1_tid=tidalAcceleration(M1,R1,L1,M2,abin,e,nbin/DAY,W1)
+            acc2_tid=tidalAcceleration(M2,R2,L2,M1,abin,e,nbin/DAY,W2)
 
-        #==============================
-        #INSTANTANEOUS PROPERTIES
-        #==============================
-        g1,T1,R1,L1=StellarGTRL(Z,M1,tau)
-        g2,T2,R2,L2=StellarGTRL(Z,M2,tau)
-
-        if verbose:
-            d="\t"*1
-            print d,"Tau:",tau
-            d="\t"*2
-            print d,"Stellar radius: ",R1,R2
-            print d,"Stellar luminosity: ",L1,L2
-
-        #==============================
-        #TIDAL ACCELERATION
-        #==============================
-        acc1_tid=tidalAcceleration(M1,R1,L1,M2,abin,e,nbin/DAY,W1)
-        acc2_tid=tidalAcceleration(M2,R2,L2,M1,abin,e,nbin/DAY,W2)
-
-        acc1_tid_vec+=[acc1_tid]
-        acc2_tid_vec+=[acc2_tid]
-
-        if verbose:
-            d="\t"*2
-            print d,"Tidal acceleration:"
-            d="\t"*3
-            print d,"Main: ",acc1_tid
-            print d,"Secondary: ",acc2_tid
-        
-        #==============================
-        #MASS-LOSS ACCELERATION
-        #==============================
-        #COMPUTE THE EFFECTIVE AGE
-        tau_rot1=tfromProt(P1/DAY,xfit1)
-        tau_rot2=tfromProt(P2/DAY,xfit2)
-        dProtdt1=dtheoProt(tau_rot1,xfit1)*DAY/GYR
-        dProtdt2=dtheoProt(tau_rot2,xfit2)*DAY/GYR
-        acc1_ML=-2*np.pi/P1**2*dProtdt1
-        acc2_ML=-2*np.pi/P2**2*dProtdt2
-
-        acc1_ML_vec+=[acc1_ML]
-        acc2_ML_vec+=[acc2_ML]
-
-        Prot1vec+=[Prot1]
-        Prot2vec+=[Prot1]
-
-        if verbose:
-            d="\t"*2
-            print d,"Mass-loss acceleration 1:"
-            d="\t"*3
-            print d,"Instantaneous rotation:",P1/DAY
-            print d,"Rotational age:",tau_rot1
-            print d,"Time step:",dt
-            print d,"Period derivative:",dProtdt1
-            print d,"Frequency derivative:",acc1_ML
-            d="\t"*2
-            print d,"Mass-loss acceleration 2:"
-            d="\t"*3
-            print d,"Instantaneous rotation:",P2/DAY
-            print d,"Rotational age:",tau_rot1
-            print d,"Time step: %e Gyr (%e s)"%(dt,dt*GYR)
-            print d,"Period derivative:",dProtdt2
-            print d,"Frequency derivative:",acc2_ML
-
-        #==============================
-        #XUV & STELLAR WIND
-        #==============================
-        if not (i%rate_Flux_integrate):
-            #TIME VECTOR
-            tvecX+=[tau]
-
-            #FLUXES (INCLUDING TIDAL INTERACTION)
-            LXUV1=starLXUV(L1,tau_rot1)
-            LXUV2=starLXUV(L2,tau_rot2)
-            FXUVopt=(LXUV1+LXUV2)/(4*np.pi*(loutcont*AU*1E2)**2)/PEL
-            FXUVp=(LXUV1+LXUV2)/(4*np.pi*(ap*AU*1E2)**2)/PEL
-            FXUVin=(LXUV1+LXUV2)/(4*np.pi*(lincont*AU*1E2)**2)/PEL
-            Pswopt,FSWopt=binaryWind(loutcont,tau_rot1,M1,R1,tau_rot2,M2,R2,early=EARLYWIND)
-            Pswp,FSWp=binaryWind(ap,tau_rot1,M1,R1,tau_rot2,M2,R2,early=EARLYWIND)
-            Pswin,FSWin=binaryWind(lincont,tau_rot1,M1,R1,tau_rot2,M2,R2,early=EARLYWIND)
-
-            #FLUXES (NO TIDAL INTERACTION)
-            ntLXUV1=starLXUV(L1,tau)
-            ntLXUV2=starLXUV(L2,tau)
-            ntFXUVopt=(ntLXUV1+ntLXUV2)/(4*np.pi*(loutcont*AU*1E2)**2)/PEL
-            ntFXUVp=(ntLXUV1+ntLXUV2)/(4*np.pi*(ap*AU*1E2)**2)/PEL
-            ntFXUVin=(ntLXUV1+ntLXUV2)/(4*np.pi*(lincont*AU*1E2)**2)/PEL
-            ntPswopt,ntFSWopt=binaryWind(loutcont,tau,M1,R1,tau,M2,R2,early=EARLYWIND)
-            ntPswp,ntFSWp=binaryWind(ap,tau,M1,R1,tau,M2,R2,early=EARLYWIND)
-            ntPswin,ntFSWin=binaryWind(lincont,tau,M1,R1,tau,M2,R2,early=EARLYWIND)
-
-            #FLUXES (SINGLE STAR)
-            sLXUV=starLXUV(L1,tau)
-            sFXUVopt=(sLXUV)/(4*np.pi*(sloutcont*AU*1E2)**2)/PEL
-            sFXUVp=(sLXUV)/(4*np.pi*(ap*AU*1E2)**2)/PEL
-            sFXUVin=(sLXUV)/(4*np.pi*(slincont*AU*1E2)**2)/PEL
-            sPswopt,sFSWopt=binaryWind(sloutcont,tau,M1,R1,-1,-1,-1,early=EARLYWIND)
-            sPswp,sFSWp=binaryWind(ap,tau,M1,R1,-1,-1,-1,early=EARLYWIND)
-            sPswin,sFSWin=binaryWind(slincont,tau,M1,R1,-1,-1,-1,early=EARLYWIND)
-
-            #VECTORS
-            FXUVopt_vec+=[FXUVopt]
-            FXUVp_vec+=[FXUVp]
-            FXUVin_vec+=[FXUVin]
-            ntFXUVopt_vec+=[ntFXUVopt]
-            ntFXUVp_vec+=[ntFXUVp]
-            ntFXUVin_vec+=[ntFXUVin]
-            sFXUVopt_vec+=[sFXUVopt]
-            sFXUVp_vec+=[sFXUVp]
-            sFXUVin_vec+=[sFXUVin]
-
-            FSWopt_vec+=[FSWopt]
-            FSWp_vec+=[FSWp]
-            FSWin_vec+=[FSWin]
-            ntFSWopt_vec+=[ntFSWopt]
-            ntFSWp_vec+=[ntFSWp]
-            ntFSWin_vec+=[ntFSWin]
-            sFSWopt_vec+=[sFSWopt]
-            sFSWp_vec+=[sFSWp]
-            sFSWin_vec+=[sFSWin]
+            acc1_tid_vec+=[acc1_tid]
+            acc2_tid_vec+=[acc2_tid]
             
             if verbose:
                 d="\t"*2
-                print d,"XUV Luminosity:"
+                print d,"Tidal acceleration:"
                 d="\t"*3
-                print d,"Cmponent 1:",LXUV1
-                print d,"Cmponent 2:",LXUV2
-                print d,"Cmponent 1 (no tidal):",ntLXUV1
-                print d,"Cmponent 2 (no tidal):",ntLXUV2
-                print d,"Single Component 1:",sLXUV
-                d="\t"*2
-                print d,"XUV Flux:"
-                d="\t"*3
-                print d,"XUV at Inner CHZ: Binary = %e, Single = %e"%(FXUVopt,sFXUVopt)
-                d="\t"*2
-                print d,"Stellar wind flux:"
-                d="\t"*3
-                print d,"SW Flux at Optimal Distance: Binary = %e, Single = %e"%(FSWopt,sFSWopt)
-
-            if pause:raw_input()
-
-        #==============================
-        #TOTAL ACCELERATION
-        #==============================
-        acc1=acc1_tid+acc1_ML
-        acc2=acc2_tid+acc2_ML
-
-        if verbose:
-            d="\t"*2
-            print d,"Total acceleration:"
-            d="\t"*3
-            print d,"Main: ",acc1
-            print d,"Secondary: ",acc2
+                print d,"Main: ",acc1_tid
+                print d,"Secondary: ",acc2_tid
         
-        acc1_vec+=[acc1]
-        acc2_vec+=[acc2]
+            #==============================
+            #MASS-LOSS ACCELERATION
+            #==============================
+            #COMPUTE THE EFFECTIVE AGE
+            tau_rot1=tfromProt(P1/DAY,xfit1)
+            tau_rot2=tfromProt(P2/DAY,xfit2)
+            dProtdt1=dtheoProt(tau_rot1,xfit1)*DAY/GYR
+            dProtdt2=dtheoProt(tau_rot2,xfit2)*DAY/GYR
+            acc1_ML=-2*np.pi/P1**2*dProtdt1
+            acc2_ML=-2*np.pi/P2**2*dProtdt2
 
-        dW1=acc1*(dt*GYR)
-        dW2=acc2*(dt*GYR)
-
-        if verbose:
-            d="\t"*2
-            print d,"Change in frequency:"
-            d="\t"*3
-            print d,"Main: ",dW1/W1
-            print d,"Secondary: ",dW2/W2
+            acc1_ML_vec+=[acc1_ML]
+            acc2_ML_vec+=[acc2_ML]
             
-        W1+=dW1
-        W2+=dW2
+            Prot1vec+=[Prot1]
+            Prot2vec+=[Prot1]
 
-        P1=2*pi/W1
-        P2=2*pi/W2
+            if verbose:
+                d="\t"*2
+                print d,"Mass-loss acceleration 1:"
+                d="\t"*3
+                print d,"Instantaneous rotation:",P1/DAY
+                print d,"Rotational age:",tau_rot1
+                print d,"Time step:",dt
+                print d,"Period derivative:",dProtdt1
+                print d,"Frequency derivative:",acc1_ML
+                d="\t"*2
+                print d,"Mass-loss acceleration 2:"
+                d="\t"*3
+                print d,"Instantaneous rotation:",P2/DAY
+                print d,"Rotational age:",tau_rot1
+                print d,"Time step: %e Gyr (%e s)"%(dt,dt*GYR)
+                print d,"Period derivative:",dProtdt2
+                print d,"Frequency derivative:",acc2_ML
 
-        tvec+=[tau]
-        P1vec+=[P1/DAY]
-        P2vec+=[P2/DAY]
+             #==============================
+             #XUV & STELLAR WIND
+             #==============================
+            if not (i%rate_Flux_integrate):
+                #TIME VECTOR
+                tvecX+=[tau]
 
-        if verbose:
-            d="\t"*2
-            print d,"New period:"
-            d="\t"*3
-            print d,"Main: ",P1/DAY
-            print d,"Secondary: ",P2/DAY
+                #FLUXES (INCLUDING TIDAL INTERACTION)
+                LXUV1=starLXUV(L1,tau_rot1)
+                LXUV2=starLXUV(L2,tau_rot2)
+                FXUVopt=(LXUV1+LXUV2)/(4*np.pi*(loutcont*AU*1E2)**2)/PEL
+                FXUVp=(LXUV1+LXUV2)/(4*np.pi*(ap*AU*1E2)**2)/PEL
+                FXUVin=(LXUV1+LXUV2)/(4*np.pi*(lincont*AU*1E2)**2)/PEL
+                Pswopt,FSWopt=binaryWind(loutcont,tau_rot1,M1,R1,tau_rot2,M2,R2,early=EARLYWIND)
+                Pswp,FSWp=binaryWind(ap,tau_rot1,M1,R1,tau_rot2,M2,R2,early=EARLYWIND)
+                Pswin,FSWin=binaryWind(lincont,tau_rot1,M1,R1,tau_rot2,M2,R2,early=EARLYWIND)
 
-        if not (i%iper):
-            d="\t"*1
-            print d,"Tau = %e"%tau
-            d="\t"*2
-            print d,"Tidal acceleration: Acc1 = %e, Acc2 = %e"%(acc1_tid,acc2_tid)
-            print d,"Mass-loss acceleration: Acc1 = %e, Acc2 = %e"%(acc1_ML,acc2_ML)
-            print d,"Total acceleration: Acc1 = %e, Acc2 = %e"%(acc1,acc2)
-            print d,"Instantaneous periods: P1 = %.17e, P2 = %.17e"%(P1/DAY,P2/DAY)
-            print d,"Last report:%e"%(tau-tau_rep)
-            tau_rep=tau
-        i+=1
+                #FLUXES (NO TIDAL INTERACTION)
+                ntLXUV1=starLXUV(L1,tau)
+                ntLXUV2=starLXUV(L2,tau)
+                ntFXUVopt=(ntLXUV1+ntLXUV2)/(4*np.pi*(loutcont*AU*1E2)**2)/PEL
+                ntFXUVp=(ntLXUV1+ntLXUV2)/(4*np.pi*(ap*AU*1E2)**2)/PEL
+                ntFXUVin=(ntLXUV1+ntLXUV2)/(4*np.pi*(lincont*AU*1E2)**2)/PEL
+                ntPswopt,ntFSWopt=binaryWind(loutcont,tau,M1,R1,tau,M2,R2,early=EARLYWIND)
+                ntPswp,ntFSWp=binaryWind(ap,tau,M1,R1,tau,M2,R2,early=EARLYWIND)
+                ntPswin,ntFSWin=binaryWind(lincont,tau,M1,R1,tau,M2,R2,early=EARLYWIND)
 
-    acc1_tid_vec=np.array(acc1_tid_vec)
-    acc1_ML_vec=np.array(acc1_ML_vec)
-    acc1_vec=np.array(acc1_vec)
-    acc2_tid_vec=np.array(acc2_tid_vec)
-    acc2_ML_vec=np.array(acc2_ML_vec)
-    acc2_vec=np.array(acc2_vec)
+                #FLUXES (SINGLE STAR)
+                sLXUV=starLXUV(L1,tau)
+                sFXUVopt=(sLXUV)/(4*np.pi*(sloutcont*AU*1E2)**2)/PEL
+                sFXUVp=(sLXUV)/(4*np.pi*(ap*AU*1E2)**2)/PEL
+                sFXUVin=(sLXUV)/(4*np.pi*(slincont*AU*1E2)**2)/PEL
+                sPswopt,sFSWopt=binaryWind(sloutcont,tau,M1,R1,-1,-1,-1,early=EARLYWIND)
+                sPswp,sFSWp=binaryWind(ap,tau,M1,R1,-1,-1,-1,early=EARLYWIND)
+                sPswin,sFSWin=binaryWind(slincont,tau,M1,R1,-1,-1,-1,early=EARLYWIND)
 
-    FXUVopt_vec=np.array(FXUVopt_vec)
-    FXUVp_vec=np.array(FXUVp_vec)
-    FXUVin_vec=np.array(FXUVin_vec)
-    ntFXUVopt_vec=np.array(ntFXUVopt_vec)
-    ntFXUVp_vec=np.array(ntFXUVp_vec)
-    ntFXUVin_vec=np.array(ntFXUVin_vec)
-    sFXUVopt_vec=np.array(sFXUVopt_vec)
-    sFXUVp_vec=np.array(sFXUVp_vec)
-    sFXUVin_vec=np.array(sFXUVin_vec)
+                #VECTORS
+                FXUVopt_vec+=[FXUVopt]
+                FXUVp_vec+=[FXUVp]
+                FXUVin_vec+=[FXUVin]
+                ntFXUVopt_vec+=[ntFXUVopt]
+                ntFXUVp_vec+=[ntFXUVp]
+                ntFXUVin_vec+=[ntFXUVin]
+                sFXUVopt_vec+=[sFXUVopt]
+                sFXUVp_vec+=[sFXUVp]
+                sFXUVin_vec+=[sFXUVin]
+                
+                FSWopt_vec+=[FSWopt]
+                FSWp_vec+=[FSWp]
+                FSWin_vec+=[FSWin]
+                ntFSWopt_vec+=[ntFSWopt]
+                ntFSWp_vec+=[ntFSWp]
+                ntFSWin_vec+=[ntFSWin]
+                sFSWopt_vec+=[sFSWopt]
+                sFSWp_vec+=[sFSWp]
+                sFSWin_vec+=[sFSWin]
+            
+                if verbose:
+                    d="\t"*2
+                    print d,"XUV Luminosity:"
+                    d="\t"*3
+                    print d,"Cmponent 1:",LXUV1
+                    print d,"Cmponent 2:",LXUV2
+                    print d,"Cmponent 1 (no tidal):",ntLXUV1
+                    print d,"Cmponent 2 (no tidal):",ntLXUV2
+                    print d,"Single Component 1:",sLXUV
+                    d="\t"*2
+                    print d,"XUV Flux:"
+                    d="\t"*3
+                    print d,"XUV at Inner CHZ: Binary = %e, Single = %e"%(FXUVopt,sFXUVopt)
+                    d="\t"*2
+                    print d,"Stellar wind flux:"
+                    d="\t"*3
+                    print d,"SW Flux at Optimal Distance: Binary = %e, Single = %e"%(FSWopt,sFSWopt)
+                    
+                if pause:raw_input()
+
+            #==============================
+            #TOTAL ACCELERATION
+            #==============================
+            acc1=acc1_tid+acc1_ML
+            acc2=acc2_tid+acc2_ML
+
+            if verbose:
+                d="\t"*2
+                print d,"Total acceleration:"
+                d="\t"*3
+                print d,"Main: ",acc1
+                print d,"Secondary: ",acc2
+        
+            acc1_vec+=[acc1]
+            acc2_vec+=[acc2]
+
+            dW1=acc1*(dt*GYR)
+            dW2=acc2*(dt*GYR)
+
+            if verbose:
+                d="\t"*2
+                print d,"Change in frequency:"
+                d="\t"*3
+                print d,"Main: ",dW1/W1
+                print d,"Secondary: ",dW2/W2
+            
+            W1+=dW1
+            W2+=dW2
+
+            P1=2*pi/W1
+            P2=2*pi/W2
+
+            tvec+=[tau]
+            P1vec+=[P1/DAY]
+            P2vec+=[P2/DAY]
+
+            if verbose:
+                d="\t"*2
+                print d,"New period:"
+                d="\t"*3
+                print d,"Main: ",P1/DAY
+                print d,"Secondary: ",P2/DAY
+                
+            if not (i%iper):
+                d="\t"*1
+                print d,"Tau = %e"%tau
+                d="\t"*2
+                print d,"Tidal acceleration: Acc1 = %e, Acc2 = %e"%(acc1_tid,acc2_tid)
+                print d,"Mass-loss acceleration: Acc1 = %e, Acc2 = %e"%(acc1_ML,acc2_ML)
+                print d,"Total acceleration: Acc1 = %e, Acc2 = %e"%(acc1,acc2)
+                print d,"Instantaneous periods: P1 = %.17e, P2 = %.17e"%(P1/DAY,P2/DAY)
+                print d,"Last report:%e"%(tau-tau_rep)
+                tau_rep=tau
+            i+=1
+
+        acc1_tid_vec=np.array(acc1_tid_vec)
+        acc1_ML_vec=np.array(acc1_ML_vec)
+        acc1_vec=np.array(acc1_vec)
+        acc2_tid_vec=np.array(acc2_tid_vec)
+        acc2_ML_vec=np.array(acc2_ML_vec)
+        acc2_vec=np.array(acc2_vec)
+        
+        FXUVopt_vec=np.array(FXUVopt_vec)
+        FXUVp_vec=np.array(FXUVp_vec)
+        FXUVin_vec=np.array(FXUVin_vec)
+        ntFXUVopt_vec=np.array(ntFXUVopt_vec)
+        ntFXUVp_vec=np.array(ntFXUVp_vec)
+        ntFXUVin_vec=np.array(ntFXUVin_vec)
+        sFXUVopt_vec=np.array(sFXUVopt_vec)
+        sFXUVp_vec=np.array(sFXUVp_vec)
+        sFXUVin_vec=np.array(sFXUVin_vec)
+        
+        FSWopt_vec=np.array(FSWopt_vec)
+        FSWp_vec=np.array(FSWp_vec)
+        FSWin_vec=np.array(FSWin_vec)
+        ntFSWopt_vec=np.array(ntFSWopt_vec)
+        ntFSWp_vec=np.array(ntFSWp_vec)
+        ntFSWin_vec=np.array(ntFSWin_vec)
+        sFSWopt_vec=np.array(sFSWopt_vec)
+        sFSWp_vec=np.array(sFSWp_vec)
+        sFSWin_vec=np.array(sFSWin_vec)
+
+        savetxt(SAVEDIR+"tvec",tvec)
+        savetxt(SAVEDIR+"P1vec",P1vec)
+        savetxt(SAVEDIR+"P2vec",P2vec)
+        savetxt(SAVEDIR+"acc1_tid_vec",acc1_tid_vec)
+        savetxt(SAVEDIR+"acc2_tid_vec",acc2_tid_vec)
+        savetxt(SAVEDIR+"acc1_ML_vec",acc1_ML_vec)
+        savetxt(SAVEDIR+"acc2_ML_vec",acc2_ML_vec)
+        savetxt(SAVEDIR+"acc1_vec",acc1_vec)
+        savetxt(SAVEDIR+"acc2_vec",acc2_vec)
+        savetxt(SAVEDIR+"tvecX",tvecX)
+        savetxt(SAVEDIR+"FXUVopt_vec",FXUVopt_vec)
+        savetxt(SAVEDIR+"FXUVp_vec",FXUVp_vec)
+        savetxt(SAVEDIR+"FXUVin_vec",FXUVin_vec)
+        savetxt(SAVEDIR+"ntFXUVopt_vec",ntFXUVopt_vec)
+        savetxt(SAVEDIR+"ntFXUVp_vec",ntFXUVp_vec)
+        savetxt(SAVEDIR+"ntFXUVin_vec",ntFXUVin_vec)
+        savetxt(SAVEDIR+"sFXUVopt_vec",sFXUVopt_vec)
+        savetxt(SAVEDIR+"sFXUVp_vec",sFXUVp_vec)
+        savetxt(SAVEDIR+"sFXUVin_vec",sFXUVin_vec)
+        savetxt(SAVEDIR+"FSWopt_vec",FSWopt_vec)
+        savetxt(SAVEDIR+"FSWp_vec",FSWp_vec)
+        savetxt(SAVEDIR+"FSWin_vec",FSWin_vec)
+        savetxt(SAVEDIR+"ntFSWopt_vec",ntFSWopt_vec)
+        savetxt(SAVEDIR+"ntFSWp_vec",ntFSWp_vec)
+        savetxt(SAVEDIR+"ntFSWin_vec",ntFSWin_vec)
+        savetxt(SAVEDIR+"sFSWopt_vec",sFSWopt_vec)
+        savetxt(SAVEDIR+"sFSWp_vec",sFSWp_vec)
+        savetxt(SAVEDIR+"sFSWin_vec",sFSWin_vec)
+    else:
+        d="\t"*1
+        print d,"Loading from files..."
+        tvec=loadtxt(SAVEDIR+"tvec")
+        P1vec=loadtxt(SAVEDIR+"P1vec")
+        P2vec=loadtxt(SAVEDIR+"P2vec")
+        acc1_tid_vec=loadtxt(SAVEDIR+"acc1_tid_vec")
+        acc2_tid_vec=loadtxt(SAVEDIR+"acc2_tid_vec")
+        acc1_ML_vec=loadtxt(SAVEDIR+"acc1_ML_vec")
+        acc2_ML_vec=loadtxt(SAVEDIR+"acc2_ML_vec")
+        acc1_vec=loadtxt(SAVEDIR+"acc1_vec")
+        acc2_vec=loadtxt(SAVEDIR+"acc2_vec")
+        tvecX=loadtxt(SAVEDIR+"tvecX")
+        FXUVopt_vec=loadtxt(SAVEDIR+"FXUVopt_vec")
+        FXUVp_vec=loadtxt(SAVEDIR+"FXUVp_vec")
+        FXUVin_vec=loadtxt(SAVEDIR+"FXUVin_vec")
+        ntFXUVopt_vec=loadtxt(SAVEDIR+"ntFXUVopt_vec")
+        ntFXUVp_vec=loadtxt(SAVEDIR+"ntFXUVp_vec")
+        ntFXUVin_vec=loadtxt(SAVEDIR+"ntFXUVin_vec")
+        sFXUVopt_vec=loadtxt(SAVEDIR+"sFXUVopt_vec")
+        sFXUVp_vec=loadtxt(SAVEDIR+"sFXUVp_vec")
+        sFXUVin_vec=loadtxt(SAVEDIR+"sFXUVin_vec")
+        FSWopt_vec=loadtxt(SAVEDIR+"FSWopt_vec")
+        FSWp_vec=loadtxt(SAVEDIR+"FSWp_vec")
+        FSWin_vec=loadtxt(SAVEDIR+"FSWin_vec")
+        ntFSWopt_vec=loadtxt(SAVEDIR+"ntFSWopt_vec")
+        ntFSWp_vec=loadtxt(SAVEDIR+"ntFSWp_vec")
+        ntFSWin_vec=loadtxt(SAVEDIR+"ntFSWin_vec")
+        sFSWopt_vec=loadtxt(SAVEDIR+"sFSWopt_vec")
+        sFSWp_vec=loadtxt(SAVEDIR+"sFSWp_vec")
+        sFSWin_vec=loadtxt(SAVEDIR+"sFSWin_vec")
     
-    FSWopt_vec=np.array(FSWopt_vec)
-    FSWp_vec=np.array(FSWp_vec)
-    FSWin_vec=np.array(FSWin_vec)
-    ntFSWopt_vec=np.array(ntFSWopt_vec)
-    ntFSWp_vec=np.array(ntFSWp_vec)
-    ntFSWin_vec=np.array(ntFSWin_vec)
-    sFSWopt_vec=np.array(sFSWopt_vec)
-    sFSWp_vec=np.array(sFSWp_vec)
-    sFSWin_vec=np.array(sFSWin_vec)
-
     #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
     #PLOT XUV (PEL)
     #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
@@ -906,7 +1004,7 @@ def Run():
     ymax=max(max(FXUVopt_vec),max(FXUVin_vec),max(FXUVp_vec),max(sFXUVopt_vec),max(sFXUVin_vec))
     plt.ylim((ymin,ymax))
     #plt.axhline(1,linestyle='--',color='k')
-    plt.xlabel(r"$t$ (Gyr)")
+    plt.xlabel(r"$t$ (Gyr)",fontsize=LABEL_SIZE)
     plt.ylabel(r"$F_{\rm XUV} ({\rm PEL})$")
     plt.legend(loc='best',prop=dict(size=10))
     plt.title(titlebin,position=(0.5,1.02))

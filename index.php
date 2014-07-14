@@ -16,6 +16,16 @@ if($out=="urania"){
   $DIR="/var/www/$WEBDIR";
 }
 
+function selectFunction($list,$name,$value){
+  return 0;
+}
+
+
+function checkFunction($name,$value){
+  return 0;
+}
+
+
 function access($referer){
   global $DIR,$WEBDIR;
 
@@ -71,6 +81,7 @@ $tau=1.0;
 $tautot=2.0;
 $incrit='recent venus';
 $outcrit='early mars';
+$confname='Configuration';
 
 //////////////////////////////////////////////////////////////////////////////////
 //COMMON
@@ -106,7 +117,7 @@ if(isset($submit) and !isset($back)){
 
   if(!isset($stat) and !isset($back)){access("run");}
   if(!isset($reload)){
-  $cmd="$PYTHONCMD BHMcalc.py $Z $M1 $M2 $e $Pbin $tau $Mp $ap $tautot $qintegration $sessid $zsvec $qchz $earlywind $FeH $ep '$incrit' '$outcrit' &> tmp/fulloutput-$sessid.log";
+  $cmd="$PYTHONCMD BHMcalc.py $Z $M1 $M2 $e $Pbin $tau $Mp $ap $tautot $qintegration $sessid $zsvec $qchz $earlywind $FeH $ep \"$incrit\" \"$outcrit\" \"$confname\" $qsaved &> tmp/fulloutput-$sessid.log";
   exec($cmd,$output,$status); 
   shell_exec("echo '$cmd' > tmp/cmd-$sessid.log");
   $qreload="reload&$qstring";
@@ -358,6 +369,22 @@ about the stellar wind before &tau;<0.7 Gyr.  Some observations
 suggest there is a saturation on magnetic activity before that.
 Select which type of behavior do you want to simulate.</i><br/><br/>
 
+Configuration name: 
+<input type='text' name='confname' value='$confname'><br/>
+
+<i style="font-size:12px">Save a configuration with a given name. Do
+not modify if you don't need this option.</i><br/><br/>
+
+Do you want to retrieve any previous result: 
+<select name="qsaved">
+<option value="1" selected>Yes</option>
+<option value="0">No</option>
+</select><br/>
+
+<i style="font-size:12px">Use this option to load results from a
+previous calculation performed with exactly the same
+parameters.</i><br/><br/>
+
 <input type="submit" name="submit" value="submit">
 
 CONTENT;
@@ -388,7 +415,7 @@ echo<<<CONTENT
 
 <i style="font-size:10pt">
 Developed by Jorge Zuluaga (2014), Viva la BHM!. <br/> 
-Last update: 30-April-2014 (Jorge Zuluaga)<br/>
+Last update: 14-July-2014 (Jorge Zuluaga)<br/>
 Please cite: Mason, P. A., Zuluaga, J. I., Clark, J. M., &
 Cuartas-Restrepo, P. A. (2013). Rotational Synchronization May Enhance
 Habitability for Circumbinary Planets: Kepler Binary Case Studies. The
