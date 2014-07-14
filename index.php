@@ -7,10 +7,14 @@ $sessid=session_id();
 echo "<P STYLE=font-size:12px>Session $sessid</P>";
 
 $PYTHONCMD="MPLCONFIGDIR=/tmp python";
-//$WEBDIR="facom/pages/binary-habitability.rs/files/binary-habitabilitygovwk/.Interactive/BHMcalc";
-$WEBDIR="BHMcalc";
-//$DIR="/websites/sitios/$WEBDIR";
-$DIR="/var/www/$WEBDIR";
+$out=shell_exec("hostname");
+if($out=="urania"){
+  $WEBDIR="facom/pages/binary-habitability.rs/files/binary-habitabilitygovwk/.Interactive/BHMcalc";
+  $DIR="/websites/sitios/$WEBDIR";
+}else{
+  $WEBDIR="BHMcalc";
+  $DIR="/var/www/$WEBDIR";
+}
 
 function access($referer){
   global $DIR,$WEBDIR;
