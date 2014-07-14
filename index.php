@@ -7,8 +7,10 @@ $sessid=session_id();
 echo "<P STYLE=font-size:12px>Session $sessid</P>";
 
 $PYTHONCMD="MPLCONFIGDIR=/tmp python";
-$WEBDIR="facom/pages/binary-habitability.rs/files/binary-habitabilitygovwk/.Interactive/BHMcalc";
-$DIR="/websites/sitios/$WEBDIR";
+//$WEBDIR="facom/pages/binary-habitability.rs/files/binary-habitabilitygovwk/.Interactive/BHMcalc";
+$WEBDIR="BHMcalc";
+//$DIR="/websites/sitios/$WEBDIR";
+$DIR="/var/www/$WEBDIR";
 
 function access($referer){
   global $DIR,$WEBDIR;
@@ -100,7 +102,7 @@ if(isset($submit) and !isset($back)){
 
   if(!isset($stat) and !isset($back)){access("run");}
   if(!isset($reload)){
-  $cmd="$PYTHONCMD BHMcalc.py $Z $M1 $M2 $e $Pbin $tau $Mp $ap $tautot $qintegration $sessid $zsvec $qchz $earlywind $FeH $ep $incrit $outcrit &> tmp/fulloutput-$sessid.log";
+  $cmd="$PYTHONCMD BHMcalc.py $Z $M1 $M2 $e $Pbin $tau $Mp $ap $tautot $qintegration $sessid $zsvec $qchz $earlywind $FeH $ep '$incrit' '$outcrit' &> tmp/fulloutput-$sessid.log";
   exec($cmd,$output,$status); 
   shell_exec("echo '$cmd' > tmp/cmd-$sessid.log");
   $qreload="reload&$qstring";
