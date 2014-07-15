@@ -55,7 +55,9 @@ TICS_SIZE=12
 #NUMBER OF PARAMETERS
 NPARAM=19
 argvstr=""
-for i in xrange(1,NPARAM+1):argvstr+="%s"%argv[i]
+for i in xrange(1,NPARAM+1):
+    if i==11 or i==19:continue
+    argvstr+="%s"%argv[i]
 
 #INPUT MD5 STRING
 MD5IN=md5str(argvstr)
@@ -93,12 +95,13 @@ suffix="%.2f%.2f%.3f%.2f-%s"%(M1,M2,e,Pbin,sessid)
 fout=open(TMPDIR+"output-%s.log"%sessid,"w")
 print>>fout,"%s"%MD5IN
 
-SAVEDIR="%s%s/"%(TMPDIR,MD5IN)
+SAVEDIR="%s/conf-%s/"%(TMPDIR,MD5IN)
 if not path.isdir(SAVEDIR):
     System("mkdir -p %s;sleep 0.5"%SAVEDIR)
     fl=open(SAVEDIR+"configuration","w")
     for arg in argv:
         fl.write(arg+"\n")
+    fl.write("%s\n"%argvstr);
     fl.close()
 
 if qsaved:

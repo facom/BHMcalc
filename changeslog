@@ -28,3 +28,13 @@ Changes log:
     corresponding to the planet around the single-primary case.  This
     is for comparison purposes with the Earth.
 
+- 15 July 2014, 05:30:00 UTC-5: Jorge I. Zuluaga
+
+  + Configurations can be saved.
+  
+  + Form remeber options.
+
+  + xlabel, xtics and legends increased.
+
+  + Calculations are not repeated if they were already performed
+

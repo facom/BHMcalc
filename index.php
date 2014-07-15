@@ -97,6 +97,7 @@ $confname='Configuration';
 $zsvec="ZSVEC_siblings";
 $earlywind="trend";
 $qsaved=1;
+$preconf="0";
 
 //////////////////////////////////////////////////////////////////////////////////
 //COMMON
@@ -123,6 +124,37 @@ if(isset($submit) and !isset($back)){
     fwrite($fc,"$field=$value\n");
   }
   fclose($fc);
+
+  //CHECK PRECONFIGURATION
+  if($preconf!="0"){
+    //echo "Configuration loaded: $preconf.<br/>";
+    $configuration=file("tmp/conf-$preconf/configuration");
+    //print_r($configuration);
+    $i=1;
+    $Z=rtrim($configuration[$i++]);
+    $M1=rtrim($configuration[$i++]); 
+    $M2=rtrim($configuration[$i++]); 
+    $e=rtrim($configuration[$i++]);
+    $Pbin=rtrim($configuration[$i++]);
+    $tau=rtrim($configuration[$i++]);
+    $Mp=rtrim($configuration[$i++]);
+    $ap=rtrim($configuration[$i++]);
+    $tautot=rtrim($configuration[$i++]);
+    $qintegration=rtrim($configuration[$i++]);
+    $i++;
+    //$sessid=rtrim($configuration[$i++]);
+    $zsvec=rtrim($configuration[$i++]);
+    $qchz=rtrim($configuration[$i++]);
+    $earlywind=rtrim($configuration[$i++]); 
+    $FeH=rtrim($configuration[$i++]);
+    $ep=rtrim($configuration[$i++]);
+    $incrit=rtrim($configuration[$i++]);
+    $outcrit=rtrim($configuration[$i++]);
+    $i++;
+    //$confname=rtrim($configuration[$i++]);
+    $qsaved=rtrim($configuration[$i++]);
+    $qstring="?preconf=0&Z=$Z&M1=$M1&M2=$M2&e=$e&Pbin=$Pbin&tau=$tau&Mp=$Mp&ap=$ap&tautot=$tautot&qintegration=$qintegration&zsvec=$zsvec&qchz=$qchz&earlywind=$earlywind&FeH=$FeH&ep=$ep&incrit=$incrit&outcrit=$outcrit&confname=$confname&qsaved=$qsaved";
+  }
   
   if(!preg_match("/\w+/",$qintegration)){$qintegration=0;}
   else{$qintegration=1;}
@@ -133,6 +165,8 @@ if(isset($submit) and !isset($back)){
   if(!isset($stat) and !isset($back)){access("run");}
   if(!isset($reload)){
   $cmd="$PYTHONCMD BHMcalc.py $Z $M1 $M2 $e $Pbin $tau $Mp $ap $tautot $qintegration $sessid $zsvec $qchz $earlywind $FeH $ep \"$incrit\" \"$outcrit\" \"$confname\" $qsaved &> tmp/fulloutput-$sessid.log";
+  //echo "<p>$cmd</p>";return;
+
   exec($cmd,$output,$status); 
   shell_exec("echo '$cmd' > tmp/cmd-$sessid.log");
   $qreload="reload&$qstring";
@@ -309,6 +343,30 @@ CONTENT;
 //////////////////////////////////////////////////////////////////////////////////
    if(!isset($stat) and !isset($back)){access("access");}
 
+   $out=shell_exec("ls -md tmp/conf-*");
+   $confs=preg_split("/\s*,\s*/",$out);
+   $PRECONFS=array();
+   $NUMCONFS=array();
+   $NAMECONFS=array();
+   foreach($confs as $conf){
+     $conf=rtrim($conf);
+     $parts=preg_split("/-/",$conf);
+     $md5in=$parts[1];
+     $name=rtrim(shell_exec("tail -n 3 $conf/configuration | head -n 1"));
+     if(preg_match("/Configuration/",$name)){continue;}
+     if(isset($NAMECONFS["$name"])){
+       $NUMCONFS["$name"]++;
+       $num=$NUMCONFS["$name"];
+       $PRECONFS["$md5in"]="$name $num";
+     }else{
+       $NUMCONFS["$name"]=1;
+       $PRECONFS["$md5in"]="$name";
+       $NAMECONFS["$name"]=1;
+     }
+   }
+   $PRECONFS["0"]="--";
+   $confsel=selectFunction("preconf",$PRECONFS,$preconf);
+
    $ZSVEC=array("ZSVEC_full"=>"Full (35 metallicities, 0.0001-0.06, [Fe/H] -2.30 to 0.62)",
 	       "ZSVEC_coarse"=>"Coarse (10 values, 0.0001-0.06, [Fe/H] -2.30 to 0.62)",
 	       "ZSVEC_siblings"=>"Near solar (3 values , 0.01-0.02, [Fe/H] -0.197 to 0.117)");
@@ -325,6 +383,8 @@ CONTENT;
 
 echo<<<CONTENT
 <H2>Input Data</H2>
+
+  Previous calculated configurations: $confsel<br/>
 
 <input type="submit" name="submit" value="submit">
 
