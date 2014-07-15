@@ -1031,12 +1031,12 @@ def Run():
     #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
     SWPEL=NSUN*VSUN
     plt.figure();ifig=0
-    plt.plot(tvecX,FSWopt_vec/SWPEL,'b-',label='SW with BHM @ Outer CHZ')
+    plt.plot(tvecX,FSWopt_vec/SWPEL,'b-',label='SW BHM @ Outer CHZ')
     #plt.plot(tvecX,FSWp_vec/SWPEL,'k-',linewidth=2,label=r'SW w. BHM @ $a = %.2f\,\rm{AU}$'%ap)
-    plt.plot(tvecX,FSWin_vec/SWPEL,'r-',label='SW with BHM @ Inner CHZ')
-    plt.plot(tvecX,ntFSWopt_vec/SWPEL,'b--',label='SW without BHM @ Outer CHZ')
+    plt.plot(tvecX,FSWin_vec/SWPEL,'r-',label='SW BHM @ Inner CHZ')
+    plt.plot(tvecX,ntFSWopt_vec/SWPEL,'b--',label='SW no BHM @ Outer CHZ')
     #plt.plot(tvecX,ntFSWp_vec/SWPEL,'k--',linewidth=2)
-    plt.plot(tvecX,ntFSWin_vec/SWPEL,'r--',label='SW without BHM @ Inner CHZ',linewidth=2)
+    plt.plot(tvecX,ntFSWin_vec/SWPEL,'r--',label='SW no BHM @ Inner CHZ',linewidth=2)
     plt.plot(tvecX,sFSWopt_vec/SWPEL,'b:',label='Single primary @ Outer CHZ',linewidth=1)
     #plt.plot(tvecX,sFSWp_vec/SWPEL,'k-.',linewidth=1)
     plt.plot(tvecX,sFSWin_vec/SWPEL,'r:',label='Single primary @ Inner CHZ',linewidth=1)
@@ -1053,7 +1053,7 @@ def Run():
     #plt.axhline(1,linestyle='--',color='k')
     plt.xlabel(r"$t$ (Gyr)",fontsize=16)
     plt.ylabel(r"$F_{\rm SW} ({\rm SW.PEL})$",fontsize=16)
-    plt.legend(loc='best',prop=dict(size=14))
+    plt.legend(loc='best',prop=dict(size=12))
     plt.title(titlebin,position=(0.5,1.02))
     saveFig(TMPDIR+"/FluxSW-%s.png"%suffix)
 
