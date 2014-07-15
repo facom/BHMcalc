@@ -546,6 +546,8 @@ def Run():
     plt.plot(tauvec,louts,'b-',linewidth=2,label=outcrit)
     plt.plot(tauvec,slins,'r--',linewidth=2)
     plt.plot(tauvec,slouts,'b--',linewidth=2)
+    plt.xticks(fontsize=TICS_SIZE)
+    plt.yticks(fontsize=TICS_SIZE)
     plt.plot([],[],'k--',linewidth=3,label='Single primary HZ limits')
 
     plt.yscale('log')
