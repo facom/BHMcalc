@@ -515,7 +515,7 @@ def Run():
     #PLOT HABITABLE ZONE
     fig=plt.figure();ifig=0
 
-    plt.axhline(loutcont,color='k',linewidth=3)
+    plt.axhline(loutcont,color='k',linewidth=1)
     plt.axhline(lincont,color='k',linewidth=1)
     plt.plot([],[],'k-',linewidth=3)
     plt.axhspan(lincont,loutcont,color='k',alpha=0.3)
