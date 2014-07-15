@@ -16,13 +16,25 @@ if($out=="urania"){
   $DIR="/var/www/$WEBDIR";
 }
 
-function selectFunction($list,$name,$value){
-  return 0;
+function selectFunction($name,$selection,$defvalue){
+$sel=<<<SELECT
+  <select name="$name">
+SELECT;
+ foreach(array_keys($selection) as $value){
+   $option=$selection[$value];
+   $selected="";
+   if($value=="$defvalue"){$selected="selected";}
+   $sel.="<option value='$value' $selected>$option\n";
+ }
+ $sel.="</select>";
+ return $sel;
 }
 
-
 function checkFunction($name,$value){
-  return 0;
+  $checked="";
+  if($value=="on" or $value==1){$checked="checked";}
+  $check="<input type='checkbox' name='$name' $checked>";
+  return $check;
 }
 
 
@@ -82,6 +94,9 @@ $tautot=2.0;
 $incrit='recent venus';
 $outcrit='early mars';
 $confname='Configuration';
+$zsvec="ZSVEC_siblings";
+$earlywind="trend";
+$qsaved=1;
 
 //////////////////////////////////////////////////////////////////////////////////
 //COMMON
@@ -109,9 +124,9 @@ if(isset($submit) and !isset($back)){
   }
   fclose($fc);
   
-  if(!preg_match("/\w/",$qintegration)){$qintegration=0;}
+  if(!preg_match("/\w+/",$qintegration)){$qintegration=0;}
   else{$qintegration=1;}
-  if(!preg_match("/\w/",$qchz)){$qchz=0;}
+  if(!preg_match("/\w+/",$qchz)){$qchz=0;}
   else{$qchz=1;}
   if($qintegration){$qchz=1;}
 
@@ -144,6 +159,7 @@ if(isset($submit) and !isset($back)){
 
   //BASIC INFORMATION ON THE SYSTEM
   $i=0;
+  $md5inp=$parts[$i++];
   $g1=$parts[$i++];$T1=$parts[$i++];$R1=$parts[$i++];$L1=$parts[$i++];
   $Rmin1=$parts[$i++];$Rmax1=$parts[$i++];$Pini1=$parts[$i++];$Prot1=$parts[$i++];
   $lin1=$parts[$i++];$aE1=$parts[$i++];$aHZ1=$parts[$i++];$lout1=$parts[$i++];
@@ -165,6 +181,8 @@ if(isset($submit) and !isset($back)){
 
 echo<<<CONTENT
 <H2>Input</H2>
+<B>Input signature</b>:</td><td>$md5inp
+<p></p>
 <table>
   <tr><td>Z:</td><td>$Z</td></tr>
   <tr><td>[Fe/H]:</td><td>$FeH</td></tr>
@@ -229,8 +247,8 @@ echo<<<CONTENT
 <H3>Continuous Habitable Zone</H3>
 <table>
   <tr><td>&tau;<sub>sys</sub>:</td><td>$tsys Gyr</td></tr>
-  <tr><td>CHZ:</td><td>[$lincont,$loutcont] AU</td></tr>
-  <tr><td>CHZ single-primary:</td><td>[$lincont,$loutcont] AU</td></tr>
+  <tr><td>CHZ binary:</td><td>[$lincont,$loutcont] AU</td></tr>
+  <tr><td>CHZ single-primary:</td><td>[$slincont,$sloutcont] AU</td></tr>
 </table>
 <a href="tmp/HZevol-$suffix.png.txt" target="_blank"><img src="tmp/HZevol-$suffix.png"></a><br/>
 CONTENT;
@@ -291,6 +309,20 @@ CONTENT;
 //////////////////////////////////////////////////////////////////////////////////
    if(!isset($stat) and !isset($back)){access("access");}
 
+   $ZSVEC=array("ZSVEC_full"=>"Full (35 metallicities, 0.0001-0.06, [Fe/H] -2.30 to 0.62)",
+	       "ZSVEC_coarse"=>"Coarse (10 values, 0.0001-0.06, [Fe/H] -2.30 to 0.62)",
+	       "ZSVEC_siblings"=>"Near solar (3 values , 0.01-0.02, [Fe/H] -0.197 to 0.117)");
+   $zsel=selectFunction("zsvec",$ZSVEC,$zsvec);
+
+   $EARLYWIND=array("trend"=>"Trending","constant"=>"Constant");
+   $ewsel=selectFunction("earlywind",$EARLYWIND,$earlywind);
+
+   $YESNO=array("1"=>"Yes","0"=>"No");
+   $savedsel=selectFunction("qsaved",$YESNO,$qsaved);
+
+   $check_qchz=checkFunction("qchz",$qchz);
+   $check_qintegration=checkFunction("qintegration",$qintegration);
+
 echo<<<CONTENT
 <H2>Input Data</H2>
 
@@ -339,30 +371,22 @@ e<sub>p</sub> : <input type="text" name="ep" value="$ep"><br/>
 
 <H3>Continuous Habitable Zone (CHZ, Optional)</H3>
 
-Compute the continuous HZ:<input type="checkbox" name="qchz"><br/>
+Compute the continuous HZ:$check_qchz<br/>
 
 <H3>Integration (optional)</H3>
 
-Integrate:<input type="checkbox" name="qintegration"><br/>
+Integrate:$check_qintegration<br/>
 
 Total integration time : <input type="text" name="tautot" value="$tautot"> Gyr<br/>
 <i style="font-size:12px">Values must be between 0.01 and 12.5 Gyr</i><br/><br/>
 
 <H3>Behavior</H3>
 
-Set of isochrones : 
-<select name="zsvec">
-  <option value="ZSVEC_full">Full (35 metallicities, 0.0001-0.06, [Fe/H] -2.30 to 0.62)</option>
-  <option value="ZSVEC_coarse">Coarse (10 values, 0.0001-0.06, [Fe/H] -2.30 to 0.62)</option>
-  <option value="ZSVEC_siblings" selected>Near solar (3 values , 0.01-0.02, [Fe/H] -0.197 to 0.117)</option>
-</select><br/>
+Set of isochrones : $zsel<br/>
 <i style="font-size:12px">It could reduce considerably the execution time.</i><br/><br/>
 
-Type of early stellar wind : 
-<select name="earlywind">
-<option value="trend" selected>Trending</option>
-<option value="constant">Constant</option>
-</select><br/>
+Type of early stellar wind : $ewsel
+<br/>
 
 <i style="font-size:12px">Observations does not provide us information
 about the stellar wind before &tau;<0.7 Gyr.  Some observations
@@ -375,11 +399,7 @@ Configuration name:
 <i style="font-size:12px">Save a configuration with a given name. Do
 not modify if you don't need this option.</i><br/><br/>
 
-Do you want to retrieve any previous result: 
-<select name="qsaved">
-<option value="1" selected>Yes</option>
-<option value="0">No</option>
-</select><br/>
+Do you want to retrieve any previous result: $savedsel<br/>
 
 <i style="font-size:12px">Use this option to load results from a
 previous calculation performed with exactly the same
