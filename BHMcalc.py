@@ -1124,14 +1124,14 @@ def Run():
     plt.plot(tvecX,intntFXUVopt/FXUVscale,'b--',label='Integrated XUV no BHM @ Outer CHZ')
     plt.plot(tvecX,intntFXUVin/FXUVscale,'r--',label='Integrated XUV no BHM @ Inner CHZ')
     plt.plot(tvecX,intsFXUVopt/FXUVscale,'b:',label='Integrated XUV single primary @ Outer CHZ')
-    plt.plot(tvecX,intsFXUVp/FXUVscale,'k-',linewidth=2,label=r'Earth')
     plt.plot(tvecX,intsFXUVin/FXUVscale,'r:',label='Integrated XUV single primary @ Inner CHZ')
+    plt.plot(tvecX,intsFXUVp/FXUVscale,'k-',linewidth=2,label=r'Earth')
     #plt.plot([],[],'k--',label='No BHM')
     #plt.plot([],[],'k:',label='Single-primary')
     #plt.plot([],[],'k-.',label='Single-primary on planet')
 
     plt.xlabel(r"$t$ (Gyr)",fontsize=LABEL_SIZE)
-    plt.ylabel(r"$\int_0^{t} F_{\rm XUV}(t')\,dt'$ ($\times 10^{%d}\,{\rm J/cm}^2$)"%logFXUV,fontsize=LABEL_SIZE)
+    plt.ylabel(r"$\int_0^{t} F_{\rm XUV}(t)\,dt$ ($\times 10^{%d}\,{\rm J/cm}^2$)"%logFXUV,fontsize=LABEL_SIZE)
     plt.legend(loc='upper left',prop=dict(size=LEGEND_SIZE))
     plt.xticks(fontsize=TICS_SIZE)
     plt.yticks(fontsize=TICS_SIZE)
@@ -1161,14 +1161,14 @@ def Run():
     plt.plot(tvecX,intntFSWopt/FSWscale,'b--',label='Integrated SW no BHM @ Outer CHZ')
     plt.plot(tvecX,intntFSWin/FSWscale,'r--',label='Integrated SW BHM @ Inner CHZ')
     plt.plot(tvecX,intsFSWopt/FSWscale,'b:',label='Integrated SW single primary @ Outer CHZ')
-    plt.plot(tvecX,intsFSWp/FSWscale,'k-',linewidth=2,label=r'Earth')
     plt.plot(tvecX,intsFSWin/FSWscale,'r:',label='Integrated SW single primary @ Inner CHZ')
+    plt.plot(tvecX,intsFSWp/FSWscale,'k-',linewidth=2,label=r'Earth')
     #plt.plot([],[],'k--',label='No BHM')
     #plt.plot([],[],'k:',label='Single-primary')
     #plt.plot([],[],'k-.',label='Single-primary on planet')
 
     plt.xlabel(r"$t$ (Gyr)",fontsize=LABEL_SIZE)
-    plt.ylabel(r"$\int_0^{t} n_{\rm SW}\,v_{\rm SW}\,dt'$ ($\times 10^{%d}\,{\rm ions/m}^2$)"%logFSW,
+    plt.ylabel(r"$\int_0^{t} n_{\rm SW}\,v_{\rm SW}\,dt$ ($\times 10^{%d}\,{\rm ions/m}^2$)"%logFSW,
                fontsize=LABEL_SIZE)
     plt.legend(loc='upper left',prop=dict(size=LEGEND_SIZE))
     plt.xticks(fontsize=TICS_SIZE)
