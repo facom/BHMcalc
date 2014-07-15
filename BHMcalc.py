@@ -45,7 +45,9 @@ TMPDIR="tmp/"
 ALPHA=0.3 #Entrapment Factor (Zendejas et al., 2010) 
 MUATM=44.0 #MEAN 
 LINES=['']*100
-LABEL_SIZE=20
+LABEL_SIZE=16
+LEGEND_SIZE=12
+TICS_SIZE=12
 
 ############################################################
 #INPUT PARAMETERS
@@ -89,6 +91,7 @@ signature_HZ=MD5.hexdigest()
 
 suffix="%.2f%.2f%.3f%.2f-%s"%(M1,M2,e,Pbin,sessid)
 fout=open(TMPDIR+"output-%s.log"%sessid,"w")
+print>>fout,"%s"%MD5IN
 
 SAVEDIR="%s%s/"%(TMPDIR,MD5IN)
 if not path.isdir(SAVEDIR):
@@ -355,7 +358,7 @@ def Run():
     ax.set_xlim((-rang,rang))
     ax.set_ylim((-rang,rang))
 
-    saveFig(TMPDIR+"/HZ-%s.png"%suffix)
+    saveFig(TMPDIR+"/HZ-%s.png"%suffix,watermarkpos='inner')
 
     #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     #HABITABLE ZONE WITH TEST PLANET
@@ -404,7 +407,7 @@ def Run():
     ax.text(0.5,0.02,r"$a_{\rm crit}=%.2f$ AU, $l_{\rm in,RV}$=%.2f AU, $l_{\rm in,RG}$=%.2f AU, $l_{\rm out,MG}$=%.2f AU, $l_{\rm out,EM}$=%.2f AU"%(acrit,lino,lini,louti,louto),transform=ax.transAxes,horizontalalignment='center',fontsize=14)
     ax.set_xlim((-rang,rang))
     ax.set_ylim((-rang,rang))
-    saveFig(TMPDIR+"/HZ+planet-%s.png"%suffix)
+    saveFig(TMPDIR+"/HZ+planet-%s.png"%suffix,watermarkpos='inner')
     
     #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     #CHECK IF CONTINUOUS HABITABLE ZONE 
@@ -985,18 +988,18 @@ def Run():
     #PLOT XUV (PEL)
     #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
     plt.figure();ifig=0
-    plt.plot(tvecX,FXUVopt_vec,'b-',label='XUV w. BHM @ Optimum')
-    plt.plot(tvecX,FXUVp_vec,'k-',linewidth=2,label=r'XUV w. BHM @ $a = %.2f\,\rm{AU}$'%ap)
+    plt.plot(tvecX,FXUVopt_vec,'b-',label='XUV BHM @ Outer CHZ')
+    #plt.plot(tvecX,FXUVp_vec,'k-',linewidth=2,label=r'XUV BHM @ $a = %.2f\,\rm{AU}$'%ap)
     plt.plot(tvecX,FXUVin_vec,'r-',label='XUV w. BHM @ Inner CHZ')
-    plt.plot(tvecX,ntFXUVopt_vec,'b--')
-    plt.plot(tvecX,ntFXUVp_vec,'k--',linewidth=2)
-    plt.plot(tvecX,ntFXUVin_vec,'r--',linewidth=2)
-    plt.plot(tvecX,sFXUVopt_vec,'b:',linewidth=1)
-    plt.plot(tvecX,sFXUVp_vec,'k-.',linewidth=1)
-    plt.plot(tvecX,sFXUVin_vec,'r:',linewidth=1)
-    plt.plot([],[],'k--',label='No BHM')
-    plt.plot([],[],'k:',label='Single-primary')
-    plt.plot([],[],'k-.',label='Single-primary on planet')
+    plt.plot(tvecX,ntFXUVopt_vec,'b--',label='XUV no BHM @ Outer CHZ')
+    #plt.plot(tvecX,ntFXUVp_vec,'k--',linewidth=2)
+    plt.plot(tvecX,ntFXUVin_vec,'r--',label='XUV no BHM @ Inner CHZ',linewidth=2)
+    plt.plot(tvecX,sFXUVopt_vec,'b:',label='Single primary @ Outer CHZ',linewidth=1)
+    #plt.plot(tvecX,sFXUVp_vec,'k-.',linewidth=1)
+    plt.plot(tvecX,sFXUVin_vec,'r:',label='Single primary @ Inner CHZ',linewidth=1)
+    #plt.plot([],[],'k--',label='No BHM')
+    #plt.plot([],[],'k:',label='Single-primary')
+    #plt.plot([],[],'k-.',label='Single-primary on planet')
     #plt.xscale('log')
     plt.yscale('log')
     logTickLabels(plt.gca(),-3,3,(3,),frm='%.1f',axis='y',notation='normal',fontsize=12)
@@ -1005,8 +1008,10 @@ def Run():
     plt.ylim((ymin,ymax))
     #plt.axhline(1,linestyle='--',color='k')
     plt.xlabel(r"$t$ (Gyr)",fontsize=LABEL_SIZE)
-    plt.ylabel(r"$F_{\rm XUV} ({\rm PEL})$")
-    plt.legend(loc='best',prop=dict(size=10))
+    plt.ylabel(r"$F_{\rm XUV} ({\rm PEL})$",fontsize=LABEL_SIZE)
+    plt.xticks(fontsize=TICS_SIZE)
+    plt.yticks(fontsize=TICS_SIZE)
+    plt.legend(loc='best',prop=dict(size=LEGEND_SIZE))
     plt.title(titlebin,position=(0.5,1.02))
     saveFig(TMPDIR+"/FluxXUV-%s.png"%suffix)
 
@@ -1016,13 +1021,15 @@ def Run():
     plt.figure();ifig=0
     plt.plot(tvecX,FXUVopt_vec/ntFXUVopt_vec,'k-',label='BHM/no BHM')
     plt.plot(tvecX,FXUVopt_vec/sFXUVopt_vec,'k--',label='BHM/Single')
-    plt.xlabel(r"$t$ (Gyr)")
-    plt.ylabel(r"$F_{\rm XUV,bin}/F_{\rm XUV,ref}$")
+    plt.xlabel(r"$t$ (Gyr)",fontsize=LABEL_SIZE)
+    plt.ylabel(r"$F_{\rm XUV,bin}/F_{\rm XUV,ref}$",fontsize=LABEL_SIZE)
     ymin,ymax=plt.ylim()
     plt.axhspan(0.0,1.0,color='g',alpha=0.2)
     plt.axhspan(1.0,max(1.0,ymax),color='r',alpha=0.2)
     plt.ylim((0.0,max(1.0,ymax)))
-    plt.legend(loc='best',prop=dict(size=10))
+    plt.xticks(fontsize=TICS_SIZE)
+    plt.yticks(fontsize=TICS_SIZE)
+    plt.legend(loc='best',prop=dict(size=LEGEND_SIZE))
     plt.title(titlebin,position=(0.5,1.02))
     saveFig(TMPDIR+"/RatiosFluxXUV-%s.png"%suffix)
 
@@ -1045,16 +1052,16 @@ def Run():
     #plt.plot([],[],'k-.',label='Single-primary on planet')
     #plt.xscale('log')
     plt.yscale('log')
-    logTickLabels(plt.gca(),-3,3,(3,),frm='%.1f',axis='y',notation='normal',fontsize=12)
-    plt.xticks(fontsize=12)
+    logTickLabels(plt.gca(),-3,3,(3,),frm='%.1f',axis='y',notation='normal',fontsize=TICS_SIZE)
+    plt.xticks(fontsize=TICS_SIZE)
     ymin=min(min(FSWopt_vec),min(FSWin_vec),min(FSWp_vec),min(sFSWopt_vec),min(sFSWin_vec))
     ymax=max(max(FSWopt_vec),max(FSWin_vec),max(FSWp_vec),max(sFSWopt_vec),max(sFSWin_vec))
     ymax=1000*SWPEL
     plt.ylim((ymin/SWPEL,ymax/SWPEL))
     #plt.axhline(1,linestyle='--',color='k')
-    plt.xlabel(r"$t$ (Gyr)",fontsize=16)
-    plt.ylabel(r"$F_{\rm SW} ({\rm SW.PEL})$",fontsize=16)
-    plt.legend(loc='best',prop=dict(size=12))
+    plt.xlabel(r"$t$ (Gyr)",fontsize=LABEL_SIZE)
+    plt.ylabel(r"$F_{\rm SW} ({\rm SW.PEL})$",fontsize=LABEL_SIZE)
+    plt.legend(loc='best',prop=dict(size=LEGEND_SIZE))
     plt.title(titlebin,position=(0.5,1.02))
     saveFig(TMPDIR+"/FluxSW-%s.png"%suffix)
 
@@ -1064,13 +1071,15 @@ def Run():
     plt.figure();ifig=0
     plt.plot(tvecX,FSWopt_vec/ntFSWopt_vec,'k-',label='BHM/no BHM')
     plt.plot(tvecX,FSWopt_vec/sFSWopt_vec,'k--',label='BHM/Single')
-    plt.xlabel(r"$t$ (Gyr)")
-    plt.ylabel(r"$F_{\rm XUV,bin}/F_{\rm XUV,ref}$")
+    plt.xlabel(r"$t$ (Gyr)",fontsize=LABEL_SIZE)
+    plt.ylabel(r"$F_{\rm XUV,bin}/F_{\rm XUV,ref}$",fontsize=LABEL_SIZE)
     ymin,ymax=plt.ylim()
     plt.axhspan(0.0,1.0,color='g',alpha=0.2)
     plt.axhspan(1.0,max(1.0,ymax),color='r',alpha=0.2)
     plt.ylim((0.0,max(1.0,ymax)))
-    plt.legend(loc='best',prop=dict(size=10))
+    plt.legend(loc='best',prop=dict(size=LEGEND_SIZE))
+    plt.xticks(fontsize=TICS_SIZE)
+    plt.yticks(fontsize=TICS_SIZE)
     plt.title(titlebin,position=(0.5,1.02))
     saveFig(TMPDIR+"/RatiosFluxSW-%s.png"%suffix)
 
@@ -1091,21 +1100,23 @@ def Run():
     logFXUV=int(np.log10(max(intFXUVopt)))
     FXUVscale=10**logFXUV
 
-    plt.plot(tvecX,intFXUVopt/FXUVscale,'b-',label='Integrated XUV @ Optimum')
-    plt.plot(tvecX,intFXUVin/FXUVscale,'r-',label='Integrated XUV @ Inner CHZ')
-    plt.plot(tvecX,intFXUVp/FXUVscale,'k-',linewidth=2,label=r'Integrated XUV @ $a = %.2f\,\rm{AU}$'%ap)
-    plt.plot(tvecX,intntFXUVopt/FXUVscale,'b--')
-    plt.plot(tvecX,intntFXUVin/FXUVscale,'r--')
-    plt.plot(tvecX,intsFXUVopt/FXUVscale,'b:')
-    plt.plot(tvecX,intsFXUVp/FXUVscale,'k-.')
-    plt.plot(tvecX,intsFXUVin/FXUVscale,'r:')
-    plt.plot([],[],'k--',label='No BHM')
-    plt.plot([],[],'k:',label='Single-primary')
-    plt.plot([],[],'k-.',label='Single-primary on planet')
+    plt.plot(tvecX,intFXUVopt/FXUVscale,'b-',label='Integrated XUV BHM @ Outer CHZ')
+    plt.plot(tvecX,intFXUVin/FXUVscale,'r-',label='Integrated XUV BHM @ Inner CHZ')
+    #plt.plot(tvecX,intFXUVp/FXUVscale,'k-',linewidth=2,label=r'Integrated XUV @ $a = %.2f\,\rm{AU}$'%ap)
+    plt.plot(tvecX,intntFXUVopt/FXUVscale,'b--',label='Integrated XUV no BHM @ Outer CHZ')
+    plt.plot(tvecX,intntFXUVin/FXUVscale,'r--',label='Integrated XUV no BHM @ Inner CHZ')
+    plt.plot(tvecX,intsFXUVopt/FXUVscale,'b:',label='Integrated XUV single primary @ Outer CHZ')
+    #plt.plot(tvecX,intsFXUVp/FXUVscale,'k-.')
+    plt.plot(tvecX,intsFXUVin/FXUVscale,'r:',label='Integrated XUV single primary @ Inner CHZ')
+    #plt.plot([],[],'k--',label='No BHM')
+    #plt.plot([],[],'k:',label='Single-primary')
+    #plt.plot([],[],'k-.',label='Single-primary on planet')
 
-    plt.xlabel(r"$t$ (Gyr)")
-    plt.ylabel(r"$\int_0^{t} F_{\rm XUV}(t')\,dt'$ ($\times 10^{%d}\,{\rm j/cm}^2$)"%logFXUV)
-    plt.legend(loc='upper left',prop=dict(size=10))
+    plt.xlabel(r"$t$ (Gyr)",fontsize=LABEL_SIZE)
+    plt.ylabel(r"$\int_0^{t} F_{\rm XUV}(t')\,dt'$ ($\times 10^{%d}\,{\rm j/cm}^2$)"%logFXUV,fontsize=LABEL_SIZE)
+    plt.legend(loc='upper left',prop=dict(size=LEGEND_SIZE))
+    plt.xticks(fontsize=TICS_SIZE)
+    plt.yticks(fontsize=TICS_SIZE)
     plt.title(titlebin,position=(0.5,1.02))
     saveFig(TMPDIR+"/IntFXUV-%s.png"%suffix)
 
@@ -1126,21 +1137,24 @@ def Run():
     logFSW=int(np.log10(max(intFSWopt)))
     FSWscale=10**logFSW
 
-    plt.plot(tvecX,intFSWopt/FSWscale,'b-',label='Integrated SW @ Optimum')
-    plt.plot(tvecX,intFSWin/FSWscale,'r-',label='Integrated SW @ Inner CHZ')
-    plt.plot(tvecX,intFSWp/FSWscale,'k-',linewidth=2,label=r'Integrated SW @ $a = %.2f\,\rm{AU}$'%ap)
-    plt.plot(tvecX,intntFSWopt/FSWscale,'b--')
-    plt.plot(tvecX,intntFSWin/FSWscale,'r--')
-    plt.plot(tvecX,intsFSWopt/FSWscale,'b:')
-    plt.plot(tvecX,intsFSWp/FSWscale,'k-.')
-    plt.plot(tvecX,intsFSWin/FSWscale,'r:')
-    plt.plot([],[],'k--',label='No BHM')
-    plt.plot([],[],'k:',label='Single-primary')
-    plt.plot([],[],'k-.',label='Single-primary on planet')
+    plt.plot(tvecX,intFSWopt/FSWscale,'b-',label='Integrated SW BHM @ Outer')
+    plt.plot(tvecX,intFSWin/FSWscale,'r-',label='Integrated SW BHM @ Inner CHZ')
+    #plt.plot(tvecX,intFSWp/FSWscale,'k-',linewidth=2,label=r'Integrated SW @ $a = %.2f\,\rm{AU}$'%ap)
+    plt.plot(tvecX,intntFSWopt/FSWscale,'b--',label='Integrated SW no BHM @ Outer CHZ')
+    plt.plot(tvecX,intntFSWin/FSWscale,'r--',label='Integrated SW BHM @ Inner CHZ')
+    plt.plot(tvecX,intsFSWopt/FSWscale,'b:',label='Integrated SW single primary @ Outer CHZ')
+    #plt.plot(tvecX,intsFSWp/FSWscale,'k-.')
+    plt.plot(tvecX,intsFSWin/FSWscale,'r:',label='Integrated SW single primary @ Inner CHZ')
+    #plt.plot([],[],'k--',label='No BHM')
+    #plt.plot([],[],'k:',label='Single-primary')
+    #plt.plot([],[],'k-.',label='Single-primary on planet')
 
-    plt.xlabel(r"$t$ (Gyr)")
-    plt.ylabel(r"$\int_0^{t} n_{\rm SW}\,v_{\rm SW}\,dt'$ ($\times 10^{%d}\,{\rm ions/m}^2$)"%logFSW)
-    plt.legend(loc='upper left',prop=dict(size=10))
+    plt.xlabel(r"$t$ (Gyr)",fontsize=LABEL_SIZE)
+    plt.ylabel(r"$\int_0^{t} n_{\rm SW}\,v_{\rm SW}\,dt'$ ($\times 10^{%d}\,{\rm ions/m}^2$)"%logFSW,
+               fontsize=LABEL_SIZE)
+    plt.legend(loc='upper left',prop=dict(size=LEGEND_SIZE))
+    plt.xticks(fontsize=TICS_SIZE)
+    plt.yticks(fontsize=TICS_SIZE)
     plt.title(titlebin,position=(0.5,1.02))
     saveFig(TMPDIR+"/IntFSW-%s.png"%suffix)
 
@@ -1180,14 +1194,16 @@ def Run():
         sMlp=ALPHA*sMLfacp*Ap*MUATM*MP
         sPlp+=[sMlp*gp/(2*Ap)/1E5]
 
-    plt.plot(Mpvec,Pl,'k-',label='Mass loss w. BHM')
+    plt.plot(Mpvec,Pl,'k-',label='Mass loss BHM')
     plt.plot(Mpvec,ntPl,'k--',label='Mass loss no BHM')
     plt.plot(Mpvec,sPl,'k:',label='Mass loss single-primary')
-    plt.plot(Mpvec,sPlp,'k-.',label='Mass loss single-primary on planet')
+    #plt.plot(Mpvec,sPlp,'k-.',label='Mass loss single-primary on planet')
 
-    plt.xlabel("$M_p/M_\oplus$")
-    plt.ylabel(r"$P_{\rm loss}\,({\rm bars})$")
-    plt.legend(loc='upper left',prop=dict(size=10))
+    plt.xlabel("$M_p/M_\oplus$",fontsize=LABEL_SIZE)
+    plt.ylabel(r"$P_{\rm loss}\,({\rm bars})$",fontsize=LABEL_SIZE)
+    plt.xticks(fontsize=TICS_SIZE)
+    plt.yticks(fontsize=TICS_SIZE)
+    plt.legend(loc='upper left',prop=dict(size=LEGEND_SIZE))
     plt.title(titlebin,position=(0.5,1.02))
     saveFig(TMPDIR+"/MassLoss-%s.png"%suffix)
 
@@ -1200,13 +1216,15 @@ def Run():
     plt.plot(tvec,theoProt(tvec,xfit1),'b--',label='No tidal')
     plt.plot(tvec,theoProt(tvec,xfit2),'r--')
     plt.grid()
-    plt.xlabel(r"$t$ (Gyr)")
-    plt.ylabel(r"$P$ (day)")
+    plt.xlabel(r"$t$ (Gyr)",fontsize=LABEL_SIZE)
+    plt.ylabel(r"$P$ (day)",fontsize=LABEL_SIZE)
     plt.axhline(Psync,linestyle='-',color='k')
     plt.axhline(Pbin/1.0,linestyle='-',color='c',label='1:1')
     plt.axhline(Pbin/1.5,linestyle='--',color='c',label='3:2')
     plt.axhline(Pbin/2.0,linestyle='-.',color='c',label='2:1')
-    plt.legend(loc='best',prop=dict(size=10))
+    plt.xticks(fontsize=TICS_SIZE)
+    plt.yticks(fontsize=TICS_SIZE)
+    plt.legend(loc='best',prop=dict(size=LEGEND_SIZE))
     plt.title(titlebin,position=(0.5,1.04))
     saveFig(TMPDIR+"/PeriodEvolution-%s.png"%suffix)
 

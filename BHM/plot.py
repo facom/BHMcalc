@@ -62,12 +62,31 @@ def logTickLabels(ax,perini,perfin,nperper,
         ax.set_xticks(yt)
         ax.set_xticklabels(yl,fontsize=fontsize)
 
-def saveFig(filename):
+def saveFig(filename,watermark="BHMcalc",watermarkpos="outer"):
     """
     Save figure with the respective data
     """
-    plt.savefig(filename)
     ax=plt.gca()
+
+    #SAVE WATERMARK
+    if watermarkpos=='inner':
+        xw=0.99
+        yw=0.99
+        ha='right'
+        va='top'
+    if watermarkpos=='outer':
+        xw=1.01
+        yw=1.01
+        ha='left'
+        va='top'
+
+    ax.text(xw,yw,watermark,
+            horizontalalignment=ha,
+            verticalalignment=va,
+            rotation=90,color='b',alpha=0.3,fontsize=12,
+            transform=ax.transAxes)
+
+    plt.savefig(filename)
     
     #SAVE DATA
     fdata=open(filename+".txt","w")
