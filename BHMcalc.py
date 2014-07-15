@@ -1052,7 +1052,7 @@ def Run():
     #plt.axhline(1,linestyle='--',color='k')
     plt.xlabel(r"$t$ (Gyr)")
     plt.ylabel(r"$F_{\rm SW} ({\rm SW.PEL})$")
-    plt.legend(loc='best',prop=dict(size=10))
+    plt.legend(loc='best',prop=dict(size=14))
     plt.title(titlebin,position=(0.5,1.02))
     saveFig(TMPDIR+"/FluxSW-%s.png"%suffix)
 
