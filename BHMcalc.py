@@ -1133,7 +1133,7 @@ def Run():
 
     plt.xlabel(r"$t$ (Gyr)",fontsize=LABEL_SIZE)
     plt.ylabel(r"$\int_0^{t} F_{\rm XUV}(t)\,dt$ ($\times 10^{%d}\,{\rm J/cm}^2$)"%logFXUV,fontsize=LABEL_SIZE)
-    plt.legend(loc='upper left',prop=dict(size=LEGEND_SIZE))
+    plt.legend(loc='lower right',prop=dict(size=10))
     plt.xticks(fontsize=TICS_SIZE)
     plt.yticks(fontsize=TICS_SIZE)
     plt.title(titlebin,position=(0.5,1.02))
@@ -1171,7 +1171,7 @@ def Run():
     plt.xlabel(r"$t$ (Gyr)",fontsize=LABEL_SIZE)
     plt.ylabel(r"$\int_0^{t} n_{\rm SW}\,v_{\rm SW}\,dt$ ($\times 10^{%d}\,{\rm ions/m}^2$)"%logFSW,
                fontsize=LABEL_SIZE)
-    plt.legend(loc='upper left',prop=dict(size=LEGEND_SIZE))
+    plt.legend(loc='lower right',prop=dict(size=10))
     plt.xticks(fontsize=TICS_SIZE)
     plt.yticks(fontsize=TICS_SIZE)
     plt.title(titlebin,position=(0.5,1.02))
