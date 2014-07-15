@@ -1131,7 +1131,7 @@ def Run():
     #plt.plot([],[],'k-.',label='Single-primary on planet')
 
     plt.xlabel(r"$t$ (Gyr)",fontsize=LABEL_SIZE)
-    plt.ylabel(r"$\int_0^{t} F_{\rm XUV}(t')\,dt'$ ($\times 10^{%d}\,{\rm j/cm}^2$)"%logFXUV,fontsize=LABEL_SIZE)
+    plt.ylabel(r"$\int_0^{t} F_{\rm XUV}(t')\,dt'$ ($\times 10^{%d}\,{\rm J/cm}^2$)"%logFXUV,fontsize=LABEL_SIZE)
     plt.legend(loc='upper left',prop=dict(size=LEGEND_SIZE))
     plt.xticks(fontsize=TICS_SIZE)
     plt.yticks(fontsize=TICS_SIZE)
@@ -1161,7 +1161,7 @@ def Run():
     plt.plot(tvecX,intntFSWopt/FSWscale,'b--',label='Integrated SW no BHM @ Outer CHZ')
     plt.plot(tvecX,intntFSWin/FSWscale,'r--',label='Integrated SW BHM @ Inner CHZ')
     plt.plot(tvecX,intsFSWopt/FSWscale,'b:',label='Integrated SW single primary @ Outer CHZ')
-    #plt.plot(tvecX,intsFSWp/FSWscale,'k-.')
+    plt.plot(tvecX,intsFSWp/FSWscale,'k-',linewidth,label=r'Integrated SW @ $a = %.2f\,\rm{AU}$'%ap)
     plt.plot(tvecX,intsFSWin/FSWscale,'r:',label='Integrated SW single primary @ Inner CHZ')
     #plt.plot([],[],'k--',label='No BHM')
     #plt.plot([],[],'k:',label='Single-primary')
