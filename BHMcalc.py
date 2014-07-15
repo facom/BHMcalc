@@ -577,6 +577,21 @@ def Run():
         tau1=tausys
 
     #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    #EARTH PROPERTIES
+    #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    earthFXUV=loadtxt("BHM/data/earth-FXUV.dat")
+    earthFSW=loadtxt("BHM/data/earth-FSW.dat")
+    earthintFXUV=loadtxt("BHM/data/earth-intFXUV.dat")
+    earthintFSW=loadtxt("BHM/data/earth-intFSW.dat")
+    earthML=loadtxt("BHM/data/earth-ML.dat")
+
+    cond=earthFXUV[:,0]<tau1
+    earthFXUV=earthFXUV[cond,:]
+    earthFSW=earthFSW[cond,:]
+    earthintFXUV=earthintFXUV[cond,:]
+    earthintFSW=earthintFSW[cond,:]
+
+    #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     #INTEGRATION RANGE
     #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     dt=min(1E-3,min(abs(tsync1),abs(tsync2))/10)
@@ -1014,7 +1029,8 @@ def Run():
     plt.plot(tvecX,ntFXUVin_vec,'r--',label='XUV no BHM @ Inner CHZ',linewidth=2)
     plt.plot(tvecX,sFXUVopt_vec,'b:',label='Single primary @ Outer CHZ',linewidth=1)
     plt.plot(tvecX,sFXUVin_vec,'r:',label='Single primary @ Inner CHZ',linewidth=1)
-    plt.plot(tvecX,sFXUVp_vec,'k-',linewidth=2,label='Earth')
+    #plt.plot(tvecX,sFXUVp_vec,'k-',linewidth=2,label='Earth')
+    plt.plot(earthFXUV[:,0],earthFXUV[:,1],'k-',linewidth=2,label='Earth')
     #plt.plot([],[],'k--',label='No BHM')
     #plt.plot([],[],'k:',label='Single-primary')
     #plt.plot([],[],'k-.',label='Single-primary on planet')
@@ -1064,7 +1080,7 @@ def Run():
     plt.plot(tvecX,ntFSWin_vec/SWPEL,'r--',label='SW no BHM @ Inner CHZ',linewidth=2)
     plt.plot(tvecX,sFSWopt_vec/SWPEL,'b:',label='Single primary @ Outer CHZ',linewidth=1)
     plt.plot(tvecX,sFSWin_vec/SWPEL,'r:',label='Single primary @ Inner CHZ',linewidth=1)
-    plt.plot(tvecX,sFSWp_vec/SWPEL,'k-',linewidth=2,label='Earth')
+    plt.plot(earthFSW[:,0],earthFSW[:,1],'k-',linewidth=2,label='Earth')
     #plt.plot([],[],'k--',label='No BHM')
     #plt.plot([],[],'k:',label='Single-primary')
     #plt.plot([],[],'k-.',label='Single-primary on planet')
@@ -1125,7 +1141,7 @@ def Run():
     plt.plot(tvecX,intntFXUVin/FXUVscale,'r--',label='Integrated XUV no BHM @ Inner CHZ')
     plt.plot(tvecX,intsFXUVopt/FXUVscale,'b:',label='Integrated XUV single primary @ Outer CHZ')
     plt.plot(tvecX,intsFXUVin/FXUVscale,'r:',label='Integrated XUV single primary @ Inner CHZ')
-    plt.plot(tvecX,intsFXUVp/FXUVscale,'k-',linewidth=2,label=r'Earth')
+    plt.plot(earthintFXUV[:,0],earthintFXUV[:,1],'k-',linewidth=2,label=r'Earth')
 
     #plt.plot([],[],'k--',label='No BHM')
     #plt.plot([],[],'k:',label='Single-primary')
@@ -1163,7 +1179,7 @@ def Run():
     plt.plot(tvecX,intntFSWin/FSWscale,'r--',label='Integrated SW BHM @ Inner CHZ')
     plt.plot(tvecX,intsFSWopt/FSWscale,'b:',label='Integrated SW single primary @ Outer CHZ')
     plt.plot(tvecX,intsFSWin/FSWscale,'r:',label='Integrated SW single primary @ Inner CHZ')
-    plt.plot(tvecX,intsFSWp/FSWscale,'k-',linewidth=2,label=r'Earth')
+    plt.plot(earthintFSW[:,0],earthintFSW[:,1],'k-',linewidth=2,label=r'Earth')
     #plt.plot([],[],'k--',label='No BHM')
     #plt.plot([],[],'k:',label='Single-primary')
     #plt.plot([],[],'k-.',label='Single-primary on planet')
@@ -1216,7 +1232,7 @@ def Run():
     plt.plot(Mpvec,Pl,'k-',label='Mass loss BHM')
     plt.plot(Mpvec,ntPl,'k--',label='Mass loss no BHM')
     plt.plot(Mpvec,sPl,'k:',label='Mass loss single-primary')
-    plt.plot(Mpvec,sPlp,'k-',linewidth=2,label='Earth')
+    plt.plot(earthML[:,0],earthML[:,1],'k-',linewidth=2,label='Earth')
 
     plt.xlabel("$M_p/M_\oplus$",fontsize=LABEL_SIZE)
     plt.ylabel(r"$P_{\rm loss}\,({\rm bars})$",fontsize=LABEL_SIZE)
