@@ -456,15 +456,17 @@ def Run():
         dlins=np.log10(lins[1::])-np.log10(lins[:-1:])
         dlins=np.append([0],dlins)
         imax=-1
+        dimax=20
         epsmax=0
         dlinold=dlins[-1]
         for i in arange(10,len(dlins))[::-3]:
             eps=2*abs(dlins[i]-dlinold)/(dlins[i]+dlinold)
-            #print tauvec[i],eps,epsmax
+            #print tauvec[i],eps,epsmax,imax,i
             if eps>epsmax:
                 imax=i
                 epsmax=eps
             dlinold=dlins[i]
+            if abs(imax-i)>dimax and epsmax>0:break
             if tauvec[i]<tausys/2:break
         lincont=lins[imax]
         loutcont=min(louts)
@@ -482,6 +484,7 @@ def Run():
                 imax=i
                 epsmax=eps
             dlinold=dslins[i]
+            if abs(imax-i)>dimax and epsmax>0:break
             if tauvec[i]<tausys/2:break
         slincont=slins[imax]
         sloutcont=min(slouts)
@@ -511,13 +514,20 @@ def Run():
 
     #PLOT HABITABLE ZONE
     fig=plt.figure();ifig=0
+
     plt.axhline(loutcont,color='k',linewidth=3)
+    plt.axhline(lincont,color='k',linewidth=1)
     plt.plot([],[],'k-',linewidth=3,label='Optimum distance')
-
     plt.axhspan(lincont,loutcont,color='k',alpha=0.3)
+    plt.text(tauvec[-1]/2,0.99*loutcont+0*(lincont+loutcont)/2,'Circumbinary CHZ',
+             horizontalalignment='center',verticalalignment='top',fontsize=18)
 
-    plt.text(tauvec[-1]/2,1.02*lincont,'Continuous Habitable Zone',
-             horizontalalignment='center',fontsize=18)
+    plt.axhline(sloutcont,color='k',linewidth=3,linestyle='--')
+    plt.axhline(slincont,color='k',linewidth=1,linestyle='--')
+    plt.plot([],[],'k-',linewidth=3)
+    plt.axhspan(slincont,sloutcont,color='k',alpha=0.3)
+    plt.text(tauvec[-1]/2,1.02*slincont+0*(slincont+sloutcont)/2,'Single Primary CHZ',
+             horizontalalignment='center',verticalalignment='bottom',fontsize=18)
 
     plt.text(1.05*tauvec[0],0.98*loutcont,'%.2f AU'%loutcont,
              horizontalalignment='left',
