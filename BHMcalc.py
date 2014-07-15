@@ -1161,7 +1161,7 @@ def Run():
     plt.plot(tvecX,intntFSWopt/FSWscale,'b--',label='Integrated SW no BHM @ Outer CHZ')
     plt.plot(tvecX,intntFSWin/FSWscale,'r--',label='Integrated SW BHM @ Inner CHZ')
     plt.plot(tvecX,intsFSWopt/FSWscale,'b:',label='Integrated SW single primary @ Outer CHZ')
-    plt.plot(tvecX,intsFSWp/FSWscale,'k-',linewidth,label=r'Integrated SW @ $a = %.2f\,\rm{AU}$'%ap)
+    plt.plot(tvecX,intsFSWp/FSWscale,'k-',linewidth=2,label=r'Integrated SW @ $a = %.2f\,\rm{AU}$'%ap)
     plt.plot(tvecX,intsFSWin/FSWscale,'r:',label='Integrated SW single primary @ Inner CHZ')
     #plt.plot([],[],'k--',label='No BHM')
     #plt.plot([],[],'k:',label='Single-primary')
