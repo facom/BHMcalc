@@ -1049,6 +1049,7 @@ def Run():
     plt.xticks(fontsize=12)
     ymin=min(min(FSWopt_vec),min(FSWin_vec),min(FSWp_vec),min(sFSWopt_vec),min(sFSWin_vec))
     ymax=max(max(FSWopt_vec),max(FSWin_vec),max(FSWp_vec),max(sFSWopt_vec),max(sFSWin_vec))
+    ymax=1000*SWPEL
     plt.ylim((ymin/SWPEL,ymax/SWPEL))
     #plt.axhline(1,linestyle='--',color='k')
     plt.xlabel(r"$t$ (Gyr)",fontsize=16)
