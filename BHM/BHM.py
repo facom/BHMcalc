@@ -416,6 +416,48 @@ def Seff2013(Teff,crits=['recent venus'],Tsun=TSUN):
     if len(Seffs)==1:return Seffs[0]
     else:return Seffs
 
+def Seff2014(Teff,crits=['recent venus'],Tsun=TSUN,Mp='1.0'):
+    """
+    Kopparapu et al., 2014
+    """
+    
+    if Teff<2600:Teff=2600.0
+    if Teff>7200:Teff=7200.0
+    Tst=Teff-Tsun
+
+    Seffs=[]
+    for crit in crits:
+        if crit=="runaway greenhouse":
+            if Mp=='1.0':
+                S=1.107
+                a=1.332E-4;b=1.58E-8;c=-8.308E-12;d=-1.931E-15
+            if Mp=='5.0':
+                S=1.188
+                a=1.433E-4;b=1.707E-8;c=-8.968E-12;d=-2.048E-15
+            if Mp=='0.1':
+                S=0.99
+                a=1.209E-4;b=1.404E-8;c=-7.418E-12;d=-1.713E-15
+        elif crit=="moist greenhouse":
+            S=1.0146
+            #SAME AS 2013
+            a=8.1884E-5;b=1.9394E-9;c=-4.3618E-12;d=-6.8260E-16
+        elif crit=="recent venus":
+            #ALL MASSES ARE EQUARL
+            S=1.776
+            a=2.136E-4;b=2.533E-8;c=-1.332E-11;d=-3.097E-15
+        elif crit=="maximum greenhouse":
+            S=0.356
+            a=6.171E-5;b=1.698E-9;c=-3.198E-12;d=-5.575E-16
+        elif crit=="early mars":
+            S=0.32
+            a=5.547E-5;b=1.526E-9;c=-2.874E-12;d=-5.011E-16
+        else:
+            S=a=b=c=d=Tst=-1
+        Seffs+=[S+a*Tst+b*Tst**2+c*Tst**3+d*Tst**4]
+        
+    if len(Seffs)==1:return Seffs[0]
+    else:return Seffs
+
 def HZ2013(Ls,Teff,lin='recent venus',lout='early mars'):
     """
     Habitable Zone limits by Kopparapu et al. (2013)
@@ -425,6 +467,21 @@ def HZ2013(Ls,Teff,lin='recent venus',lout='early mars'):
     if Ls<0 or Teff<0:
         raise Exception("Negative value in stellar properties")
     Seffin,Seffout=Seff2013(Teff,crits=[lin,lout])
+    Seffsun=1.0
+    lin=(Ls/Seffin)**0.5
+    lout=(Ls/Seffout)**0.5
+    aHZ=(Ls/Seffsun)**0.5
+    return lin,aHZ,lout
+
+def HZ(Ls,Teff,lin='recent venus',lout='early mars',Seff=Seff2013):
+    """
+    Habitable Zone limits by Kopparapu et al. (2013)
+    Ls: In solar Units
+    Teff: In K
+    """
+    if Ls<0 or Teff<0:
+        raise Exception("Negative value in stellar properties")
+    Seffin,Seffout=Seff(Teff,crits=[lin,lout])
     Seffsun=1.0
     lin=(Ls/Seffin)**0.5
     lout=(Ls/Seffout)**0.5

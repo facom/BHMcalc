@@ -538,8 +538,8 @@ def Run():
              verticalalignment='bottom',
              fontsize=12)
 
-    plt.xlabel(r"$\tau$ (Gyr)")
-    plt.ylabel(r"$a$ (AU)")
+    plt.xlabel(r"$\tau$ (Gyr)",fontsize=LABEL_SIZE)
+    plt.ylabel(r"$a$ (AU)",fontsize=LABEL_SIZE)
 
     plt.fill_between(tauvec,lins,louts,color='g',alpha=0.3)
     plt.plot(tauvec,lins,'r-',linewidth=2,label=incrit)
