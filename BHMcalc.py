@@ -517,7 +517,7 @@ def Run():
 
     plt.axhline(loutcont,color='k',linewidth=3)
     plt.axhline(lincont,color='k',linewidth=1)
-    plt.plot([],[],'k-',linewidth=3,label='Optimum distance')
+    plt.plot([],[],'k-',linewidth=3)
     plt.axhspan(lincont,loutcont,color='k',alpha=0.3)
     plt.text(tauvec[-1]/2,0.99*loutcont+0*(lincont+loutcont)/2,'Circumbinary CHZ',
              horizontalalignment='center',verticalalignment='top',fontsize=18)
@@ -526,7 +526,6 @@ def Run():
     plt.axhline(sloutcont,color='k',linewidth=3,linestyle='--')
     plt.axhline(slincont,color='k',linewidth=1,linestyle='--')
     plt.plot([],[],'k-',linewidth=3)
-
     plt.axhspan(slincont,sloutcont,color='k',alpha=0.3)
     plt.text(tauvec[-1]/2,1.02*slincont+0*(slincont+sloutcont)/2,'Single Primary CHZ',
              horizontalalignment='center',verticalalignment='bottom',fontsize=18)
@@ -537,12 +536,10 @@ def Run():
              verticalalignment='top',
              fontsize=12)
 
-    """
     plt.text(1.05*tauvec[0],1.02*lincont,'%.2f AU'%lincont,
              horizontalalignment='left',
              verticalalignment='bottom',
              fontsize=12)
-             """
 
     plt.xlabel(r"$\tau$ (Gyr)",fontsize=LABEL_SIZE)
     plt.ylabel(r"$a$ (AU)",fontsize=LABEL_SIZE)
@@ -550,8 +547,8 @@ def Run():
     plt.fill_between(tauvec,lins,louts,color='g',alpha=0.3)
     plt.plot(tauvec,lins,'r-',linewidth=2,label=incrit)
     plt.plot(tauvec,louts,'b-',linewidth=2,label=outcrit)
-    plt.plot(tauvec,slins,'r--',linewidth=2)
-    plt.plot(tauvec,slouts,'b--',linewidth=2)
+    plt.plot(tauvec,slins,'k--',linewidth=2)
+    plt.plot(tauvec,slouts,'k--',linewidth=2)
     plt.xticks(fontsize=TICS_SIZE)
     plt.yticks(fontsize=TICS_SIZE)
     plt.plot([],[],'k--',linewidth=3,label='Single primary HZ limits')
@@ -562,7 +559,7 @@ def Run():
     plt.ylim((min(slins),max(louts)))
     plt.xlim((tauvec[0],tauvec[-1]))
 
-    plt.legend(loc='upper left',prop={'size':10})
+    plt.legend(loc='upper left',prop={'size':LEGEND_SIZE})
     plt.title(titlebin,position=(0.5,1.02),fontsize=16)
     saveFig(TMPDIR+"/HZevol-%s.png"%suffix)
     
