@@ -1126,6 +1126,7 @@ def Run():
     plt.plot(tvecX,intsFXUVopt/FXUVscale,'b:',label='Integrated XUV single primary @ Outer CHZ')
     plt.plot(tvecX,intsFXUVin/FXUVscale,'r:',label='Integrated XUV single primary @ Inner CHZ')
     plt.plot(tvecX,intsFXUVp/FXUVscale,'k-',linewidth=2,label=r'Earth')
+
     #plt.plot([],[],'k--',label='No BHM')
     #plt.plot([],[],'k:',label='Single-primary')
     #plt.plot([],[],'k-.',label='Single-primary on planet')
