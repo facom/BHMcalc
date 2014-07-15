@@ -519,7 +519,7 @@ def Run():
     plt.axhline(lincont,color='k',linewidth=1)
     plt.plot([],[],'k-',linewidth=3)
     plt.axhspan(lincont,loutcont,color='k',alpha=0.3)
-    plt.text(tauvec[-1]/2,0.99*loutcont+0*(lincont+loutcont)/2,'Circumbinary CHZ',
+    plt.text(tauvec[-1]/2,0.98*loutcont+0*(lincont+loutcont)/2,'Circumbinary CHZ',
              horizontalalignment='center',verticalalignment='top',fontsize=18)
 
     """"
