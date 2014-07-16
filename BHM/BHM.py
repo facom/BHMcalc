@@ -5,6 +5,7 @@ from constants import *
 #OWN MODULES
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 from scipy.integrate import quad as integrate
+from scipy.linalg import norm
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 #STELLAR PROPERTIES
@@ -537,6 +538,28 @@ def aKepler(P,M1,M2,UL=AU,UT=DAY,UM=MSUN):
     a=(((P*UT)**2*GCONST*((M1+M2)*UM))/(4*PI**2))**(1./3.)/UL
     return a
 
+def PKepler(a,M1,M2,UL=AU,UT=DAY,UM=MSUN):
+    """
+    P: in UT
+    M1,M2: In UM
+    
+    Returns a in UL
+    """
+    P=np.sqrt((a*UL)**3/(GCONST*((M1+M2)*UM)/(4*PI**2)))/UT;
+    return P
+
+def keplerEquation(E,**pars):
+    e=pars['e']
+    M=pars['M']
+    ke=E+e*np.sin(E)-M
+    return ke
+
+def eccentricAnomaly(M,e):
+    pars=dict(M=M,e=e)
+    if M==0:return 0;
+    E=bisectFunction(keplerEquation,M/2,2*M,**pars)
+    return E
+
 def aCritical(mu,a,e):
     ac=(1.6+(5.1*e)-(2.22*e**2)+(4.12*mu)-(4.27*e*mu)-(5.09*mu**2)+(4.61*e**2*mu**2))*a
     return ac
@@ -597,6 +620,27 @@ def tidalAcceleration(Mtarg,Rtarg,Ltarg,Mfield,abin,e,n,Omega,verbose=False):
     if verbose:print "Acc:",angacc
 
     return angacc
+
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+#PLANCK DISTRIBUTION
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+def planckDistrib(lamb,T):
+    B=2*HP*CSPEED**2/(lamb**5)/(np.exp(HP*CSPEED/(KB*T*lamb))-1)
+    I=np.pi*B
+    return I
+
+def planckPhotonDistrib(lamb,T):
+    B=2*HP*CSPEED**2/(lamb**5)/(np.exp(HP*CSPEED/(KB*T*lamb))-1)
+    J=np.pi*B/(HP*CSPEED/lamb)
+    return J
+
+def planckPower(lamb1,lamb2,T):
+    R,dR=integrate(planckDistrib,lamb1,lamb2,args=(T,))
+    return R
+
+def planckPhotons(lamb1,lamb2,T):
+    N,dN=integrate(planckPhotonDistrib,lamb1,lamb2,args=(T,))
+    return N
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 #DERIVED CONSTANTS

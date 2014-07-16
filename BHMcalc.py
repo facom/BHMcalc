@@ -44,6 +44,20 @@ Example:
 TMPDIR="tmp/"
 ALPHA=0.3 #Entrapment Factor (Zendejas et al., 2010) 
 MUATM=44.0 #MEAN 
+
+#PHOTON DENSITY ON EARTH
+#PHOTOSYNTHETIC PHOTON FLUX ON EARTH (400-700 nm)
+#400-1400
+PPFD_EARTH=3.83647334928e+21 #photons s^-1 m^-2
+#400-1100
+#PPFD_EARTH=3.03998869273e+21 #photons s^-1 m^-2
+#400-700
+#PPFD_EARTH=1.37945308352e+21 #photons s^-1 m^-2
+#TOTAL PHOTON FLUX ON EARTH 
+PFD_EARTH=6.34586512763e+21 #photons s^-1 m^-2
+#TOTAL INSOLATION ON EARTH
+SOLAR_CONSTANT=1367.9046529 #W m^-2
+
 LINES=['']*100
 LABEL_SIZE=16
 LEGEND_SIZE=12
@@ -142,7 +156,7 @@ exec("num=loadIsochroneSet(verbose=True,Zs=%s)"%zsvec)
 #ROUTINES
 ############################################################
 def Run():
-    global tau1
+    global tau1,ap,Mp,e
 
     #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     #CONSTANT PROPERTIES
@@ -411,7 +425,7 @@ def Run():
     ax.set_xlim((-rang,rang))
     ax.set_ylim((-rang,rang))
     saveFig(TMPDIR+"/HZ+planet-%s.png"%suffix,watermarkpos='inner')
-    
+
     #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     #CHECK IF CONTINUOUS HABITABLE ZONE 
     #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -488,7 +502,178 @@ def Run():
             if tauvec[i]<tausys/2:break
         slincont=slins[imax]
         sloutcont=min(slouts)
+         
+        #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        #STELLAR ORBIT
+        #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        #PERIOD OF THE PLANET
+        MTbin=M1+M2
+        Ppin=PKepler(lincont,MTbin,Mp*MEARTH/MSUN)
+        Ppout=PKepler(loutcont,MTbin,Mp*MEARTH/MSUN)
+        Ppp=max(Ppin,Ppout)
+        epp=0.0
+    
+        #TIME
+        torbs=linspace(0,1.5*Ppp,500)
+
+        #INTEGRATE POSITIONS
+        r1s=[]
+        r2s=[]
+        rpins=[]
+        rpouts=[]
+        rp1ins=[]
+        rp2ins=[]
+        rp1outs=[]
+        rp2outs=[]
+        for t in torbs:
+            #MEAN ANOMALY
+            Mbin=2*np.pi/Pbin*t
+            Mp=2*np.pi/Ppp*t
+            
+            #ECCENTRIC AND TRUE ANOMALY
+            Ebin=eccentricAnomaly(Mbin,e)
+            fbin=2*arctan(np.sqrt((1+e)/(1-e))*tan(Ebin/2))
+            Ep=eccentricAnomaly(Mp,epp)
+            fp=2*arctan(np.sqrt((1+epp)/(1-epp))*tan(Ep/2))
+            
+            #RADIO-VECTOR BINARY COMPONENTS
+            rbin=abin*(1-e*cos(Ebin))
+            rred=array([rbin*cos(fbin),rbin*sin(fbin)])
+            r1=M2/MTbin*rred
+            r2=-M1/MTbin*rred
+            r1s+=[r1]
+            r2s+=[r2]
+
+            #INNER EDGE
+            rprad=lincont*(1-epp*cos(Ep))
+            rp=array([rprad*cos(fp),rprad*sin(fp)])
+            rpins+=[rp]
+            rp1=r1-rp;rp1ins+=[rp1]
+            rp2=r2-rp;rp2ins+=[rp2]
+
+            #OUTER EDGE
+            rprad=loutcont*(1-epp*cos(Ep))
+            rp=array([rprad*cos(fp),rprad*sin(fp)])
+            rpins+=[rp]
+            rp1=r1-rp;rp1outs+=[rp1]
+            rp2=r2-rp;rp2outs+=[rp2]
+
+        r1s=np.array(r1s)
+        r2s=np.array(r2s)
+        rpins=np.array(rpins)
+        rp1ins=np.array(rp1ins)
+        rp2ins=np.array(rp2ins)
+        rpouts=np.array(rpouts)
+        rp1outs=np.array(rp1outs)
+        rp2outs=np.array(rp2outs)
         
+        #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        #PHOTON FLUX DENSITY
+        #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        npoint=len(torbs)
+        lamb0=1.0*NANO
+        lambinf=1E6*NANO
+        lamb1=400.0*NANO
+        lamb2=700.0*NANO
+        lamb2=1100.0*NANO
+        lamb2=1400.0*NANO
+        
+        fin1s=[]
+        fout1s=[]
+        fin2s=[]
+        fout2s=[]
+        
+        pin1s=[]
+        pout1s=[]
+        pin2s=[]
+        pout2s=[]
+        
+        flins=[]
+        flouts=[]
+        pins=[]
+        pouts=[]
+        
+        for i in xrange(npoint):
+            #DISTANCE
+            r1in=norm(rp1ins[i])
+            r2in=norm(rp2ins[i])
+            r1out=norm(rp1outs[i])
+            r2out=norm(rp2outs[i])
+            
+            #INSOLATION
+            fluxin1=planckPower(lamb0,lambinf,T1)*(R1*RSUN/(r1in*AU))**2
+            fin1s+=[fluxin1]
+            fluxout1=planckPower(lamb0,lambinf,T1)*(R1*RSUN/(r1out*AU))**2
+            fout1s+=[fluxout1]
+
+            fluxin2=planckPower(lamb0,lambinf,T2)*(R2*RSUN/(r2in*AU))**2
+            fin2s+=[fluxin2]
+            fluxout2=planckPower(lamb0,lambinf,T2)*(R2*RSUN/(r2out*AU))**2
+            fout2s+=[fluxout2]
+
+            #PHOTON FLUX
+            ppfdin1=planckPhotons(lamb1,lamb2,T1)*(R1*RSUN/(r1in*AU))**2
+            pin1s+=[ppfdin1]
+            ppfdout1=planckPhotons(lamb1,lamb2,T1)*(R1*RSUN/(r1out*AU))**2
+            pout1s+=[ppfdout1]
+
+            ppfdin2=planckPhotons(lamb1,lamb2,T2)*(R2*RSUN/(r2in*AU))**2
+            pin2s+=[ppfdin2]
+            ppfdout2=planckPhotons(lamb1,lamb2,T2)*(R2*RSUN/(r2out*AU))**2
+            pout2s+=[ppfdout2]
+
+            #TOTAL
+            flin=fluxin1+fluxin2
+            flout=fluxout1+fluxout2
+            pin=ppfdin1+ppfdin2
+            pout=ppfdout1+ppfdout2
+
+            flins+=[flin]
+            flouts+=[flout]
+            pins+=[pin]
+            pouts+=[pout]
+
+        fin1s=array(fin1s)
+        fout1s=array(fout1s)
+        fin2s=array(fin2s)
+        fout2s=array(fout2s)
+        pin1s=array(pin1s)
+        pout1s=array(pout1s)
+        pin2s=array(pin2s)
+        pout2s=array(pout2s)
+
+        flins=array(flins)
+        flouts=array(flouts)
+        pins=array(pins)
+        pouts=array(pouts)
+        
+        #SAVING STELLAR ORBIT
+        savetxt(SAVEDIR+"torbs",torbs)
+        savetxt(SAVEDIR+"r1s",r1s)
+        savetxt(SAVEDIR+"r2s",r2s)
+        savetxt(SAVEDIR+"rpins",rpins)
+        savetxt(SAVEDIR+"rp1ins",rp1ins)
+        savetxt(SAVEDIR+"rp2ins",rp2ins)
+        savetxt(SAVEDIR+"rpouts",rpouts)
+        savetxt(SAVEDIR+"rp1outs",rp1outs)
+        savetxt(SAVEDIR+"rp2outs",rp2outs)
+        savetxt(SAVEDIR+"stellar-orbits",[MTbin,Ppin,Ppout,lamb1,lamb2])
+        
+        #SAVING PHOTON FLUX
+        savetxt(SAVEDIR+"fin1s",fin1s)
+        savetxt(SAVEDIR+"fout1s",fout1s)
+        savetxt(SAVEDIR+"fin2s",fin2s)
+        savetxt(SAVEDIR+"fout2s",fout2s)
+        savetxt(SAVEDIR+"pin1s",pin1s)
+        savetxt(SAVEDIR+"pout1s",pout1s)
+        savetxt(SAVEDIR+"pin2s",pin2s)
+        savetxt(SAVEDIR+"pout2s",pout2s)
+
+        savetxt(SAVEDIR+"flins",flins)
+        savetxt(SAVEDIR+"flouts",flouts)
+        savetxt(SAVEDIR+"pins",pins)
+        savetxt(SAVEDIR+"pouts",pouts)
+
         #SAVING
         savetxt(SAVEDIR+"tauvec",tauvec)
         savetxt(SAVEDIR+"lins",lins)
@@ -506,6 +691,34 @@ def Run():
         slouts=loadtxt(SAVEDIR+"slouts")
         tausys,lincont,loutcont,slincont,sloutcont=loadtxt(SAVEDIR+"chz")
 
+        #SAVING STELLAR ORBIT
+        torbs=loadtxt(SAVEDIR+"torbs")
+        r1s=loadtxt(SAVEDIR+"r1s")
+        r2s=loadtxt(SAVEDIR+"r2s")
+        rpins=loadtxt(SAVEDIR+"rpins")
+        rp1ins=loadtxt(SAVEDIR+"rp1ins")
+        rp2ins=loadtxt(SAVEDIR+"rp2ins")
+        rpouts=loadtxt(SAVEDIR+"rpouts")
+        rp1outs=loadtxt(SAVEDIR+"rp1outs")
+        rp2outs=loadtxt(SAVEDIR+"rp2outs")
+        
+        #SAVING PHOTON FLUX
+        fin1s=loadtxt(SAVEDIR+"fin1s")
+        fout1s=loadtxt(SAVEDIR+"fout1s")
+        fin2s=loadtxt(SAVEDIR+"fin2s")
+        fout2s=loadtxt(SAVEDIR+"fout2s")
+        pin1s=loadtxt(SAVEDIR+"pin1s")
+        pout1s=loadtxt(SAVEDIR+"pout1s")
+        pin2s=loadtxt(SAVEDIR+"pin2s")
+        pout2s=loadtxt(SAVEDIR+"pout2s")
+
+        flins=loadtxt(SAVEDIR+"flins")
+        flouts=loadtxt(SAVEDIR+"flouts")
+        pins=loadtxt(SAVEDIR+"pins")
+        pouts=loadtxt(SAVEDIR+"pouts")
+
+        MTbin,Ppin,Ppout,lamb1,lamb2=loadtxt(SAVEDIR+"stellar-orbits")
+
     if lincont<acrit:
         print "Inner edge of CHZ (%.3f) is inside critical distance (%.3f).  Changed."%(lincont,acrit)
         lincont=acrit
@@ -522,14 +735,14 @@ def Run():
     plt.text(tauvec[-1]/2,0.98*loutcont+0*(lincont+loutcont)/2,'Circumbinary CHZ',
              horizontalalignment='center',verticalalignment='top',fontsize=18)
 
-    """"
-    plt.axhline(sloutcont,color='k',linewidth=3,linestyle='--')
-    plt.axhline(slincont,color='k',linewidth=1,linestyle='--')
+    #""""
+    plt.axhline(sloutcont,color='k',linewidth=1)
+    plt.axhline(slincont,color='k',linewidth=1)
     plt.plot([],[],'k-',linewidth=3)
     plt.axhspan(slincont,sloutcont,color='k',alpha=0.3)
     plt.text(tauvec[-1]/2,1.02*slincont+0*(slincont+sloutcont)/2,'Single Primary CHZ',
              horizontalalignment='center',verticalalignment='bottom',fontsize=18)
-             """
+    #"""
 
     plt.text(1.05*tauvec[0],0.98*loutcont,'%.2f AU'%loutcont,
              horizontalalignment='left',
@@ -565,6 +778,66 @@ def Run():
     
     print>>fout,tausys,lincont,loutcont,slincont,sloutcont
 
+    #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    #PLOT STELLAR ORBIT
+    #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    fig=plt.figure(figsize=(8,8))
+    """
+    plt.plot(r1s[:,0],r1s[:,1])
+    plt.plot(r2s[:,0],r2s[:,1])
+    plt.plot(rps[:,0],rps[:,1])
+    """
+    orange="#FACC2E"
+    plt.plot(rp1ins[:,0],rp1ins[:,1],'-',color=orange,label='Component 1')
+    plt.plot(rp2ins[:,0],rp2ins[:,1],'r-',label='Component 2')
+    plt.plot(rp1outs[:,0],rp1outs[:,1],'-',color=orange,linewidth=2)
+    plt.plot(rp2outs[:,0],rp2outs[:,1],'r-',linewidth=2)
+    plt.plot([0],[0],'ko',markersize=10)
+    plt.text(0,lincont,"Inner CHZ",horizontalalignment='center',bbox=dict(facecolor='w',edgecolor='none'),fontsize=12)
+    plt.text(0,loutcont,"Outer CHZ",horizontalalignment='center',bbox=dict(facecolor='w',edgecolor='none'),fontsize=12)
+    rmax=loutcont
+    plt.xlim((-1.5*rmax,1.5*rmax))
+    plt.ylim((-1.5*rmax,1.5*rmax))
+    plt.xlabel('x (AU)',fontsize=LABEL_SIZE)
+    plt.ylabel('y (AU)',fontsize=LABEL_SIZE)
+    plt.xticks(fontsize=TICS_SIZE)
+    plt.yticks(fontsize=TICS_SIZE)
+    plt.legend(loc='best',prop=dict(size=LEGEND_SIZE))
+    plt.grid()
+    saveFig(TMPDIR+"/StellarOrbits-%s.png"%suffix)
+
+    #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    #PLOT PHOTON FLUX DENSITY
+    #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    fig=plt.figure(figsize=(8,8))
+    """
+    plt.plot(torbs,fin1s/SOLAR_CONSTANT,'b-',label='Component 1, inner CHZ')
+    plt.plot(torbs,fin2s/SOLAR_CONSTANT,'r-',label='Component 2, inner CHZ')
+    plt.plot(torbs,fout1s/SOLAR_CONSTANT,'b:',label='Component 1, outer CHZ')
+    plt.plot(torbs,fout2s/SOLAR_CONSTANT,'r:',label='Component 2, outer CHZ')
+
+    plt.plot(torbs,pin1s/PPFD_EARTH,'b-',linewidth=2)
+    plt.plot(torbs,pin2s/PPFD_EARTH,'r-',linewidth=2)
+    plt.plot(torbs,pout1s/PPFD_EARTH,'b:',linewidth=2)
+    plt.plot(torbs,pout2s/PPFD_EARTH,'r:',linewidth=2)
+    """
+
+    plt.plot(torbs,pins/PPFD_EARTH,'r-',linewidth=2,label='PPFD Inner CHZ')
+    plt.plot(torbs,pouts/PPFD_EARTH,'b-',linewidth=2,label='PPFD Outer CHZ')
+    plt.plot(torbs,flins/SOLAR_CONSTANT,'k-',linewidth=2,label='Insolation',zorder=-10)
+    plt.plot(torbs,flouts/SOLAR_CONSTANT,'k-',linewidth=2,zorder=-10)
+
+    plt.axhline(1.0,color='k',linewidth=2)
+    plt.xlabel('t (days)',fontsize=LABEL_SIZE)
+    plt.ylabel('Insolation, PPFD (PEL)',fontsize=LABEL_SIZE)
+    plt.xlim((0,Ppout))
+    plt.xticks(fontsize=TICS_SIZE)
+    plt.yticks(fontsize=TICS_SIZE)
+    plt.legend(loc='lower right',prop=dict(size=LEGEND_SIZE))
+    #plt.grid()
+    saveFig(TMPDIR+"/InsolationPhotonDensity-%s.png"%suffix)
+
+    exit(0)
     #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     #CHECK IF INTEGRATION IS REQUESTED
     #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
