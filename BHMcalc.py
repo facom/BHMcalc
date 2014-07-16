@@ -735,7 +735,7 @@ def Run():
     plt.text(tauvec[-1]/2,0.98*loutcont+0*(lincont+loutcont)/2,'Circumbinary CHZ',
              horizontalalignment='center',verticalalignment='top',fontsize=18)
 
-    #""""
+    """"
     plt.axhline(sloutcont,color='k',linewidth=1)
     plt.axhline(slincont,color='k',linewidth=1)
     plt.plot([],[],'k-',linewidth=3)
@@ -769,7 +769,8 @@ def Run():
     plt.yscale('log')
     logTickLabels(plt.gca(),-1,2,(1,),frm='%.1f',axis='y',notation='normal',fontsize=12)
 
-    plt.ylim((min(slins),max(louts)))
+    #plt.ylim((min(slins),max(louts)))
+    plt.ylim((0.5,3.5))
     plt.xlim((tauvec[0],tauvec[-1]))
 
     plt.legend(loc='upper left',prop={'size':LEGEND_SIZE})
