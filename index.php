@@ -286,6 +286,19 @@ echo<<<CONTENT
   <tr><td>CHZ single-primary:</td><td>[$slincont,$sloutcont] AU</td></tr>
 </table>
 <a href="tmp/HZevol-$suffix.png.txt" target="_blank"><img src="tmp/HZevol-$suffix.png"></a><br/>
+
+Orbits of the stellar components with respect to a planet at the inner
+and outer edge of the Continuous Habitable Zone:<br/>
+
+<a href="tmp/StellarOrbits-$suffix.png.txt"
+target="_blank"><img src="tmp/StellarOrbits-$suffix.png"></a><br/>
+
+Insolation and Photosynthetic Photon Flux Density (PPFD, 400-1400 nm)
+at the inner and outer edge of the continuous habitable zone:<br/>
+
+<a href="tmp/InsolationPhotonDensity-$suffix.png.txt"
+target="_blank"><img src="tmp/InsolationPhotonDensity-$suffix.png"></a><br/>
+
 CONTENT;
 }
 if($qintegration){

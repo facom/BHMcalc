@@ -24,6 +24,10 @@ GCONST=6.67E-11
 MU0=const.mu_0
 #BOLTZMAN CONSTANT
 KB=const.k
+#BOLTZMAN CONSTANT
+HP=const.h
+#SPEED OF LIGHT
+CSPEED=const.c
 #PROTON MASS
 MP=const.m_p
 #STEFAN-BOLTZMAN CONSTANT
@@ -104,6 +108,7 @@ RJUP=7.1492E7 #m
 GIGA=1.0E9
 KILO=1.0E3
 MICRO=1.0E-6
+NANO=1E-9
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 #NUMERIC
