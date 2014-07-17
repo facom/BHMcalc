@@ -769,8 +769,8 @@ def Run():
     plt.yscale('log')
     logTickLabels(plt.gca(),-1,2,(1,),frm='%.1f',axis='y',notation='normal',fontsize=12)
 
-    #plt.ylim((min(slins),max(louts)))
-    plt.ylim((0.5,3.5))
+    plt.ylim((min(slins),max(louts)))
+    #plt.ylim((0.5,3.5))
     plt.xlim((tauvec[0],tauvec[-1]))
 
     plt.legend(loc='upper left',prop={'size':LEGEND_SIZE})
