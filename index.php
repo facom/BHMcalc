@@ -340,14 +340,18 @@ if(isset($submit) and !isset($back)){
 
   $qstring_save=preg_replace("/reload&/","",$qstring);
   for($i=0;$i<36;$i++){$qstring_save.="&parts_$i=".$parts[$i];}
+  $del_button="";
   if(!isset($load)){
-    $save_button="<p><a href=\"?$qstring_save&save\" style=background:lightgray;padding:10px;>Save Result</a></p>";
+    $save_button="<a href=\"?$qstring_save&save\" style=background:lightgray;padding:10px;>Save Result</a>";
   }else{
     $save_button="";
+    if(isset($admin)){
+      $del_button="<a href=\"?$qstring_save&delete\" style=background:lightgray;padding:10px;>Delete</a>";
+    }
   }
 
 echo<<<CONTENT
-$save_button
+<p>$save_button $del_button</b>
 <H2>Input properties</H2>
 <B>Input signature</b>:$md5inp<br/>
 <B>Configuration name</b>:$confname
@@ -480,7 +484,7 @@ CONTENT;
 }
 
 echo<<<CONTENT
-$save_button
+<p>$save_button $del_button</p>
 <a href=?back&$qstring>Back</a> - <a href=?$qreload>Reload</a>
 </form>
 CONTENT;
