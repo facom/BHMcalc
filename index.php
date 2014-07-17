@@ -516,7 +516,7 @@ CONTENT;
    foreach($keys as $key){
      $qstring=$preconfs_qstring[$key];
      $confiname=$preconfs_name[$key];
-     $global_list.="<a href='?load=repo/admin/$key&$qstring'>$confiname</a><br/>";
+     $global_list.="<a href='?load=repo/admin/$key&$qstring&admin'>$confiname</a><br/>";
    }
    if(!preg_match("/\w/",$global_list)){
      $global_list="<i>(No configurations found)</i>";
@@ -535,7 +535,7 @@ CONTENT;
      $qstring=rtrim(shell_exec("cat $conf/qstring"));
      //echo "$confiname";
      $preconfs_name["$md5in"]="$confiname";
-     $preconfs_qstring["$md5in"]="$qstring";
+     $preconfs_qstring["$md5in"]="$qstring&admin";
    }
    $this_session="";
    $keys=array_keys($preconfs_name);
