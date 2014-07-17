@@ -519,7 +519,8 @@ CONTENT;
    //SESSION LIST
    $out=shell_exec("ls -md repo/users/$sessid/*");
    $confs=preg_split("/\s*,\s/",$out);
-   $preconfs=array();
+   $preconfs_name=array();
+   $preconfs_qstring=array();
    foreach($confs as $conf){
      $conf=rtrim($conf);
      //echo "User configuration:$conf<br/>";

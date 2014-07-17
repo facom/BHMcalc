@@ -285,7 +285,7 @@ def Run():
     print d,"Prot = %f days"%Prot2
     print d,"HZ = ",lin2,aE2,aHZ2,lout2
     print
-    titlebin=r"$M_1=%.3f$, $M_2=%.3f$, $a_{\rm bin}=%.3f$ AU, $e=%.3f$, $P_{\rm bin}=%.3f$ days"%(M1,M2,abin,e,Pbin)
+    titlebin=r"$M_1=%.3f$, $M_2=%.3f$, $a_{\rm bin}=%.3f$ AU, $e_{\rm bin}=%.3f$, $P_{\rm bin}=%.3f$ days"%(M1,M2,abin,e,Pbin)
 
     #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     #ESTIMATED SYNC. TIME
