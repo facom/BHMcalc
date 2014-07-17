@@ -838,7 +838,6 @@ def Run():
     #plt.grid()
     saveFig(TMPDIR+"/InsolationPhotonDensity-%s.png"%suffix)
 
-    exit(0)
     #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     #CHECK IF INTEGRATION IS REQUESTED
     #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

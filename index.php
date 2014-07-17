@@ -16,6 +16,25 @@ if($out=="urania"){
   $DIR="/var/www/$WEBDIR";
 }
 
+function generateFileList($sessid,$suffix){
+    $files=array(
+		 "output-$sessid.log",
+		 "fulloutput-$sessid.log",
+		 "cmd-$sessid.log",
+		 "config-$sessid.log",
+		 "HZ-$suffix.png","HZ-$suffix.png.txt",
+		 "HZ+planet-$suffix.png","HZ+planet-$suffix.png.txt",
+		 "HZevol-$suffix.png","HZevol-$suffix.png.txt",
+		 "StellarOrbits-$suffix.png","StellarOrbits-$suffix.png.txt",
+		 "InsolationPhotonDensity-$suffix.png","InsolationPhotonDensity-$suffix.png.txt",
+		 "PeriodEvolution-$suffix.png","PeriodEvolution-$suffix.png.txt",
+		 "FluxXUV-$suffix.png","FluxSW-$suffix.png.txt",
+		 "RatiosFluxXUV-$suffix.png","RatiosFluxXUV-$suffix.png.txt",
+		 "RatiosFluxSW-$suffix.png","IntFXUV-$suffix.png.txt",
+		 "MassLoss-$suffix.png","MassLoss-$suffix.png.txt");
+    return $files;
+}
+
 function selectFunction($name,$selection,$defvalue){
 $sel=<<<SELECT
   <select name="$name">
@@ -63,6 +82,15 @@ function access($referer){
   fclose($fl);
 }
 
+function generateRandomString($length = 10) {
+  $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+  $randomString = '';
+  for ($i = 0; $i < $length; $i++) {
+    $randomString .= $characters[rand(0, strlen($characters) - 1)];
+  }
+  return $randomString;
+}
+
 //////////////////////////////////////////////////////////////////////////////////
 //FOOTER
 //////////////////////////////////////////////////////////////////////////////////
@@ -78,9 +106,14 @@ echo<<<CONTENT
 <form>
 CONTENT;
 
+if(isset($_GET["admin"])){
+  echo "<input type='hidden' name='admin' value=1>";
+}
+
 //////////////////////////////////////////////////////////////////////////////////
 //DEFAULT VALUES
 //////////////////////////////////////////////////////////////////////////////////
+$randstr=generateRandomString(5);
 $Z=0.0;
 $FeH=0.0;
 $M1=1.0;
@@ -89,12 +122,12 @@ $Pbin=10.0;
 $e=0.0;
 $Mp=1.0;
 $ap=1.5;
-$ep=0.5;
+$ep=0.1;
 $tau=1.0;
 $tautot=2.0;
 $incrit='recent venus';
 $outcrit='early mars';
-$confname='Configuration';
+$confname="Configuration $randstr";
 $zsvec="ZSVEC_siblings";
 $earlywind="trend";
 $qsaved=1;
@@ -114,8 +147,13 @@ foreach(array_keys($_POST) as $field){
 //REPORT
 //////////////////////////////////////////////////////////////////////////////////
 if(isset($submit) and !isset($back)){
+  /*
+  if(!isset($qstring)){
+    $qstring=$_SERVER["QUERY_STRING"];
+  }
+  echo "QSTRING: $qstring<br/>";
+  */
   $qstring=$_SERVER["QUERY_STRING"];
-
   //SAVE CONFIGURATION
   $fc=fopen("tmp/config-$sessid.log","w");
   fwrite($fc,"URL: $qstring\n\n");
@@ -130,7 +168,6 @@ if(isset($submit) and !isset($back)){
   if($preconf!="0"){
     //echo "Configuration loaded: $preconf.<br/>";
     $configuration=file("tmp/conf-$preconf/configuration");
-    //print_r($configuration);
     $i=1;
     $Z=rtrim($configuration[$i++]);
     $M1=rtrim($configuration[$i++]); 
@@ -143,7 +180,6 @@ if(isset($submit) and !isset($back)){
     $tautot=rtrim($configuration[$i++]);
     $qintegration=rtrim($configuration[$i++]);
     $i++;
-    //$sessid=rtrim($configuration[$i++]);
     $zsvec=rtrim($configuration[$i++]);
     $qchz=rtrim($configuration[$i++]);
     $earlywind=rtrim($configuration[$i++]); 
@@ -152,7 +188,6 @@ if(isset($submit) and !isset($back)){
     $incrit=rtrim($configuration[$i++]);
     $outcrit=rtrim($configuration[$i++]);
     $i++;
-    //$confname=rtrim($configuration[$i++]);
     $qsaved=rtrim($configuration[$i++]);
     $qstring="?preconf=0&Z=$Z&M1=$M1&M2=$M2&e=$e&Pbin=$Pbin&tau=$tau&Mp=$Mp&ap=$ap&tautot=$tautot&qintegration=$qintegration&zsvec=$zsvec&qchz=$qchz&earlywind=$earlywind&FeH=$FeH&ep=$ep&incrit=$incrit&outcrit=$outcrit&confname=$confname&qsaved=$qsaved";
   }
@@ -164,16 +199,103 @@ if(isset($submit) and !isset($back)){
   if($qintegration){$qchz=1;}
 
   if(!isset($stat) and !isset($back)){access("run");}
-  if(!isset($reload)){
+
+  if(!isset($reload) and !isset($load) and !isset($save)){
   $cmd="$PYTHONCMD BHMcalc.py $Z $M1 $M2 $e $Pbin $tau $Mp $ap $tautot $qintegration $sessid $zsvec $qchz $earlywind $FeH $ep \"$incrit\" \"$outcrit\" \"$confname\" $qsaved &> tmp/fulloutput-$sessid.log";
   //echo "<p>$cmd</p>";return;
 
   exec($cmd,$output,$status); 
   shell_exec("echo '$cmd' > tmp/cmd-$sessid.log");
   $qreload="reload&$qstring";
-  }else{
+  }else if(isset($reload)){
     $qreload=$qstring;
-  }
+  }else if(isset($load)){
+    echo "<i>Loading '$confname'...<br/><br/></i>";
+    //SAVE DIR
+    $savedir=$load;
+    //LOADING RESULT
+    $parts=array();
+    for($i=0;$i<36;$i++){
+      $name="parts_$i";
+      $parts[$i]=$$name;
+    }
+    //SUFFIX
+    $i=0;
+    $md5inp=$parts[$i++];
+    $g1=$parts[$i++];$T1=$parts[$i++];$R1=$parts[$i++];$L1=$parts[$i++];
+    $Rmin1=$parts[$i++];$Rmax1=$parts[$i++];$Pini1=$parts[$i++];$Prot1=$parts[$i++];
+    $lin1=$parts[$i++];$aE1=$parts[$i++];$aHZ1=$parts[$i++];$lout1=$parts[$i++];
+    $g2=$parts[$i++];$T2=$parts[$i++];$R2=$parts[$i++];$L2=$parts[$i++];
+    $Rmin2=$parts[$i++];$Rmax2=$parts[$i++];$Pini2=$parts[$i++];$Prot2=$parts[$i++];
+    $lin2=$parts[$i++];$aE2=$parts[$i++];$aHZ2=$parts[$i++];$lout2=$parts[$i++];
+    $abin=$parts[$i++];$acrit=$parts[$i++];$nsync=$parts[$i++];$Psync=$parts[$i++];
+    $lin=$parts[$i++];$aE=$parts[$i++];$aHZ=$parts[$i++];$lout=$parts[$i++];
+    $tsync1=$parts[$i++];$tsync2=$parts[$i++];
+    $Z=$parts[$i++];
+    $sessid_original=rtrim(shell_exec("cat $savedir/sessid"));
+    $suffix_original=sprintf("%.2f%.2f%.3f%.2f-%s",$M1,$M2,$e,$Pbin,$sessid_original);
+    $suffix_new=sprintf("%.2f%.2f%.3f%.2f-%s",$M1,$M2,$e,$Pbin,$sessid);
+    //ORIGINAL SESSID
+    $files_original=generateFileList($sessid_original,$suffix_original);
+    $files_new=generateFileList($sessid,$suffix_new);
+    //COPY FILES
+    $numfiles=count($files_original);
+    for($i=0;$i<$numfiles;$i++){
+      $fileori=$files_original[$i];
+      $filenew=$files_new[$i];
+      //echo "Loading file $savedir/$fileori as tmp/$filenew...<br/>";
+      shell_exec("cp -rf $savedir/$fileori tmp/$filenew");
+    }
+    //QSTRING
+    $qstring=preg_replace("/confname=/","confname=Modified+",$qstring);
+  }else if(isset($save)){
+    echo "<i>Result has been saved as '$confname'...<br/><br/></i>";
+    //QSTRING
+    $qstring_save=preg_replace("/admin=1&/","",$qstring);
+    $qstring_save=preg_replace("/&save/","",$qstring_save);
+    //LOAD DATA
+    $parts=array();
+    for($i=0;$i<36;$i++){
+      $name="parts_$i";
+      $parts[$i]=$$name;
+    }
+    //SUFFIX
+    $i=0;
+    $md5inp=$parts[$i++];
+    $g1=$parts[$i++];$T1=$parts[$i++];$R1=$parts[$i++];$L1=$parts[$i++];
+    $Rmin1=$parts[$i++];$Rmax1=$parts[$i++];$Pini1=$parts[$i++];$Prot1=$parts[$i++];
+    $lin1=$parts[$i++];$aE1=$parts[$i++];$aHZ1=$parts[$i++];$lout1=$parts[$i++];
+    $g2=$parts[$i++];$T2=$parts[$i++];$R2=$parts[$i++];$L2=$parts[$i++];
+    $Rmin2=$parts[$i++];$Rmax2=$parts[$i++];$Pini2=$parts[$i++];$Prot2=$parts[$i++];
+    $lin2=$parts[$i++];$aE2=$parts[$i++];$aHZ2=$parts[$i++];$lout2=$parts[$i++];
+    $abin=$parts[$i++];$acrit=$parts[$i++];$nsync=$parts[$i++];$Psync=$parts[$i++];
+    $lin=$parts[$i++];$aE=$parts[$i++];$aHZ=$parts[$i++];$lout=$parts[$i++];
+    $tsync1=$parts[$i++];$tsync2=$parts[$i++];
+    $Z=$parts[$i++];
+    $suffix=sprintf("%.2f%.2f%.3f%.2f-%s",$M1,$M2,$e,$Pbin,$sessid);
+    $files=generateFileList($sessid,$suffix);
+    //SAVE STRING
+    $savestr=$md5inp;
+    //CHECK IF IT IS ADMIN
+    if(!isset($admin)){$savedir="repo/users/$sessid/$savestr";}
+    else{$savedir="repo/admin/$savestr";}
+    //CREATE DIRECTORY
+    shell_exec("mkdir -p $savedir");
+    //SAVE QSTRING
+    shell_exec("echo '$qstring_save' > $savedir/qstring");
+    shell_exec("echo '$sessid' > $savedir/sessid");
+    shell_exec("echo '$confname' > $savedir/confname");
+    shell_exec("echo '$md5inp' > $savedir/md5in");
+    //SAVING FILES
+    foreach($files as $file){
+      //echo "Saving file $file...<br/>";
+      shell_exec("cp -rf tmp/$file $savedir/$file");
+    }
+  }//END OF SAVE
+  
+  ////////////////////////////////////////////////////
+  //LOAD A RESULT
+  ////////////////////////////////////////////////////
   $result=shell_exec("cat tmp/output-$sessid.log");
   
   //ERROR
@@ -190,9 +312,8 @@ if(isset($submit) and !isset($back)){
   echo "<a href=?$qreload>Reload</a>";
   echo "<P><a href=tmp/fulloutput-$sessid.log target=_blank>Full Output</a> - <a href=tmp/config-$sessid.log target=_blank>Configuration</a> - <a href=tmp/cmd-$sessid.log target=_blank>Command</a></P>";
 
-  //print_r($parts);
-
   //BASIC INFORMATION ON THE SYSTEM
+  $Zinp=$Z;
   $i=0;
   $md5inp=$parts[$i++];
   $g1=$parts[$i++];$T1=$parts[$i++];$R1=$parts[$i++];$L1=$parts[$i++];
@@ -214,22 +335,35 @@ if(isset($submit) and !isset($back)){
 	
   $suffix=sprintf("%.2f%.2f%.3f%.2f-%s",$M1,$M2,$e,$Pbin,$sessid);
 
+  $zcalc="";
+  if($Zinp==0){$zcalc="<sup>*Calculated</sup>";}
+
+  $qstring_save=preg_replace("/reload&/","",$qstring);
+  for($i=0;$i<36;$i++){$qstring_save.="&parts_$i=".$parts[$i];}
+  if(!isset($load)){
+    $save_button="<p><a href=\"?$qstring_save&save\" style=background:lightgray;padding:10px;>Save Result</a></p>";
+  }else{
+    $save_button="";
+  }
+
 echo<<<CONTENT
-<H2>Input</H2>
-<B>Input signature</b>:</td><td>$md5inp
+$save_button
+<H2>Input properties</H2>
+<B>Input signature</b>:$md5inp<br/>
+<B>Configuration name</b>:$confname
 <p></p>
 <table>
-  <tr><td>Z:</td><td>$Z</td></tr>
   <tr><td>[Fe/H]:</td><td>$FeH</td></tr>
+  <tr><td>Z:</td><td>$Z$zcalc</td></tr>
   <tr><td>M<sub>1</sub>:</td><td>$M1 M<sub>Sun</sub></td></tr>
   <tr><td>M<sub>2</sub>:</td><td>$M2 M<sub>Sun</sub></td></tr>
   <tr><td>q:</td><td>$q</td></tr>
   <tr><td>P<sub>bin</sub>:</td><td>$Pbin days</td></tr>
   <tr><td>e:</td><td>$e</td></tr>
+  <tr><td>&tau;:</td><td>$tau Gyr</td></tr>
   <tr><td>M<sub>p</sub>:</td><td>$Mp M<sub>Earth</sub></td></tr>
   <tr><td>a<sub>p</sub>:</td><td>$ap AU</td></tr>
   <tr><td>e<sub>p</sub>:</td><td>$ep</td></tr>
-  <tr><td>&tau;:</td><td>$tau Gyr</td></tr>
 </table>
 
 <H2>Binary System Properties</H2>
@@ -268,8 +402,7 @@ Gyr.</P>
   <tr><td>P<sub>rot</sub>:</td><td>$Prot2 days</td></tr>
   <tr><td>HZ:</td><td>[$lin2,$aE2 ($aHZ2),$lout2] AU</td></tr>
 </table>
-<br/>
-<H3>Habitable Zone</H3>
+<H3>Cricumbinary Habitable Zone</H3>
 <a href="tmp/HZ-$suffix.png.txt" target="_blank"><img src="tmp/HZ-$suffix.png"></a><br/>
 <a href="tmp/HZ+planet-$suffix.png.txt" target="_blank"><img src="tmp/HZ+planet-$suffix.png"></a><br/>
 CONTENT;
@@ -347,40 +480,66 @@ CONTENT;
 }
 
 echo<<<CONTENT
+$save_button
 <a href=?back&$qstring>Back</a> - <a href=?$qreload>Reload</a>
+</form>
 CONTENT;
 
  }else{
 
+  //echo "Confname: $confname";
 //////////////////////////////////////////////////////////////////////////////////
 //INPUT
 //////////////////////////////////////////////////////////////////////////////////
    if(!isset($stat) and !isset($back)){access("access");}
 
-   $out=shell_exec("ls -md tmp/conf-*");
-   $confs=preg_split("/\s*,\s*/",$out);
-   $PRECONFS=array();
-   $NUMCONFS=array();
-   $NAMECONFS=array();
+   //GLOBAL LIST
+   $out=shell_exec("ls -md repo/admin/*");
+   $confs=preg_split("/\s*,\s/",$out);
+   $preconfs=array();
    foreach($confs as $conf){
      $conf=rtrim($conf);
-     $parts=preg_split("/-/",$conf);
-     $md5in=$parts[1];
-     $name=rtrim(shell_exec("tail -n 3 $conf/configuration | head -n 1"));
-     if(preg_match("/Configuration/",$name)){continue;}
-     if(isset($NAMECONFS["$name"])){
-       $NUMCONFS["$name"]++;
-       $num=$NUMCONFS["$name"];
-       $PRECONFS["$md5in"]="$name $num";
-     }else{
-       $NUMCONFS["$name"]=1;
-       $PRECONFS["$md5in"]="$name";
-       $NAMECONFS["$name"]=1;
-     }
+     $confiname=rtrim(shell_exec("cat $conf/confname"));
+     $md5in=rtrim(shell_exec("cat $conf/md5in"));
+     $qstring=rtrim(shell_exec("cat $conf/qstring"));
+     //echo "Configuration '$conf' ($confiname,$md5in)...<br/>";
+     $preconfs_name["$md5in"]="$confiname";
+     $preconfs_qstring["$md5in"]="$qstring";
    }
-   $PRECONFS["0"]="--";
-   $confsel=selectFunction("preconf",$PRECONFS,$preconf);
+   $global_list="";
+   foreach(array_keys($preconfs_name) as $key){
+     $qstring=$preconfs_qstring[$key];
+     $confiname=$preconfs_name[$key];
+     $global_list.="<a href='?load=repo/admin/$key&$qstring'>$confiname</a><br/>";
+   }
+   if(!preg_match("/\w/",$global_list)){
+     $global_list="<i>(No configurations found)</i>";
+   }
 
+   //SESSION LIST
+   $out=shell_exec("ls -md repo/users/$sessid/*");
+   $confs=preg_split("/\s*,\s/",$out);
+   $preconfs=array();
+   foreach($confs as $conf){
+     $conf=rtrim($conf);
+     //echo "User configuration:$conf<br/>";
+     $confiname=rtrim(shell_exec("cat $conf/confname"));
+     $md5in=rtrim(shell_exec("cat $conf/md5in"));
+     $qstring=rtrim(shell_exec("cat $conf/qstring"));
+     //echo "$confiname";
+     $preconfs_name["$md5in"]="$confiname";
+     $preconfs_qstring["$md5in"]="$qstring";
+   }
+   $this_session="";
+   foreach(array_keys($preconfs_name) as $key){
+     $qstring=$preconfs_qstring[$key];
+     $confiname=$preconfs_name[$key];
+     $this_session.="<a href='?load=repo/users/$sessid/$key&$qstring'>$confiname</a><br/>";
+   }
+   if(!preg_match("/\w/",$this_session)){
+     $this_session="<i>(No configurations found)</i>";
+   }
+   
    $ZSVEC=array("ZSVEC_full"=>"Full (35 metallicities, 0.0001-0.06, [Fe/H] -2.30 to 0.62)",
 	       "ZSVEC_coarse"=>"Coarse (10 values, 0.0001-0.06, [Fe/H] -2.30 to 0.62)",
 	       "ZSVEC_siblings"=>"Near solar (3 values , 0.01-0.02, [Fe/H] -0.197 to 0.117)");
@@ -398,22 +557,13 @@ CONTENT;
 echo<<<CONTENT
 <H2>Input Data</H2>
 
-  Previous calculated configurations: $confsel<br/>
-
-<input type="submit" name="submit" value="submit">
-
 <H3>Binary System</H3>
 
-Z : <input type="text" name="Z" value="$Z"><br/> 
+<p>Choose here the basic properties of the binary system and a test planet.  You can load precalculated systems in the <a href="#repo">Results Repository</a>.</p>
 
-<i style="font-size:12px">Metallicity of the binary system.  If
-unknown leave [Fe/H] below in 0.  Theoretical metallicities are in the
-  range 0.0001 to 0.06 (see isochrone set in the behavior section).  If you only know [Fe/H] leave Z =
-0</i><br/><br/>
+[Fe/H] : <input type="text" name="FeH" value="$FeH"> or Z : <input type="text" name="Z" value="$Z"><br/> 
 
-[Fe/H] : <input type="text" name="FeH" value="$FeH"><br/> 
-
-<i style="font-size:12px">Metallicity in dex.</i><br/><br/>
+<i style="font-size:12px">Metallicity.  Leave in zero either [Fe/H] in Z if you do not know the exact value of this quantities. The valid range of Z with depend on the isochrone set selected in the <a href="#options">options section</a>. It typically range from 0.0001 to 0.06.</i><br/><br/>
 
 M<sub>1</sub> : <input type="text" name="M1" value="$M1"> M<sub>Sun</sub><br/>
 <i style="font-size:12px">Mass of the main component</i><br/><br/>
@@ -427,7 +577,12 @@ P<sub>bin</sub> : <input type="text" name="Pbin" value="$Pbin"> days<br/>
 e : <input type="text" name="e" value="$e"><br/>
 <i style="font-size:12px">Binary eccentricity.</i><br/><br/>
 
-<H3>Planet (optional)</H3>
+&tau; : <input type="text" name="tau" value="$tau"> Gyr<br/>
+<i style="font-size:12px">Age of the system.  Values must be between 0.01 and 12.5 Gyr</i><br/><br/>
+
+<input type="submit" name="submit" value="submit">
+
+<H3>Properties of the test planet</H3>
 
 M<sub>p</sub> : <input type="text" name="Mp" value="$Mp"> M<sub>Earth</sub><br/>
 <i style="font-size:12px">Planetary mass. Values must be between 0.5 and 10.0</i><br/><br/>
@@ -438,23 +593,31 @@ a<sub>p</sub> : <input type="text" name="ap" value="$ap"> AU<br/>
 e<sub>p</sub> : <input type="text" name="ep" value="$ep"><br/>
 <i style="font-size:12px">Eccentricity of the planet</i><br/><br/>
 
-<H3>Planetary System (optional)</H3>
+<input type="submit" name="submit" value="submit">
 
-&tau; : <input type="text" name="tau" value="$tau"> Gyr<br/>
-<i style="font-size:12px">Age of the system.  Values must be between 0.01 and 12.5 Gyr</i><br/><br/>
+<H3>Available calculation</H3>
 
-<H3>Continuous Habitable Zone (CHZ, Optional)</H3>
+<p>Please indicate here which calculation do you want to perform.  More advanced calculations will takes considerably more time to be performed.</p>
+
+Basic binary properties: <input type="checkbox" name="qbasic" checked><br/>
+<i style="font-size:12px">Compute the basic properties of the binaries including instantaneous stellar properties, critical distance, binary semimajor axis, etc.</i><br/><br/>
+
+Binary HZ: <input type="checkbox" name="qhz" checked><br/>
+	   <i style="font-size:12px">Compute and plot the Habitable Zone (HZ) of the binary at its present age (see parameter &tau;).</i><br/><br/>
 
 Compute the continuous HZ:$check_qchz<br/>
+<i style="font-size:12px">Compute and plot the continuous habitable zone (CHZ).</i><br/><br/>
 
-<H3>Integration (optional)</H3>
-
-Integrate:$check_qintegration<br/>
+Integrate properties:$check_qintegration<br/>
+<i style="font-size:12px">Calculate the evolution of the interacting properties between the planet and the stellar components (XUV flux, stellar wind, estimated atmospheric mass-loss, etc.)</i><br/><br/>
 
 Total integration time : <input type="text" name="tautot" value="$tautot"> Gyr<br/>
 <i style="font-size:12px">Values must be between 0.01 and 12.5 Gyr</i><br/><br/>
 
-<H3>Behavior</H3>
+<input type="submit" name="submit" value="submit">
+
+<a name="options"></a>
+<H3>Options</H3>
 
 Set of isochrones : $zsel<br/>
 <i style="font-size:12px">It could reduce considerably the execution time.</i><br/><br/>
@@ -467,19 +630,30 @@ about the stellar wind before &tau;<0.7 Gyr.  Some observations
 suggest there is a saturation on magnetic activity before that.
 Select which type of behavior do you want to simulate.</i><br/><br/>
 
-Configuration name: 
-<input type='text' name='confname' value='$confname'><br/>
-
-<i style="font-size:12px">Save a configuration with a given name. Do
-not modify if you don't need this option.</i><br/><br/>
-
 Do you want to retrieve any previous result: $savedsel<br/>
 
 <i style="font-size:12px">Use this option to load results from a
 previous calculation performed with exactly the same
 parameters.</i><br/><br/>
 
+Configuration name: 
+<input type='text' name='confname' value="$confname"><br/>
+
+<i style="font-size:12px">Save a configuration with a given name. Do
+not modify if you don't need this option.</i><br/><br/>
+
 <input type="submit" name="submit" value="submit">
+
+<a name="repo"></a>
+<H3>Results Repository</H3>
+
+<H4>Global list</H4>
+
+$global_list
+
+<H4>This session</H4>
+
+$this_session
 
 CONTENT;
  }
