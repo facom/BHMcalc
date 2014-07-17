@@ -1506,7 +1506,7 @@ def Run():
     plt.plot(Mpvec,Pl,'k-',label='Mass loss BHM')
     plt.plot(Mpvec,ntPl,'k--',label='Mass loss no BHM')
     plt.plot(Mpvec,sPl,'k:',label='Mass loss single-primary')
-    plt.plot(earthML[:,0],earthML[:,1],'k-',linewidth=2,label='Earth')
+    plt.plot(earthML[:,0],earthML[:,1],'k-',linewidth=2,label='Single solar-mass, $a = 1$ AU')
 
     plt.xlabel("$M_p/M_\oplus$",fontsize=LABEL_SIZE)
     plt.ylabel(r"$P_{\rm loss}\,({\rm bars})$",fontsize=LABEL_SIZE)
