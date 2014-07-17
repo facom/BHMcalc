@@ -307,6 +307,8 @@ if(isset($submit) and !isset($back)){
   if($Zinp==0){$zcalc="<sup>*Calculated</sup>";}
 
   $qstring_save=preg_replace("/reload&/","",$qstring);
+  $qstring_del=preg_replace("/reload&/","",$qstring);
+  $qstring_del=preg_replace("/Modified/","",$qstring);
   for($i=0;$i<36;$i++){$qstring_save.="&parts_$i=".$parts[$i];}
   $del_button="";
   if(!isset($load)){
@@ -314,7 +316,7 @@ if(isset($submit) and !isset($back)){
   }else{
     $save_button="";
     if(isset($admin)){
-      $del_button="<a href=\"?$qstring_save&delete\" style=background:lightgray;padding:10px;>Delete</a>";
+      $del_button="<a href=\"?$qstring_del&delete\" style=background:lightgray;padding:10px;>Delete</a>";
     }
   }
 
