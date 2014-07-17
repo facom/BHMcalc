@@ -1379,7 +1379,7 @@ def Run():
     plt.plot(tvecX,FSWopt_vec/ntFSWopt_vec,'k-',label='BHM/no BHM')
     plt.plot(tvecX,FSWopt_vec/sFSWopt_vec,'k--',label='BHM/Single')
     plt.xlabel(r"$t$ (Gyr)",fontsize=LABEL_SIZE)
-    plt.ylabel(r"$F_{\rm XUV,bin}/F_{\rm XUV,ref}$",fontsize=LABEL_SIZE)
+    plt.ylabel(r"$F_{\rm SW,bin}/F_{\rm SW,ref}$",fontsize=LABEL_SIZE)
     ymin,ymax=plt.ylim()
     plt.axhspan(0.0,1.0,color='g',alpha=0.2)
     plt.axhspan(1.0,max(1.0,ymax),color='r',alpha=0.2)
