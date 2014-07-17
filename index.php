@@ -507,7 +507,9 @@ CONTENT;
      $preconfs_qstring["$md5in"]="$qstring";
    }
    $global_list="";
-   foreach(array_keys($preconfs_name) as $key){
+   $keys=array_keys($preconfs_name);
+   array_multisort($preconfs_name,$keys);
+   foreach($keys as $key){
      $qstring=$preconfs_qstring[$key];
      $confiname=$preconfs_name[$key];
      $global_list.="<a href='?load=repo/admin/$key&$qstring'>$confiname</a><br/>";
@@ -532,7 +534,9 @@ CONTENT;
      $preconfs_qstring["$md5in"]="$qstring";
    }
    $this_session="";
-   foreach(array_keys($preconfs_name) as $key){
+   $keys=array_keys($preconfs_name);
+   array_multisort($preconfs_name,$keys);
+   foreach($keys as $key){
      $qstring=$preconfs_qstring[$key];
      $confiname=$preconfs_name[$key];
      $this_session.="<a href='?load=repo/users/$sessid/$key&$qstring'>$confiname</a><br/>";
