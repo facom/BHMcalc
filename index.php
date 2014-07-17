@@ -200,7 +200,7 @@ if(isset($submit) and !isset($back)){
 
   if(!isset($stat) and !isset($back)){access("run");}
 
-  if(!isset($reload) and !isset($load) and !isset($save)){
+  if(!isset($reload) and !isset($load) and !isset($save) and !isset($delete)){
   $cmd="$PYTHONCMD BHMcalc.py $Z $M1 $M2 $e $Pbin $tau $Mp $ap $tautot $qintegration $sessid $zsvec $qchz $earlywind $FeH $ep \"$incrit\" \"$outcrit\" \"$confname\" $qsaved &> tmp/fulloutput-$sessid.log";
   //echo "<p>$cmd</p>";return;
 
@@ -209,45 +209,13 @@ if(isset($submit) and !isset($back)){
   $qreload="reload&$qstring";
   }else if(isset($reload)){
     $qreload=$qstring;
-  }else if(isset($load)){
-    echo "<i>Loading '$confname'...<br/><br/></i>";
+  }else if(isset($delete)){
+    echo "<i>Removing '$confname'...<br/><br/></i>";
     //SAVE DIR
     $savedir=$load;
-    //LOADING RESULT
-    $parts=array();
-    for($i=0;$i<36;$i++){
-      $name="parts_$i";
-      $parts[$i]=$$name;
-    }
-    //SUFFIX
-    $i=0;
-    $md5inp=$parts[$i++];
-    $g1=$parts[$i++];$T1=$parts[$i++];$R1=$parts[$i++];$L1=$parts[$i++];
-    $Rmin1=$parts[$i++];$Rmax1=$parts[$i++];$Pini1=$parts[$i++];$Prot1=$parts[$i++];
-    $lin1=$parts[$i++];$aE1=$parts[$i++];$aHZ1=$parts[$i++];$lout1=$parts[$i++];
-    $g2=$parts[$i++];$T2=$parts[$i++];$R2=$parts[$i++];$L2=$parts[$i++];
-    $Rmin2=$parts[$i++];$Rmax2=$parts[$i++];$Pini2=$parts[$i++];$Prot2=$parts[$i++];
-    $lin2=$parts[$i++];$aE2=$parts[$i++];$aHZ2=$parts[$i++];$lout2=$parts[$i++];
-    $abin=$parts[$i++];$acrit=$parts[$i++];$nsync=$parts[$i++];$Psync=$parts[$i++];
-    $lin=$parts[$i++];$aE=$parts[$i++];$aHZ=$parts[$i++];$lout=$parts[$i++];
-    $tsync1=$parts[$i++];$tsync2=$parts[$i++];
-    $Z=$parts[$i++];
-    $sessid_original=rtrim(shell_exec("cat $savedir/sessid"));
-    $suffix_original=sprintf("%.2f%.2f%.3f%.2f-%s",$M1,$M2,$e,$Pbin,$sessid_original);
-    $suffix_new=sprintf("%.2f%.2f%.3f%.2f-%s",$M1,$M2,$e,$Pbin,$sessid);
-    //ORIGINAL SESSID
-    $files_original=generateFileList($sessid_original,$suffix_original);
-    $files_new=generateFileList($sessid,$suffix_new);
-    //COPY FILES
-    $numfiles=count($files_original);
-    for($i=0;$i<$numfiles;$i++){
-      $fileori=$files_original[$i];
-      $filenew=$files_new[$i];
-      //echo "Loading file $savedir/$fileori as tmp/$filenew...<br/>";
-      shell_exec("cp -rf $savedir/$fileori tmp/$filenew");
-    }
-    //QSTRING
-    $qstring=preg_replace("/confname=/","confname=Modified+",$qstring);
+    //shell_exec("rm -rf $savedir");
+    echo("rm -rf $savedir");
+    return;
   }else if(isset($save)){
     echo "<i>Result has been saved as '$confname'...<br/><br/></i>";
     //QSTRING
