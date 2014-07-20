@@ -467,15 +467,26 @@ def Run():
         print "Maximum age of the system: %.3f"%(tausys)
  
         #FIND BINARY CONTINUOUS HABITABLE ZONE
+        """
+        nlins=len(lins)
+        dlins=[]
+        for i in xrange(10,nlins):
+            dlins+=[np.log10(lins[i])-np.log10(lins[i-3])]
+        dlins=np.array(dlins)
+        """
+        #"""
         dlins=np.log10(lins[1::])-np.log10(lins[:-1:])
         dlins=np.append([0],dlins)
+        #print np.log10(lins[1::])[-10:-1],dlins[-10:-1]
+        #exit(0)
+        #"""
         imax=-1
         dimax=20
         epsmax=0
         dlinold=dlins[-1]
         for i in arange(10,len(dlins))[::-3]:
             eps=2*abs(dlins[i]-dlinold)/(dlins[i]+dlinold)
-            #print tauvec[i],eps,epsmax,imax,i
+            #print tauvec[i],dlins[i],dlinold,eps,epsmax,imax,i
             if eps>epsmax:
                 imax=i
                 epsmax=eps
@@ -484,6 +495,8 @@ def Run():
             if tauvec[i]<tausys/2:break
         lincont=lins[imax]
         loutcont=min(louts)
+        #print lincont,loutcont
+        #exit(0)
 
         #FIND SINGLE PRIMARY CONTINUOUS HABITABLE ZONE
         dslins=np.log10(slins[1::])-np.log10(slins[:-1:])
@@ -493,7 +506,7 @@ def Run():
         dlinold=dslins[-1]
         for i in arange(10,len(dslins))[::-3]:
             eps=2*abs(dslins[i]-dlinold)/(dslins[i]+dlinold)
-            #print tauvec[i],eps,epsmax
+            #print tauvec[i],dslins[i],dlinold,eps,epsmax
             if eps>epsmax:
                 imax=i
                 epsmax=eps
