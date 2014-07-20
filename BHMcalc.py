@@ -1,7 +1,7 @@
 from BHM.isochrones import *
 from BHM.plot import *
 from BHM.BHM import *
-from BHM.keplerbin import *
+from BHM.catalogue import *
 from numpy import *
 
 """
