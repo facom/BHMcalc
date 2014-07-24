@@ -326,7 +326,7 @@ def Run():
     #ax=fig.add_axes([0.1,0.1,0.8,0.8])
     ax.set_xticklabels([])
     ax.set_yticklabels([])
-    ax.tick_params(direction='out',pad=5)
+    ax.tick_params(direction='in',pad=5)
 
     #ORBIT
     MTOT=M1+M2
