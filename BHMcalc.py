@@ -361,7 +361,7 @@ def Run():
 
     #SINGLE STAR
     print lin1
-    inHZs=Circle((0,0),lin1,facecolor='k',linestyle='dashed',alpha=0.3,linewidth=2,zorder=60)
+    inHZs=Circle((0,0),lin1,facecolor='none',linestyle='dashed',linewidth=2,zorder=60)
     ax.add_patch(inHZs)
 
     #OUTER
