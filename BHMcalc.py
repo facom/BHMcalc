@@ -322,8 +322,8 @@ def Run():
     rang=1.2*lout
     fig=plt.figure(figsize=(8,8))
     ifig=0
-    #ax=fig.add_axes([0.01,0.01,0.98,0.98])
-    ax=fig.add_axes([0.1,0.1,0.8,0.8])
+    ax=fig.add_axes([0.01,0.01,0.98,0.98])
+    #ax=fig.add_axes([0.1,0.1,0.8,0.8])
     ax.set_xticklabels([])
     ax.set_yticklabels([])
 
