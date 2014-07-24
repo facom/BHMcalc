@@ -360,7 +360,7 @@ def Run():
     ax.add_patch(inHZ)
 
     #SINGLE STAR
-    inHZs=Circle((0,0),lin1,facecolor='none',linestyle='dotted',color='b',linewidth=2,zorder=60)
+    inHZs=Circle((0,0),lin1,facecolor='none',linestyle='dotted',edgecolor='b',linewidth=2,zorder=60)
     ax.add_patch(inHZs)
 
     #OUTER
