@@ -359,6 +359,10 @@ def Run():
                 linewidth=2,zorder=10)
     ax.add_patch(inHZ)
 
+    #SINGLE
+    inHZs=Circle((0,0),lin1,facecolor='k',linestyle='dashed',alpha=0.3,linewidth=2)
+    ax.add_patch(inHZs)
+
     #OUTER
     lino,aEo,louto=HZbin4(M2/M1,LZ1,LZ2,TZ1,abin,
                        crits=['recent venus','early mars'])
