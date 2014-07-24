@@ -319,7 +319,7 @@ def Run():
     #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     #PLOT HABITABLE ZONE AND BINARY ORBIT
     #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    rang=1.2*lout*3
+    rang=1.2*lout
     fig=plt.figure(figsize=(8,8))
     ifig=0
     ax=fig.add_axes([0.01,0.01,0.98,0.98])
