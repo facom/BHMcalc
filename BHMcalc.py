@@ -322,7 +322,8 @@ def Run():
     rang=1.2*lout
     fig=plt.figure(figsize=(8,8))
     ifig=0
-    ax=fig.add_axes([0.01,0.01,0.98,0.98])
+    #ax=fig.add_axes([0.01,0.01,0.98,0.98])
+    ax=fig.add_axes([0.1,0.1,0.8,0.8])
     ax.set_xticklabels([])
     ax.set_yticklabels([])
 
@@ -371,7 +372,7 @@ def Run():
     #TITLE
     ax.set_title(titlebin,position=(0.5,0.95),fontsize=16)
     ax.text(0.5,0.02,r"$a_{\rm crit}=%.2f$ AU, $l_{\rm in,RV}$=%.2f AU, $l_{\rm in,RG}$=%.2f AU, $l_{\rm out,MG}$=%.2f AU, $l_{\rm out,EM}$=%.2f AU"%(acrit,lino,lini,louti,louto),transform=ax.transAxes,horizontalalignment='center',fontsize=14)
-
+    
     ax.set_xlim((-rang,rang))
     ax.set_ylim((-rang,rang))
 

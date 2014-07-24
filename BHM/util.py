@@ -94,3 +94,6 @@ def System(cmd,out=False,sim=False):
     else:
         output=commands.getoutput(cmd)
     return output
+
+def D2R(angle):return angle*np.pi/180
+def R2D(angle):return angle*180/np.pi
