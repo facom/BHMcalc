@@ -359,8 +359,9 @@ def Run():
                 linewidth=2,zorder=10)
     ax.add_patch(inHZ)
 
-    #SINGLE
-    inHZs=Circle((0,0),lin1,facecolor='k',linestyle='dashed',alpha=0.3,linewidth=2)
+    #SINGLE STAR
+    print lin1
+    inHZs=Circle((0,0),lin1,facecolor='k',linestyle='dashed',alpha=0.3,linewidth=2,zorder=60)
     ax.add_patch(inHZs)
 
     #OUTER
