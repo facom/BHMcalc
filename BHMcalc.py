@@ -362,7 +362,7 @@ def Run():
     #SINGLE STAR
     inHZs=Circle((0,0),lin1,facecolor='none',linestyle='dotted',edgecolor='r',linewidth=2,zorder=60)
     ax.add_patch(inHZs)
-    outHZs=Circle((0,0),lin1,facecolor='none',linestyle='dotted',edgecolor='b',linewidth=2,zorder=60)
+    outHZs=Circle((0,0),lout1,facecolor='none',linestyle='dotted',edgecolor='b',linewidth=2,zorder=60)
     ax.add_patch(outHZs)
 
     #OUTER
