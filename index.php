@@ -600,7 +600,7 @@ CONTENT;
    if(isset($back)){
      $displayo="block";
      $displayb="block";
-     $savedsel="Yes";
+     $qsaved="Yes";
    }
 
    //REFERENCES
