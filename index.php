@@ -2,7 +2,12 @@
 //////////////////////////////////////////////////////////////////////////////////
 //STYLE
 //////////////////////////////////////////////////////////////////////////////////
-
+$HEADER=<<<HEADER
+<head>
+  <script src="etc/jquery.js"></script>
+  
+</head>
+HEADER;
 //////////////////////////////////////////////////////////////////////////////////
 //STATISTICS
 //////////////////////////////////////////////////////////////////////////////////
@@ -100,6 +105,7 @@ function generateRandomString($length = 10) {
 //////////////////////////////////////////////////////////////////////////////////
 echo<<<CONTENT
 <HTML>
+$HEADER
 <BODY>
 <H1><A HREF="?">Binary Habitability Calculator</A>
 <!--<SUP style='color:red;font-size:18px'>v2.0</SUP>-->
@@ -512,7 +518,7 @@ CONTENT;
    foreach($keys as $key){
      $qstring=$preconfs_qstring[$key];
      $confiname=$preconfs_name[$key];
-     $global_list.="<a href='?load=repo/admin/$key&$qstring&admin'>$confiname</a><br/>";
+     $global_list.="<a href='?load=repo/admin/$key&$qstring'>$confiname</a><br/>";
    }
    if(!preg_match("/\w/",$global_list)){
      $global_list="<i>(No configurations found)</i>";
@@ -564,33 +570,48 @@ echo<<<CONTENT
 
 <H3>Binary System</H3>
 
-<p>Choose here the basic properties of the binary system and a test planet.  You can load precalculated systems in the <a href="#repo">Results Repository</a>.</p>
+<p>Choose the basic properties of the binary system here. Optionally,
+a test planet may be selected with results displayed on the habitable
+zone plots. Most results are given for planets in circular orbits at
+the inner and outer edges of the continuous habitable zone. You can
+load pre-calculated systems in the <a href="#repo">Results
+Repository</a>.</p>
 
 [Fe/H] : <input type="text" name="FeH" value="$FeH"> or Z : <input type="text" name="Z" value="$Z"><br/> 
 
-<i style="font-size:12px">Metallicity.  Leave in zero either [Fe/H] in Z if you do not know the exact value of this quantities. The valid range of Z with depend on the isochrone set selected in the <a href="#options">options section</a>. It typically range from 0.0001 to 0.06.</i><br/><br/>
+<i style="font-size:12px">Metallicity. Leave either [Fe/H] in Z as
+zero, if you do not know the exact value of this quantities. The valid
+range of Z depends on the isochrone set selected in
+the <a href="#options">options section</a>. It typically ranges from
+0.0001 to 0.06.</i><br/><br/>
 
 M<sub>1</sub> : <input type="text" name="M1" value="$M1"> M<sub>Sun</sub><br/>
 <i style="font-size:12px">Mass of the main component</i><br/><br/>
 
-M<sub>2</sub> : <input type="text" name="M2" value="$M2"> M<sub>Sun</sub><br/>
-<i style="font-size:12px">Mass of the secondary component.  Leave 0 to compute single star properties</i><br/><br/>
+M<sub>2</sub> : <input type="text" name="M2" value="$M2">
+M<sub>Sun</sub><br/>
+<i style="font-size:12px">Mass of the secondary component.  Leave 0 to
+compute single star properties</i><br/><br/>
 
-P<sub>bin</sub> : <input type="text" name="Pbin" value="$Pbin"> days<br/>
+P<sub>bin</sub> : <input type="text" name="Pbin" value="$Pbin">
+days<br/>
 <i style="font-size:12px">Binary period.</i><br/><br/>
 
 e : <input type="text" name="e" value="$e"><br/>
 <i style="font-size:12px">Binary eccentricity.</i><br/><br/>
 
 &tau; : <input type="text" name="tau" value="$tau"> Gyr<br/>
-<i style="font-size:12px">Age of the system.  Values must be between 0.01 and 12.5 Gyr</i><br/><br/>
+<i style="font-size:12px">Age of the system.  Values must be between
+0.01 and 12.5 Gyr</i><br/><br/>
 
 <input type="submit" name="submit" value="submit">
 
 <H3>Properties of the test planet</H3>
 
-M<sub>p</sub> : <input type="text" name="Mp" value="$Mp"> M<sub>Earth</sub><br/>
-<i style="font-size:12px">Planetary mass. Values must be between 0.5 and 10.0</i><br/><br/>
+M<sub>p</sub> : <input type="text" name="Mp" value="$Mp">
+M<sub>Earth</sub><br/>
+<i style="font-size:12px">Planetary mass. Values must be between 0.5
+and 10.0</i><br/><br/>
 
 a<sub>p</sub> : <input type="text" name="ap" value="$ap"> AU<br/>
 <i style="font-size:12px">Semimajor axis of planet</i><br/><br/>
@@ -602,10 +623,15 @@ e<sub>p</sub> : <input type="text" name="ep" value="$ep"><br/>
 
 <H3>Available calculation</H3>
 
-<p>Please indicate here which calculation do you want to perform.  More advanced calculations will takes considerably more time to be performed.</p>
+<p>Please indicate here which calculation you want to perform.  More
+advanced calculations will take considerably more time to be
+performed.</p>
 
 Basic binary properties: <input type="checkbox" name="qbasic" checked><br/>
-<i style="font-size:12px">Compute the basic properties of the binaries including instantaneous stellar properties, critical distance, binary semimajor axis, etc.</i><br/><br/>
+
+<i style="font-size:12px">Compute the basic properties of the binary
+including instantaneous stellar properties, critical distance, binary
+semimajor axis, etc.</i><br/><br/>
 
 Binary HZ: <input type="checkbox" name="qhz" checked><br/>
 	   <i style="font-size:12px">Compute and plot the Habitable Zone (HZ) of the binary at its present age (see parameter &tau;).</i><br/><br/>
@@ -614,7 +640,9 @@ Compute the continuous HZ:$check_qchz<br/>
 <i style="font-size:12px">Compute and plot the continuous habitable zone (CHZ).</i><br/><br/>
 
 Integrate properties:$check_qintegration<br/>
-<i style="font-size:12px">Calculate the evolution of the interacting properties between the planet and the stellar components (XUV flux, stellar wind, estimated atmospheric mass-loss, etc.)</i><br/><br/>
+<i style="font-size:12px">Calculate the evolution of the interacting
+properties between the planet and the stars (XUV flux, stellar wind,
+estimated atmospheric mass-loss, etc.)</i><br/><br/>
 
 Total integration time : <input type="text" name="tautot" value="$tautot"> Gyr<br/>
 <i style="font-size:12px">Values must be between 0.01 and 12.5 Gyr</i><br/><br/>
@@ -625,14 +653,16 @@ Total integration time : <input type="text" name="tautot" value="$tautot"> Gyr<b
 <H3>Options</H3>
 
 Set of isochrones : $zsel<br/>
-<i style="font-size:12px">It could reduce considerably the execution time.</i><br/><br/>
+
+<i style="font-size:12px">Using the default (solar metalicity) reduces
+the execution time considerably.</i><br/><br/>
 
 Type of early stellar wind : $ewsel
 <br/>
 
-<i style="font-size:12px">Observations does not provide us information
+<i style="font-size:12px">Observations do not provide us information
 about the stellar wind before &tau;<0.7 Gyr.  Some observations
-suggest there is a saturation on magnetic activity before that.
+suggest there is a saturation of magnetic activity before that.
 Select which type of behavior do you want to simulate.</i><br/><br/>
 
 Do you want to retrieve any previous result: $savedsel<br/>
