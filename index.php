@@ -591,6 +591,19 @@ CONTENT;
    $check_qchz=checkFunction("qchz",$qchz);
    $check_qintegration=checkFunction("qintegration",$qintegration);
 
+   //DISPLAY
+   $displayb="none";
+   $displayp="none";
+   $displayc="none";
+   $displayo="none";
+   $displayr="none";
+   if(isset($back)){
+     $displayo="block";
+     $displayb="block";
+     $savedsel="Yes";
+   }
+
+   //REFERENCES
    $mason2013="http://iopscience.iop.org/2041-8205/774/2/L26";
    $mason2014="http://iopscience.iop.org/2041-8205/774/2/L26";
    $zuluaga2014="http://iopscience.iop.org/2041-8205/774/2/L26";
@@ -688,7 +701,7 @@ Hidden all
   Binary System
   </a>
 </H3>
-<div id="binary_input_form" class="form" style="display:none">
+<div id="binary_input_form" class="form" style="display:$displayb">
 <p>Choose the basic properties of the binary system here. Optionally,
 a test planet may be selected with results displayed on the habitable
 zone plots. Most results are given for planets in circular orbits at
@@ -737,7 +750,7 @@ e : <input type="text" name="e" value="$e"><br/>
   </a>
 </H3>
 
-<div id="planet_input_form" class="form" style="display:none">
+<div id="planet_input_form" class="form" style="display:$displayp">
 M<sub>p</sub> : <input type="text" name="Mp" value="$Mp">
 M<sub>Earth</sub><br/>
 <i style="font-size:12px">Planetary mass. Values must be between 0.5
@@ -761,7 +774,7 @@ e<sub>p</sub> : <input type="text" name="ep" value="$ep"><br/>
   Available calculation
   </a>
 </H3>
-<div id="calculations_input_form" class="form" style="display:none">
+<div id="calculations_input_form" class="form" style="display:$displayc">
 <p>Please indicate here which calculation you want to perform.  More
 advanced calculations will take considerably more time to be
 performed.</p>
@@ -801,7 +814,7 @@ Total integration time : <input type="text" name="tautot" value="$tautot"> Gyr<b
   </a>
 </H3>
 
-<div id="options_input_form" class="form" style="display:none">
+<div id="options_input_form" class="form" style="display:$displayo">
 Set of isochrones : $zsel<br/>
 
 <i style="font-size:12px">Using the default (solar metalicity) reduces
@@ -842,7 +855,7 @@ not modify if you don't need this option.</i><br/><br/>
   </a>
 </H3>
 
-<div id="results_input_form" class="form" style="display:none">
+<div id="results_input_form" class="form" style="display:$displayr">
 <H4>Global list</H4>
 
 $global_list
