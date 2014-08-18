@@ -135,7 +135,9 @@ CONTENT;
 
 if(isset($_GET["help"])){
 echo<<<CONTENT
-Men at work.
+<center>
+  <img src="images/maw.gif">
+</center>
 CONTENT;
 goto footer;
 }
