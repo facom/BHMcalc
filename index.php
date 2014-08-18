@@ -37,9 +37,12 @@ function generateFileList($sessid,$suffix){
 		 "StellarOrbits-$suffix.png","StellarOrbits-$suffix.png.txt",
 		 "InsolationPhotonDensity-$suffix.png","InsolationPhotonDensity-$suffix.png.txt",
 		 "PeriodEvolution-$suffix.png","PeriodEvolution-$suffix.png.txt",
-		 "FluxXUV-$suffix.png","FluxSW-$suffix.png.txt",
+		 "FluxXUV-$suffix.png","FluxXUV-$suffix.png.txt",
+		 "FluxSW-$suffix.png","FluxSW-$suffix.png.txt",
 		 "RatiosFluxXUV-$suffix.png","RatiosFluxXUV-$suffix.png.txt",
-		 "RatiosFluxSW-$suffix.png","IntFXUV-$suffix.png.txt",
+		 "RatiosFluxSW-$suffix.png","RatiosFluxSW-$suffix.png.txt",
+		 "IntFXUV-$suffix.png","IntFXUV-$suffix.png.txt",
+		 "IntSW-$suffix.png","IntSW-$suffix.png.txt",
 		 "MassLoss-$suffix.png","MassLoss-$suffix.png.txt");
     return $files;
 }
