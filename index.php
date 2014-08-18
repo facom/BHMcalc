@@ -2,10 +2,16 @@
 //////////////////////////////////////////////////////////////////////////////////
 //STYLE
 //////////////////////////////////////////////////////////////////////////////////
+include("etc/BHM-style.php");
 $HEADER=<<<HEADER
 <head>
   <script src="etc/jquery.js"></script>
-  
+  $CSS
+  <script>
+  function display(element){
+      $('#'+element).toggle('fast',null);
+  }
+  </script>
 </head>
 HEADER;
 //////////////////////////////////////////////////////////////////////////////////
@@ -569,15 +575,35 @@ CONTENT;
    $check_qintegration=checkFunction("qintegration",$qintegration);
 
 echo<<<CONTENT
-<H2>Input Data</H2>
 
-<H3>Binary System</H3>
+<!-- &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&& -->
+<!-- SUBMIT BUTTON -->
+<!-- &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&& -->
+<div class="title">
+<a id="show" href="JavaScript:null(0)" onclick="$('.form').toggle('fast',null);$('#hidden').css('display','block');$('#show').css('display','none');">
+Show all
+</a>
+<a id="hidden" href="JavaScript:null(0)" onclick="$('.form').toggle('fast',null);$('#show').css('display','block');$('#hidden').css('display','none');" style="display:none">
+Hidden all
+</a>
+</div>
 
+<!-- &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&& -->
+<!-- BINARY INFORMATION -->
+<!-- &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&& -->
+
+<div id="binary_input" class="title">
+<H3>
+  <a href="JavaScript:null(0)" onclick="display('binary_input_form')">
+  Binary System
+  </a>
+</H3>
+<div id="binary_input_form" class="form" style="display:none">
 <p>Choose the basic properties of the binary system here. Optionally,
 a test planet may be selected with results displayed on the habitable
 zone plots. Most results are given for planets in circular orbits at
 the inner and outer edges of the continuous habitable zone. You can
-load pre-calculated systems in the <a href="#repo">Results
+load pre-calculated systems in the <a href="#repo" onclick="display('results_input_form');">Results
 Repository</a>.</p>
 
 [Fe/H] : <input type="text" name="FeH" value="$FeH"> or Z : <input type="text" name="Z" value="$Z"><br/> 
@@ -608,9 +634,20 @@ e : <input type="text" name="e" value="$e"><br/>
 0.01 and 12.5 Gyr</i><br/><br/>
 
 <input type="submit" name="submit" value="submit">
+</div></div>
 
-<H3>Properties of the test planet</H3>
+<!-- &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&& -->
+<!-- PLANETARY INFORMATION -->
+<!-- &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&& -->
 
+<div id="planet_input" class="title">
+<H3>
+  <a href="JavaScript:null(0)" onclick="display('planet_input_form')">
+  Properties of the test planet
+  </a>
+</H3>
+
+<div id="planet_input_form" class="form" style="display:none">
 M<sub>p</sub> : <input type="text" name="Mp" value="$Mp">
 M<sub>Earth</sub><br/>
 <i style="font-size:12px">Planetary mass. Values must be between 0.5
@@ -623,9 +660,18 @@ e<sub>p</sub> : <input type="text" name="ep" value="$ep"><br/>
 <i style="font-size:12px">Eccentricity of the planet</i><br/><br/>
 
 <input type="submit" name="submit" value="submit">
+</div></div>
 
-<H3>Available calculation</H3>
-
+<!-- &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&& -->
+<!-- CALCULATIONS -->
+<!-- &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&& -->
+<div id="calculations_input"  class="title">
+<H3>
+  <a href="JavaScript:null(0)" onclick="display('calculations_input_form')">
+  Available calculation
+  </a>
+</H3>
+<div id="calculations_input_form" class="form" style="display:none">
 <p>Please indicate here which calculation you want to perform.  More
 advanced calculations will take considerably more time to be
 performed.</p>
@@ -651,10 +697,21 @@ Total integration time : <input type="text" name="tautot" value="$tautot"> Gyr<b
 <i style="font-size:12px">Values must be between 0.01 and 12.5 Gyr</i><br/><br/>
 
 <input type="submit" name="submit" value="submit">
+</div></div>
 
+<!-- &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&& -->
+<!-- OPTIONS -->
+<!-- &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&& -->
+
+<div id="options_input" class="title">
 <a name="options"></a>
-<H3>Options</H3>
+<H3>
+  <a href="JavaScript:null(0)" onclick="display('options_input_form')">
+  Options
+  </a>
+</H3>
 
+<div id="options_input_form" class="form" style="display:none">
 Set of isochrones : $zsel<br/>
 
 <i style="font-size:12px">Using the default (solar metalicity) reduces
@@ -681,10 +738,21 @@ Configuration name:
 not modify if you don't need this option.</i><br/><br/>
 
 <input type="submit" name="submit" value="submit">
+</div></div>
 
+<!-- &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&& -->
+<!-- RESULTS REPOSITORY -->
+<!-- &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&& -->
+
+<div id="results_input" class="title">
 <a name="repo"></a>
-<H3>Results Repository</H3>
+<H3>
+  <a href="JavaScript:null(0)" onclick="display('results_input_form')">
+  Results Repository
+  </a>
+</H3>
 
+<div id="results_input_form" class="form" style="display:none">
 <H4>Global list</H4>
 
 $global_list
@@ -692,7 +760,14 @@ $global_list
 <H4>This session</H4>
 
 $this_session
+</div></div>
 
+<!-- &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&& -->
+<!-- SUBMIT BUTTON -->
+<!-- &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&& -->
+<div class="title">
+<input type="submit" name="submit" value="submit">
+</div>
 CONTENT;
  }
 
@@ -721,7 +796,7 @@ echo<<<CONTENT
 
 <i style="font-size:10pt">
 Developed by Jorge Zuluaga (2014), Viva la BHM!. <br/> 
-Last update: 14-July-2014 (Jorge Zuluaga)<br/>
+Last update: 18-August-2014 (Jorge Zuluaga)<br/>
 Please cite: Mason, P. A., Zuluaga, J. I., Clark, J. M., &
 Cuartas-Restrepo, P. A. (2013). Rotational Synchronization May Enhance
 Habitability for Circumbinary Planets: Kepler Binary Case Studies. The
