@@ -1,10 +1,14 @@
 <?PHP
 //////////////////////////////////////////////////////////////////////////////////
+//STYLE
+//////////////////////////////////////////////////////////////////////////////////
+
+//////////////////////////////////////////////////////////////////////////////////
 //STATISTICS
 //////////////////////////////////////////////////////////////////////////////////
 if(!isset($_SESSION)){session_start();}
 $sessid=session_id();
-echo "<P STYLE=font-size:12px>Session $sessid</P>";
+//echo "<P STYLE=font-size:12px>Session $sessid</P>";
 
 $PYTHONCMD="MPLCONFIGDIR=/tmp python";
 $out=shell_exec("hostname");
@@ -99,8 +103,7 @@ echo<<<CONTENT
 <BODY>
 <H1><A HREF="?">Binary Habitability Calculator</A>
 <!--<SUP style='color:red;font-size:18px'>v2.0</SUP>-->
-<br/>
-<a href=changeslog style=font-size:10px>Changeslog/</a><a href=TODO style=font-size:10px>ToDo</a>
+<!--<br/><a href=changeslog style=font-size:10px>Changeslog/</a><a href=TODO style=font-size:10px>ToDo</a>-->
 </H1>
 
 <form>
@@ -152,8 +155,27 @@ if(isset($submit) and !isset($back)){
     $qstring=$_SERVER["QUERY_STRING"];
   }
   echo "QSTRING: $qstring<br/>";
-  */
+  //*/
   $qstring=$_SERVER["QUERY_STRING"];
+  
+  if(isset($load)){
+    preg_match("/\/([^\/]+$)/",$load,$match);
+    $loadsessid=$match[1];
+    //echo "LOAD DIRECTORY: $load<br/>";
+    //echo "LOAD SESSID: $loadsessid<br/>";
+    $suffixt=sprintf("%.2f%.2f%.3f%.2f-%s",$M1,$M2,$e,$Pbin,$sessid);
+    $suffixs=sprintf("%.2f%.2f%.3f%.2f-%s",$M1,$M2,$e,$Pbin,$loadsessid);
+    $files_source=generateFileList($loadsessid,$suffixs);
+    $files_target=generateFileList($sessid,$suffixt);
+    $nfiles=count($files_source);
+    for($i=0;$i<$nfiles;$i++){
+      $fsource=$files_source[$i];
+      $ftarget=$files_target[$i];
+      //echo "Saving file $fsource as $ftarget...<br/>";
+      shell_exec("cp -rf $load/$fsource tmp/$ftarget");
+    }
+  }
+
   //SAVE CONFIGURATION
   $fc=fopen("tmp/config-$sessid.log","w");
   fwrite($fc,"URL: $qstring\n\n");
@@ -166,7 +188,7 @@ if(isset($submit) and !isset($back)){
 
   //CHECK PRECONFIGURATION
   if($preconf!="0"){
-    //echo "Configuration loaded: $preconf.<br/>";
+    echo "Configuration loaded: $preconf.<br/>";
     $configuration=file("tmp/conf-$preconf/configuration");
     $i=1;
     $Z=rtrim($configuration[$i++]);
@@ -199,22 +221,20 @@ if(isset($submit) and !isset($back)){
   if($qintegration){$qchz=1;}
 
   if(!isset($stat) and !isset($back)){access("run");}
-
   if(!isset($reload) and !isset($load) and !isset($save) and !isset($delete)){
-  $cmd="$PYTHONCMD BHMcalc.py $Z $M1 $M2 $e $Pbin $tau $Mp $ap $tautot $qintegration $sessid $zsvec $qchz $earlywind $FeH $ep \"$incrit\" \"$outcrit\" \"$confname\" $qsaved &> tmp/fulloutput-$sessid.log";
-  //echo "<p>$cmd</p>";return;
-
-  exec($cmd,$output,$status); 
-  shell_exec("echo '$cmd' > tmp/cmd-$sessid.log");
-  $qreload="reload&$qstring";
+    $cmd="$PYTHONCMD BHMcalc.py $Z $M1 $M2 $e $Pbin $tau $Mp $ap $tautot $qintegration $sessid $zsvec $qchz $earlywind $FeH $ep \"$incrit\" \"$outcrit\" \"$confname\" $qsaved &> tmp/fulloutput-$sessid.log";
+    //echo "<p>$cmd</p>";return;
+    exec($cmd,$output,$status); 
+    shell_exec("echo '$cmd' > tmp/cmd-$sessid.log");
+    $qreload="reload&$qstring";
   }else if(isset($reload)){
     $qreload=$qstring;
   }else if(isset($delete)){
     echo "<i>Removing '$confname'...<br/><br/></i>";
     //SAVE DIR
     $savedir=$load;
-    //shell_exec("rm -rf $savedir");
-    echo("rm -rf $savedir");
+    shell_exec("rm -rf $savedir");
+    //echo("rm -rf $savedir");
     return;
   }else if(isset($save)){
     echo "<i>Result has been saved as '$confname'...<br/><br/></i>";
@@ -227,7 +247,7 @@ if(isset($submit) and !isset($back)){
       $name="parts_$i";
       $parts[$i]=$$name;
     }
-    //SUFFIX
+    //SUFFIX	
     $i=0;
     $md5inp=$parts[$i++];
     $g1=$parts[$i++];$T1=$parts[$i++];$R1=$parts[$i++];$L1=$parts[$i++];
@@ -241,9 +261,11 @@ if(isset($submit) and !isset($back)){
     $tsync1=$parts[$i++];$tsync2=$parts[$i++];
     $Z=$parts[$i++];
     $suffix=sprintf("%.2f%.2f%.3f%.2f-%s",$M1,$M2,$e,$Pbin,$sessid);
-    $files=generateFileList($sessid,$suffix);
     //SAVE STRING
+    $files_source=generateFileList($sessid,$suffix);
     $savestr=$md5inp;
+    $suffixt=sprintf("%.2f%.2f%.3f%.2f-%s",$M1,$M2,$e,$Pbin,$savestr);
+    $files_target=generateFileList($savestr,$suffixt);
     //CHECK IF IT IS ADMIN
     if(!isset($admin)){$savedir="repo/users/$sessid/$savestr";}
     else{$savedir="repo/admin/$savestr";}
@@ -254,10 +276,14 @@ if(isset($submit) and !isset($back)){
     shell_exec("echo '$sessid' > $savedir/sessid");
     shell_exec("echo '$confname' > $savedir/confname");
     shell_exec("echo '$md5inp' > $savedir/md5in");
+
     //SAVING FILES
-    foreach($files as $file){
-      //echo "Saving file $file...<br/>";
-      shell_exec("cp -rf tmp/$file $savedir/$file");
+    $nfiles=count($files_source);
+    for($i=0;$i<$nfiles;$i++){
+      $fsource=$files_source[$i];
+      $ftarget=$files_target[$i];
+      //echo "Saving file $fsource as $ftarget...<br/>";
+      shell_exec("cp -rf tmp/$fsource $savedir/$ftarget");
     }
   }//END OF SAVE
   
