@@ -1,4 +1,5 @@
 <?PHP
+  //print_r($_GET);
 //////////////////////////////////////////////////////////////////////////////////
 //STYLE
 //////////////////////////////////////////////////////////////////////////////////
@@ -74,7 +75,6 @@ function checkFunction($name,$value){
   return $check;
 }
 
-
 function access($referer){
   global $DIR,$WEBDIR;
 
@@ -109,6 +109,45 @@ function generateRandomString($length = 10) {
   return $randomString;
 }
 
+function ajaxForm($buttonid,$formid,$resultid){
+  //Taken from: http://hayageek.com/examples/jquery/ajax-form-submit/index.php
+$ajaxform=<<<AJAXFORM
+<script>
+  $("#$buttonid").
+  click(function()
+	{
+	  $("#$formid").submit(function(e)
+			       {
+				 $("#$resultid").html("<center style='padding:2px'><p style='padding:2px;font-size:18px'>Calculating...</p><img src='images/loader-circle.gif'/></center>");
+				 $("#warning").html("<center style='padding:0px'><p style='padding:0px;font-size:18px'>Calculating... <img src='images/loader-circle.gif'/></p></center>");
+				 $("#warning").toggle("fast",null);
+				 var postData = $(this).serializeArray();
+				 var formURL = $(this).attr("action");
+				 $.ajax(
+					{
+					 url : formURL,
+					 type: "GET",
+					 data : postData,
+					 success:function(data, textStatus, jqXHR) 
+					     {
+					       $("#$resultid").html(data);
+					       $("#warning").toggle("fast",null);
+					     },
+					     error: function(jqXHR, textStatus, errorThrown) 
+					     {
+					       $("#$resultid").html('<pre><code class="prettyprint">AJAX Request Failed<br/> textStatus='+textStatus+', errorThrown='+errorThrown+'</code></pre>');
+					     }
+					 });
+				  e.preventDefault();
+				  e.unbind();
+				});
+	  $("#$formid").submit();
+	});
+</script>
+AJAXFORM;
+ return $ajaxform;
+}
+
 //////////////////////////////////////////////////////////////////////////////////
 //FOOTER
 //////////////////////////////////////////////////////////////////////////////////
@@ -116,6 +155,25 @@ echo<<<CONTENT
 <HTML>
 $HEADER
 <BODY>
+CONTENT;
+/*
+$ajaxform=ajaxForm("simple-post","ajaxform","result");
+echo<<<CONTENT
+<div id="result" style="">
+</div>
+<form id="ajaxform" action="index.php">
+  Nombre: <input type="text" name="nombre" value="">
+</form>
+<button id="simple-post">Ir</button>
+$ajaxform
+CONTENT;
+//*/
+
+$ajaxf=ajaxForm("envia","ajaxf","result");
+if(!isset($_GET["submit"]) or isset($_GET["back"]) or isset($_GET["load"]) or isset($_GET["save"]) or isset($_GET["delete"])){
+echo<<<CONTENT
+<div class="warning" id="warning" style="display:none">
+</div>
 <H1><A HREF="?">Binary Habitability Calculator</A>
 <!--<SUP style='color:red;font-size:18px'>v2.0</SUP>-->
 <!--<br/><a href=changeslog style=font-size:10px>Changeslog/</a><a href=TODO style=font-size:10px>ToDo</a>-->
@@ -130,9 +188,7 @@ $HEADER
   Help
 </a>
 <HR/>
-<form>
 CONTENT;
-
 if(isset($_GET["help"])){
 echo<<<CONTENT
 <center>
@@ -140,6 +196,7 @@ echo<<<CONTENT
 </center>
 CONTENT;
 goto footer;
+}
 }
 
 if(isset($_GET["admin"])){
@@ -335,8 +392,11 @@ if(isset($submit) and !isset($back)){
   }
 
   $parts=preg_split("/\s+/",$result);
-  echo "<a href=?back&$qstring>Back</a> - ";
-  echo "<a href=?$qreload>Reload</a>";
+  if(isset($_GET["save"]) or
+     isset($_GET["load"])){
+      echo "<a href=?back&$qstring>Back</a> - ";
+      echo "<a href=?$qreload>Reload</a>";
+    }
   echo "<P><a href=tmp/fulloutput-$sessid.log target=_blank>Full Output</a> - <a href=tmp/config-$sessid.log target=_blank>Configuration</a> - <a href=tmp/cmd-$sessid.log target=_blank>Command</a></P>";
 
   //BASIC INFORMATION ON THE SYSTEM
@@ -514,7 +574,7 @@ CONTENT;
 
 echo<<<CONTENT
 <p>$save_button $del_button</p>
-<a href=?back&$qstring>Back</a> - <a href=?$qreload>Reload</a>
+<!--<a href=?back&$qstring>Back</a> - <a href=?$qreload>Reload</a>-->
 </form>
 CONTENT;
 
@@ -599,18 +659,35 @@ CONTENT;
    $displayc="none";
    $displayo="none";
    $displayr="none";
+   $displayh="none";
+   $displays="block";
+   /*
    if(isset($back)){
      $displayo="block";
      $displayb="block";
      $qsaved="Yes";
+     $displayh="block";
+     $displays="none";
    }
+   */
 
    //REFERENCES
    $mason2013="http://iopscience.iop.org/2041-8205/774/2/L26";
    $mason2014="http://iopscience.iop.org/2041-8205/774/2/L26";
    $zuluaga2014="http://iopscience.iop.org/2041-8205/774/2/L26";
 
+   /*
+CONTENT;
+<input type="text" name="nombre" value="jorge">
+</form>
+<div id="result">Nada</div>
+<input id="envia" type="submit" name="submit" value="submit">
+$ajaxf
 echo<<<CONTENT
+   //*/
+
+echo<<<CONTENT
+<div id="result2">
 <p>
   Welcome to the <b>Binary Habitability Calculator</b>. Use
   the <a href="#form">form below</a> to configure your system and
@@ -633,11 +710,9 @@ echo<<<CONTENT
 </p>
 
 <p>
-  Using this interface you will be able to:
+  Using this interface you will be able to calculate:
   <ul>
-    <li>Providing metallicity, stellar mass, binary period and binary
-    eccentricity, calculate the full properties of a binary system at
-    a given age.  They include:
+    <li>Full properties of a binary system at a given age including:
       <ul>
 	<li>Binary semi-major axis.</li>
 	<li>Critical distance for stable p-type planetary orbits.</li>
@@ -646,15 +721,15 @@ echo<<<CONTENT
 	  (gravity, luminosity, temperature, radius, rotational
 	  period, circumstellar habitable zone)
       </ul>
-    <li>Continuous circumbinary habitable zone (CHZ).</li>
-    <li>Insolation and photon flux at the inner and outer edges of the CHZ.</li>
+    <li>The limist of the continuous circumbinary habitable zone (CHZ).</li>
+    <li>The insolation and photon flux at the inner and outer edges of the CHZ.</li>
     <li>Evolution of the rotation period of the binary components as a
     result of their mutual tidal interaction.</li>
-    <li>Flux of X-Rays and Extreme Ultraviolet radiation (XUV) at the
+    <li>The flux of X-Rays and Extreme Ultraviolet radiation (XUV) at the
     inner and outer edges of the CHZ.</li>
-    <li>Stellar wind flux at the inner and outer edges of the
+    <li>The stellar wind flux at the inner and outer edges of the
     CHZ.</li>
-    <li>Atmospheric mass-loss for unmagnetized terrestrial planets at
+    <li>The atmospheric mass-loss for unmagnetized terrestrial planets at
     the middle of the CHZ.</li>
   </ul>
 </p>
@@ -684,12 +759,13 @@ echo<<<CONTENT
 <!-- &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&& -->
 <!-- SUBMIT BUTTON -->
 <!-- &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&& -->
+<form id="ajaxf" action="index.php" method="get">
 <div class="title">
-<a id="show" href="JavaScript:null(0)" onclick="$('.form').toggle('fast',null);$('#hidden').css('display','block');$('#show').css('display','none');">
+<a id="show" href="JavaScript:null(0)" onclick="$('.form').css('display','block');$('#hidden').css('display','block');$('#show').css('display','none');" style="display:$displays;font-size:10px;">
 Show all
 </a>
-<a id="hidden" href="JavaScript:null(0)" onclick="$('.form').toggle('fast',null);$('#show').css('display','block');$('#hidden').css('display','none');" style="display:none">
-Hidden all
+<a id="hidden" href="JavaScript:null(0)" onclick="$('.form').css('display','none');$('#show').css('display','block');$('#hidden').css('display','none');" style="display:$displayh;font-size:12px;">
+Hide all
 </a>
 </div>
 
@@ -738,7 +814,7 @@ e : <input type="text" name="e" value="$e"><br/>
 <i style="font-size:12px">Age of the system.  Values must be between
 0.01 and 12.5 Gyr</i><br/><br/>
 
-<input type="submit" name="submit" value="submit">
+<!--<input type="submit" name="submit" value="submit">-->
 </div></div>
 
 <!-- &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&& -->
@@ -764,7 +840,7 @@ a<sub>p</sub> : <input type="text" name="ap" value="$ap"> AU<br/>
 e<sub>p</sub> : <input type="text" name="ep" value="$ep"><br/>
 <i style="font-size:12px">Eccentricity of the planet</i><br/><br/>
 
-<input type="submit" name="submit" value="submit">
+<!--<input type="submit" name="submit" value="submit">-->
 </div></div>
 
 <!-- &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&& -->
@@ -801,7 +877,7 @@ estimated atmospheric mass-loss, etc.)</i><br/><br/>
 Total integration time : <input type="text" name="tautot" value="$tautot"> Gyr<br/>
 <i style="font-size:12px">Values must be between 0.01 and 12.5 Gyr</i><br/><br/>
 
-<input type="submit" name="submit" value="submit">
+<!--<input type="submit" name="submit" value="submit">-->
 </div></div>
 
 <!-- &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&& -->
@@ -840,9 +916,9 @@ Configuration name:
 <input type='text' name='confname' value="$confname"><br/>
 
 <i style="font-size:12px">Save a configuration with a given name. Do
-not modify if you don't need this option.</i><br/><br/>
+not modify if you do not need this option.</i><br/><br/>
 
-<input type="submit" name="submit" value="submit">
+<!--<input type="submit" name="submit" value="submit">-->
 </div></div>
 
 <!-- &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&& -->
@@ -870,11 +946,17 @@ $this_session
 <!-- &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&& -->
 <!-- SUBMIT BUTTON -->
 <!-- &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&& -->
-<div class="title">
-<input type="submit" name="submit" value="submit">
+<input type="hidden" name="submit" value="submit">
+</form>
+<button id="envia">Submit</button>
 </div>
+<div style="padding:5px"></div>
+<div id="result" class="result">
+  (Any result calculated yet)
+</div>
+$ajaxf
 CONTENT;
- }
+}
 
 //////////////////////////////////////////////////////////////////////////////////
 //FOOTER
@@ -896,10 +978,10 @@ CONTENT;
 }
 
 footer:
-echo<<<CONTENT
-</form>
-<hr/>
 
+if(!isset($_GET["submit"]) or isset($_GET["back"]) or isset($_GET["load"]) or isset($_GET["save"]) or isset($_GET["delete"])){
+echo<<<CONTENT
+<hr/>
 <i style="font-size:10pt">
 Developed by <a href="mailto:jorge.zuluaga@udea.edu.co">Jorge I. Zuluaga</a>
 (2014), Instituto de Fisica, Universidad de Antioquia, Viva la BHM!. <br/> 
@@ -913,6 +995,12 @@ Astrophysical Journal Letters, 774(2), L26.</a>
 
 </i>
 
+</BODY>
+</HTML>
+CONTENT;
+ }
+
+echo<<<CONTENT
 </BODY>
 </HTML>
 CONTENT;
