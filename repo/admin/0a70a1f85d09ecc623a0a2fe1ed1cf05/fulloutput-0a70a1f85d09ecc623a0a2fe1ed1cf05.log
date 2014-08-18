@@ -1,0 +1,116 @@
+Loading isochrone set...
+	Loading Isochrone for Z = 0.010000...
+	Loading Isochrone for Z = 0.015200...
+	Loading Isochrone for Z = 0.020000...
+Binary properties:
+	a = 0.288404 AU
+	ac = 0.917390 AU
+	e = 0.300000
+	P = 40.000000 days
+	n = 0.157080 rad/day
+	Psync = 25.688298 days
+	tau = 1.000000 Gyr
+	HZ =  0.965671343994 1.60958902283 1.60958902283 2.25350670166
+Test planet:
+	ap = 1.500000 AU
+	ep = 0.100000
+	Main component:
+		Z = 0.015420
+		M = 1.000000 Msun
+		T = 5757.962324 K
+		R = 0.913015 Rsun
+		Rmin,Rmax = 0.884729,1.166576 Rsun
+		L = 0.808268 Lsun
+		Pmax = 0.101004 days
+		Pini = 0.833104 days
+		Omega_ini = 7.541893 rad/day
+		Prot = 7.711786 days
+		HZ =  0.675158753189 0.899037357147 1.13284474912 1.59053074506
+	Secondary component:
+		Z = 0.015420
+		M = 1.000000 Msun
+		T = 5757.962324 K
+		R = 0.913015 Rsun
+		Rmin,Rmax = 0.884729,1.166576 Rsun
+		L = 0.808268 Lsun
+		Pmax = 0.101004 days
+		Pini = 0.833104 days
+		Omega_ini = 7.541893 rad/day
+		Prot = 7.711786 days
+		HZ =  0.675158753189 0.899037357147 1.13284474912 1.59053074506
+
+ Tidal properties:
+	Main component:
+		Hut synchronization time: 7.131060e+00 Gyr
+		Hut tidal acceleration: -3.881557e-22 s^-1
+	Secondary component:
+		Hut synchronization time: 7.131060e+00 Gyr
+		Hut tidal acceleration: -3.881557e-22 s^-1
+
+ Calculating the continuous Habitable Zone...
+	From scratch...
+Maximum age of the system: 11.191
+Continuous Binary HZ:  1.56991636963 2.17538209229
+Continuous Single Primary HZ:  1.10579873655 1.53584361504
+ Tidal integration:
+	Computing from scratch...
+	Tau = 1.100000e-02
+		Tidal acceleration: Acc1 = -1.271370e-21, Acc2 = -1.271370e-21
+		Mass-loss acceleration: Acc1 = -3.609281e-20, Acc2 = -3.609281e-20
+		Total acceleration: Acc1 = -3.736418e-20, Acc2 = -3.736418e-20
+		Instantaneous periods: P1 = 8.44504291332716317e-01, P2 = 8.44504291332716317e-01
+		Last report:0.000000e+00
+	Tau = 5.110000e-01
+		Tidal acceleration: Acc1 = -5.903986e-23, Acc2 = -5.903986e-23
+		Mass-loss acceleration: Acc1 = -6.240090e-22, Acc2 = -6.240090e-22
+		Total acceleration: Acc1 = -6.830488e-22, Acc2 = -6.830488e-22
+		Instantaneous periods: P1 = 4.99074001626477770e+00, P2 = 4.99074001626477770e+00
+		Last report:5.000000e-01
+	Tau = 1.011000e+00
+		Tidal acceleration: Acc1 = -3.103137e-23, Acc2 = -3.103137e-23
+		Mass-loss acceleration: Acc1 = -1.873362e-22, Acc2 = -1.873362e-22
+		Total acceleration: Acc1 = -2.183676e-22, Acc2 = -2.183676e-22
+		Instantaneous periods: P1 = 8.53557231736648525e+00, P2 = 8.53557231736648525e+00
+		Last report:5.000000e-01
+	Tau = 1.511000e+00
+		Tidal acceleration: Acc1 = -1.934752e-23, Acc2 = -1.934752e-23
+		Mass-loss acceleration: Acc1 = -8.873236e-23, Acc2 = -8.873236e-23
+		Total acceleration: Acc1 = -1.080799e-22, Acc2 = -1.080799e-22
+		Instantaneous periods: P1 = 1.19197550783314874e+01, P2 = 1.19197550783314874e+01
+		Last report:5.000000e-01
+	Tau = 2.011000e+00
+		Tidal acceleration: Acc1 = -1.259657e-23, Acc2 = -1.259657e-23
+		Mass-loss acceleration: Acc1 = -5.159647e-23, Acc2 = -5.159647e-23
+		Total acceleration: Acc1 = -6.419304e-23, Acc2 = -6.419304e-23
+		Instantaneous periods: P1 = 1.51908857663982886e+01, P2 = 1.51908857663982886e+01
+		Last report:5.000000e-01
+	Tau = 2.511000e+00
+		Tidal acceleration: Acc1 = -8.000157e-24, Acc2 = -8.000157e-24
+		Mass-loss acceleration: Acc1 = -3.392204e-23, Acc2 = -3.392204e-23
+		Total acceleration: Acc1 = -4.192220e-23, Acc2 = -4.192220e-23
+		Instantaneous periods: P1 = 1.83267717963506875e+01, P2 = 1.83267717963506875e+01
+		Last report:5.000000e-01
+	Tau = 3.011000e+00
+		Tidal acceleration: Acc1 = -4.547807e-24, Acc2 = -4.547807e-24
+		Mass-loss acceleration: Acc1 = -2.431030e-23, Acc2 = -2.431030e-23
+		Total acceleration: Acc1 = -2.885811e-23, Acc2 = -2.885811e-23
+		Instantaneous periods: P1 = 2.12740376648693328e+01, P2 = 2.12740376648693328e+01
+		Last report:5.000000e-01
+	Tau = 3.511000e+00
+		Tidal acceleration: Acc1 = -1.743491e-24, Acc2 = -1.743491e-24
+		Mass-loss acceleration: Acc1 = -1.863333e-23, Acc2 = -1.863333e-23
+		Total acceleration: Acc1 = -2.037682e-23, Acc2 = -2.037682e-23
+		Instantaneous periods: P1 = 2.39637984772105170e+01, P2 = 2.39637984772105170e+01
+		Last report:5.000000e-01
+	Tau = 4.011000e+00
+		Tidal acceleration: Acc1 = 6.440998e-25, Acc2 = 6.440998e-25
+		Mass-loss acceleration: Acc1 = -1.510714e-23, Acc2 = -1.510714e-23
+		Total acceleration: Acc1 = -1.446304e-23, Acc2 = -1.446304e-23
+		Instantaneous periods: P1 = 2.63235916650560142e+01, P2 = 2.63235916650560142e+01
+		Last report:5.000000e-01
+	Tau = 4.511000e+00
+		Tidal acceleration: Acc1 = 2.762961e-24, Acc2 = 2.762961e-24
+		Mass-loss acceleration: Acc1 = -1.286241e-23, Acc2 = -1.286241e-23
+		Total acceleration: Acc1 = -1.009945e-23, Acc2 = -1.009945e-23
+		Instantaneous periods: P1 = 2.82892833679742068e+01, P2 = 2.82892833679742068e+01
+		Last report:5.000000e-01

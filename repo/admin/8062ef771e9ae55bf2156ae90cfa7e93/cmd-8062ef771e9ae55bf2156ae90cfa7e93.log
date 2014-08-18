@@ -1,0 +1,1 @@
+MPLCONFIGDIR=/tmp python BHMcalc.py 0 0.7 0.7 0.4 18 1 1 1.5 5 1 8062ef771e9ae55bf2156ae90cfa7e93 ZSVEC_siblings 1 trend 0 0.1 "recent venus" "early mars" "Niche 10" 0 &> tmp/fulloutput-8062ef771e9ae55bf2156ae90cfa7e93.log
