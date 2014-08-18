@@ -120,9 +120,25 @@ $HEADER
 <!--<SUP style='color:red;font-size:18px'>v2.0</SUP>-->
 <!--<br/><a href=changeslog style=font-size:10px>Changeslog/</a><a href=TODO style=font-size:10px>ToDo</a>-->
 </H1>
-
+<a href="?">
+  Main
+</a> 
+| <a href="JavaScript:null(0)" onclick="display('about');">
+  About
+</a> 
+| <a href="?help">
+  Help
+</a>
+<HR/>
 <form>
 CONTENT;
+
+if(isset($_GET["help"])){
+echo<<<CONTENT
+Men at work.
+CONTENT;
+goto footer;
+}
 
 if(isset($_GET["admin"])){
   echo "<input type='hidden' name='admin' value=1>";
@@ -552,11 +568,12 @@ CONTENT;
    $keys=array_keys($preconfs_name);
    array_multisort($preconfs_name,$keys);
    foreach($keys as $key){
+     if(!preg_match("/[\w\d]+/",$key)){continue;}
      $qstring=$preconfs_qstring[$key];
      $confiname=$preconfs_name[$key];
      $this_session.="<a href='?load=repo/users/$sessid/$key&$qstring'>$confiname</a><br/>";
    }
-   if(!preg_match("/\w/",$this_session)){
+   if($this_session==""){
      $this_session="<i>(No configurations found)</i>";
    }
    
@@ -574,8 +591,81 @@ CONTENT;
    $check_qchz=checkFunction("qchz",$qchz);
    $check_qintegration=checkFunction("qintegration",$qintegration);
 
-echo<<<CONTENT
+   $mason2013="http://iopscience.iop.org/2041-8205/774/2/L26";
+   $mason2014="http://iopscience.iop.org/2041-8205/774/2/L26";
+   $zuluaga2014="http://iopscience.iop.org/2041-8205/774/2/L26";
 
+echo<<<CONTENT
+<p>
+  Welcome to the <b>Binary Habitability Calculator</b>. Use
+  the <a href="#form">form below</a> to configure your system and
+  calculate its properties and the effects of the BHM.  To know more
+  about this calculator and the Binary Habitability
+  Mechanism <a href="JavaScript:null(0)"
+  style="text-decoration:underline" onclick="display('about');">click
+  here</a>.  For a complete guide to this calculator
+  just <a href="?help">ask for help</a>.
+</p>
+<div id="about" style="display:none">
+<p>
+  The Binary Habitability Calculator is a web interface to a set of
+  programs testing the so called <b>Binary Habitability Mechanism</b>
+  (BHM).  The BHM was discovered by Paul Mason, Jorge I. Zuluaga,
+  Pablo Cuartas and Joni Clark (<a href="$zuluaga2014">Zuluaga et
+  al. 2014</a>, <a href="$mason2013">Mason et al. 2013</a>).
+  According to this mechanisms some binaries could offer more suitable
+  environments for life than single stars.
+</p>
+
+<p>
+  Using this interface you will be able to:
+  <ul>
+    <li>Providing metallicity, stellar mass, binary period and binary
+    eccentricity, calculate the full properties of a binary system at
+    a given age.  They include:
+      <ul>
+	<li>Binary semi-major axis.</li>
+	<li>Critical distance for stable p-type planetary orbits.</li>
+	<li>Limits of the circumbinary habitable zone.</li>
+	<li>Instantaneous basic properties of the stellar components
+	  (gravity, luminosity, temperature, radius, rotational
+	  period, circumstellar habitable zone)
+      </ul>
+    <li>Continuous circumbinary habitable zone (CHZ).</li>
+    <li>Insolation and photon flux at the inner and outer edges of the CHZ.</li>
+    <li>Evolution of the rotation period of the binary components as a
+    result of their mutual tidal interaction.</li>
+    <li>Flux of X-Rays and Extreme Ultraviolet radiation (XUV) at the
+    inner and outer edges of the CHZ.</li>
+    <li>Stellar wind flux at the inner and outer edges of the
+    CHZ.</li>
+    <li>Atmospheric mass-loss for unmagnetized terrestrial planets at
+    the middle of the CHZ.</li>
+  </ul>
+</p>
+<p>
+<b>References</b><br/>
+<ul>
+  <li>
+    <a href="$mason2013">
+      Mason, Paul A., et al. "Rotational Synchronization May Enhance
+      Habitability for Circumbinary Planets: Kepler Binary Case Studies."
+      The Astrophysical Journal Letters 774.2 (2013): L26.
+  </li>
+  <li>
+    <a href="$mason2014">
+      Mason, Paul A., et al. "Circumbinary Habitability Niches."
+      To appear in the International Journal of Astrobiology.
+  </li>
+  <li>
+    <a href="$zuluaga2014">
+      Zuluaga, Jorge I., et al. "The Binary Habitability Mechanism."
+      In preparation.
+  </li>
+  </a>
+</ul>
+</div>
+<a name="form"></a>
 <!-- &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&& -->
 <!-- SUBMIT BUTTON -->
 <!-- &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&& -->
@@ -757,7 +847,7 @@ not modify if you don't need this option.</i><br/><br/>
 
 $global_list
 
-<H4>This session</H4>
+<H4>This session (id = $sessid)</H4>
 
 $this_session
 </div></div>
@@ -790,17 +880,23 @@ Last
 CONTENT;
 }
 
+footer:
 echo<<<CONTENT
 </form>
 <hr/>
 
 <i style="font-size:10pt">
-Developed by Jorge Zuluaga (2014), Viva la BHM!. <br/> 
-Last update: 18-August-2014 (Jorge Zuluaga)<br/>
-Please cite: Mason, P. A., Zuluaga, J. I., Clark, J. M., &
+Developed by <a href="mailto:jorge.zuluaga@udea.edu.co">Jorge I. Zuluaga</a>
+(2014), Instituto de Fisica, Universidad de Antioquia, Viva la BHM!. <br/> 
+
+Last update: 18-August-2014 (Jorge Zuluaga)<br/> 
+
+For references please cite: <a href="$mason2013">Mason, P. A., Zuluaga, J. I., Clark, J. M., &
 Cuartas-Restrepo, P. A. (2013). Rotational Synchronization May Enhance
 Habitability for Circumbinary Planets: Kepler Binary Case Studies. The
-Astrophysical Journal Letters, 774(2), L26.  </i>
+Astrophysical Journal Letters, 774(2), L26.</a>
+
+</i>
 
 </BODY>
 </HTML>
