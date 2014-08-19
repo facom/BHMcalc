@@ -43,8 +43,10 @@ div.warning{
 position:fixed;
 right:0px;
 top:0px;
-border-style:round;
+border:0px solid;
+border-radius:20px;
 background-color:yellow;
+box-shadow:10px 10px 5x black;
 padding:5px;
 }
 </style>
