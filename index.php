@@ -49,7 +49,7 @@ function generateFileList($sessid,$suffix){
 		 "RatiosFluxXUV-$suffix.png","RatiosFluxXUV-$suffix.png.txt",
 		 "RatiosFluxSW-$suffix.png","RatiosFluxSW-$suffix.png.txt",
 		 "IntFXUV-$suffix.png","IntFXUV-$suffix.png.txt",
-		 "IntSW-$suffix.png","IntSW-$suffix.png.txt",
+		 "IntFSW-$suffix.png","IntFSW-$suffix.png.txt",
 		 "MassLoss-$suffix.png","MassLoss-$suffix.png.txt");
     return $files;
 }
