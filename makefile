@@ -7,7 +7,7 @@
 # |____/|_|  |_|_|  |_|\___\__,_|_|\___|
 # v2.0
 ###################################################
-# 2014 (C) Jorge I. Zuluaga, Viva la BHM!
+# 2014 [)] Jorge I. Zuluaga, Viva la BHM!
 ###################################################
 USER=root
 GROUP=www-data
@@ -17,25 +17,30 @@ branch:
 	@echo "This is branch $(BRANCH)"
 
 clean:
-	find . -name "*~" -exec rm -rf {} \;
-	find . -name "*.pyc" -exec rm -rf {} \;
+	@echo "Cleaning directory..."
+	@find . -name "*~" -exec rm -rf {} \;
+	@find . -name "*.pyc" -exec rm -rf {} \;
 
 deepclean:clean
-	rm -rf tmp/*
-	rm -rf repo/admin/*
-	rm -rf repo/users/*
+	@echo "Cleaning temporary directories..."
+	@rm -rf tmp/*
+	@rm -rf repo/admin/*
+	@rm -rf repo/users/*
 	echo > access.log
 
 reset:
-	echo > access.log
+	@echo "Resetting access.log..."
+	@echo > access.log
 
 permissions:
-	chown -R $(USER):$(GROUP) .
-	chmod -R g+w .
+	@echo "Setting web permissions..."
+	@chown -R $(USER):$(GROUP) .
+	@chmod -R g+w .
 
 commit:
-	git commit -am "Commit"
-	git push origin $(BRANCH)
+	@echo "Committing changes to branch $(BRANCH)..."
+	@git commit -am "Commit"
+	@git push origin $(BRANCH)
 
 pull:
 	git reset --hard HEAD	
