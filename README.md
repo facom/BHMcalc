@@ -9,7 +9,6 @@
 
  The Binary Habitability Mechanism Calculator
  2014 (C) Jorge Zuluaga - Viva la BHM!
-
 ################################################################################
 ```
 The Binary Habitability Mechanism Calculator
