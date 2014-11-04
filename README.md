@@ -12,6 +12,11 @@
 ################################################################################
 ```
 
+Presentation
+------------
+
+*BHMcalc* is a project 
+
 Getting a copy
 --------------
 
@@ -58,3 +63,11 @@ Instructions for the contirbutor
    ```
    $ git checkout master
    ```
+
+Licensing
+---------
+
+All rights reserved to [Jorge
+I. Zuluaga](mailto:zuluagajorge@gmail.com).
+
+This project is protected under the GNU GPL License Version 2.
