@@ -15,7 +15,32 @@
 Presentation
 ------------
 
-*BHMcalc* is a project 
+*BHMcalc* is a project conceived and developed after the collaboration
+of the author (Jorge I. Zuluaga, UdeA) with Prof. Paul Mason (NMSU)
+and their former graduate and undergraduate students Dr. Pablo
+A. Cuartas-Restrepo and Joni Clark.  It arose from the interest of our
+team (internally dubbed as the *BHM Mafia*) in the complex and rich
+conditions that potentially habitable planets could have while
+orbiting moderately separated binaries (binary periods under 60 days).
+
+This is a tool that can be used as a web app or a python package.  The
+tool is entirely programmed in python and php (web interface) and it
+intends to be as friendly as possible to astronomers working in this
+field.
+
+If you need to cite this software please include a reference to one
+(or all) of the following papers:
+
+- Mason, P. A., Zuluaga, J. I., Clark, J. M., & Cuartas-Restrepo,
+  P. A. (2013). Rotational Synchronization May Enhance Habitability
+  for Circumbinary Planets: Kepler Binary Case Studies. The
+  Astrophysical Journal Letters, 774(2), L26 ([ADS
+  Entry](http://adsabs.harvard.edu/abs/2013ApJ...774L..26M)).
+
+- Mason, P. A., Zuluaga, J. I., Cuartas-Restrepo, P. A., & Clark,
+  J. M. (2014). Circumbinary Habitability Niches. arXiv preprint
+  arXiv:1408.5163 ([ADS
+  Entry](http://adsabs.harvard.edu/abs/2014arXiv1408.5163M))
 
 Getting a copy
 --------------
