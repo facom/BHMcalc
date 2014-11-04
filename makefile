@@ -43,5 +43,6 @@ commit:
 	@git push origin $(BRANCH)
 
 pull:
-	git reset --hard HEAD	
-	git pull
+	@echo "Getting the lattest changes from branch $(BRANCH)..."
+	@git reset --hard HEAD	
+	@git pull
