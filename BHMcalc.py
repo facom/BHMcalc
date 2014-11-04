@@ -98,16 +98,6 @@ outcrit=argv[18]
 confname=argv[19]
 qsaved=int(argv[20])
 
-#OPTIONAL PARAMETERS
-try:
-    Pobs=float(argv[21])
-    dPobs=float(argv[22])
-    tage1=float(argv[23])
-    tage2=float(argv[24])
-except:
-    Pobs=-1
-    pass
-
 if qintegration:qchz=1
 if Z==0:
     Z,dZ=ZfromFHe(FeH)
@@ -174,7 +164,6 @@ def Run():
     #VERBOSITY
     verbose=False
     #verbose=True
-
     pause=False
     #pause=True
 
@@ -183,7 +172,7 @@ def Run():
     tauM=12.5
     
     #INITIAL PERIOD OF ROTATION ABOVE DISRUPTION
-    PFAC=1
+    PFAC=2
     
     #HZ ZONE AGE
     tauHZ=TAU
@@ -404,7 +393,7 @@ def Run():
     ax=fig.add_axes([0.01,0.01,0.98,0.98])
     ax.set_xticklabels([])
     ax.set_yticklabels([])
-    
+
     #STELLAR PROPERTIES
     ax.plot(x1,y1,'k-',linewidth=1,zorder=20)
     ax.plot(x2,y2,'k-',linewidth=1,zorder=20)
@@ -436,26 +425,14 @@ def Run():
     y=r*sin(f)
     ax.plot(x,y,'k-',linewidth=2,zorder=100)
 
-    ax.set_title(titlebin,position=(0.5,0.90),fontsize=14)
-    ax.text(0.5,0.95,r"%s: $\tau\sim %.2f$ Gyr, $a_p = %.2f$ AU, $e_p = %.3f$"%(confname,TAU,ap,ep),
+    ax.set_title(titlebin,position=(0.5,0.95),fontsize=16)
+    ax.text(0.5,0.92,"Test planet: $a_p = %.2f$ AU, $e_p = %.3f$"%(ap,ep),
             horizontalalignment='center',transform=ax.transAxes,
-            fontsize=16)
+            fontsize=14)
     ax.text(0.5,0.02,r"$a_{\rm crit}=%.2f$ AU, $l_{\rm in,RV}$=%.2f AU, $l_{\rm in,RG}$=%.2f AU, $l_{\rm out,MG}$=%.2f AU, $l_{\rm out,EM}$=%.2f AU"%(acrit,lino,lini,louti,louto),transform=ax.transAxes,horizontalalignment='center',fontsize=14)
-
-    dr=rang/10
-    ax.set_xlim((-rang-dr,rang+dr))
-    ax.set_ylim((-rang-dr,rang+dr))
-
-    yt=ax.get_yticks()
-    for y in yt[1:-1]:
-        if y==0:continue
-        if y<0:va='bottom'
-        else:va='top'
-        ax.text(-rang-dr+rang/30,y,"%.1f AU"%y,fontsize=10,horizontalalignment='left',
-                 verticalalignment=va,rotation=90)
-        ax.text(+rang+dr-rang/30,y,"%.1f AU"%y,fontsize=10,horizontalalignment='right',
-                 verticalalignment=va,rotation=90)
-    saveFig(TMPDIR+"/HZ+planet-%s.png"%suffix,watermarkpos='inner',dyw=0.5,va='center')
+    ax.set_xlim((-rang,rang))
+    ax.set_ylim((-rang,rang))
+    saveFig(TMPDIR+"/HZ+planet-%s.png"%suffix,watermarkpos='inner')
 
     #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     #CHECK IF CONTINUOUS HABITABLE ZONE 
@@ -550,15 +527,15 @@ def Run():
         #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         #STELLAR ORBIT
         #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-   
         #PERIOD OF THE PLANET
         MTbin=M1+M2
-        Pp=PKepler(ap,MTbin,Mp*MEARTH/MSUN)
         Ppin=PKepler(lincont,MTbin,Mp*MEARTH/MSUN)
         Ppout=PKepler(loutcont,MTbin,Mp*MEARTH/MSUN)
+        Ppp=max(Ppin,Ppout)
+        epp=0.0
     
         #TIME
-        torbs=linspace(0,1.5*Pp,500)
+        torbs=linspace(0,1.5*Ppp,500)
 
         #INTEGRATE POSITIONS
         r1s=[]
@@ -569,23 +546,16 @@ def Run():
         rp2ins=[]
         rp1outs=[]
         rp2outs=[]
-        rp1ps=[]
-        rp2ps=[]
         for t in torbs:
-
-            #MEAN ANOMALIES
+            #MEAN ANOMALY
             Mbin=2*np.pi/Pbin*t
-            Min=2*np.pi/Ppin*t
-            Mout=2*np.pi/Ppout*t
-            Mp=2*np.pi/Pp*t
+            Mp=2*np.pi/Ppp*t
             
             #ECCENTRIC AND TRUE ANOMALY
-            #BINARY
             Ebin=eccentricAnomaly(Mbin,e)
             fbin=2*arctan(np.sqrt((1+e)/(1-e))*tan(Ebin/2))
-            #PLANET
-            Ep=eccentricAnomaly(Mp,ep)
-            fp=2*arctan(np.sqrt((1+ep)/(1-ep))*tan(Ep/2))
+            Ep=eccentricAnomaly(Mp,epp)
+            fp=2*arctan(np.sqrt((1+epp)/(1-epp))*tan(Ep/2))
             
             #RADIO-VECTOR BINARY COMPONENTS
             rbin=abin*(1-e*cos(Ebin))
@@ -596,34 +566,27 @@ def Run():
             r2s+=[r2]
 
             #INNER EDGE
-            rprad=lincont
-            rp=array([rprad*cos(Min),rprad*sin(Min)])
+            rprad=lincont*(1-epp*cos(Ep))
+            rp=array([rprad*cos(fp),rprad*sin(fp)])
             rpins+=[rp]
             rp1=r1-rp;rp1ins+=[rp1]
             rp2=r2-rp;rp2ins+=[rp2]
 
             #OUTER EDGE
-            rprad=loutcont
-            rp=array([rprad*cos(Mout),rprad*sin(Mout)])
+            rprad=loutcont*(1-epp*cos(Ep))
+            rp=array([rprad*cos(fp),rprad*sin(fp)])
             rpins+=[rp]
             rp1=r1-rp;rp1outs+=[rp1]
             rp2=r2-rp;rp2outs+=[rp2]
 
-            #PLANET
-            rprad=ap*(1-ep*cos(Ep))
-            rp=array([rprad*cos(fp),rprad*sin(fp)])
-            rpins+=[rp]
-            rp1=r1-rp;rp1ps+=[rp1]
-            rp2=r2-rp;rp2ps+=[rp2]
-
         r1s=np.array(r1s)
         r2s=np.array(r2s)
+        rpins=np.array(rpins)
         rp1ins=np.array(rp1ins)
         rp2ins=np.array(rp2ins)
+        rpouts=np.array(rpouts)
         rp1outs=np.array(rp1outs)
         rp2outs=np.array(rp2outs)
-        rp1ps=np.array(rp1ps)
-        rp2ps=np.array(rp2ps)
         
         #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         #PHOTON FLUX DENSITY
@@ -638,136 +601,72 @@ def Run():
         
         fin1s=[]
         fout1s=[]
-
         fin2s=[]
         fout2s=[]
-
-        fp1s=[]
-        fp2s=[]
         
         pin1s=[]
         pout1s=[]
-
         pin2s=[]
         pout2s=[]
-
-        pp1s=[]
-        pp2s=[]
         
         flins=[]
         flouts=[]
-        flps=[]
-
         pins=[]
         pouts=[]
-        pps=[]
-        
-        power1=planckPower(lamb0,lambinf,T1)
-        photons1=planckPhotons(lamb1,lamb2,T1)
-
-        power2=planckPower(lamb0,lambinf,T2)
-        photons2=planckPhotons(lamb1,lamb2,T2)
         
         for i in xrange(npoint):
-
             #DISTANCE
             r1in=norm(rp1ins[i])
             r2in=norm(rp2ins[i])
             r1out=norm(rp1outs[i])
             r2out=norm(rp2outs[i])
-            r1p=norm(rp1ps[i])
-            r2p=norm(rp2ps[i])
-
-            shrin1=(R1*RSUN/(r1in*AU))**2
-            shrout1=(R1*RSUN/(r1out*AU))**2
-            shrp1=(R1*RSUN/(r1p*AU))**2
-
-            shrin2=(R2*RSUN/(r2in*AU))**2
-            shrout2=(R2*RSUN/(r2out*AU))**2
-            shrp2=(R2*RSUN/(r2p*AU))**2
-
-            #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+            
             #INSOLATION
-            #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-            #RESPECT MAIN COMPONENT
-            fluxin1=power1*shrin1
+            fluxin1=planckPower(lamb0,lambinf,T1)*(R1*RSUN/(r1in*AU))**2
             fin1s+=[fluxin1]
-
-            fluxout1=power1*shrout1
+            fluxout1=planckPower(lamb0,lambinf,T1)*(R1*RSUN/(r1out*AU))**2
             fout1s+=[fluxout1]
 
-            fluxp1=power1*shrp1
-            fp1s+=[fluxp1]
-
-            #RESPECT SECONDARY COMPONENT
-            fluxin2=power2*shrin2
+            fluxin2=planckPower(lamb0,lambinf,T2)*(R2*RSUN/(r2in*AU))**2
             fin2s+=[fluxin2]
-
-            fluxout2=power2*shrout2
+            fluxout2=planckPower(lamb0,lambinf,T2)*(R2*RSUN/(r2out*AU))**2
             fout2s+=[fluxout2]
 
-            fluxp2=power2*shrp2
-            fp2s+=[fluxp2]
-
-            #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
             #PHOTON FLUX
-            #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-            #RESPECT MAIN COMPONENT
-            ppfdin1=photons1*shrin1
+            ppfdin1=planckPhotons(lamb1,lamb2,T1)*(R1*RSUN/(r1in*AU))**2
             pin1s+=[ppfdin1]
-
-            ppfdout1=photons1*shrout1
+            ppfdout1=planckPhotons(lamb1,lamb2,T1)*(R1*RSUN/(r1out*AU))**2
             pout1s+=[ppfdout1]
 
-            ppfdp1=photons1*shrp1
-            pp1s+=[ppfdp1]
-
-            #RESPECT SECONDARY
-            ppfdin2=photons2*shrin2
+            ppfdin2=planckPhotons(lamb1,lamb2,T2)*(R2*RSUN/(r2in*AU))**2
             pin2s+=[ppfdin2]
-
-            ppfdout2=photons2*shrout2
+            ppfdout2=planckPhotons(lamb1,lamb2,T2)*(R2*RSUN/(r2out*AU))**2
             pout2s+=[ppfdout2]
 
-            ppfdp2=photons2*shrp2
-            pp2s+=[ppfdp2]
-
-            #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
             #TOTAL
-            #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
             flin=fluxin1+fluxin2
             flout=fluxout1+fluxout2
-            flp=fluxp1+fluxp2
             pin=ppfdin1+ppfdin2
             pout=ppfdout1+ppfdout2
-            pp=ppfdp1+ppfdp2
 
             flins+=[flin]
             flouts+=[flout]
-            flps+=[flp]
             pins+=[pin]
             pouts+=[pout]
-            pps+=[pp]
 
         fin1s=array(fin1s)
         fout1s=array(fout1s)
-        fp1s=array(fp1s)
         fin2s=array(fin2s)
         fout2s=array(fout2s)
-        fp2s=array(fp2s)
         pin1s=array(pin1s)
         pout1s=array(pout1s)
-        pp1s=array(pp1s)
         pin2s=array(pin2s)
         pout2s=array(pout2s)
-        pp2s=array(pp2s)
 
         flins=array(flins)
         flouts=array(flouts)
-        flps=array(flps)
         pins=array(pins)
         pouts=array(pouts)
-        pps=array(pps)
         
         #SAVING STELLAR ORBIT
         savetxt(SAVEDIR+"torbs",torbs)
@@ -779,30 +678,22 @@ def Run():
         savetxt(SAVEDIR+"rpouts",rpouts)
         savetxt(SAVEDIR+"rp1outs",rp1outs)
         savetxt(SAVEDIR+"rp2outs",rp2outs)
-        savetxt(SAVEDIR+"rp1ps",rp1ps)
-        savetxt(SAVEDIR+"rp2ps",rp2ps)
         savetxt(SAVEDIR+"stellar-orbits",[MTbin,Ppin,Ppout,lamb1,lamb2])
         
         #SAVING PHOTON FLUX
         savetxt(SAVEDIR+"fin1s",fin1s)
         savetxt(SAVEDIR+"fout1s",fout1s)
-        savetxt(SAVEDIR+"fp1s",fout1s)
         savetxt(SAVEDIR+"fin2s",fin2s)
         savetxt(SAVEDIR+"fout2s",fout2s)
-        savetxt(SAVEDIR+"fp2s",fout2s)
         savetxt(SAVEDIR+"pin1s",pin1s)
         savetxt(SAVEDIR+"pout1s",pout1s)
-        savetxt(SAVEDIR+"pp1s",pout1s)
         savetxt(SAVEDIR+"pin2s",pin2s)
         savetxt(SAVEDIR+"pout2s",pout2s)
-        savetxt(SAVEDIR+"pp2s",pout2s)
 
         savetxt(SAVEDIR+"flins",flins)
         savetxt(SAVEDIR+"flouts",flouts)
-        savetxt(SAVEDIR+"flps",flps)
         savetxt(SAVEDIR+"pins",pins)
         savetxt(SAVEDIR+"pouts",pouts)
-        savetxt(SAVEDIR+"pps",pps)
 
         #SAVING
         savetxt(SAVEDIR+"tauvec",tauvec)
@@ -831,29 +722,21 @@ def Run():
         rpouts=loadtxt(SAVEDIR+"rpouts")
         rp1outs=loadtxt(SAVEDIR+"rp1outs")
         rp2outs=loadtxt(SAVEDIR+"rp2outs")
-        rp1ps=loadtxt(SAVEDIR+"rp1ps")
-        rp2ps=loadtxt(SAVEDIR+"rp2ps")
         
         #SAVING PHOTON FLUX
         fin1s=loadtxt(SAVEDIR+"fin1s")
         fout1s=loadtxt(SAVEDIR+"fout1s")
-        fp1s=loadtxt(SAVEDIR+"fp1s")
         fin2s=loadtxt(SAVEDIR+"fin2s")
         fout2s=loadtxt(SAVEDIR+"fout2s")
-        fp2s=loadtxt(SAVEDIR+"fp2s")
         pin1s=loadtxt(SAVEDIR+"pin1s")
         pout1s=loadtxt(SAVEDIR+"pout1s")
-        pp1s=loadtxt(SAVEDIR+"pp1s")
         pin2s=loadtxt(SAVEDIR+"pin2s")
         pout2s=loadtxt(SAVEDIR+"pout2s")
-        pp2s=loadtxt(SAVEDIR+"pp2s")
 
         flins=loadtxt(SAVEDIR+"flins")
         flouts=loadtxt(SAVEDIR+"flouts")
-        flps=loadtxt(SAVEDIR+"flps")
         pins=loadtxt(SAVEDIR+"pins")
         pouts=loadtxt(SAVEDIR+"pouts")
-        pps=loadtxt(SAVEDIR+"pps")
 
         MTbin,Ppin,Ppout,lamb1,lamb2=loadtxt(SAVEDIR+"stellar-orbits")
 
@@ -960,30 +843,19 @@ def Run():
     plt.plot(torbs,pout1s/PPFD_EARTH,'b:',linewidth=2)
     plt.plot(torbs,pout2s/PPFD_EARTH,'r:',linewidth=2)
     """
-    """
+
     plt.plot(torbs,pins/PPFD_EARTH,'r-',linewidth=2,label='PPFD Inner CHZ')
     plt.plot(torbs,pouts/PPFD_EARTH,'b-',linewidth=2,label='PPFD Outer CHZ')
     plt.plot(torbs,flins/SOLAR_CONSTANT,'k-',linewidth=2,label='Insolation',zorder=-10)
     plt.plot(torbs,flouts/SOLAR_CONSTANT,'k-',linewidth=2,zorder=-10)
-    """
-    plt.fill_between(torbs,pins/PPFD_EARTH,pouts/PPFD_EARTH,color='b',alpha=0.2,linewidth=2)
-    plt.fill_between(torbs,flins/SOLAR_CONSTANT,flouts/SOLAR_CONSTANT,color='g',alpha=0.2,linewidth=2)
-
-    plt.plot(torbs,pps/PPFD_EARTH,'b-',linewidth=2,label='PPFD')
-    plt.plot(torbs,flps/SOLAR_CONSTANT,'g-',linewidth=2,zorder=-10,label='Insolation')
-
-    if Pobs>0:
-        plt.text(0.02,0.95,confname,
-                 fontsize=18,transform=plt.gca().transAxes)
 
     plt.axhline(1.0,color='k',linewidth=2)
-    plt.title(titlebin,position=(0.5,1.02))
     plt.xlabel('t (days)',fontsize=LABEL_SIZE)
     plt.ylabel('Insolation, PPFD (PEL)',fontsize=LABEL_SIZE)
-    plt.xlim((0,max(torbs)))
+    plt.xlim((0,Ppout))
     plt.xticks(fontsize=TICS_SIZE)
     plt.yticks(fontsize=TICS_SIZE)
-    plt.legend(loc='best',prop=dict(size=LEGEND_SIZE))
+    plt.legend(loc='lower right',prop=dict(size=LEGEND_SIZE))
     #plt.grid()
     saveFig(TMPDIR+"/InsolationPhotonDensity-%s.png"%suffix)
 
@@ -1005,7 +877,6 @@ def Run():
     earthFSW=loadtxt("BHM/data/earth-FSW.dat")
     earthintFXUV=loadtxt("BHM/data/earth-intFXUV.dat")
     earthintFSW=loadtxt("BHM/data/earth-intFSW.dat")
-    earthPL=loadtxt("BHM/data/earth-PL.dat")
     earthML=loadtxt("BHM/data/earth-ML.dat")
 
     cond=earthFXUV[:,0]<tau1
@@ -1282,14 +1153,10 @@ def Run():
                     d="\t"*2
                     print d,"XUV Luminosity:"
                     d="\t"*3
-                    print d,"Component 1:",LXUV1
-                    print d,"Component 2:",LXUV2
-                    print d,"Component 1 (no tidal):",ntLXUV1
-                    print d,"Component 2 (no tidal):",ntLXUV2
-                    print d,"SW Flux:"
-                    d="\t"*3
-                    print d,"Binary:",FSWp
-                    print d,"Binary (no tidal):",ntFSWp
+                    print d,"Cmponent 1:",LXUV1
+                    print d,"Cmponent 2:",LXUV2
+                    print d,"Cmponent 1 (no tidal):",ntLXUV1
+                    print d,"Cmponent 2 (no tidal):",ntLXUV2
                     print d,"Single Component 1:",sLXUV
                     d="\t"*2
                     print d,"XUV Flux:"
@@ -1455,7 +1322,6 @@ def Run():
     #plt.plot(tvecX,ntFXUVp_vec,'k--',linewidth=2)
     plt.plot(tvecX,ntFXUVin_vec,'r--',label='XUV no BHM @ Inner CHZ',linewidth=2)
     plt.plot(tvecX,sFXUVopt_vec,'b:',label='Single primary @ Outer CHZ',linewidth=1)
-    plt.plot(tvecX,sFXUVp_vec,'c-.',label='Single primary @ a = %.1f AU'%ap,linewidth=5)
     plt.plot(tvecX,sFXUVin_vec,'r:',label='Single primary @ Inner CHZ',linewidth=1)
     #plt.plot(tvecX,sFXUVp_vec,'k-',linewidth=2,label='Earth')
     plt.plot(earthFXUV[:,0],earthFXUV[:,1],'k-',linewidth=2,label='Earth')
@@ -1507,9 +1373,12 @@ def Run():
     #plt.plot(tvecX,ntFSWp_vec/SWPEL,'k--',linewidth=2)
     plt.plot(tvecX,ntFSWin_vec/SWPEL,'r--',label='SW no BHM @ Inner CHZ',linewidth=2)
     plt.plot(tvecX,sFSWopt_vec/SWPEL,'b:',label='Single primary @ Outer CHZ',linewidth=1)
-    plt.plot(tvecX,sFSWp_vec/SWPEL,'c-.',label='Single primary @ a = %.1f AU'%ap,linewidth=5)
     plt.plot(tvecX,sFSWin_vec/SWPEL,'r:',label='Single primary @ Inner CHZ',linewidth=1)
     plt.plot(earthFSW[:,0],earthFSW[:,1],'k-',linewidth=2,label='Earth')
+    #plt.plot([],[],'k--',label='No BHM')
+    #plt.plot([],[],'k:',label='Single-primary')
+    #plt.plot([],[],'k-.',label='Single-primary on planet')
+    #plt.xscale('log')
     plt.yscale('log')
     logTickLabels(plt.gca(),-3,3,(3,),frm='%.1f',axis='y',notation='normal',fontsize=TICS_SIZE)
     plt.xticks(fontsize=TICS_SIZE)
@@ -1546,6 +1415,7 @@ def Run():
     #INTEGRATE XUV FLUX
     #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
     nX=len(tvecX)
+    plt.figure();ifig=0
     intFXUVopt=np.array([FXUVopt_vec[:i].sum() for i in xrange(nX)])*Dt
     intFXUVin=np.array([FXUVin_vec[:i].sum() for i in xrange(nX)])*Dt
     intFXUVp=np.array([FXUVp_vec[:i].sum() for i in xrange(nX)])*Dt
@@ -1558,53 +1428,22 @@ def Run():
     logFXUV=int(np.log10(max(intFXUVopt)))
     FXUVscale=10**logFXUV
 
-    intFXUVearthFunc=interpScipy(earthintFXUV[:,0],earthintFXUV[:,1],kind='slinear')
-    intFXUVearth=intFXUVearthFunc(tvecX)*FXUVscale
-    intFXUVearth[0]=1
-
-    #$$$$$$$$$$$$$$$$$$$
-    #ABSOLUTE PLOT
-    #$$$$$$$$$$$$$$$$$$$
-    fig=plt.figure();ifig=0
-    ax=fig.add_axes([0.1,0.1,0.8,0.8])
-
     plt.plot(tvecX,intFXUVopt/FXUVscale,'b-',label='Integrated XUV BHM @ Outer CHZ')
     plt.plot(tvecX,intFXUVin/FXUVscale,'r-',label='Integrated XUV BHM @ Inner CHZ')
-    plt.plot(tvecX,intFXUVp/FXUVscale,'c-',linewidth=2,label=r'Integrated XUV BHM @ $a = %.2f\,\rm{AU}$'%ap)
+    #plt.plot(tvecX,intFXUVp/FXUVscale,'k-',linewidth=2,label=r'Integrated XUV @ $a = %.2f\,\rm{AU}$'%ap)
     plt.plot(tvecX,intntFXUVopt/FXUVscale,'b--',label='Integrated XUV no BHM @ Outer CHZ')
     plt.plot(tvecX,intntFXUVin/FXUVscale,'r--',label='Integrated XUV no BHM @ Inner CHZ')
-    plt.plot(tvecX,intntFXUVp/FXUVscale,'c--',label='Integrated XUV no BHM @ Inner CHZ')
     plt.plot(tvecX,intsFXUVopt/FXUVscale,'b:',label='Integrated XUV single primary @ Outer CHZ')
     plt.plot(tvecX,intsFXUVin/FXUVscale,'r:',label='Integrated XUV single primary @ Inner CHZ')
-    plt.plot(tvecX,intsFXUVp/FXUVscale,'k-',linewidth=2,label=r'Integrated XUV single primary @ $a = %.2f\,\rm{AU}$'%ap)
-    plt.plot(earthintFXUV[:,0],earthintFXUV[:,1],'k--',linewidth=4,label=r'Earth')
+    plt.plot(earthintFXUV[:,0],earthintFXUV[:,1],'k-',linewidth=2,label=r'Earth')
 
-    plt.xlabel(r"$\tau$ (Gyr)",fontsize=LABEL_SIZE)
+    #plt.plot([],[],'k--',label='No BHM')
+    #plt.plot([],[],'k:',label='Single-primary')
+    #plt.plot([],[],'k-.',label='Single-primary on planet')
+
+    plt.xlabel(r"$t$ (Gyr)",fontsize=LABEL_SIZE)
     plt.ylabel(r"$\int_0^{t} F_{\rm XUV}(t)\,dt$ ($\times 10^{%d}\,{\rm J/cm}^2$)"%logFXUV,fontsize=LABEL_SIZE)
-    plt.legend(loc='upper right',prop=dict(size=LEGEND_SIZE))
-    plt.xticks(fontsize=TICS_SIZE)
-    plt.yticks(fontsize=TICS_SIZE)
-    plt.title(titlebin,position=(0.5,1.02))
-
-    saveFig(TMPDIR+"/IntFXUVabs-%s.png"%suffix)
-
-    #$$$$$$$$$$$$$$$$$$$
-    #RELATIVE PLOT
-    #$$$$$$$$$$$$$$$$$$$
-    fig=plt.figure();ifig=0
-    ax=fig.add_axes([0.18,0.1,0.75,0.8])
-    
-    plt.fill_between(tvecX,intFXUVin/intFXUVearth,intFXUVopt/intFXUVearth,
-                     color='b',alpha=0.2,label='Integrated XUV BHM')
-    plt.fill_between(tvecX,intntFXUVin/intFXUVearth,intntFXUVopt/intFXUVearth,
-                     color='r',alpha=0.2,label='Integrated XUV no BHM')
-    plt.plot(tvecX,intFXUVp/intFXUVearth,'k-',linewidth=2,
-             label=r'%s, $a_{\rm p}=%.2f$ AU'%(confname,ap))
-    
-    plt.xlabel(r"$\tau$ (Gyr)",fontsize=LABEL_SIZE)
-    plt.ylabel(r"$\Phi_{\rm XUV}(\tau)=\int_0^{\tau} F_{\rm XUV}(t)\,dt\,/\,\Phi_{\rm XUV,Earth}(4.5\,{\rm Gyr})$",
-               fontsize=LABEL_SIZE)
-    plt.legend(loc='lower right',prop=dict(size=14))
+    plt.legend(loc='lower right',prop=dict(size=10))
     plt.xticks(fontsize=TICS_SIZE)
     plt.yticks(fontsize=TICS_SIZE)
     plt.title(titlebin,position=(0.5,1.02))
@@ -1613,6 +1452,8 @@ def Run():
     #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
     #INTEGRATED SW FLUX
     #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+    nX=len(tvecX)
+    plt.figure();ifig=0
     intFSWopt=np.array([FSWopt_vec[:i].sum() for i in xrange(nX)])*Dt
     intFSWin=np.array([FSWin_vec[:i].sum() for i in xrange(nX)])*Dt
     intFSWp=np.array([FSWp_vec[:i].sum() for i in xrange(nX)])*Dt
@@ -1625,57 +1466,22 @@ def Run():
     logFSW=int(np.log10(max(intFSWopt)))
     FSWscale=10**logFSW
 
-    intFSWearthFunc=interpScipy(earthintFSW[:,0],earthintFSW[:,1],kind='slinear')
-    intFSWearth=intFSWearthFunc(tvecX)*FSWscale
-    intFSWearth[0]=1
-
-    #$$$$$$$$$$$$$$$$$$$
-    #ABSOLUTE PLOT
-    #$$$$$$$$$$$$$$$$$$$
-    nX=len(tvecX)
-    fig=plt.figure();ifig=0
-    ax=fig.add_axes([0.18,0.1,0.75,0.8])
-
     plt.plot(tvecX,intFSWopt/FSWscale,'b-',label='Integrated SW BHM @ Outer')
     plt.plot(tvecX,intFSWin/FSWscale,'r-',label='Integrated SW BHM @ Inner CHZ')
-    plt.plot(tvecX,intFSWp/FSWscale,'c-',linewidth=2,label=r'Integrated SW BHM @ $a = %.2f\,\rm{AU}$'%ap)
+    #plt.plot(tvecX,intFSWp/FSWscale,'k-',linewidth=2,label=r'Integrated SW @ $a = %.2f\,\rm{AU}$'%ap)
     plt.plot(tvecX,intntFSWopt/FSWscale,'b--',label='Integrated SW no BHM @ Outer CHZ')
     plt.plot(tvecX,intntFSWin/FSWscale,'r--',label='Integrated SW BHM @ Inner CHZ')
-    plt.plot(tvecX,intntFSWp/FSWscale,'c--',label='Integrated SW BHM @ Inner CHZ')
     plt.plot(tvecX,intsFSWopt/FSWscale,'b:',label='Integrated SW single primary @ Outer CHZ')
     plt.plot(tvecX,intsFSWin/FSWscale,'r:',label='Integrated SW single primary @ Inner CHZ')
-    plt.plot(tvecX,intsFSWp/FSWscale,'k-',linewidth=2,label=r'Integrated SW single primary @ $a = %.2f\,\rm{AU}$'%ap)
-    plt.plot(earthintFSW[:,0],earthintFSW[:,1],'k--',linewidth=4,label=r'Earth')
-    
-    plt.xlabel(r"$\tau$ (Gyr)",fontsize=LABEL_SIZE)
+    plt.plot(earthintFSW[:,0],earthintFSW[:,1],'k-',linewidth=2,label=r'Earth')
+    #plt.plot([],[],'k--',label='No BHM')
+    #plt.plot([],[],'k:',label='Single-primary')
+    #plt.plot([],[],'k-.',label='Single-primary on planet')
+
+    plt.xlabel(r"$t$ (Gyr)",fontsize=LABEL_SIZE)
     plt.ylabel(r"$\int_0^{t} n_{\rm SW}\,v_{\rm SW}\,dt$ ($\times 10^{%d}\,{\rm ions/m}^2$)"%logFSW,
                fontsize=LABEL_SIZE)
-
-    plt.legend(loc='upper right',prop=dict(size=LEGEND_SIZE))
-    plt.xticks(fontsize=TICS_SIZE)
-    plt.yticks(fontsize=TICS_SIZE)
-    plt.title(titlebin,position=(0.5,1.02))
-    saveFig(TMPDIR+"/IntFSWabs-%s.png"%suffix)
-
-    #$$$$$$$$$$$$$$$$$$$
-    #RELATIVE PLOT
-    #$$$$$$$$$$$$$$$$$$$
-    nX=len(tvecX)
-    fig=plt.figure();ifig=0
-    ax=fig.add_axes([0.18,0.1,0.75,0.8])
-
-    plt.fill_between(tvecX,intFSWin/intFSWearth,intFSWopt/intFSWearth,
-                     color='b',alpha=0.2,label='Integrated SW BHM')
-    plt.fill_between(tvecX,intntFSWin/intFSWearth,intntFSWopt/intFSWearth,
-                     color='r',alpha=0.2,label='Integrated SW no BHM')
-    plt.plot(tvecX,intFSWp/intFSWearth,'k-',linewidth=2,
-             label=r'%s, $a_{\rm p}=%.2f$ AU'%(confname,ap))
-    
-    plt.xlabel(r"$\tau$ (Gyr)",fontsize=LABEL_SIZE)
-    plt.ylabel(r"$\Psi_{\rm SW}(\tau)=\int_0^{\tau} F_{\rm SW}(t)\,dt\,/\,\Psi_{\rm SW,Earth}(4.5\,{\rm Gyr})$",
-               fontsize=LABEL_SIZE)
-
-    plt.legend(loc='lower right',prop=dict(size=14))
+    plt.legend(loc='lower right',prop=dict(size=10))
     plt.xticks(fontsize=TICS_SIZE)
     plt.yticks(fontsize=TICS_SIZE)
     plt.title(titlebin,position=(0.5,1.02))
@@ -1684,15 +1490,13 @@ def Run():
     #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
     #MASS-LOSS AT INNER CHZ VS. PLANET.MASS
     #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-    Mpvec=logspace(np.log10(0.01),np.log10(10.0),100)
+    plt.figure();ifig=0
+    
+    Mpvec=linspace(0.1,10.0,100)
     Pl=[]
-    Mls=[]
     ntPl=[]
-    ntMls=[]
     sPl=[]
-    sMls=[]
     sPlp=[]
-    sMlps=[]
     for Mp in Mpvec:
 
         #PLANETARY PROPERTIES
@@ -1709,107 +1513,26 @@ def Run():
         #MASS LOSS
         Ml=ALPHA*MLfac*Ap*MUATM*MP
         Pl+=[Ml*gp/(2*Ap)/1E5]
-        Mls+=[Ml]
 
         ntMl=ALPHA*ntMLfac*Ap*MUATM*MP
         ntPl+=[ntMl*gp/(2*Ap)/1E5]
-        ntMls+=[ntMl]
 
         sMl=ALPHA*sMLfac*Ap*MUATM*MP
         sPl+=[sMl*gp/(2*Ap)/1E5]
-        sMls+=[sMl]
 
         sMlp=ALPHA*sMLfacp*Ap*MUATM*MP
         sPlp+=[sMlp*gp/(2*Ap)/1E5]
-        sMlps+=[sMlp]
-        
-    MlearthFunc=interpScipy(earthML[:,0],earthML[:,1],
-                            kind='slinear')
-    Mlearth=MlearthFunc(Mpvec)
 
-    #$$$$$$$$$$$$$$$$$$$
-    #ABSOLUTE PLOT
-    #$$$$$$$$$$$$$$$$$$$
-    plt.figure();ifig=0
-
-    if Pobs>0:
-        plt.text(0.95,0.70,'%s'%(confname),fontsize=18,
-                 horizontalalignment='right',
-                 transform=plt.gca().transAxes)
-    
-    plt.plot(earthPL[:,0],earthPL[:,1],'b-',linewidth=2,label='Single solar-mass, $a = 1$ AU')
-    plt.plot(Mpvec,array(Pl),'r-',
-             label='Mass loss BHM')
-    plt.plot(Mpvec,array(ntPl),'g--',linewidth=5,
-             label='Mass loss no BHM')
-    plt.plot(Mpvec,array(sPlp),'k:',linewidth=5,
-             label='Mass loss single-primary')
-
-    plt.xscale("log")
-    #plt.yscale("log")
+    plt.plot(Mpvec,Pl,'k-',label='Mass loss BHM')
+    plt.plot(Mpvec,ntPl,'k--',label='Mass loss no BHM')
+    plt.plot(Mpvec,sPl,'k:',label='Mass loss single-primary')
+    plt.plot(earthML[:,0],earthML[:,1],'k-',linewidth=2,label='Single solar-mass, $a = 1$ AU')
 
     plt.xlabel("$M_p/M_\oplus$",fontsize=LABEL_SIZE)
-    plt.ylabel(r"$P_{\rm loss}(\tau=%.1f\,{\rm Gyr})\,[{\rm bars}]$"%TAU,fontsize=LABEL_SIZE)
-    
-    pmass=[MGANYMEDE,MMERCURY,MMARS,MVENUS]
-    pnames=["Ganymede","Mercury","Mars","Venus"]
-    for Mp,name in zip(pmass,pnames):
-        fp=Mp/MEARTH
-        fpt=(np.log10(fp)+2)/3.0+0.01
-        plt.axvline(fp,color='b')
-        plt.text(fpt,0.02,name,
-                 rotation=90,
-                 horizontalalignment='left',
-                 verticalalignment='bottom',
-                 bbox=dict(fc='w',ec='none'),
-                 transform=plt.gca().transAxes)
-    
-    logTickLabels(plt.gca(),-1,1,(3,),axis='x')
+    plt.ylabel(r"$P_{\rm loss}\,({\rm bars})$",fontsize=LABEL_SIZE)
     plt.xticks(fontsize=TICS_SIZE)
     plt.yticks(fontsize=TICS_SIZE)
-    plt.legend(loc='upper right',prop=dict(size=LEGEND_SIZE))
-    plt.title(titlebin,position=(0.5,1.02))
-    saveFig(TMPDIR+"/MassLossabs-%s.png"%suffix)
-
-    #$$$$$$$$$$$$$$$$$$$
-    #RELATIVE PLOT
-    #$$$$$$$$$$$$$$$$$$$
-    plt.figure();ifig=0
-    
-    plt.plot(Mpvec,Mls/(Mpvec*MEARTH),'k-',label='Mass loss BHM')
-    plt.plot(Mpvec,ntMls/(Mpvec*MEARTH),'k--',label='Mass loss no BHM')
-    plt.plot(Mpvec,sMlps/(Mpvec*MEARTH),'k:',linewidth=3,label='Mass loss single-primary')
-    plt.plot(Mpvec,Mlearth/(Mpvec*MEARTH),'k-',linewidth=1,label='Single solar-mass, $a = 1$ AU')
-    
-    if Pobs>0:
-        plt.text(0.95,0.70,'%s'%(confname),fontsize=18,
-                 horizontalalignment='right',
-                 transform=plt.gca().transAxes)
-
-    plt.xscale("log")
-    plt.yscale("log")
-
-    plt.xlabel("$M_p/M_\oplus$",fontsize=LABEL_SIZE)
-    plt.ylabel(r"$M_{\rm loss}(\tau=%.1f\,{\rm Gyr})/M_{\rm p}$"%TAU,fontsize=LABEL_SIZE)
-    
-    pmass=[MGANYMEDE,MMERCURY,MMARS,MVENUS]
-    pnames=["Ganymede","Mercury","Mars","Venus"]
-    for Mp,name in zip(pmass,pnames):
-        fp=Mp/MEARTH
-        fpt=(np.log10(fp)+2)/3.0+0.01
-        plt.axvline(fp,color='b')
-        plt.text(fpt,0.02,name,
-                 rotation=90,
-                 horizontalalignment='left',
-                 verticalalignment='bottom',
-                 bbox=dict(fc='w',ec='none'),
-                 transform=plt.gca().transAxes)
-    
-    logTickLabels(plt.gca(),-1,1,(3,),axis='x')
-
-    plt.xticks(fontsize=TICS_SIZE)
-    plt.yticks(fontsize=TICS_SIZE)
-    plt.legend(loc='upper right',prop=dict(size=LEGEND_SIZE))
+    plt.legend(loc='upper left',prop=dict(size=LEGEND_SIZE))
     plt.title(titlebin,position=(0.5,1.02))
     saveFig(TMPDIR+"/MassLoss-%s.png"%suffix)
 
@@ -1824,40 +1547,10 @@ def Run():
     #plt.grid()
     plt.xlabel(r"$t$ (Gyr)",fontsize=LABEL_SIZE)
     plt.ylabel(r"$P$ (day)",fontsize=LABEL_SIZE)
-    plt.axhline(Psync,linestyle='-',color='k',
-                linewidth=2)
-    #plt.axhline(Pbin/1.0,linestyle='-',color='c',linewidth=2,label='1:1 Resonance')
-    #plt.axhline(Pbin/1.5,linestyle='--',color='c',linewidth=2,label='3:2 Resonance')
-    #plt.axhline(Pbin/2.0,linestyle='-.',color='c',linewidth=2,label='2:1 Resonance')
-
-    plt.text(29*tau1/30,Psync,
-             r"$P_{\rm bin}/n_{\rm sync}$=$P_{\rm bin}/%.1f$"%nsync,
-             zorder=10,
-             verticalalignment='top',horizontalalignment='right',
-             bbox=dict(fc='w',ec='none'),
-             transform=offSet(0,-10))
-
-    if abs(nsync-1.0)>0.1:
-        plt.axhline(Pbin/1.0,linestyle='-.',color='k',
-                    linewidth=2)
-        plt.text(29*tau1/30,Pbin/1.0,r"$P_{\rm bin}$",
-                 verticalalignment='top',horizontalalignment='right',
-                 zorder=10,
-                 bbox=dict(fc='w',ec='none'),
-                 transform=offSet(0,10))
-
-    if Pobs>0:
-        tage=0.5*(tage1+tage2)
-        dtage=0.5*(tage2-tage1)
-        plt.plot([tage],[Pobs],'bs',
-                 markeredgecolor='none')
-        plt.errorbar(tage,Pobs,xerr=dtage,yerr=dPobs,
-                     color='b',linewidth=2)
-        plt.text(0.95,0.05,"%s"%confname[:-1],
-                 horizontalalignment='right',fontsize=18,
-                 transform=plt.gca().transAxes,
-                 bbox=dict(fc='w',ec='none'))
-
+    plt.axhline(Psync,linestyle='-',color='k')
+    plt.axhline(Pbin/1.0,linestyle='-',color='c',linewidth=2,label='1:1 Resonance')
+    plt.axhline(Pbin/1.5,linestyle='--',color='c',linewidth=2,label='3:2 Resonance')
+    plt.axhline(Pbin/2.0,linestyle='-.',color='c',linewidth=2,label='2:1 Resonance')
     plt.xticks(fontsize=TICS_SIZE)
     plt.yticks(fontsize=TICS_SIZE)
     plt.ylim((0,1.5*Pbin))
