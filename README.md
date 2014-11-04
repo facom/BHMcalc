@@ -11,11 +11,9 @@
  2014 (C) Jorge Zuluaga - Viva la BHM!
 ################################################################################
 ```
-The Binary Habitability Mechanism Calculator
---------------------------------------------
 
-For the contirbutor
--------------------
+Instruction For the contirbutor
+*******************************
 
 1. Generate a public key of your account at the server where you will
    develop contributions:
