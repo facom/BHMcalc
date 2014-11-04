@@ -689,7 +689,9 @@ echo<<<CONTENT
 echo<<<CONTENT
 <div id="result2">
 <p>
-  Welcome to the <b>Binary Habitability Calculator</b>. Use
+  Welcome to the <b>Binary Habitability Calculator</b>. To start with
+  try with the precalculated configurations available in
+  the <a href="#repo">Results Repository</a>. Use
   the <a href="#form">form below</a> to configure your system and
   calculate its properties and the effects of the BHM.  To know more
   about this calculator and the Binary Habitability
@@ -933,7 +935,8 @@ not modify if you do not need this option.</i><br/><br/>
   </a>
 </H3>
 
-<div id="results_input_form" class="form" style="display:$displayr">
+<!--class="form" style="display:$displayr"-->
+<div id="results_input_form">
 <H4>Global list</H4>
 
 $global_list
@@ -952,7 +955,7 @@ $this_session
 </div>
 <div style="padding:5px"></div>
 <div id="result" class="result">
-  (Any result calculated yet)
+  <i>Results box</i>
 </div>
 $ajaxf
 CONTENT;
