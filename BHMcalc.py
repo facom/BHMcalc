@@ -1585,6 +1585,7 @@ def Run():
     plt.xticks(fontsize=TICS_SIZE)
     plt.yticks(fontsize=TICS_SIZE)
     plt.title(titlebin,position=(0.5,1.02))
+
     saveFig(TMPDIR+"/IntFXUVabs-%s.png"%suffix)
 
     #$$$$$$$$$$$$$$$$$$$
