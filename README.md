@@ -9,7 +9,6 @@
  v2.0
 ##################################################
 ```
-BHMcalc
-=======
+The Binary Habitability Mechanism Calculator
+============================================
 
-Binary Habitability Mechanism - Calculator
