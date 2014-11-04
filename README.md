@@ -47,13 +47,16 @@ Versions
 --------
 
 An on-line version of BHMcalc is available at:
+http://bit.ly/BHM-calculator.  This version is intended to be used by
+non-programmer or for those not interested on dealing with source code
+coming from a different programmers.
 
-[http://bit.ly/BHM-calculator]
-
-Presently there are two versions of the software.  The first (and more
-primitive version) located in the trunk of this project (master
-branch).  And the newest (experimental but more flexible and faster)
-version which is presently located in the `BHMcalc2` branch.  
+For those interested in getting the source code or installing a mirror
+site, you need to know that presently are two versions of the
+software.  The first (and more primitive version) located in the trunk
+of this project (master branch).  And the newest (experimental but
+more flexible and faster) version which is presently located in the
+`BHMcalc2` branch.
 
 For getting the lattest version please follow the instructions below.
 
