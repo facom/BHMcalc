@@ -8,20 +8,21 @@
  |____/|_|  |_|_|  |_|\___\__,_|_|\___|
 
  The Binary Habitability Mechanism Calculator
- 2014 (C) Jorge Zuluaga - Viva la BHM!
+ 2014 [)] Jorge Zuluaga - Viva la BHM!
 ################################################################################
 ```
 
 Presentation
 ------------
 
-*BHMcalc* is a project conceived and developed after the collaboration
-of the author (Jorge I. Zuluaga, UdeA) with Prof. Paul Mason (NMSU)
-and their former graduate and undergraduate students Dr. Pablo
-A. Cuartas-Restrepo and Joni Clark.  It arose from the interest of our
-team (internally dubbed as the *BHM Mafia*) in the complex and rich
-conditions that potentially habitable planets could have while
-orbiting moderately separated binaries (binary periods under 60 days).
+**BHMcalc** is a project conceived and developed after the
+collaboration of the author (Prof. **Jorge I. Zuluaga, UdeA**) with
+Prof. **Paul Mason** (NMSU) and their former graduate and
+undergraduate students Dr. Pablo A. Cuartas-Restrepo and Joni Clark.
+It arose from the interest of our team (internally dubbed as the *BHM
+Mafia*) in the complex and rich conditions that potentially habitable
+planets could have while orbiting moderately separated binaries
+(binary periods under 60 days).
 
 This is a tool that can be used as a web app or a python package.  The
 tool is entirely programmed in python and php (web interface) and it
@@ -41,6 +42,19 @@ If you need to cite this software please include a reference to one
   J. M. (2014). Circumbinary Habitability Niches. arXiv preprint
   arXiv:1408.5163 ([ADS
   Entry](http://adsabs.harvard.edu/abs/2014arXiv1408.5163M))
+
+Versions
+--------
+
+Presently there are two versions of the software.  The first (and more
+primitive version) located in the trunk of this project (master
+branch).  And the newest (experimental but more flexible and faster)
+version which is presently located in the `BHMcalc2` branch.  
+
+For getting the lattest version please follow the instructions below.
+
+The first version is not anymore maintained so it is not as
+recommended as the newest version.
 
 Getting a copy
 --------------
