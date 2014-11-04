@@ -118,6 +118,6 @@ Licensing
 ---------
 
 This project must be used and distributed under the [GPL License
-Version 2] (http://www.gnu.org/licenses/gpl-2.0.html)
+Version 2] (http://www.gnu.org/licenses/gpl-2.0.html).
 
 All wrongs reserved to [Jorge I. Zuluaga](mailto:zuluagajorge@gmail.com).
