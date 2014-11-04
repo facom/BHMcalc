@@ -68,11 +68,13 @@ recommended as the newest version.
 Getting a copy
 --------------
 
-To get a copy of this project just execute:
+To get a copy of the newest version of this project just execute:
 
 ```
-$ git clone http://github.com/facom/BHMcalc.git
+$ git clone --branch BHMcalc2 http://github.com/facom/BHMcalc.git
 ```
+
+For the oldest version just remove the `--branch` option.
 
 Instructions for the contirbutor
 --------------------------------
