@@ -12,6 +12,15 @@
 ################################################################################
 ```
 
+Getting a copy
+--------------
+
+To get a copy of this project just execute:
+
+```
+$ git clone http://github.com/facom/BHMcalc.git
+```
+
 Instructions for the contirbutor
 --------------------------------
 
@@ -38,8 +47,14 @@ Instructions for the contirbutor
    $ git clone git@github.com:facom/BHMcalc.git
    ```
 
-5. Checkout the branch you are interested to (e.g. BHMcalc2):
+5. Checkout the branch you are interested in (e.g. BHMcalc2):
 
    ```
-   $ git checkout BHMcalc2
+   $ git checkout -b BHMcalc2 origin/BHMcalc2
+   ```
+
+6. Checkout back into the master:
+
+   ```
+   $ git checkout master
    ```
