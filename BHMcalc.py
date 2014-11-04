@@ -1553,6 +1553,7 @@ def Run():
     plt.axhline(Pbin/2.0,linestyle='-.',color='c',linewidth=2,label='2:1 Resonance')
     plt.xticks(fontsize=TICS_SIZE)
     plt.yticks(fontsize=TICS_SIZE)
+    plt.ylim((0,1.5*Pbin))
     plt.legend(loc='best',prop=dict(size=LEGEND_SIZE))
     plt.title(titlebin,position=(0.5,1.04))
     saveFig(TMPDIR+"/PeriodEvolution-%s.png"%suffix)
