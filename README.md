@@ -48,9 +48,7 @@ Versions
 
 An on-line version of BHMcalc is available at:
 
-```
-http://bit.ly/BHM-calculator
-```
+[http://bit.ly/BHM-calculator]
 
 Presently there are two versions of the software.  The first (and more
 primitive version) located in the trunk of this project (master
