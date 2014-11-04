@@ -12,8 +12,8 @@
 ################################################################################
 ```
 
-Instruction For the contirbutor
-*******************************
+Instructions for the contirbutor
+--------------------------------
 
 1. Generate a public key of your account at the server where you will
    develop contributions:
