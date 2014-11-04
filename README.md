@@ -13,7 +13,7 @@ The Binary Habitability Mechanism Calculator
 --------------------------------------------
 
 For the contirbutor
-...................
+-------------------
 
 1. Generate a public key of your account at the server where you will
    develop contributions:
