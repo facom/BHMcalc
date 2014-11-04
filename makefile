@@ -1,5 +1,9 @@
 USER=root
 GROUP=www-data
+BRANCH=$(shell bash .getbranch)
+
+show:
+	@echo $(BRANCH)
 
 clean:
 	find . -name "*~" -exec rm -rf {} \;
@@ -20,7 +24,7 @@ permissions:
 
 commit:
 	git commit -am "Commit"
-	git push origin master
+	git push origin $(BRANCH)
 
 pull:
 	git reset --hard HEAD	
