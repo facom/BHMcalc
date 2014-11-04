@@ -67,7 +67,7 @@ Instructions for the contirbutor
 Licensing
 ---------
 
-All rights reserved to [Jorge
-I. Zuluaga](mailto:zuluagajorge@gmail.com).
+This project must be used and distributed under the [GPL License
+Version 2] (http://www.gnu.org/licenses/gpl-2.0.html)
 
-This project is protected under the GNU GPL License Version 2.
+All wrongs reserved to [Jorge I. Zuluaga](mailto:zuluagajorge@gmail.com).
