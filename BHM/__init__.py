@@ -42,6 +42,12 @@ ERROR_CODES=dict(FILE_ERROR=1,
                  DATA_ERROR=3)
 
 ###################################################
+#COMMON OPERATIONS
+###################################################
+if LOG_MODE:FLOG=open(LOG_DIR+"master.log","a")
+else:FLOG=open("/dev/null","a")
+
+###################################################
 #CONSTANTS
 ###################################################
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -247,13 +253,18 @@ def hashObject(obj):
     obj_hash=MD5STR(obj_str)
     return obj_str,obj_hash
 
-def makeObjectDir(obj,qover=0):
+def makeObject(obj_conf,qover=0):
+    obj=loadConf(obj_conf)
     obj_str,obj_hash=hashObject(obj)
     obj_dir=OBJ_DIR+"%s-%s"%(obj.type,obj_hash)
     if DIREXISTS(obj_dir):
         if not qover:
-            print "Do nothing. Object already computed."
-            return 0
-        else:print "Overriding."
+            logEntry("Do nothing to %s. Object already computed."%(obj_dir))
+            return None
+        else:logEntry("Overriding '%s'."%(obj_dir))
     system("mkdir -p %s"%obj_dir)
+    system("cp -rf %s %s/%s.conf"%(obj_conf,obj_dir,obj.type))
+    return obj
 
+def logEntry(str):
+    FLOG.write("Log:"+str+"\n")
