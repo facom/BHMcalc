@@ -22,6 +22,8 @@ from BHM.BHMnum import *
 #CONFIGURATION
 ###################################################
 ZSVEC_DEF="ZSVEC_siblings"
+TAU_MIN=0.01 #Gyr
+TAU_MAX=12.5 #Gyr
 
 ###################################################
 #GLOBALS
@@ -48,9 +50,10 @@ ZSVEC_solar=np.array([0.0152])
 ###################################################
 def chooseZsvec(Z,zsdef=ZSVEC_DEF):
     ZSs=["ZSVEC_siblings","ZSVEC_coarse","ZSVEC_full"]
-    if Z==ZSVEC_solar[0]:zsvec="ZSVEC_solar"
+    qoutdef=False;qoutoth=False
+    #if Z==ZSVEC_solar[0]:zsvec="ZSVEC_solar"
+    if False:pass
     else:
-        qoutdef=False;qoutoth=False
         zsvec=zsdef
         for ZS in ZSs:
             exec("Zvec=%s[%s==Z]"%(ZS,ZS))
