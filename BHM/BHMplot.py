@@ -98,7 +98,7 @@ saveFig('%s%s.png',watermarkpos="%s")
     #EXECUTE COMMANDS
     exec(plotcmd)
 
-def saveFig(filename,watermark="BHMcalc",watermarkpos="outer"):
+def saveFig(filename,watermark="BHMcalc",watermarkpos="outer",dxw=0.01,dyw=0.01,va='top'):
     """
     Save figure with the respective data
     """
@@ -106,15 +106,13 @@ def saveFig(filename,watermark="BHMcalc",watermarkpos="outer"):
 
     #SAVE WATERMARK
     if watermarkpos=='inner':
-        xw=0.99
-        yw=0.99
+        xw=1-dxw
+        yw=1-dyw
         ha='right'
-        va='top'
     if watermarkpos=='outer':
-        xw=1.01
-        yw=1.01
+        xw=1+dxw
+        yw=1+dyw
         ha='left'
-        va='top'
 
     ax.text(xw,yw,watermark,
             horizontalalignment=ha,

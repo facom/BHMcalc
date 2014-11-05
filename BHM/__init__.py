@@ -41,7 +41,8 @@ def PRINTOUT(str):
 #ERROR CODES
 ERROR_CODES=dict(FILE_ERROR=1,
                  INPUT_ERROR=2,
-                 DATA_ERROR=3)
+                 DATA_ERROR=3,
+                 PARAMETER_ERROR=3)
 
 ###################################################
 #COMMON OPERATIONS
@@ -171,6 +172,17 @@ PI=np.pi
 ###################################################
 #ROUTINES
 ###################################################
+def System(cmd,out=True):
+    """
+    Execute a command
+    """
+    if not out:
+        system(cmd)
+        output=""
+    else:
+        output=commands.getoutput(cmd)
+    return output
+
 class dict2obj(object):
     """Object like dictionary
     
@@ -264,31 +276,42 @@ def signObject(obj_conf):
     obj=loadConf(obj_conf)
     obj_str,obj_hash=hashObject(obj)
     obj_dir=OBJ_DIR+"%s-%s/"%(obj.type,obj_hash)
-    if DIREXISTS(obj_dir):obj_liv=1
+    obj_stg=0
+    if DIREXISTS(obj_dir):
+        obj_liv=1
+        obj_stg=int(System("cat %s/.stage"%obj_dir))
     else:obj_liv=0
-    return obj,obj_dir,obj_str,obj_hash,obj_liv
+    return obj,obj_dir,obj_str,obj_hash,obj_liv,obj_stg
 
 def openObject(obj_dir):
-    system("if [ -e %s/.close ];then rm %s/.close;fi"%obj_dir)
+    system("if [ -e '%s/.close' ];then rm '%s/.close';fi"%(obj_dir,obj_dir))
     system("echo > %s/.open"%obj_dir)
+    system("echo 0 > %s/.stage"%obj_dir)
 
 def closeObject(obj_dir):
-    system("if [ -e %s/.open ];then rm %s/.open;fi"%obj_dir)
+    system("if [ -e '%s/.open' ];then rm '%s/.open';fi"%(obj_dir,obj_dir))
     system("echo > %s/.close"%obj_dir)
+    system("echo 10 > %s/.stage"%obj_dir)
 
 def makeObject(obj_conf,qover=0):
-    obj,obj_dir,obj_str,obj_hash,obj_liv=\
+    obj,obj_dir,obj_str,obj_hash,obj_liv,obj_stg=\
         signObject(obj_conf)
+    qcreate=True
     if obj_liv:
-        if not qover:
-            PRINTERR("Object '%s' already exists."%obj_str)
-            exit(0)
-        else:PRINTERR("Overriding '%s'."%(obj_str))
-    system("mkdir -p %s"%obj_dir)
-    openObject(obj_dir)
-    system("cp -rf %s %s/%s.conf"%(obj_conf,
-                                   obj_dir,
-                                   obj.type))
+        if obj_stg==10:
+            if not qover:
+                PRINTERR("Object '%s' already exists in stage %d"%(obj_str,obj_stg))
+                exit(0)
+            else:PRINTERR("Overriding '%s'."%(obj_str))
+        else:
+            PRINTERR("Object '%s' exists but it is in stage %s"%(obj_str,obj_stg))
+            qcreate=False
+    if qcreate:
+        system("mkdir -p %s"%obj_dir)
+        openObject(obj_dir)
+        system("cp -rf %s %s/%s.conf"%(obj_conf,
+                                       obj_dir,
+                                       obj.type))
     return obj,obj_str,obj_hash,obj_dir
 
 def logEntry(str):
@@ -311,3 +334,25 @@ def array2str(array):
     string=string.strip(",")+"])"
     return string
 
+def addRow(matrix,row):
+    new=np.vstack((matrix,row))
+    return new
+
+class stack(object):
+    def __init__(self,ncols):
+        self.ncols=ncols
+        if ncols>1:
+            self.array=np.zeros((0,ncols))
+        else:
+            self.array=np.array([])
+    def __add__(self,array):
+        if self.ncols>1:
+            self.array=np.vstack((self.array,array))
+        else:
+            self.array=np.append(self.array,array)
+        return self
+    def __or__(self,other):
+        new=np.vstack((np.transpose(self.array),
+                       np.transpose(other.array)))
+        return np.transpose(new)
+    
