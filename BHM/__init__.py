@@ -27,14 +27,16 @@ from sys import exit,stderr,stdout,argv
 ###################################################
 FILEEXISTS=path.isfile
 DIREXISTS=path.isdir
-MD5=hashlib.md5()
 def MD5STR(str):
+    MD5=hashlib.md5()
     MD5.update(str)
     return MD5.hexdigest()
 DEG=np.pi/180
 RAD=180/np.pi
 def PRINTERR(str):
     print >>stderr,argv[0]+":"+str
+def PRINTOUT(str):
+    print >>stdout,argv[0]+":"+str
 
 #ERROR CODES
 ERROR_CODES=dict(FILE_ERROR=1,
@@ -112,6 +114,8 @@ TSUN=5780.0 #K
 RSUN=6.955E8 #m
 #SOLAR LUMINOSITY
 LSUN=3.842E26
+#SOLAR GRAVITY
+GRAVSUN=GCONST*MSUN/(RSUN**2)
 #SOLAR AVERAGE ROTATION PERIOD
 PSUN=25.05*DAY
 #SOLAR METALLICITY
@@ -246,25 +250,64 @@ def hashObject(obj):
     """
     Calculate the hash of an object
     """
-    obj_str=""
+    obj_str=obj.type+"-"
     for key in obj.hashable.keys():
-        exec("obj_str+='%s'%%(%s)"%(obj.hashable[key],
-                                    obj.__dict__[key]))
+        exec("obj_str+='%s_%s-'%%(%s)"%(
+                key,
+                obj.hashable[key],
+                obj.__dict__[key]))
+    obj_str=obj_str.strip("-")
     obj_hash=MD5STR(obj_str)
     return obj_str,obj_hash
 
-def makeObject(obj_conf,qover=0):
+def signObject(obj_conf):
     obj=loadConf(obj_conf)
     obj_str,obj_hash=hashObject(obj)
-    obj_dir=OBJ_DIR+"%s-%s"%(obj.type,obj_hash)
-    if DIREXISTS(obj_dir):
+    obj_dir=OBJ_DIR+"%s-%s/"%(obj.type,obj_hash)
+    if DIREXISTS(obj_dir):obj_liv=1
+    else:obj_liv=0
+    return obj,obj_dir,obj_str,obj_hash,obj_liv
+
+def openObject(obj_dir):
+    system("if [ -e %s/.close ];then rm %s/.close;fi"%obj_dir)
+    system("echo > %s/.open"%obj_dir)
+
+def closeObject(obj_dir):
+    system("if [ -e %s/.open ];then rm %s/.open;fi"%obj_dir)
+    system("echo > %s/.close"%obj_dir)
+
+def makeObject(obj_conf,qover=0):
+    obj,obj_dir,obj_str,obj_hash,obj_liv=\
+        signObject(obj_conf)
+    if obj_liv:
         if not qover:
-            logEntry("Do nothing to %s. Object already computed."%(obj_dir))
-            return None
-        else:logEntry("Overriding '%s'."%(obj_dir))
+            PRINTERR("Object '%s' already exists."%obj_str)
+            exit(0)
+        else:PRINTERR("Overriding '%s'."%(obj_str))
     system("mkdir -p %s"%obj_dir)
-    system("cp -rf %s %s/%s.conf"%(obj_conf,obj_dir,obj.type))
-    return obj
+    openObject(obj_dir)
+    system("cp -rf %s %s/%s.conf"%(obj_conf,
+                                   obj_dir,
+                                   obj.type))
+    return obj,obj_str,obj_hash,obj_dir
 
 def logEntry(str):
     FLOG.write("Log:"+str+"\n")
+
+def array2str(array):
+    array=np.array(array)
+    n=array.shape[0]
+    try:m=array.shape[1]
+    except:m=0
+    string="array(["
+    for i in xrange(n):
+        if m>0:
+            string+="\\\n["
+            for j in xrange(m):
+                string+="%.17e,"%array[i,j]
+            string=string.strip(",")+"],\\\n"
+        else:
+            string+="%.17e,"%array[i]
+    string=string.strip(",")+"])"
+    return string
+

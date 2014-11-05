@@ -22,6 +22,7 @@ use('Agg')
 from matplotlib import colors,ticker,patches,pylab as plt
 from matplotlib.pyplot import cm
 from matplotlib.font_manager import FontProperties
+from matplotlib.transforms import offset_copy
 
 ###################################################
 #ROUTINES
@@ -79,6 +80,24 @@ def logTickLabels(ax,perini,perfin,nperper,
         ax.set_xticks(yt)
         ax.set_xticklabels(yl,fontsize=fontsize)
 
+def plotFigure(plotdir,plotname,plotcmd,watermarkpos="outer"):
+    #COMPLETE PLOTTING COMMAND
+    plotcmd="""\
+from BHM import *
+from BHM.BHMplot import *
+from numpy import array
+%s
+saveFig('%s%s.png',watermarkpos="%s")
+"""%(plotcmd,plotdir,plotname,watermarkpos)
+    #PLOT SCRIPT
+    plotscr=plotdir+"%s.py"%plotname
+    #SAVE PLOT SCRIPT
+    fp=open(plotscr,"w")
+    fp.write(plotcmd)
+    fp.close()
+    #EXECUTE COMMANDS
+    exec(plotcmd)
+
 def saveFig(filename,watermark="BHMcalc",watermarkpos="outer"):
     """
     Save figure with the respective data
@@ -120,3 +139,10 @@ def saveFig(filename,watermark="BHMcalc",watermarkpos="outer"):
         for n in xrange(ndata):
             fdata.write("\t%25.17e\t%25.17e\n"%(x[n],y[n]))
     fdata.close()
+
+def offSet(dx,dy):
+    fig=plt.gcf()
+    ax=fig.gca()
+    toff=offset_copy(ax.transData,fig=fig,
+                     x=dx,y=dy,units='dots')
+    return toff
