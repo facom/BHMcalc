@@ -18,8 +18,15 @@
 exec("TMP_DIR='tmp/'");
 exec("OBJ_DIR='objs/'");
 exec("LOG_DIR='logs/'");
+exec("WEB_DIR='/BHMcalc/'");
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 #BEHAVIOR
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-exec("LOG_MODE=1");
+exec("LOG_MODE=0");
+
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+#PHYSICAL
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+exec("IN_CRITS=('recent venus','runaway greenhouse','moist greenhouse')");
+exec("OUT_CRITS=('maximum greenhouse','early mars')");

@@ -24,6 +24,15 @@ from BHM.BHMnum import *
 ZSVEC_DEF="ZSVEC_siblings"
 TAU_MIN=0.01 #Gyr
 TAU_MAX=12.5 #Gyr
+NTIMES=100
+
+###################################################
+#MACROS
+###################################################
+RHO_COL=1
+TEFF_COL=2
+RAD_COL=3
+LUM_COL=4
 
 ###################################################
 #GLOBALS
@@ -298,7 +307,7 @@ def StellarGTRL(Z,M,t):
     if logL==-1.2345:L=-1
     return g,T,R,L
 
-def minmaxRadius(Z,M,tmin=0.01,tmax=1.0):
+def minmaxRadius(Z,M,tmin=TAU_MIN,tmax=1.0):
     Rmin=1E100
     Rmax=0.0
     for t in np.linspace(tmin,tmax,20):
@@ -359,6 +368,22 @@ def FeHfromZ(Z):
     FeH=bisectFunction(func,-10.0,10.0)
     return FeH
 
+def evoFunctions(evodata):
+    ts=evodata[:,0]
+    logrho_func=interp1d(np.log10(ts),
+                      np.log10(evodata[:,RHO_COL]),
+                      kind='slinear')
+    Teff_func=interp1d(np.log10(ts),
+                       evodata[:,TEFF_COL],
+                       kind='slinear')
+    logR_func=interp1d(np.log10(ts),
+                    np.log10(evodata[:,RAD_COL]),
+                    kind='slinear')
+    logL_func=interp1d(np.log10(ts),
+                       np.log10(evodata[:,LUM_COL]),
+                       kind='slinear')
+    return logrho_func,Teff_func,logR_func,logL_func
+
 ###################################################
 #TEST
 ###################################################
@@ -386,3 +411,108 @@ if __name__=="__main__":
     print "Ts (normal) = %e"%Ts
     print "Ts (log-interp) = %e"%Tslog
 
+def Seff2014(Teff,crits=['recent venus'],Tsun=TSUN,Mp='1.0'):
+    """
+    Kopparapu et al., 2014
+    """
+    
+    if Teff<2600:Teff=2600.0
+    if Teff>7200:Teff=7200.0
+    Tst=Teff-Tsun
+
+    Seffs=[]
+    for crit in crits:
+        if crit=="runaway greenhouse":
+            if Mp=='1.0':
+                S=1.107
+                a=1.332E-4;b=1.58E-8;c=-8.308E-12;d=-1.931E-15
+            if Mp=='5.0':
+                S=1.188
+                a=1.433E-4;b=1.707E-8;c=-8.968E-12;d=-2.048E-15
+            if Mp=='0.1':
+                S=0.99
+                a=1.209E-4;b=1.404E-8;c=-7.418E-12;d=-1.713E-15
+        elif crit=="moist greenhouse":
+            S=1.0146
+            #SAME AS 2013
+            a=8.1884E-5;b=1.9394E-9;c=-4.3618E-12;d=-6.8260E-16
+        elif crit=="recent venus":
+            #ALL MASSES ARE EQUARL
+            S=1.776
+            a=2.136E-4;b=2.533E-8;c=-1.332E-11;d=-3.097E-15
+        elif crit=="maximum greenhouse":
+            S=0.356
+            a=6.171E-5;b=1.698E-9;c=-3.198E-12;d=-5.575E-16
+        elif crit=="early mars":
+            S=0.32
+            a=5.547E-5;b=1.526E-9;c=-2.874E-12;d=-5.011E-16
+        else:
+            S=a=b=c=d=Tst=-1
+        Seffs+=[S+a*Tst+b*Tst**2+c*Tst**3+d*Tst**4]
+        
+    if len(Seffs)==1:return Seffs[0]
+    else:return Seffs
+
+def HZ(Ls,Teff,lin='recent venus',lout='early mars',Seff=Seff2014):
+    """
+    Habitable Zone limits by Kopparapu et al. (2013)
+    Ls: In solar Units
+    Teff: In K
+    """
+    if Ls<0 or Teff<0:
+        raise Exception("Negative value in stellar properties")
+    Seffin,Seffout=Seff(Teff,crits=[lin,lout])
+    Seffsun=1.0
+    lin=(Ls/Seffin)**0.5
+    lout=(Ls/Seffout)**0.5
+    aHZ=(Ls/Seffsun)**0.5
+    return lin,aHZ,lout
+
+"""
+Taken from Claret & Gimenez (1989, 1990)
+ZAMS values
+"""
+STELLAR_MOI=np.array([
+        [0.020,0.230**1],
+        [0.600,0.378**2],
+        [0.800,0.323**2],
+        [1.000,0.277**2],
+        [1.122,0.248**2],
+        [1.259,0.224**2],
+        ])
+def stellarMoI(M,type="Regression"):
+    """
+    #type=Regression,Upper,Lower
+    plt.figure()
+    plt.plot(STELLAR_MOI[:,0],sqrt(STELLAR_MOI[:,1]))
+    plt.savefig("moi.png")
+    print sqrt(stellarMoI(1.5))
+    exit(0)
+    """    
+    #Regression Coefficients (calculated at May.7/2013)
+    a=-1.577705e-01
+    b=2.339366e-01
+    
+    #Lower limit
+    MoIlow=0.076729 #Claret & Gimenez (1989)
+
+    #Upper limit
+    MoIup=0.25 #Leconte et al. (2011)
+    
+    #type="Upper"
+    if type=="Regression":
+        MoI=a*M+b
+    elif type=="Upper":
+        MoI=MoIup
+    else:
+        MoI=MoIlow
+
+    if M>STELLAR_MOI[-1,0]:
+        MoI=STELLAR_MOI[-1,-1]
+
+    return MoI
+
+def dissipationTime(M,R,L):
+    #Zahn (2008) DISSIPATION TIME
+    tdiss=3.48*((M*MSUN*(R*RSUN)**2)/(L*LSUN))**(1./3)    
+    return tdiss
