@@ -17,6 +17,8 @@ from BHM import *
 #PACKAGES
 ###################################################
 from scipy.interpolate import interp1d
+from scipy.integrate import quad as integrate
+from scipy.optimize import newton as rootFind
 try:
     from scipy.optimize import minimize
 except:
