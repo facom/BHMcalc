@@ -20,7 +20,6 @@ from BHM import *
 from BHM.BHMplot import *
 from BHM.BHMstars import *
 
-
 ###################################################
 #CLI ARGUMENTS
 ###################################################
@@ -47,10 +46,6 @@ star_conf,qover=\
 PRINTOUT("Loading object from '%s'"%star_conf)
 star,star_str,star_hash,star_dir=makeObject(star_conf,
                                            qover=qover)
-if star is None:
-    PRINTERR("Object '%s' already exists."%star_str)
-    exit(0)
-
 PRINTOUT("Object directory '%s' created"%star_dir)
 star_webdir=WEB_DIR+star_dir
 

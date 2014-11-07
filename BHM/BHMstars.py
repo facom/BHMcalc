@@ -22,8 +22,6 @@ from BHM.BHMnum import *
 #CONFIGURATION
 ###################################################
 ZSVEC_DEF="ZSVEC_siblings"
-TAU_MIN=0.01 #Gyr
-TAU_MAX=12.5 #Gyr
 NTIMES=100
 
 ###################################################
@@ -164,13 +162,13 @@ def loadIsochroneSet(Zs=ZSVEC_full,
     for Z in Zs:
         if verbose:print "\tLoading Isochrone for Z = %f..."%Z
         SMiso=dict2obj(dict())
-        PADOVA='BHM/data/PADOVA/Padova-Z%.4f.dat'%Z
+        Stars='BHM/data/Stars/Padova-Z%.4f.dat'%Z
         Mmin=0.1
         Mmax=2.0
         try:
-            data=np.loadtxt(PADOVA)
+            data=np.loadtxt(Stars)
         except IOError:
-            print "Error openning file '%s'"%PADOVA
+            print "Error openning file '%s'"%Stars
             exit(1)
         ndata=data.shape[0]
         idata=np.arange(0,ndata)

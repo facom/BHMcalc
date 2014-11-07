@@ -19,6 +19,7 @@ from BHMconfig import *
 ###################################################
 import hashlib,commands,numpy as np
 import scipy.constants as const
+from copy import copy
 from os import system,path
 from sys import exit,stderr,stdout,argv
 
@@ -42,7 +43,8 @@ def PRINTOUT(str):
 ERROR_CODES=dict(FILE_ERROR=1,
                  INPUT_ERROR=2,
                  DATA_ERROR=3,
-                 PARAMETER_ERROR=3)
+                 PARAMETER_ERROR=3,
+                 RANGE_ERROR=4)
 
 ###################################################
 #COMMON OPERATIONS
@@ -64,12 +66,24 @@ rhoc_E=1.1E4 #kg/m3, **OC06**
 gc_E=10.68 #**RG00**
 Rosl_E=0.09/(1+Chi_E) #**OC06+ALP09**
 Tc_E=5000
+fdip_f_E=0.2
+fdip_g_E=1.0
+fdip_a_E=0.009
+fdip_b_E=0.1
+sigma_E=6E5
+kappa_E=8E-6
+QconvE=3E12
+CROLM=(1-Chi_E)**(1./3)*(1-Chi_E**3)**(1./2)
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 #PHYSICAL CONSTANTS
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 #GRAVITATIONAL CONSTANTS
 GCONST=6.67E-11
+#STEFAN CONSTANT
+SIGMA=5.67E-8
+#UMA
+UMA=1.66054E-27 # kg
 #MAGNETIC PERMEABILITY
 MU0=const.mu_0
 #BOLTZMAN CONSTANT
@@ -132,6 +146,7 @@ SOLAR_CONSTANT=1367.9046529 #W m^-2
 
 #EARTH MASS
 MEARTH=5.9722E24 #kg
+REARTH=Rp_E
 #EARTH COMPOSITIONS (*CITATION*)
 MOCEANS=1.39E24 #g
 MATMOSPHERE=5.15E18 #kg
@@ -155,6 +170,7 @@ PPRIM=17.0*HOUR
 #JUPITER
 MJUP=1.899E27 #kg
 RJUP=7.1492E7 #m
+RCJUP=0.83*RJUP
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 #MULTIPLES
@@ -356,3 +372,28 @@ class stack(object):
                        np.transpose(other.array)))
         return np.transpose(new)
     
+def toStack(array1d):
+    sarray=stack(1)
+    sarray.array=array1d
+    return sarray
+
+def copyObject(obj):
+    """
+    Create a copy of an object
+    """
+    new=dict()
+    dic=obj.__dict__
+    for key in dic.keys():
+        var=dic[key]
+        new[key]=var
+        try:
+            var.__dict__
+            inew=copyObject(var)
+            new[key]=inew
+        except:
+            pass
+        if isinstance(var,np.ndarray):
+            new[key]=copy(var)
+
+    nobj=dict2obj(new)
+    return nobj
