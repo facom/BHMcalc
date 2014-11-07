@@ -35,25 +35,33 @@ Usage:
    calculation.
 """
 
-binary_conf,star1_conf,star2_conf,qover=\
+binary_conf,star1_conf,star2_conf,planet_conf,qover=\
     readArgs(argv,
-             ["str","str","str","int"],
-             ["binary.conf","star1.conf","star2.conf","0"],
+             ["str","str","str","str","int"],
+             ["binary.conf","star1.conf","star2.conf","planet.conf","0"],
              Usage=Usage)
 
 ###################################################
 #LOAD PREVIOUS OBJECTS
 ###################################################
+#==================================================
 #LOADING STAR 1
 star1,star1_dir,star1_str,star1_hash,star1_liv,star1_stg=\
     signObject(star1_conf)
 system("python stEvo.py %s %s"%(star1_conf,qover))
 star1+=loadConf(star1_dir+"star.data")
+#==================================================
 #LOADING STAR 2
 star2,star2_dir,star2_str,star2_hash,star2_liv,star2_stg=\
     signObject(star2_conf)
 system("python stEvo.py %s %s"%(star2_conf,qover))
 star2+=loadConf(star2_dir+"star.data")
+#==================================================
+#LOADING PLANET
+planet,planet_dir,planet_str,planet_hash,planet_liv,planet_stg=\
+    signObject(planet_conf)
+system("python plBas.py %s %s"%(planet_conf,qover))
+planet+=loadConf(planet_dir+"planet.data")
 
 ###################################################
 #LOAD BINARY OBJECT
@@ -244,3 +252,8 @@ fh.write("""\
      binary_webdir,binary_webdir
      ))
 fh.close()
+
+###################################################
+#CLOSE OBJECT
+###################################################
+closeObject(binary_dir)

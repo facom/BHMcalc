@@ -8,6 +8,7 @@
  |____/|_|  |_|_|  |_|\___\__,_|_|\___|
 
  The Binary Habitability Mechanism Calculator
+ The Playground of Planetary Astronomers
  2014 [)] Jorge Zuluaga - Viva la BHM!
 ################################################################################
 ```

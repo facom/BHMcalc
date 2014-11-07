@@ -11,6 +11,7 @@
 ###################################################
 # BHM Configuration File
 ###################################################
+from numpy import array
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 #DIRECTORIES
@@ -18,15 +19,20 @@
 exec("TMP_DIR='tmp/'");
 exec("OBJ_DIR='objs/'");
 exec("LOG_DIR='logs/'");
+exec("DATA_DIR='BHM/data/'");
 exec("WEB_DIR='/BHMcalc/'");
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 #BEHAVIOR
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 exec("LOG_MODE=0");
+exec("VERBOSE=0");
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 #PHYSICAL
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 exec("IN_CRITS=('recent venus','runaway greenhouse','moist greenhouse')");
 exec("OUT_CRITS=('maximum greenhouse','early mars')");
+exec("TAU_MIN=0.01");
+exec("TAU_MAX=12.5");
+exec("NTIMES=100");
