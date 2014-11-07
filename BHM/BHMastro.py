@@ -123,3 +123,21 @@ def orbitalPosition(n,a,e,t,w=0):
     cw=cos(w)
     sw=sin(w)
     return np.array([x*cw-y*sw,x*sw+y*cw])
+
+def planckDistrib(lamb,T):
+    B=2*HP*CSPEED**2/(lamb**5)/(np.exp(HP*CSPEED/(KB*T*lamb))-1)
+    I=np.pi*B
+    return I
+
+def planckPhotonDistrib(lamb,T):
+    B=2*HP*CSPEED**2/(lamb**5)/(np.exp(HP*CSPEED/(KB*T*lamb))-1)
+    J=np.pi*B/(HP*CSPEED/lamb)
+    return J
+
+def planckPower(lamb1,lamb2,T):
+    R,dR=integrate(planckDistrib,lamb1,lamb2,args=(T,))
+    return R
+
+def planckPhotons(lamb1,lamb2,T):
+    N,dN=integrate(planckPhotonDistrib,lamb1,lamb2,args=(T,))
+    return N

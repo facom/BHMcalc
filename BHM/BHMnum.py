@@ -18,6 +18,7 @@ from BHM import *
 ###################################################
 from scipy.interpolate import interp1d
 from scipy.integrate import quad as integrate
+from scipy.linalg import norm
 from scipy.optimize import newton 
 try:
     from scipy.optimize import minimize
@@ -37,26 +38,16 @@ def scaleProp(m,alpha,beta):
     """
     return alpha*m**beta
 
-def bisectFunction(fsw,a,b,maxiter=20,tol=1E-3,**pars):
-    """
-    Bisection algorithm
-    """
-    eps=1.0;
-    i=0
-    f1=fsw(b,**pars)
-    f2=fsw(a,**pars)
-    if f1*f2>0:
-        #print "Bisection failed. f1 = %e, f2 = %e No zero in the interval (%e,%e)"%(f1,f2,a,b)
-        return -1
+def interpArray(t,r,kind='slinear'):
+    x=interp1d(t,r[:,0],kind=kind)
+    y=interp1d(t,r[:,1],kind=kind)
+    rfunc=lambda t:array([x(t),y(t)])
+    return rfunc
 
-    while eps>tol and i<maxiter:
-        m=a+(b-a)/2.
-        f1=fsw(a,**pars)
-        fm=fsw(m,**pars)
-        f2=fsw(b,**pars)
-        if f1*fm<0:b=m
-        else:a=m
-        eps=abs(b-a)/abs(a+b)
-        i=i+1
-
-    return m
+def statsArray(array):
+    mean=array.mean()
+    minn=array.min()
+    maxx=array.max()
+    rang=maxx-minn
+    stdv=array.std()
+    return mean,minn,maxx,rang,stdv
