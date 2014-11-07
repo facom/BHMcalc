@@ -44,6 +44,7 @@ binary_conf,star1_conf,star2_conf,planet_conf,qover=\
 ###################################################
 #LOAD PREVIOUS OBJECTS
 ###################################################
+PRINTOUT("Loading other objects...")
 #==================================================
 #LOADING STAR 1
 star1,star1_dir,star1_str,star1_hash,star1_liv,star1_stg=\
