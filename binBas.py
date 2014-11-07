@@ -98,7 +98,8 @@ binary.title=r"$M_1/M_{\\rm Sun}=$%.3f, $M_2/M_{\\rm Sun}$=%.3f, $a_{\\rm bin}$=
 ###################################################
 #EPHEMERIS OF BINARY ORBIT
 ###################################################
-ts=np.linspace(0.0,1.1*binary.Pbin,100)
+dt=0.5 #DAYS
+ts=np.arange(0.0,1.1*binary.Pbin,dt)
 rbins=stack(4)
 tes=stack(1)
 for t in ts:

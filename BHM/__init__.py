@@ -56,6 +56,14 @@ else:FLOG=open("/dev/null","a")
 #CONSTANTS
 ###################################################
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+#MULTIPLES
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+GIGA=1.0E9
+KILO=1.0E3
+MICRO=1.0E-6
+NANO=1E-9
+
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 #EARTH PROPERTIES
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 Rp_E=6.371E6 #m
@@ -74,6 +82,30 @@ sigma_E=6E5
 kappa_E=8E-6
 QconvE=3E12
 CROLM=(1-Chi_E)**(1./3)*(1-Chi_E**3)**(1./2)
+
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+#RADIATION ENVIRONMENT EARTH
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+#PHOTON DENSITY ON EARTH
+#PHOTOSYNTHETIC PHOTON FLUX ON EARTH
+#400-1400
+PPFD_EARTH=3.83647334928e+21 #photons s^-1 m^-2
+#400-1100
+#PPFD_EARTH=3.03998869273e+21 #photons s^-1 m^-2
+#400-700
+#PPFD_EARTH=1.37945308352e+21 #photons s^-1 m^-2
+#TOTAL PHOTON FLUX ON EARTH 
+PFD_EARTH=6.34586512763e+21 #photons s^-1 m^-2
+#TOTAL INSOLATION ON EARTH
+SOLAR_CONSTANT=1367.9046529 #W m^-2
+
+LAMB0=1.0*NANO
+LAMBINF=1E6*NANO
+LAMB1=400.0*NANO
+LAMB2=1400.0*NANO
+
+ALPHA=0.3 #Entrapment Factor (Zendejas et al., 2010) 
+MUATM=44.0 #MEAN 
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 #PHYSICAL CONSTANTS
@@ -171,14 +203,6 @@ PPRIM=17.0*HOUR
 MJUP=1.899E27 #kg
 RJUP=7.1492E7 #m
 RCJUP=0.83*RJUP
-
-#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-#MULTIPLES
-#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-GIGA=1.0E9
-KILO=1.0E3
-MICRO=1.0E-6
-NANO=1E-9
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 #NUMERIC
@@ -397,3 +421,11 @@ def copyObject(obj):
 
     nobj=dict2obj(new)
     return nobj
+
+def initialsString(string):
+    string=string.replace("'","")
+    parts=string.split()
+    initials=""
+    for part in parts:
+        initials+="%s"%part[0].upper()
+    return initials
