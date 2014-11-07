@@ -521,19 +521,22 @@ def Flux(q,Ls1=1.0,Ls2=1.0,rc1=0.1,rc2=0.1,D=1.0,qsgn=1):
     F=qsgn*(Ls1/R1**2+Ls2/R2**2)
     return F
 
+NUMCALLS=1
 def AverageFlux(d,**args):
+    global NUMCALLS
     args['D']=d
     intFlux=lambda x:Flux(x,**args)
     #print args
     F=integrate(intFlux,0.0,2*PI)[0]/(2*PI)
     #print F
     #exit(0)
+    NUMCALLS+=1
     return F
 
 def HZbin(q,Ls1,Ls2,Teffbin,abin,
           Seff=Seff2014,
           crits=['recent venus','early mars']):
-
+    global NUMCALLS
     rc2=abin/(q+1)
     rc1=q*rc2
     args=dict(Ls1=Ls1,Ls2=Ls2,rc1=rc1,rc2=rc2)
@@ -543,13 +546,17 @@ def HZbin(q,Ls1,Ls2,Teffbin,abin,
 
     #INNER LIMIT
     AF=lambda x:AverageFlux(x,**args)-Seffin
-    lin=bisectFunction(AF,1.0)
     #lin=bisectFunction(AF,1E-4,20)
+    lin=newton(AF,1.0)
 
     #OUTER LIMIT
     AF=lambda x:AverageFlux(x,**args)-Seffout
-    lout=bisectFunction(AF,1E-4,20)
-
-    aHZ=(lin+lout)/2
+    #lout=bisectFunction(AF,1E-4,20)
+    lout=newton(AF,1.0)
+    
+    #EARTH EQUIVALENT
+    AF=lambda x:AverageFlux(x,**args)-1.0
+    #lout=bisectFunction(AF,1E-4,20)
+    aHZ=newton(AF,1.0)
 
     return lin,aHZ,lout
