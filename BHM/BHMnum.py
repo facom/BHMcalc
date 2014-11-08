@@ -19,7 +19,7 @@ from BHM import *
 from scipy.interpolate import interp1d
 from scipy.integrate import quad as integrate
 from scipy.linalg import norm
-from scipy.optimize import newton 
+from scipy.optimize import newton,brentq 
 try:
     from scipy.optimize import minimize
 except:
@@ -51,3 +51,26 @@ def statsArray(array):
     rang=maxx-minn
     stdv=array.std()
     return mean,minn,maxx,rang,stdv
+
+def disconSignal(t,s,tausys=12,iper=3,dimax=20):
+    ds=np.log10(s[1::])-np.log10(s[:-1:])
+    ds=np.append([0],ds)
+    imax=-1
+    epsmax=0
+    dsold=ds[-1]
+    for i in np.arange(10,len(ds))[::-iper]:
+        eps=2*abs(ds[i]-dsold)/(ds[i]+dsold)
+        if eps>epsmax:
+            imax=i
+            epsmax=eps
+        #print t[i],eps,epsmax
+        dsold=ds[i]
+        if abs(imax-i)>dimax and epsmax>0:
+            #print "Break 1"
+            break
+        if t[i]<tausys/2:
+            imax=-1
+            #print "Break 2"
+            break
+    scont=s[imax]
+    return t[imax]

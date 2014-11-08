@@ -382,6 +382,14 @@ def evoFunctions(evodata):
                        kind='slinear')
     return logrho_func,Teff_func,logR_func,logL_func
 
+def evoInterpFunctions(star):
+    evodata=star.evotrack
+    funcs=evoFunctions(evodata)
+    star.__dict__['gfunc']=lambda t:10**funcs[0](np.log10(t))
+    star.__dict__['Tfunc']=lambda t:funcs[1](np.log10(t))
+    star.__dict__['Rfunc']=lambda t:10**funcs[2](np.log10(t))
+    star.__dict__['Lfunc']=lambda t:10**funcs[3](np.log10(t))
+
 ###################################################
 #TEST
 ###################################################
@@ -560,3 +568,220 @@ def HZbin(q,Ls1,Ls2,Teffbin,abin,
         limits+=aeeq,
 
     return limits
+
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+#STELLAR WIND
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+def vn1AUeq(t):
+    """
+    Velocity and density 1 AU equivalent for main sequence stars.  G07.
+
+    Parameter:
+    t: secs
+
+    Return:
+    Velocity v at 1 AU: m/s
+    Number density n at 1 AU: m^{-3}
+    """
+    vo=3971*KILO #m/s
+    no=1.04E11 #m^{-3}
+    tau=2.56E7*YEAR #secs
+    betav=-0.43
+    betan=-1.86
+
+    ft=(1+t/tau)
+    v=vo*ft**betav #Eq. 6
+    n=no*ft**betan #Eq. 7
+    return v,n
+
+def EqTcorona(Tc,M=1.0,t=1.0):
+    """
+    Equation to compute corona temperature, G07
+    """
+    vref,nref=vn1AUeq(t*GIGA*YEAR)
+    v=VParker(1.0,M,Tc)
+    et=v-vref
+    return et
+
+def EqParker(vn,dn=1.0):
+    """
+    Parker Equation.  G07.
+    """
+    ep=np.log(vn**2.0)-vn**2.0+4*np.log(dn)+4/dn-3 #Eq.3
+    return ep
+
+def VParker(d,M,Tc):
+    """
+    Velocity of a Parker stellar wind. G07.
+    
+    Parameters:
+    M: Stellar mass (solar masses)
+    Tc: Corona temperature (K)
+    d: Distance (AU)
+    """
+    M=M*MSUN
+    d=d*AU
+    m=MP
+    
+    vc=np.sqrt(KB*Tc/m) #Eq.4
+    dc=m*GCONST*M/(4*KB*Tc) #Eq.5
+    
+    dn=d/dc
+    
+    if abs(dn-1)<1E-3:
+        vn=1
+    elif dn>1:
+        vn=brentq(EqParker,1.001,10,args=(dn,))
+    else:
+        vn=brentq(EqParker,0.0001,0.9998,args=(dn,))
+    return vn*vc
+
+def Tcorona(t,M):
+    """
+    Temperature of Corona, G07
+    """
+    Tc=newton(EqTcorona,1E6,args=(M,t))
+    return Tc
+
+def vnGreissmeier(d,t,M,R):
+    """
+    Velocity and number density computed from Greissmeier model at G07
+    
+    Parameters:
+    d: distance in AU
+    t: time in Gyrs
+    M: Mass in Msun
+    R: Radius in Rsun
+
+    Return:
+    v: Velocity in m/s
+    n: Number density in m^{-3}
+    """
+    #STELLAR RADIUS
+    R=R*RSUN #m
+
+    #REFERENCE VELOCITY AND DENSITY
+    vref,nref=vn1AUeq(t*GIGA*YEAR)
+
+    #SOLAR MASS LOSS RATE AT t
+    dMsun=4*PI*AU**2*nref*vref*MP #Eq. 10
+
+    #SCALED STELLAR MASS LOSS RATE AT t
+    dMstar=scaleProp(R/RSUN,dMsun,2.0) # Eq.11
+
+    #CORONAL TEMPERATURE AT t (ISOTHERMAL MODEL)
+    Tc=Tcorona(t,M)
+
+    #RADIAL VELOCITY
+    vr=VParker(d,M,Tc)
+
+    #NUMBER DENSITY
+    n=dMstar/(4*PI*(d*AU)**2*vr*MP)
+
+    #EFFECTIVE VELOCITY
+    vkep=np.sqrt(GCONST*M*MSUN/(d*AU))
+    v=np.sqrt(vr**2+vkep**2)
+
+    return v,n
+
+"""
+Compare with:
+MacGregor & Brenner, 1991
+http://articles.adsabs.harvard.edu//full/1991ApJ...376..204M/0000211.000.html
+"""
+VSUN,NSUN=vnGreissmeier(1.0,TAGE,1.0,1.0)
+MDOTSUN=4*PI*(1*AU)**2*MP*NSUN*VSUN
+#print "Solar mass loss: %e kg/s"%(MDOTSUN/MSUN*YEAR)
+#Period-ram pressure relationship (Griessmeier, 2006):
+#Mdot v = ko P^{-3.3}
+KO=(MDOTSUN*VSUN)*(PSUN**3.3)
+def Prot(t,**pars):
+    """
+    Stellar Rotational Period
+    Consistent with stellar wind model
+    """
+    Ms=pars['Ms']
+    Rs=pars['Rs']
+
+    #Properties of the Solar Wind
+    v,n=vnGreissmeier(1.0,t,Ms,Rs)
+
+    #Mass Loss
+    Mdot=4*PI*(1*AU)**2*MP*n*v
+
+    #Period from the scaling law
+    P=(Mdot*v/KO)**(-1/3.3)
+
+    #print "Ms, t (Gyr), P (day)= ",Ms,t,P/DAY
+    return P
+
+def maxPeriod(M,R):
+    """
+    Maximum period of rotation before disruption
+    """
+    Wmax=(GCONST*M*MSUN/(R*RSUN)**3)**0.5
+    Pmax=2*PI/Wmax
+    return Pmax/DAY
+
+def tidalAcceleration(Mtarg,Rtarg,Ltarg,MoItarg,
+                      Mfield,abin,e,n,Omega,
+                      verbose=False):
+    """
+    Tidal acceleration on star Mtarg,Rtarg,Ltarg (in solar units) due
+    to body Mfield when body is rotating with angular velocity Omega
+    in an orbit with semimajor axis abin (AU), eccentricity e and mean
+    angular velocity n (same units as Omega)
+    
+    Returns angular velocity 
+    """
+    if verbose:print "*"*50
+    if verbose:print "HUT"
+    if verbose:print "abin:",abin
+
+    #Eccentricity function
+    f2=1+(15./2.)*e**2+(45./8.)*e**4+(5./16.)*e**6
+    f5=1+3*e**2+(3./8.)*e**4
+    if verbose:print "f1,f5:",f2,f5
+
+    #Maximum rotational rate
+    Omega_min=n*f2/((1-e**2)**1.5*f5)
+
+    #Zahn (2008) DISSIPATION TIME
+    tdiss=3.48*((Mtarg*MSUN*(Rtarg*RSUN)**2)/(Ltarg*LSUN))**(1./3)
+    kdiss=1/tdiss
+
+    if verbose:print "tdiss:",tdiss
+    if verbose:print "n,Omega:",n,Omega
+    if verbose:print "e:",e
+
+    #Radius of gyration
+    rg2=MoItarg**2
+    if verbose:print "Radius of Gyration:",rg2
+
+    #Angular acceleration
+    angacc=kdiss/rg2*(Mfield/Mtarg)**2*((Rtarg*RSUN)/(abin*AU))**6*(n/(1-e**2)**6)*(f2-(1-e**2)**1.5*f5*Omega/n)
+    if verbose:print "Factors:",Omega/n,f2/((1-e**2)**1.5*f5)
+    if verbose:print "Acc:",angacc
+
+    return angacc
+
+def theoProt(t,x):
+    a=x[0]
+    b=x[1]
+    c=x[2]
+    y=a*t**b+c
+    return y
+
+def dtheoProt(t,x):
+    a=x[0]
+    b=x[1]
+    c=x[2]
+    y=a*b*t**(b-1)
+    return y
+    
+def tfromProt(P,x):
+    a=x[0]
+    b=x[1]
+    c=x[2]
+    t=((P-c)/a)**(1./b)
+    return t

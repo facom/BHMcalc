@@ -75,7 +75,8 @@ except:
 #DETERMINING APPROXIMATELY THE MAXIMUM AGE
 PRINTERR("Estimating maximum age...")
 tau_max=TAU_MAX
-for t in np.linspace(TAU_MIN,TAU_MAX,NTIMES):
+ts=np.linspace(TAU_MIN,TAU_MAX,NTIMES)
+for t in ts:
     data=StellarGTRL(star.Z,star.M,t)
     if data[1]<0:
         tau_max=t
@@ -92,10 +93,21 @@ evodata=np.array([np.array([t]+list(StellarGTRL(star.Z,star.M,t))) for t in ts])
 maxdata=evodata[:,1]>0
 evodata=evodata[maxdata]
 evodata_str=array2str(evodata)
+star.evotrack=evodata
+evoInterpFunctions(star)
 
 #MAXIMUM ALLOWABLE TIME
 tau_max=evodata[-1,0]
 PRINTERR("Maximum age = %.3f"%tau_max)
+
+#DETECTING THE END OF HYDROGEN BURNING
+ts=evodata[:,0]
+Rs=evodata[:,3]
+if star.taums==0:
+    tau_ms=disconSignal(ts,Rs,
+                        tausys=tau_max/2,
+                        iper=3,dimax=10)
+else:tau_ms=star.taums
 
 ###################################################
 #CALCULATE DERIVATIVE PROPERTIES
@@ -120,6 +132,47 @@ MoI=np.sqrt(stellarMoI(star.M))
 #DISSIPATION TIME
 tdiss=dissipationTime(star.M,R,L)
 
+title=r"$M_{\\rm star}/M_{\odot}$=%.2f, $Z$=%.4f, $[Fe/H]$=%.2f, $\\tau$=%.2f Gyr"%(star.M,star.Z,star.FeH,star.tau)
+
+###################################################
+#FIT ROTATIONAL PERIOD FOR THIS MASS
+###################################################
+ts=evodata[:,0]
+ms=ts<0.9*tau_ms
+Rs=evodata[:,3]
+prots=stack(1)
+
+for i in xrange(len(ts)):
+    t=ts[i]
+    Rstar=Rs[i]
+    prot=Prot(t,Ms=star.M,Rs=Rstar)/DAY
+    prots+=[prot]
+prots=prots.array
+
+def chiSquare(x):
+    #residuals=(theoProt(ts[ms],x)-prots[ms])/theoProt(ts[ms],x)
+    residuals=(theoProt(ts[ms],x)-prots[ms])
+    chisquare=(residuals**2).sum()
+    return chisquare
+
+prot_fit=minimize(chiSquare,[1,1.0,1.0]).x
+
+#==============================
+#VERIFY ROTATIONAL FIT
+#==============================
+fig=plt.figure()
+ax=fig.add_axes([0.1,0.1,0.8,0.8])
+ax.plot(ts,prots,label='Model')
+ax.plot(ts,theoProt(ts,prot_fit),label='Fit')
+ax.axvline(tau_ms,color='k',linestyle='--',label='Turn over')
+ax.axvline(star.tau,color='k',label='Stellar Age')
+ax.set_ylabel("Period (days)")
+ax.set_ylabel("$\tau$ (Gyr)")
+ax.set_xlim((0,min(12,tau_max)))
+ax.legend(loc='best')
+fig.savefig(star_dir+"prot.png")
+fig.savefig("tmp/prot.png")
+
 ###################################################
 #STORE STELLAR DATA
 ###################################################
@@ -129,6 +182,10 @@ f.write("""\
 from numpy import array
 #MAXIMUM AGE
 taumax=%.17e #Gyr
+taums=%.17e #Gyr
+
+#INSTANTANEOUS PROPERTIES
+title="%s"
 
 #INSTANTANEOUS PROPERTIES
 g=%.17e #m/s^2
@@ -138,15 +195,19 @@ L=%.17e #Lsun
 MoI=%.17e #Gyration radius (I/M R^2)
 tdiss=%.17e #s
 
+#ROTATION FIT
+protfit=%s
+
 #OTHER PROPERTIES
 lins=%s #AU
 lsun=%.17e #AU
 louts=%s #AU
 
 #EVOLUTIONARY TRACK
-evotrack=\
-%s
-"""%(tau_max,g,Teff,R,L,MoI,tdiss,
+evotrack=%s
+"""%(tau_max,tau_ms,title,
+     g,Teff,R,L,MoI,tdiss,
+     array2str(prot_fit),
      array2str(lins),lsun,array2str(louts),
      evodata_str,
      ))
@@ -163,6 +224,9 @@ PRINTERR("Creating plots...")
 plotFigure(star_dir,"stellar-props",\
 """
 from BHM.BHMstars import *
+star=\
+loadConf("%s"+"star.conf")+\
+loadConf("%s"+"star.data")
 
 fig=plt.figure(figsize=(8,6))
 ax=fig.add_axes([0.1,0.1,0.8,0.8])
@@ -174,21 +238,24 @@ ax.plot(ts,10**logrho_func(np.log10(ts))/GRAVSUN,label=r"$g_{\\rm surf}$")
 ax.plot(ts,Teff_func(np.log10(ts))/TSUN,label=r"$T_{\\rm eff}$")
 ax.plot(ts,10**logR_func(np.log10(ts)),label=r"$R$")
 ax.plot(ts,10**logL_func(np.log10(ts)),label=r"$L$")
+ax.axvline(star.taums,color='k',linestyle='--',label='Turn Over')
+ax.axvline(star.tau,color='k',linestyle='-',label='Stellar Age')
 
 ax.set_xscale('log')
 ax.set_yscale('log')
 
 logTickLabels(ax,-2,1,(3,),axis='x',frm='%%.2f')
-ax.set_title("Stellar Properties",position=(0.5,1.02))
+ax.set_title(star.title,position=(0.5,1.02))
 ax.set_xlabel(r"$\\tau$ (Gyr)")
 ax.set_ylabel(r"Property in Solar Units")
 
 ymin,ymax=ax.get_ylim()
 ax.set_xlim((0,%.17e))
+ax.set_ylim((0.1,10.0))
 ax.set_ylim((ymin,ymax))
 
-ax.legend(loc='best')
-"""%(evodata_str,tau_max))
+ax.legend(loc='best',prop=dict(size=12))
+"""%(star_dir,star_dir,evodata_str,tau_max))
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 #EVOLUTIONARY TRACK
@@ -350,6 +417,7 @@ fh.write("""\
   <tr><td>[Fe/H] (dex):</td><td>%.2f</td></tr>
   <tr><td>&tau; (Gyr):</td><td>%.2f</td></tr>
   <tr><td>&tau;<sub>max</sub> (Gyr):</td><td>%.2f</td></tr>
+  <tr><td>&tau;<sub>MS</sub> (Gyr):</td><td>%.2f</td></tr>
 </table>
 <h3>Instantaneous theoretical properties:</h3>
 <table width=300>
@@ -414,7 +482,7 @@ fh.write("""\
   </td></tr>
 </table>
 
-"""%(star.M,star.Z,star.FeH,star.tau,tau_max,
+"""%(star.M,star.Z,star.FeH,star.tau,tau_max,tau_ms,
 star_webdir,star_webdir,star_webdir,WEB_DIR,
 g,Teff,R,L,MoI,tdiss,
 lins[0],lins[1],lins[2],
