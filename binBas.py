@@ -31,16 +31,21 @@ Usage:
 
    <binary>.conf (file): Configuration file with data about star.
 
+   <star1>.conf,<star2>.conf (file): Configuration file with data
+   about stars.
+
    <qoverride> (int 0/1): Override any previously existent
    calculation.
 """
 
-binary_conf,star1_conf,star2_conf,planet_conf,qover=\
+binary_conf,star1_conf,star2_conf,qover=\
     readArgs(argv,
-             ["str","str","str","str","int"],
-             ["binary.conf","star1.conf","star2.conf","planet.conf","0"],
+             ["str","str","str","int"],
+             ["binary.conf","star1.conf","star2.conf","0"],
              Usage=Usage)
-
+PRINTOUT("Executing for: %s, %s, %s"%(binary_conf,
+                                      star1_conf,
+                                      star2_conf))
 ###################################################
 #LOAD PREVIOUS OBJECTS
 ###################################################
@@ -57,12 +62,6 @@ star2,star2_dir,star2_str,star2_hash,star2_liv,star2_stg=\
     signObject(star2_conf)
 system("python stEvo.py %s %s"%(star2_conf,qover))
 star2+=loadConf(star2_dir+"star.data")
-#==================================================
-#LOADING PLANET
-planet,planet_dir,planet_str,planet_hash,planet_liv,planet_stg=\
-    signObject(planet_conf)
-system("python plBas.py %s %s"%(planet_conf,qover))
-planet+=loadConf(planet_dir+"planet.data")
 
 ###################################################
 #LOAD BINARY OBJECT

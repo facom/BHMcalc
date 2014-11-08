@@ -34,6 +34,7 @@ def MD5STR(str):
     return MD5.hexdigest()
 DEG=np.pi/180
 RAD=180/np.pi
+NEXT=lambda i,p:(i+1)%p
 def PRINTERR(str):
     print >>stderr,argv[0]+":"+str
 def PRINTOUT(str):
@@ -429,3 +430,4 @@ def initialsString(string):
     for part in parts:
         initials+="%s"%part[0].upper()
     return initials
+
