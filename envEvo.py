@@ -67,60 +67,40 @@ PRINTOUT("Executing for: env=%s, rot=%s, bin=%s, ihz=%s, star1=%s, star2=%s, pla
 #LOAD PREVIOUS OBJECTS
 ###################################################
 PRINTOUT("Loading other objects...")
-qout=True
-qout=False
-
 #==================================================
 #LOADING ROTATIONAL EVOLUTION
 rot,rot_dir,rot_str,rot_hash,rot_liv,rot_stg=\
     signObject(rot_conf)
-System("python rotEvo.py %s %s %s %s %d"%(rot_conf,binary_conf,
-                                          star1_conf,star2_conf,
-                                          qover),out=qout)
 rot+=loadConf(rot_dir+"rot.data")
 tr,bin_rot1=interpMatrix(rot.star1_binrotevol)
 tr,bin_rot2=interpMatrix(rot.star2_binrotevol)
-
-#### START COMMENT ####
-
 #==================================================
 #LOADING HABITABLE ZONE
 ihz,ihz_dir,ihz_str,ihz_hash,ihz_liv,ihz_stg=\
     signObject(ihz_conf)
-System("python iHZ.py %s %s %s %s %s %d"%(ihz_conf,binary_conf,
-                                          star1_conf,star2_conf,
-                                          planet_conf,
-                                          qover),out=qout)
 ihz+=loadConf(ihz_dir+"ihz.data")
-
 #==================================================
 #LOADING BINARY
 binary,binary_dir,binary_str,binary_hash,binary_liv,binary_stg=\
     signObject(binary_conf)
 binary+=loadConf(binary_dir+"binary.data")
-
 #==================================================
 #LOADING STAR 1
 star1,star1_dir,star1_str,star1_hash,star1_liv,star1_stg=\
     signObject(star1_conf)
 star1+=loadConf(star1_dir+"star.data")
 evoInterpFunctions(star1)
-
 #==================================================
 #LOADING STAR 2
 star2,star2_dir,star2_str,star2_hash,star2_liv,star2_stg=\
     signObject(star2_conf)
 star2+=loadConf(star2_dir+"star.data")
 evoInterpFunctions(star2)
-
-#### END COMMENT ####
-
 #==================================================
 #LOADING PLANET
 planet,planet_dir,planet_str,planet_hash,planet_liv,planet_stg=\
     signObject(planet_conf)
 planet+=loadConf(planet_dir+"planet.data")
-
 tp,thermevol=interpMatrix(planet.thermevol)
 
 ###################################################

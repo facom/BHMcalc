@@ -26,13 +26,13 @@ from BHM.BHMstars import *
 Usage=\
 """
 Usage:
-   python stEvo.py <star>.conf <qoverride>
+   python %s <star>.conf <qoverride>
 
    <star>.conf (file): Configuration file with data about star.
 
    <qoverride> (int 0/1): Override any previously existent
    calculation.
-"""
+"""%argv[0]
 
 star_conf,qover=\
     readArgs(argv,

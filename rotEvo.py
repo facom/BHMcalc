@@ -61,9 +61,6 @@ PRINTOUT("Loading other objects...")
 #LOADING BINARY
 binary,binary_dir,binary_str,binary_hash,binary_liv,binary_stg=\
     signObject(binary_conf)
-system("python binBas.py %s %s %s %d"%(binary_conf,
-                                       star1_conf,star2_conf,
-                                       qover))
 binary+=loadConf(binary_dir+"binary.data")
 #==================================================
 #LOADING STAR 1
@@ -82,7 +79,6 @@ if star1_hash==star2_hash:
     qtwins=True
     star2=star1
     PRINTOUT("Stars are twins.")
-
 
 ###################################################
 #LOAD ROT OBJECT
