@@ -29,7 +29,7 @@ from BHM.BHMastro import *
 Usage=\
 """
 Usage:
-   python %s <env>.py <rot>.conf <binary>.conf <star1>.conf <star1>.conf <planet>.conf <qoverride>
+   python %s <env>.conf <rot>.conf <binary>.conf <star1>.conf <star1>.conf <planet>.conf <qoverride>
 
    <env>.conf (file): Configuration of the environmental evolution model.
 
