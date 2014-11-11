@@ -77,6 +77,7 @@ evoInterpFunctions(star2)
 planet,planet_dir,planet_str,planet_hash,planet_liv,planet_stg=\
     signObject(planet_conf)
 planet+=loadConf(planet_dir+"planet.data")
+
 ###################################################
 #LOAD IHZ OBJECT
 ###################################################

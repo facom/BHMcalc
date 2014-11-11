@@ -27,7 +27,7 @@ from BHM.BHMastro import *
 Usage=\
 """
 Usage:
-   python binBas.py <binary>.conf <star1>.conf <star1>.conf <qoverride>
+   python %s <binary>.conf <star1>.conf <star1>.conf <qoverride>
 
    <binary>.conf (file): Configuration file with data about star.
 
@@ -36,7 +36,7 @@ Usage:
 
    <qoverride> (int 0/1): Override any previously existent
    calculation.
-"""
+"""%(argv[0])
 
 binary_conf,star1_conf,star2_conf,qover=\
     readArgs(argv,
@@ -55,13 +55,11 @@ PRINTOUT("Loading other objects...")
 #LOADING STAR 1
 star1,star1_dir,star1_str,star1_hash,star1_liv,star1_stg=\
     signObject(star1_conf)
-system("python stEvo.py %s %s"%(star1_conf,qover))
 star1+=loadConf(star1_dir+"star.data")
 #==================================================
 #LOADING STAR 2
 star2,star2_dir,star2_str,star2_hash,star2_liv,star2_stg=\
     signObject(star2_conf)
-system("python stEvo.py %s %s"%(star2_conf,qover))
 star2+=loadConf(star2_dir+"star.data")
 
 ###################################################

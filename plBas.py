@@ -25,9 +25,9 @@ from BHM.BHMplanets import *
 Usage=\
 """
 Usage:
-   python %s <star>.conf <qoverride>
+   python %s <planet>.conf <qoverride>
 
-   <star>.conf (file): Configuration file with data about the planet.
+   <planet>.conf (file): Configuration file with data about the planet.
 
    <qoverride> (int 0/1): Override any previously existent
    calculation.
