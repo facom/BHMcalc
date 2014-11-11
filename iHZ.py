@@ -28,9 +28,16 @@ from BHM.BHMastro import *
 Usage=\
 """
 Usage:
-   python %s <star>.conf <qoverride>
+   python %s <ihz>.conf <binary>.conf <star1>.conf <star1>.conf <planet>.conf <qoverride>
 
-   <star>.conf (file): Configuration file with data about the planet.
+   <ihz>.conf (file): Module configuration
+
+   <binary>.conf (file): Configuration file with data about binary.
+
+   <star1>.conf,<star2>.conf (file): Configuration file with data
+   about stars.
+
+   <planet>.conf (file): Configuration file with data about planet.
 
    <qoverride> (int 0/1): Override any previously existent
    calculation.
@@ -52,27 +59,24 @@ PRINTOUT("Loading other objects...")
 #LOADING BINARY
 binary,binary_dir,binary_str,binary_hash,binary_liv,binary_stg=\
     signObject(binary_conf)
-system("python binBas.py %s %s %s %d"%(binary_conf,
-                                       star1_conf,star2_conf,
-                                       qover))
 binary+=loadConf(binary_dir+"binary.data")
 #==================================================
 #LOADING STAR 1
 star1,star1_dir,star1_str,star1_hash,star1_liv,star1_stg=\
     signObject(star1_conf)
 star1+=loadConf(star1_dir+"star.data")
+evoInterpFunctions(star1)
 #==================================================
 #LOADING STAR 2
 star2,star2_dir,star2_str,star2_hash,star2_liv,star2_stg=\
     signObject(star2_conf)
 star2+=loadConf(star2_dir+"star.data")
+evoInterpFunctions(star2)
 #==================================================
 #LOADING PLANET
 planet,planet_dir,planet_str,planet_hash,planet_liv,planet_stg=\
     signObject(planet_conf)
-system("python plBas.py %s %d"%(planet_conf,qover))
 planet+=loadConf(planet_dir+"planet.data")
-
 ###################################################
 #LOAD IHZ OBJECT
 ###################################################
@@ -181,6 +185,32 @@ for i in range(1,12,2):
     pstats+=[statsArray(insolation[:,i+1])]
 
 ###################################################
+#CALCULATE BINARY HABITABLE ZONE EVOLUTION
+###################################################
+taumax=min(star1.taumax,star2.taumax)
+ts=star1.evotrack[:,0]
+hz=stack(3)
+shz=stack(3)
+for tau in ts:
+    lin,lout,leeq=HZbin(star2.M/star1.M,
+                        star1.Lfunc(tau),star2.Lfunc(tau),star1.Tfunc(tau),
+                        binary.abin,
+                        crits=[incrit_wd,outcrit_wd],eeq=True)
+    slin,sleeq,slout=HZ(star1.Lfunc(tau),star1.Tfunc(tau),
+                        lin=incrit_wd,lout=outcrit_wd)
+    hz+=[lin,leeq,lout]
+    shz+=[slin,sleeq,slout]
+hz=toStack(ts)|hz
+shz=toStack(ts)|shz
+
+#CONTINUOUS HABITABLE ZONE
+tms=star1.taums
+clout=min(hz[:,3])
+clin=np.interp(tms,ts,hz[:,1])
+if clin<binary.acrit:
+    clin=binary.acrit
+
+###################################################
 #STORE iHZ DATA
 ###################################################
 ihz.title=r"$M_p=%.3f\,M_{\\rm Jup}$, $f_{\\rm H/He}=%.3f$, $\\tau=%.2f$ Gyr, $R_p=%.3f\,R_{\\rm Jup}$"%(planet.Mg,planet.fHHe,planet.tau,planet.Rg)
@@ -205,12 +235,18 @@ ini_innr = "%s"
 ini_outnr = "%s"
 
 #HZ EDGES
+taumax = %.17e #Gyr
 tau = %.17e #Gyr
 leeq = %.17e #AU
 linwd = %.17e #AU
 loutwd = %.17e #AU
 linnr = %.17e #AU
 loutnr = %.17e #AU
+
+#CHZ
+taums = %.17e #Gyr
+clin = %.17e #Gyr
+clout = %.17e #Gyr
 
 #FLUX AND PHOTON DENSITY STATS
 #COLS:mean,min,max,range,st.dev.
@@ -220,15 +256,24 @@ pstats=%s
 
 #FLUX AND PHOTON DENSITY
 insolation=%s
+
+#BINARY HABITABLE ZONE EVOLUTION
+hz=%s
+
+#PRIMARY HABITABLE ZONE EVOLUTION
+shz=%s
 """%(ihz.title,
      ini_inwd,ini_outwd,ini_innr,ini_outnr,
-     ihz.tau,
+     taumax,ihz.tau,
      leeq,
      linwd,loutwd,
      linnr,loutnr,
+     tms,clin,clout,
      array2str(fstats.array),
      array2str(pstats.array),
-     array2str(insolation)
+     array2str(insolation),
+     array2str(hz),
+     array2str(shz)
      ))
 fd.close()
 
@@ -397,6 +442,66 @@ ax.set_ylabel('Insolation, PPFD (PEL)',fontsize=12)
      ihz_dir,ihz_dir
      ),watermarkpos="outer")
 
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+#EVOLUTION AND CONTINUOUS HABITABLE ZONE
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+plotFigure(ihz_dir,"hz-evolution",\
+"""
+from BHM.BHMstars import *
+binary=\
+loadConf("%s"+"binary.conf")+\
+loadConf("%s"+"binary.data")
+planet=\
+loadConf("%s"+"planet.conf")+\
+loadConf("%s"+"planet.data")
+ihz=\
+loadConf("%s"+"ihz.conf")+\
+loadConf("%s"+"ihz.data")
+
+fig=plt.figure(figsize=(8,6))
+ax=fig.add_axes([0.1,0.1,0.8,0.8])
+
+ts=ihz.hz[:,0]
+
+#BHZ
+ax.plot(ts,ihz.hz[:,1],'r-',linewidth=2)
+ax.plot(ts,ihz.hz[:,2],'k:',linewidth=2)
+ax.plot(ts,ihz.hz[:,3],'b-',linewidth=2)
+ax.fill_between(ts,ihz.hz[:,1],ihz.hz[:,3],color='g',alpha=0.3)
+
+#SHZ
+ax.plot(ts,ihz.shz[:,1],'r--',linewidth=2)
+ax.plot(ts,ihz.shz[:,3],'b--',linewidth=2)
+ax.fill_between(ts,ihz.hz[:,1],ihz.hz[:,3],color='g',alpha=0.3)
+
+#CRITICAL DISTANCE
+ax.axhline(binary.acrit,linewidth=2)
+
+#DECORATION
+ax.set_xlim((0.0,ihz.taums))
+ax.set_ylim((min(ihz.shz[:,1]),max(ihz.hz[:,3])))
+
+ax.set_xlabel(r"$\\tau$ (Gyr)",fontsize=12)
+ax.set_ylabel(r"$r$ (AU)",fontsize=12)
+ax.set_title(binary.title,position=(0.5,1.02),fontsize=12)
+
+#CHZ
+ymin,ymax=ax.get_ylim()
+rchz=0.95*(ihz.clout-ymin)/(ymax-ymin)
+rihz=1.05*(ihz.clin-ymin)/(ymax-ymin)
+ax.axhspan(ihz.clin,ihz.clout,color='k',alpha=0.3,linewidth=3)
+ax.text(0.5,rchz,"Continuous Habitable Zone",fontsize=18,
+horizontalalignment='center',verticalalignment='top',transform=ax.transAxes)
+ax.text(0.05,rchz,"%%.2f AU"%%(ihz.clout),fontsize=10,
+horizontalalignment='center',verticalalignment='top',transform=ax.transAxes)
+ax.text(0.05,rihz,"%%.2f AU"%%(ihz.clin),fontsize=10,
+horizontalalignment='center',verticalalignment='bottom',transform=ax.transAxes)
+
+"""%(binary_dir,binary_dir,
+     planet_dir,planet_dir,
+     ihz_dir,ihz_dir
+     ),watermarkpos="outer")
+
 ###################################################
 #GENERATE FULL REPORT
 ###################################################
@@ -424,6 +529,23 @@ fh.write("""\
 	)
   </td></tr>
 </table>
+<h3>Continuous Habitable Zone</h3>
+<table width=300>
+  <tr><td>&tau;<sub>MS</sub> (Gyr):</td><td>%.3f</td></tr>
+  <tr><td>l<sub>in,max</sub> (AU):</td><td>%.3f</td></tr>
+  <tr><td>l<sub>out,min</sub> (AU):</td><td>%.3f</td></tr>
+  <tr><td colspan=2>
+      <a href="%s/hz-evolution.png">
+	<img width=100%% src="%s/hz-evolution.png">
+      </a>
+      <br/>
+      <i>Instantaneous Habitable Zone</i>
+	(
+	<a href="%s/hz-evolution.png.txt">data</a>|
+	<a href="%s/web/replot.php?plot=hz-evolution.py">replot</a>
+	)
+  </td></tr>
+</table>
 <h3>Insolation and Photon Flux</h3>
 <table width=500>
   <tr><td>&lt;S(Planet,a=%.2f,e=%.2f)&gt; [W/m<sup>2</sup>,S<sub>Sun</sub>]:</td><td>%.3f, %.3f</td></tr>
@@ -443,6 +565,8 @@ fh.write("""\
 """%(leeq,
      ini_inwd,linwd,ini_outwd,loutwd,
      ini_innr,linnr,ini_outnr,loutnr,
+     ihz_webdir,ihz_webdir,ihz_webdir,WEB_DIR,
+     tms,clin,clout,
      ihz_webdir,ihz_webdir,ihz_webdir,WEB_DIR,
      planet.aorb,planet.eorb,fstats.array[0,0],fstats.array[0,0]/SOLAR_CONSTANT,
      fstats.array[0,1]/SOLAR_CONSTANT,fstats.array[0,2]/SOLAR_CONSTANT,
@@ -486,4 +610,4 @@ fh.close()
 ###################################################
 #CLOSE OBJECT
 ###################################################
-closeObject(ihz_dir)
+#closeObject(ihz_dir)

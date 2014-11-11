@@ -28,20 +28,27 @@ from BHM.BHMastro import *
 Usage=\
 """
 Usage:
-   python %s <star>.conf <qoverride>
+   python %s <chz>.conf <binary>.conf <star1>.conf <star2>.conf <qoverride>
 
-   <star>.conf (file): Configuration file with data about the planet.
+   <chz>.conf (file): Module configuration
+
+   <binary>.conf (file): Binary configuration
+
+   <star1>.conf,<star2>.conf (file): Configuration file with data
+   about stars.
 
    <qoverride> (int 0/1): Override any previously existent
    calculation.
 """%argv[0]
 
-ihz_conf,binary_conf,star1_conf,star2_conf,planet_conf,qover=\
+chz_conf,binary_conf,star1_conf,star2_conf,qover=\
     readArgs(argv,
-             ["str","str","str","str","str","int"],
+             ["str",
+              "str","str","str",
+              "int"],
              ["ihz.conf",
               "binary.conf","star1.conf","star2.conf",
-              "planet.conf","0"],
+              "0"],
              Usage=Usage)
 
 ###################################################
@@ -52,9 +59,6 @@ PRINTOUT("Loading other objects...")
 #LOADING BINARY
 binary,binary_dir,binary_str,binary_hash,binary_liv,binary_stg=\
     signObject(binary_conf)
-system("python binBas.py %s %s %s %d"%(binary_conf,
-                                       star1_conf,star2_conf,
-                                       qover))
 binary+=loadConf(binary_dir+"binary.data")
 #==================================================
 #LOADING STAR 1
@@ -66,36 +70,54 @@ star1+=loadConf(star1_dir+"star.data")
 star2,star2_dir,star2_str,star2_hash,star2_liv,star2_stg=\
     signObject(star2_conf)
 star2+=loadConf(star2_dir+"star.data")
-#==================================================
-#LOADING PLANET
-planet,planet_dir,planet_str,planet_hash,planet_liv,planet_stg=\
-    signObject(planet_conf)
-system("python plBas.py %s %d"%(planet_conf,qover))
-planet+=loadConf(planet_dir+"planet.data")
 
 ###################################################
-#LOAD IHZ OBJECT
+#LOAD CHZ OBJECT
 ###################################################
-ihz,ihz_str,ihz_hash,ihz_dir=\
-    makeObject(ihz_conf,qover=qover)
-ihz_webdir=WEB_DIR+ihz_dir
-PRINTOUT("Object hash:%s"%ihz_hash)
+chz,chz_str,chz_hash,chz_dir=\
+    makeObject(chz_conf,qover=qover)
+chz_webdir=WEB_DIR+chz_dir
+PRINTOUT("Object hash:%s"%chz_hash)
 
 ###################################################
 #CALCULATE BINARY HABITABLE ZONE AT TAU
 ###################################################
-ihz.tau=star1.tau
+incrit=chz.incrit.replace("'","")
+outcrit=chz.outcrit.replace("'","")
 
-incrit_wd=ihz.incrit_wd.replace("'","")
-outcrit_wd=ihz.outcrit_wd.replace("'","")
+lins=stack(1)
+louts=stack(1)
+slins=stack(1)
+slouts=stack(1)
+
+for tau in tauvec:
+    g1e,T1e,R1e,L1e=StellarGTRL(Z,M1,tau)
+    g2e,T2e,R2e,L2e=StellarGTRL(Z,M2,tau)
+    try:
+                lin1e,aE1e,lout1e=HZ2013(L1e,T1e,lin=incrit,lout=outcrit)
+            except:
+                break
+            line,aEe,loute=HZbin4(M2/M1,L1e,L2e,T1e,abin,crits=[incrit,outcrit])
+            tausys=tau
+            lins+=[line]
+            louts+=[loute]
+            slins+=[lin1e]
+            slouts+=[lout1e]
+            i+=1
+        tauvec=tauvec[:i]
+        lins=np.array(lins)
+        louts=np.array(louts)
+
+exit(0)
+
 linwd,loutwd=HZbin(star2.M/star1.M,star1.L,star2.L,star1.T,
                    binary.abin,
                    crits=[incrit_wd,outcrit_wd])
 Pinwd=PKepler(linwd,star1.M,star2.M);ninwd=2*np.pi/Pinwd
 Poutwd=PKepler(loutwd,star1.M,star2.M);noutwd=2*np.pi/Poutwd
 
-incrit_nr=ihz.incrit_nr.replace("'","")
-outcrit_nr=ihz.outcrit_nr.replace("'","")
+incrit_nr=chz.incrit_nr.replace("'","")
+outcrit_nr=chz.outcrit_nr.replace("'","")
 linnr,loutnr,leeq=HZbin(star2.M/star1.M,star1.L,star2.L,star1.T,
                         binary.abin,
                         crits=[incrit_nr,outcrit_nr],eeq=True)
@@ -181,17 +203,17 @@ for i in range(1,12,2):
     pstats+=[statsArray(insolation[:,i+1])]
 
 ###################################################
-#STORE iHZ DATA
+#STORE chz DATA
 ###################################################
-ihz.title=r"$M_p=%.3f\,M_{\\rm Jup}$, $f_{\\rm H/He}=%.3f$, $\\tau=%.2f$ Gyr, $R_p=%.3f\,R_{\\rm Jup}$"%(planet.Mg,planet.fHHe,planet.tau,planet.Rg)
+chz.title=r"$M_p=%.3f\,M_{\\rm Jup}$, $f_{\\rm H/He}=%.3f$, $\\tau=%.2f$ Gyr, $R_p=%.3f\,R_{\\rm Jup}$"%(planet.Mg,planet.fHHe,planet.tau,planet.Rg)
 
 #INITIALS
-ini_inwd=initialsString(ihz.incrit_wd)
-ini_outwd=initialsString(ihz.outcrit_wd)
-ini_innr=initialsString(ihz.incrit_nr)
-ini_outnr=initialsString(ihz.outcrit_nr)
+ini_inwd=initialsString(chz.incrit_wd)
+ini_outwd=initialsString(chz.outcrit_wd)
+ini_innr=initialsString(chz.incrit_nr)
+ini_outnr=initialsString(chz.outcrit_nr)
 
-fd=open(ihz_dir+"ihz.data","w")
+fd=open(chz_dir+"chz.data","w")
 fd.write("""\
 from numpy import array
 
@@ -220,9 +242,9 @@ pstats=%s
 
 #FLUX AND PHOTON DENSITY
 insolation=%s
-"""%(ihz.title,
+"""%(chz.title,
      ini_inwd,ini_outwd,ini_innr,ini_outnr,
-     ihz.tau,
+     chz.tau,
      leeq,
      linwd,loutwd,
      linnr,loutnr,
@@ -240,7 +262,7 @@ PRINTOUT("Creating plots...")
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 #INSTANTANEOUS HABITABLE ZONE
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-plotFigure(ihz_dir,"iHZ",\
+plotFigure(chz_dir,"chz",\
 """
 from BHM.BHMstars import *
 binary=\
@@ -249,9 +271,9 @@ loadConf("%s"+"binary.data")
 planet=\
 loadConf("%s"+"planet.conf")+\
 loadConf("%s"+"planet.data")
-ihz=\
-loadConf("%s"+"ihz.conf")+\
-loadConf("%s"+"ihz.data")
+chz=\
+loadConf("%s"+"chz.conf")+\
+loadConf("%s"+"chz.data")
 
 fig=plt.figure(figsize=(8,8))
 ax=fig.add_axes([0.01,0.01,0.98,0.98])
@@ -259,29 +281,29 @@ ax.set_xticklabels([])
 ax.set_yticklabels([])
 
 #WIDE HZ
-outwd=patches.Circle((0,0),ihz.loutwd,facecolor='g',
+outwd=patches.Circle((0,0),chz.loutwd,facecolor='g',
                      alpha=0.3,linewidth=2,zorder=-10)
 ax.add_patch(outwd)
-inwd=patches.Circle((0,0),ihz.linwd,facecolor='r',edgecolor='r',
+inwd=patches.Circle((0,0),chz.linwd,facecolor='r',edgecolor='r',
                     alpha=0.2,linewidth=2,zorder=-5)
 ax.add_patch(inwd)
 
 #NARROW HZ
-outnr=patches.Circle((0,0),ihz.loutnr,facecolor='g',
+outnr=patches.Circle((0,0),chz.loutnr,facecolor='g',
                      alpha=0.3,linewidth=2,zorder=-10)
 ax.add_patch(outnr)
 
-innr=patches.Circle((0,0),ihz.linnr,facecolor='r',edgecolor='r',
+innr=patches.Circle((0,0),chz.linnr,facecolor='r',edgecolor='r',
                     alpha=0.2,linewidth=2,zorder=-5)
 ax.add_patch(innr)
 
 #WHITE INNER AREA
-inwd=patches.Circle((0,0),ihz.linwd,facecolor='w',edgecolor='r',
+inwd=patches.Circle((0,0),chz.linwd,facecolor='w',edgecolor='r',
                     linewidth=2,zorder=0)
 ax.add_patch(inwd)
 
 #EARTH EQUIVALENT DISTANCE
-aeq=patches.Circle((0,0),ihz.leeq,facecolor='none',edgecolor=cm.gray(0.5),
+aeq=patches.Circle((0,0),chz.leeq,facecolor='none',edgecolor=cm.gray(0.5),
                    linewidth=2,linestyle='dotted',zorder=20)
 ax.add_patch(aeq)
 
@@ -313,10 +335,10 @@ ax.text(0.5,0.92,planet.orbit,fontsize=12,
 transform=ax.transAxes,horizontalalignment='center')
 
 #LIMITS
-ax.text(0.5,0.08,r"$a_{\\rm crit}=%%.2f$ AU, $l_{\\rm E,eq}$=%%.2f AU, $l_{\\rm in,%%s}$=%%.2f AU, $l_{\\rm in,%%s}$=%%.2f AU, $l_{\\rm out,%%s}$=%%.2f AU, $l_{\\rm out,%%s}$=%%.2f AU"%%(binary.acrit,ihz.leeq,ihz.ini_inwd,ihz.linwd,ihz.ini_innr,ihz.linnr,ihz.ini_outwd,ihz.loutwd,ihz.ini_outnr,ihz.loutnr),transform=ax.transAxes,horizontalalignment='center',fontsize=12)
+ax.text(0.5,0.08,r"$a_{\\rm crit}=%%.2f$ AU, $l_{\\rm E,eq}$=%%.2f AU, $l_{\\rm in,%%s}$=%%.2f AU, $l_{\\rm in,%%s}$=%%.2f AU, $l_{\\rm out,%%s}$=%%.2f AU, $l_{\\rm out,%%s}$=%%.2f AU"%%(binary.acrit,chz.leeq,chz.ini_inwd,chz.linwd,chz.ini_innr,chz.linnr,chz.ini_outwd,chz.loutwd,chz.ini_outnr,chz.loutnr),transform=ax.transAxes,horizontalalignment='center',fontsize=12)
 
 #RANGE
-rang=1.5*max(ihz.loutwd,max(abs(xs)),max(abs(ys)))
+rang=1.5*max(chz.loutwd,max(abs(xs)),max(abs(ys)))
 ax.set_xlim((-rang,+rang))
 ax.set_ylim((-rang,+rang))
 
@@ -331,13 +353,13 @@ transform=ax.transAxes)
 
 """%(binary_dir,binary_dir,
      planet_dir,planet_dir,
-     ihz_dir,ihz_dir
+     chz_dir,chz_dir
      ),watermarkpos="inner")
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 #FLUX AND PHOTON DENSITY
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-plotFigure(ihz_dir,"insolation",\
+plotFigure(chz_dir,"insolation",\
 """
 from BHM.BHMstars import *
 binary=\
@@ -346,16 +368,16 @@ loadConf("%s"+"binary.data")
 planet=\
 loadConf("%s"+"planet.conf")+\
 loadConf("%s"+"planet.data")
-ihz=\
-loadConf("%s"+"ihz.conf")+\
-loadConf("%s"+"ihz.data")
+chz=\
+loadConf("%s"+"chz.conf")+\
+loadConf("%s"+"chz.data")
 
 fig=plt.figure(figsize=(8,6))
 ax=fig.add_axes([0.1,0.1,0.8,0.8])
 
-insolation=ihz.insolation
-fstats=ihz.fstats
-pstats=ihz.pstats
+insolation=chz.insolation
+fstats=chz.fstats
+pstats=chz.pstats
 ts=insolation[:,0]
 
 #PLANET
@@ -364,12 +386,12 @@ color='k',linestyle='-',linewidth=2,
 label=r"Planet, $a_{\\rm orb}$=%%.2f AU,$e_{\\rm orb}$=%%.2f"%%(planet.aorb,planet.eorb))
 ax.plot(ts/planet.Porb,insolation[:,2]/PPFD_EARTH,
 color='k',linestyle='-',linewidth=1)
-ax.axhline(ihz.fstats[0,0]/SOLAR_CONSTANT,color='k',linestyle='-.',linewidth=2,label='Planet average')
+ax.axhline(chz.fstats[0,0]/SOLAR_CONSTANT,color='k',linestyle='-.',linewidth=2,label='Planet average')
 
 #EARTH EQUIVALENT
 ax.plot(ts/planet.Porb,insolation[:,3]/SOLAR_CONSTANT,
 color='k',linestyle='--',linewidth=2,
-label=r"$a_{\\rm E,eq}$=%%.2f AU"%%(ihz.leeq))
+label=r"$a_{\\rm E,eq}$=%%.2f AU"%%(chz.leeq))
 ax.plot(ts/planet.Porb,insolation[:,4]/PPFD_EARTH,
 color='k',linestyle='--',linewidth=1)
 
@@ -394,13 +416,13 @@ ax.set_xlabel('orbital phase',fontsize=12)
 ax.set_ylabel('Insolation, PPFD (PEL)',fontsize=12)
 """%(binary_dir,binary_dir,
      planet_dir,planet_dir,
-     ihz_dir,ihz_dir
+     chz_dir,chz_dir
      ),watermarkpos="outer")
 
 ###################################################
 #GENERATE FULL REPORT
 ###################################################
-fh=open(ihz_dir+"ihz.html","w")
+fh=open(chz_dir+"chz.html","w")
 fh.write("""\
 <h2>Instantaneous Circumbinary Habitable Zone (HZ)</h2>
 <h3>HZ Edges</h3>
@@ -413,14 +435,14 @@ fh.write("""\
   <tr><td>l<sub>in,%s</sub> (AU):</td><td>%.3f</td></tr>
   <tr><td>l<sub>out,%s</sub> (AU):</td><td>%.3f</td></tr>
   <tr><td colspan=2>
-      <a href="%s/iHZ.png">
-	<img width=100%% src="%s/iHZ.png">
+      <a href="%s/chz.png">
+	<img width=100%% src="%s/chz.png">
       </a>
       <br/>
       <i>Instantaneous Habitable Zone</i>
 	(
-	<a href="%s/iHZ.png.txt">data</a>|
-	<a href="%s/web/replot.php?plot=iHZ.py">replot</a>
+	<a href="%s/chz.png.txt">data</a>|
+	<a href="%s/web/replot.php?plot=chz.py">replot</a>
 	)
   </td></tr>
 </table>
@@ -443,18 +465,18 @@ fh.write("""\
 """%(leeq,
      ini_inwd,linwd,ini_outwd,loutwd,
      ini_innr,linnr,ini_outnr,loutnr,
-     ihz_webdir,ihz_webdir,ihz_webdir,WEB_DIR,
+     chz_webdir,chz_webdir,chz_webdir,WEB_DIR,
      planet.aorb,planet.eorb,fstats.array[0,0],fstats.array[0,0]/SOLAR_CONSTANT,
      fstats.array[0,1]/SOLAR_CONSTANT,fstats.array[0,2]/SOLAR_CONSTANT,
      fstats.array[0,3]/SOLAR_CONSTANT,fstats.array[0,4]/SOLAR_CONSTANT,
-     ihz_webdir,ihz_webdir,ihz_webdir,WEB_DIR
+     chz_webdir,chz_webdir,chz_webdir,WEB_DIR
      ))
 fh.close()
 
 ###################################################
 #GENERATE SUMMARY REPORT
 ###################################################
-fh=open(ihz_dir+"ihz-summary.html","w")
+fh=open(chz_dir+"chz-summary.html","w")
 fh.write("""\
 <table width=300>
   <tr><td>l<sub>Earth,eq</sub> (AU):</td><td>%.3f</td></tr>
@@ -465,8 +487,8 @@ fh.write("""\
   <tr><td>l<sub>in,%s</sub> (AU):</td><td>%.3f</td></tr>
   <tr><td>l<sub>out,%s</sub> (AU):</td><td>%.3f</td></tr>
   <tr><td colspan=2>
-      <a href="%s/iHZ.png">
-	<img width=100%% src="%s/iHZ.png">
+      <a href="%s/chz.png">
+	<img width=100%% src="%s/chz.png">
       </a>
   </td></tr>
   <tr><td colspan=2>
@@ -478,12 +500,12 @@ fh.write("""\
 """%(leeq,
      ini_inwd,linwd,ini_outwd,loutwd,
      ini_innr,linnr,ini_outnr,loutnr,
-     ihz_webdir,ihz_webdir,
-     ihz_webdir,ihz_webdir,
+     chz_webdir,chz_webdir,
+     chz_webdir,chz_webdir,
      ))
 fh.close()
 
 ###################################################
 #CLOSE OBJECT
 ###################################################
-closeObject(ihz_dir)
+#closeObject(chz_dir)
