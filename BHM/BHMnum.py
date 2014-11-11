@@ -17,7 +17,7 @@ from BHM import *
 #PACKAGES
 ###################################################
 from scipy.interpolate import interp1d
-from scipy.integrate import quad as integrate
+from scipy.integrate import quad as integrate,odeint
 from scipy.linalg import norm
 from scipy.optimize import newton,brentq 
 try:
@@ -74,3 +74,66 @@ def disconSignal(t,s,tausys=12,iper=3,dimax=20):
             break
     scont=s[imax]
     return t[imax]
+
+def interpMatrix(data):
+    x=data[:,0]
+    ncols=data.shape[1]
+    yfunc=[None]
+    for j in xrange(1,ncols):
+        y=data[:,j]
+        yfunc+=[interp1d(x,y,kind='slinear')]
+    return x,yfunc
+
+def chopArray(array,xini,xend):
+    cond1=array>xini
+    cond2=array<xend
+    narray=np.concatenate(([xini],array[cond1*cond2],[xend]))
+    return narray
+
+def minmeanmaxArrays(arrays):
+    mins=[];maxs=[];means=[]
+    for array in arrays:
+        mins+=[min(array)]
+        means+=[np.mean(array)]
+        maxs+=[max(array)]
+    return min(mins),np.mean(means),max(maxs)
+
+XQUAD5=np.array([0,
+                 1./3*(5-2*(10./7)**0.5)**0.5,
+                 1./3*(5+2*(10./7)**0.5)**0.5,
+                 ])
+
+WQUAD5=np.array([128./225,
+                 +(322+13*70**0.5)/900.,
+                 +(322+13*70**0.5)/900.,
+                 (322-13*70**0.5)/900.,
+                 +(322-13*70**0.5)/900.
+                 ])
+
+def integrateArray(xs,ys,a,b):
+    """
+    Gaussian Quadrature with 5 points
+    """
+    xi=[]
+    xi+=[(b-a)/2*XQUAD5[0]+(a+b)/2]
+    xi+=[(b-a)/2*XQUAD5[1]+(a+b)/2]
+    xi+=[-(b-a)/2*XQUAD5[1]+(a+b)/2]
+    xi+=[(b-a)/2*XQUAD5[2]+(a+b)/2]
+    xi+=[-(b-a)/2*XQUAD5[2]+(a+b)/2]
+    yi=np.array(np.interp(xi,xs,ys))
+    integral=(WQUAD5*yi).sum()*(b-a)/2
+    return integral
+
+def rectangleArray(xs,ys,i):
+    """
+    Rectangle Rule Integrating from xs[0] to xs[i]
+    """
+    integral=(ys[1:i+1]*(xs[1:i+1]-xs[:i])).sum()
+    return integral
+
+def trapezoidalArray(xs,ys,i):
+    """
+    Simpson Rule Integrating from xs[0] to xs[i]
+    """
+    integral=((ys[1:i+1]+ys[:i])*(xs[1:i+1]-xs[:i])/2).sum()
+    return integral

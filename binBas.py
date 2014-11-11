@@ -46,6 +46,7 @@ binary_conf,star1_conf,star2_conf,qover=\
 PRINTOUT("Executing for: %s, %s, %s"%(binary_conf,
                                       star1_conf,
                                       star2_conf))
+
 ###################################################
 #LOAD PREVIOUS OBJECTS
 ###################################################
@@ -92,7 +93,7 @@ binary.acrit=aCritical(binary.mu,binary.abin,binary.ebin)
 binary.nsync=nSync(binary.ebin)
 binary.Psync=binary.Pbin/binary.nsync
 binary.Wsync=binary.nbin*binary.nsync
-binary.title=r"$M_1/M_{\\rm Sun}=$%.3f, $M_2/M_{\\rm Sun}$=%.3f, $a_{\\rm bin}$=%.3f AU, $e_{\\rm bin}$=%.2f, $P_{\\rm bin}$=%.3f d"%(star1.M,star2.M,binary.abin,binary.ebin,binary.Pbin)
+binary.title=r"$M_1/M_{\rm Sun}=$%.3f, $M_2/M_{\rm Sun}=$%.3f, $a_{\rm bin}=$%.3f AU, $e_{\rm bin}=$%.2f, $P_{\rm bin}=$%.3f d"%(star1.M,star2.M,binary.abin,binary.ebin,binary.Pbin)
 
 ###################################################
 #EPHEMERIS OF BINARY ORBIT
@@ -137,7 +138,7 @@ Psync=%.17e #days, Pseudo-synchronization period
 Wsync=%.17e #Pseudo-synchronization angular velocity
 
 #GRAPHICAL
-title="%s"
+title=r"%s"
 
 #ORBITAL EPHEMERIS
 ephemeris=%s
