@@ -150,28 +150,19 @@ for i in xrange(len(ts)):
 prots=prots.array
 
 def chiSquare(x):
-    #residuals=(theoProt(ts[ms],x)-prots[ms])/theoProt(ts[ms],x)
-    residuals=(theoProt(ts[ms],x)-prots[ms])
+    #WEIGHTED BY PERIOD TO ENHANCE EARLY FIT
+    residuals=(theoProt(ts[ms],x)-prots[ms])/theoProt(ts[ms],x)
     chisquare=(residuals**2).sum()
     return chisquare
 
 prot_fit=minimize(chiSquare,[1,1.0,1.0]).x
 
 #==============================
-#VERIFY ROTATIONAL FIT
+#ROTATION EVOLUTION
 #==============================
-fig=plt.figure()
-ax=fig.add_axes([0.1,0.1,0.8,0.8])
-ax.plot(ts,prots,label='Model')
-ax.plot(ts,theoProt(ts,prot_fit),label='Fit')
-ax.axvline(tau_ms,color='k',linestyle='--',label='Turn over')
-ax.axvline(star.tau,color='k',label='Stellar Age')
-ax.set_ylabel("Period (days)")
-ax.set_ylabel("$\tau$ (Gyr)")
-ax.set_xlim((0,min(12,tau_max)))
-ax.legend(loc='best')
-fig.savefig(star_dir+"prot.png")
-fig.savefig("tmp/prot.png")
+star.protevol=toStack(prots)
+star.protevol=toStack(theoProt(ts,prot_fit))|star.protevol
+star.protevol=toStack(ts)|toStack(star.protevol)
 
 ###################################################
 #STORE STELLAR DATA
@@ -205,11 +196,16 @@ louts=%s #AU
 
 #EVOLUTIONARY TRACK
 evotrack=%s
+
+#ROTATIONAL EVOLUTION
+protevol=%s
+
 """%(tau_max,tau_ms,title,
      g,Teff,R,L,MoI,tdiss,
      array2str(prot_fit),
      array2str(lins),lsun,array2str(louts),
      evodata_str,
+     array2str(star.protevol)
      ))
 f.close()
 
@@ -379,6 +375,35 @@ rang=max(1.5*R,1.5)
 ax.set_xlim((-rang,+rang))
 ax.set_ylim((-rang,+rang))
 """%(star.M,star.Z,star.tau,R,Teff),watermarkpos="inner")
+
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+#STELLAR ROTATION
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+plotFigure(star_dir,"stellar-rotation",\
+"""
+from BHM.BHMstars import *
+star=\
+loadConf("%s"+"star.conf")+\
+loadConf("%s"+"star.data")
+
+fig=plt.figure(figsize=(8,6))
+ax=fig.add_axes([0.1,0.1,0.8,0.8])
+
+ts=star.protevol[:,0]
+Psemi=star.protevol[:,1]
+Panal=star.protevol[:,2]
+ax.plot(ts,Psemi,label="Model")
+ax.plot(ts,Panal,label="Fit")
+ax.axvline(star.taums,color='k',linestyle='--',label='Turn over')
+ax.axvline(star.tau,color='k',label='Stellar Age')
+
+ax.set_title(star.title,position=(0.5,1.02))
+ax.set_ylabel("Period (days)")
+ax.set_xlabel(r"$\\tau$ (Gyr)")
+
+ax.set_xlim((0,min(12,star.taumax)))
+ax.legend(loc='best')
+"""%(star_dir,star_dir))
 
 ###################################################
 #GENERATE SUMMARY

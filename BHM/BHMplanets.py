@@ -1258,4 +1258,101 @@ def planetaryDipoleMoment(planet):
                             planet.Ric*planet.R*REARTH,
                             planet.sigma,planet.kappa)
     return Mdip
-                            
+
+def StandoffDistance(M,Pdyn,Rp,
+                     Mref=MDIPSAT,Pref=PDYNSAT,Rsref=RSSAT,
+                     nM=3,nP=4.5):
+    """
+    Parameters:
+    M: Dipolar moment (A m^2)
+    Pdyn = n*v^2: Dynamical pressure (Pa)
+    Mref,Pref,Rsref: Reference values (suggested, Earth and Saturn)
+
+    nM: Inverse of the scaling exponent of dipole moment (Theoretical,
+    nM=3.0.  Works well for giant and terrestrial planets)
+
+    nP: Inverse of the scaling exponent of dynamic pressure.
+    Theoretical value nP=6.0 (stiff magnetospheres).  nP=4.5 works
+    better for giant planets.  See Arridge et al. (2006)
+  
+    Returns:
+    Rs: Standoff distance (m)
+    """
+    Mrel=(M/MDIPSAT)
+    Pswrel=((MP*Pdyn)/PDYNSAT)
+    Rs=RSSAT*Mrel**(1.0/nM)*Pswrel**(-1.0/nP)
+    Rs=Rs/Rp
+    if Rs<1:Rs=1
+    return Rs
+
+def StandoffDistance(M,Pdyn,Rp,
+                     objref='Saturn',
+                     nM=3,nP=4.5):
+    """
+    Parameters:
+    M: Dipolar moment (A m^2)
+    Pdyn = n*v^2: Dynamical pressure (Pa)
+    Mref,Pref,Rsref: Reference values (suggested, Earth and Saturn)
+
+    nM: Inverse of the scaling exponent of dipole moment (Theoretical,
+    nM=3.0.  Works well for giant and terrestrial planets)
+
+    nP: Inverse of the scaling exponent of dynamic pressure.
+    Theoretical value nP=6.0 (stiff magnetospheres).  nP=4.5 works
+    better for giant planets.  See Arridge et al. (2006)
+  
+    Returns:
+    Rs: Standoff distance (m)
+    """
+    if objref=="Saturn":
+        Mref=MDIPSAT
+        Pref=PDYNSAT
+        Rsref=RSSAT
+    else:
+        Mref=MDIPE
+        Pref=PDYNSUN
+        Rsref=9.75*REARTH
+
+    Mrel=(M/Mref)
+    Pswrel=((MP*Pdyn)/Pref)
+    Rs=Rsref*Mrel**(1.0/nM)*Pswrel**(-1.0/nP)
+    Rs=Rs/Rp
+    if Rs<1:Rs=1
+
+    return Rs
+
+def StandoffDistanceStiff(M,Pdyn,Rp):
+    """
+    Standoff distance as given by G07 Eq. 21
+    
+    Parameters:
+    M: Dipolar moment (A m^2)
+    n: Number density (m^{-3})
+    v: Velocity (m/s)
+    
+    Returns:
+    Rs: Standoff distance (m)
+    """
+    fo=1.16 #Voigt 1995, Greissmeier 2004
+    Rs1=MU0*fo*M**2
+    Rs2=8*np.pi**2*MP*Pdyn
+    Rs=(Rs1/Rs2)**(1./6)/Rp
+    if Rs<1:Rs=1
+    return Rs
+
+def massLoss(A,intflux,mu=44.0,alpha=0.3):
+    Ap=A/2
+    ML=alpha*intflux*Ap*mu*MP    
+    return ML
+
+def surfacePressure(Matm,M,R):
+    """
+    Surface Pressure (in Bars) Given an Atmospheric Mass over a planet
+    with mass M and radius R referred to Earth.
+    """
+    M=M*MEARTH
+    R=R*REARTH
+    A=4*np.pi*R**2
+    g=GCONST*M/R**2
+    Patm=Matm*g/(2*A)/1E5
+    return Patm

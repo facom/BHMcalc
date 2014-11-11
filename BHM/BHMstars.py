@@ -643,7 +643,7 @@ def Tcorona(t,M):
     Tc=newton(EqTcorona,1E6,args=(M,t))
     return Tc
 
-def vnGreissmeier(d,t,M,R):
+def vnGreissmeier(d,t,M,R,verbose=False,early='constant'):
     """
     Velocity and number density computed from Greissmeier model at G07
     
@@ -651,36 +651,49 @@ def vnGreissmeier(d,t,M,R):
     d: distance in AU
     t: time in Gyrs
     M: Mass in Msun
-    R: Radius in Rsun
+    R: Radius in Msun
 
     Return:
     v: Velocity in m/s
     n: Number density in m^{-3}
     """
-    #STELLAR RADIUS
-    R=R*RSUN #m
+    if verbose:
+        print "Computing stellar wind properties at t=%e:Ms=%e Msun,Rs = %e Rsun,d=%e AU"%(t,M,R,d)
+
+    #IF TIME IS EARLY THAN 0.7 ASSUME A CONTANT WIND
+    if t<0.7 and early=='constant':
+        if verbose:print "\tSATURATION!"
+        t=0.7
 
     #REFERENCE VELOCITY AND DENSITY
     vref,nref=vn1AUeq(t*GIGA*YEAR)
+    if verbose:print "\tvref,nref = %e m/s,%e m^-3"%(vref,nref)
 
     #SOLAR MASS LOSS RATE AT t
-    dMsun=4*PI*AU**2*nref*vref*MP #Eq. 10
+    dMsun=4*np.pi*AU**2*nref*vref*MP #Eq. 10
+    if verbose:print "\tSolar mass loss: %e kg/s"%dMsun
 
     #SCALED STELLAR MASS LOSS RATE AT t
-    dMstar=scaleProp(R/RSUN,dMsun,2.0) # Eq.11
+    dMstar=scaleProp(R,dMsun,2.0) # Eq.11
+    if verbose:print "\tStellar mass loss: %e kg/s (%e Mdot,sun)"%(dMstar,dMstar/dMsun)
 
     #CORONAL TEMPERATURE AT t (ISOTHERMAL MODEL)
     Tc=Tcorona(t,M)
+    if verbose:print "\tTc=%e MK"%(Tc/1E6)
 
     #RADIAL VELOCITY
     vr=VParker(d,M,Tc)
+    if verbose:print "\tvr = %e m/s"%(vr)
 
     #NUMBER DENSITY
-    n=dMstar/(4*PI*(d*AU)**2*vr*MP)
+    n=dMstar/(4*np.pi*(d*AU)**2*vr*MP)
 
     #EFFECTIVE VELOCITY
     vkep=np.sqrt(GCONST*M*MSUN/(d*AU))
+    if verbose:print "\tvkep = %e m/s"%(vkep)
     v=np.sqrt(vr**2+vkep**2)
+    if verbose:print "\tn = %e m^-3"%(n)
+    if verbose:print "\tv = %e m/s"%(v)
 
     return v,n
 
@@ -690,7 +703,8 @@ MacGregor & Brenner, 1991
 http://articles.adsabs.harvard.edu//full/1991ApJ...376..204M/0000211.000.html
 """
 VSUN,NSUN=vnGreissmeier(1.0,TAGE,1.0,1.0)
-MDOTSUN=4*PI*(1*AU)**2*MP*NSUN*VSUN
+SWPEL=NSUN*VSUN
+MDOTSUN=4*PI*(1*AU)**2*MP*SWPEL
 #print "Solar mass loss: %e kg/s"%(MDOTSUN/MSUN*YEAR)
 #Period-ram pressure relationship (Griessmeier, 2006):
 #Mdot v = ko P^{-3.3}
@@ -736,6 +750,7 @@ def tidalAcceleration(Mtarg,Rtarg,Ltarg,MoItarg,
     """
     if verbose:print "*"*50
     if verbose:print "HUT"
+    if verbose:print "R=%e,L=%e"%(Rtarg,Ltarg)
     if verbose:print "abin:",abin
 
     #Eccentricity function
@@ -785,3 +800,62 @@ def tfromProt(P,x):
     c=x[2]
     t=((P-c)/a)**(1./b)
     return t
+
+def totalAcceleration(t,star,starf,binary,verbose=False,qreturn=False):
+    if verbose:print "Time:",t
+    acc_tid=tidalAcceleration(star.M,star.Rfunc(t),
+                              star.Lfunc(t),star.MoI,
+                              starf.M,
+                              binary.abin,binary.ebin,
+                              binary.nbin/DAY,star.W,
+                              verbose=verbose)
+    if verbose:print "Tidal acceleration:",acc_tid
+    tau_rot=tfromProt(star.P/DAY,star.protfit)
+    dProtdt=dtheoProt(tau_rot,star.protfit)*DAY/GYR
+    acc_ML=-2*np.pi/star.P**2*dProtdt
+    if verbose:print "Mass-loss acceleration:",acc_ML
+    acc=acc_tid+acc_ML
+    if qreturn:
+        return acc_tid,acc_ML,acc
+    else:
+        return acc
+
+def starLXUV(Ls,t):
+    """
+    Stellar XUV Luminosity
+    Ls in LSUN and t in Gyrs
+    """
+    #==================================================
+    #CRITICAL TIME: Scalo 2007, Khodachenko 2009 Fig.1
+    #==================================================
+    taui=2.03E15*(Ls*1.8)**(-0.65)/(1E9*YEAR)
+
+    #==================================================
+    #X-RAY LUMINOSITY --kilsykova et Lammer 2012
+    #==================================================
+    if t<=taui:
+        LX=6.3E-4*(Ls*LSUN*1E7)
+    else:
+        LX=1.8928E28*t**(-1.34)
+
+    #==================================================
+    #EUV LUMINOSITY
+    #==================================================
+    LEUV=10**(4.8+0.86*np.log10(LX))
+    LXUV=(LX+LEUV) #/(Ls*4E33)
+    LXUV=LX #/(Ls*4E33)
+    return LXUV
+
+#XUV Present Earth Level in erg cm^-2 s^-1
+PEL=starLXUV(1.0,TAGE)/(4*PI*(1*AU*1E2)**2)
+#XUV IN SI
+PELSI=PEL*(1E-7/(1E-2))
+
+def binaryWind(a,tau1,M1,R1,tau2,M2,R2,early='constant'):
+    v1,n1=vnGreissmeier(a,tau1,M1,R1,early=early)
+    if tau2>0:
+        v2,n2=vnGreissmeier(a,tau2,M2,R2,early=early)
+    else:v2=n2=0
+    Psw=n1*v1**2+n2*v2**2
+    Fsw=n1*v1+n2*v2
+    return Psw,Fsw
