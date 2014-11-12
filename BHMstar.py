@@ -26,7 +26,7 @@ from BHM.BHMstars import *
 Usage=\
 """
 Usage:
-   python %s <star>.conf <qoverride>
+   python %s <systemdir>  <qoverride>
 
    <star>.conf (file): Configuration file with data about star.
 
