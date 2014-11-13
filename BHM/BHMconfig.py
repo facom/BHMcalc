@@ -36,3 +36,14 @@ exec("OUT_CRITS=('maximum greenhouse','early mars')");
 exec("TAU_MIN=0.01");
 exec("TAU_MAX=12.5");
 exec("NTIMES=100");
+
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+#OBJECT HASHABLES
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+exec("OBJECT_HASHABLES=dict()")
+exec("OBJECT_HASHABLES['star']=dict(M='%.4f',Z='%.4f',FeH='%.4f',tau='%.4f')")
+exec("OBJECT_HASHABLES['binary']=dict(Pbin='%.4f',abin='%.4f',ebin='%.4f')")
+exec("OBJECT_HASHABLES['planet']=dict(M='%.4f',fHHe='%.4f',CMF='%.4f',tau='%.4f',aorb='%.4f',eorb='%.4f',Porb='%.4f',worb='%.4f',Prot='%.4f')")
+exec("OBJECT_HASHABLES['rotation']=dict(k='%.4f')")
+exec("OBJECT_HASHABLES['hz']=dict(incrit_wd='%s',incrit_nr='%s',outcrit_wd='%s',outcrit_nr='%s')")
+exec("OBJECT_HASHABLES['interaction']=dict(tauini='%.4f',earlywind='%s',nM='%.2f',nP='%.2f',refobj='%s')")

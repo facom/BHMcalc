@@ -10,11 +10,6 @@
 # 2014 [)] Jorge I. Zuluaga, Viva la BHM!
 ###################################################
 # Stellar Evolution 
-# Inputs: 
-# - Stellar properties (star.conf)
-# Outputs: 
-# - Star data file (star.data)
-# - Html report (star.html)
 ###################################################
 from BHM import *
 from BHM.BHMplot import *
@@ -26,26 +21,28 @@ from BHM.BHMstars import *
 Usage=\
 """
 Usage:
-   python %s <systemdir>  <qoverride>
+   python %s <sysdir> <module>.conf <qoverride>
 
-   <star>.conf (file): Configuration file with data about star.
+   <sysdir>: Directory where the system configuration files lie
 
-   <qoverride> (int 0/1): Override any previously existent
-   calculation.
+   <module>.conf (file): Configuration file for the module.
+
+   <qoverride> (int 0/1): Override any existent object with the same hash.
 """%argv[0]
 
-star_conf,qover=\
+sys_dir,star_conf,qover=\
     readArgs(argv,
-             ["str","int"],
-             ["star.conf","0"],
+             ["str","str","int"],
+             ["sys/template","star1.conf","0"],
              Usage=Usage)
 
 ###################################################
 #LOAD STAR PROPERTIES
 ###################################################
 PRINTOUT("Loading object from '%s'"%star_conf)
-star,star_str,star_hash,star_dir=makeObject(star_conf,
-                                           qover=qover)
+star,star_str,star_hash,star_dir=makeObject("star",
+                                            sys_dir+"/"+star_conf,
+                                            qover=qover)
 PRINTOUT("Object directory '%s' created"%star_dir)
 star_webdir=WEB_DIR+star_dir
 

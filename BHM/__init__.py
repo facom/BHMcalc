@@ -45,7 +45,8 @@ ERROR_CODES=dict(FILE_ERROR=1,
                  INPUT_ERROR=2,
                  DATA_ERROR=3,
                  PARAMETER_ERROR=3,
-                 RANGE_ERROR=4)
+                 RANGE_ERROR=4
+                 )
 
 ###################################################
 #COMMON OPERATIONS
@@ -327,8 +328,10 @@ def hashObject(obj):
     obj_hash=MD5STR(obj_str)
     return obj_str,obj_hash
 
-def signObject(obj_conf):
+def signObject(obj_type,obj_conf):
     obj=loadConf(obj_conf)
+    obj.type=obj_type
+    obj.__dict__["hashable"]=OBJECT_HASHABLES[obj_type]
     obj_str,obj_hash=hashObject(obj)
     obj_dir=OBJ_DIR+"%s-%s/"%(obj.type,obj_hash)
     obj_stg=0
@@ -348,14 +351,14 @@ def closeObject(obj_dir):
     system("echo > %s/.close"%obj_dir)
     system("echo 10 > %s/.stage"%obj_dir)
 
-def makeObject(obj_conf,qover=0):
+def makeObject(obj_type,obj_conf,qover=0):
     obj,obj_dir,obj_str,obj_hash,obj_liv,obj_stg=\
-        signObject(obj_conf)
+        signObject(obj_type,obj_conf)
     qcreate=True
     if obj_liv:
         if obj_stg==10:
             if not qover:
-                PRINTERR("Object '%s' already exists in stage %d"%(obj_str,obj_stg))
+                PRINTOUT("Object '%s' already exists in stage %d"%(obj_str,obj_stg))
                 exit(0)
             else:PRINTERR("Overriding '%s'."%(obj_str))
         else:
