@@ -16,7 +16,7 @@
 */
 include("web/BHM.php");
 $qstring=$_SERVER["QUERY_STRING"];
-$cmd=$PYTHONCMD." convZ.py '$qstring' 2> $TMPDIR/Zconv.log";
+$cmd=$PYTHONCMD." BHMmetals.py '$qstring' 2> $TMPDIR/BHMmetals.log";
 $out=shell_exec($cmd);
 $out=sprintf("%.4f",$out);
 echo "$out";

@@ -28,11 +28,12 @@ $COLORS=array("back"=>"WHITE",
 $CSS=<<<CSS
 <style>
 p{
-font-size:16px;
+font-size:12px;
 }
 body{
 background-color:white;
 font-family:Arial,Helvetica;
+font-size:12px;
 padding:10px;
 }
 
@@ -91,11 +92,12 @@ ul.tabbernav
 {
  margin:0px;
  padding: 3px 0;
- border-bottom: 2px solid $COLORS[dark];
+ border-bottom: 1px solid $COLORS[dark];
  font: bold 20px Arial, Helvetica;
 }
 ul.tabbernav li
 {
+ font-size:14px;
  list-style: none;
  margin: 0;
  display: inline;
@@ -104,7 +106,7 @@ ul.tabbernav li a
 {
  padding: 3px 0.5em;
  margin-left: 3px;
- border: 2px solid $COLORS[dark];
+ border: 1px solid $COLORS[dark];
  border-bottom: none;
  background: $COLORS[text];
  text-decoration: none;
@@ -120,17 +122,17 @@ ul.tabbernav li a:hover
 ul.tabbernav li.tabberactive a
 {
   background-color:#fff;
-  border-bottom:3px solid #fff;
+  border-bottom:2px solid #fff;
 }
 ul.tabbernav li.tabberactive a:hover
 {
  color:$COLORS[dark];
  background:white;
-  border-bottom:3px solid white;
+ border-bottom:1px solid white;
 }
 .tabberlive .tabbertab {
  padding:20px;
- border:2px solid $COLORS[dark];
+ border:1px solid $COLORS[dark];
  border-top:0px;
  height:100%;
  overflow:auto;
@@ -208,6 +210,7 @@ height:20%;
 /*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%*/
 td.name{
  font-weight:bold;
+ font-size:12px;
  padding:10px;
 }
 td.field{
@@ -215,7 +218,7 @@ td.field{
 }
 td.help{
  font-style:italic;
-  font-size:2ex;
+ font-size:12px;
  padding:10px;
 }
 td.button{
@@ -227,13 +230,18 @@ td.button{
 /*INPUT*/
 /*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%*/
 button{
-  font-size:3ex;
+  font-size:12px;
 }
 input{
  background:white;
  height:30px;
- padding:10px;
+ padding:2px;
 }
+
+.title{
+  font-weight:bold;
+  font-size:14px;
+ }
 </style>
 CSS;
 ?>
