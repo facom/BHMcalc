@@ -24,6 +24,9 @@ clean:
 	@find . -name "*#*" -exec rm -rf {} \;
 	@find . -name "*.pyc" -exec rm -rf {} \;
 
+cleansys:
+	find sys -type d -and -not -name "template" -and -not -name "sys" -exec rm -rf {} \;
+
 deepclean:clean
 	@echo "Cleaning temporary directories..."
 	@rm -rf tmp/*

@@ -440,6 +440,7 @@ fh.write("""\
   <tr><td>&tau; (Gyr):</td><td>%.2f</td></tr>
   <tr><td>&tau;<sub>max</sub> (Gyr):</td><td>%.2f</td></tr>
   <tr><td>&tau;<sub>MS</sub> (Gyr):</td><td>%.2f</td></tr>
+  <tr><td>Hash:</td><td>%s</td></tr>
 </table>
 <h3>Instantaneous theoretical properties:</h3>
 <table width=300>
@@ -504,7 +505,7 @@ fh.write("""\
   </td></tr>
 </table>
 
-"""%(star.M,star.Z,star.FeH,star.tau,tau_max,tau_ms,
+"""%(star.M,star.Z,star.FeH,star.tau,tau_max,tau_ms,star_hash,
 star_webdir,star_webdir,star_webdir,WEB_DIR,
 g,Teff,R,L,MoI,tdiss,
 lins[0],lins[1],lins[2],
