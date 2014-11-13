@@ -188,19 +188,19 @@ height:100%;
 float:right;
 width:50%;
 height:100%;
-background:lightyellow;
+//background:lightyellow;
 }
 .formarea{
 float:right;
 width:50%;
 height:100%;
-background:lightgreen;
+//background:lightgreen;
 }
 .status{
 float:right;
 width:50%;
 height:20%;
- background:lightblue;
+//background:lightblue;
 }
 
 /*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%*/
