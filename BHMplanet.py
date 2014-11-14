@@ -25,26 +25,28 @@ from BHM.BHMplanets import *
 Usage=\
 """
 Usage:
-   python %s <planet>.conf <qoverride>
+   python %s <sysdir> <module>.conf <qoverride>
 
-   <planet>.conf (file): Configuration file with data about the planet.
+   <sysdir>: Directory where the system configuration files lie
 
-   <qoverride> (int 0/1): Override any previously existent
-   calculation.
+   <module>.conf (file): Configuration file for the module.
+
+   <qoverride> (int 0/1): Override any existent object with the same hash.
 """%argv[0]
 
-planet_conf,qover=\
+sys_dir,planet_conf,qover=\
     readArgs(argv,
-             ["str","int"],
-             ["planet.conf","0"],
+             ["str","str","int"],
+             ["sys/template","planet.conf","0"],
              Usage=Usage)
 
 ###################################################
 #LOAD PLANETARY OBJECT
 ###################################################
 PRINTOUT("Loading object from '%s'"%planet_conf)
-planet,planet_str,planet_hash,planet_dir=\
-    makeObject(planet_conf,qover=qover)
+planet,planet_str,planet_hash,planet_dir=makeObject("planet",
+                                            sys_dir+"/"+planet_conf,
+                                            qover=qover)
 planet_webdir=WEB_DIR+planet_dir
 PRINTOUT("Object hash:%s"%planet_hash)
 

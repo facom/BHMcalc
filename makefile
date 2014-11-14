@@ -25,7 +25,8 @@ clean:
 	@find . -name "*.pyc" -exec rm -rf {} \;
 
 cleansys:
-	find sys -type d -and -not -name "template" -and -not -name "sys" -exec rm -rf {} \;
+	@echo "Cleaning session directories..."
+	@find sys -type d -and -not -name "template" -and -not -name "sys" -exec rm -rf {} \; &> /dev/null
 
 deepclean:clean
 	@echo "Cleaning temporary directories..."

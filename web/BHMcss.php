@@ -187,13 +187,13 @@ width:100%;
 height:100%;
 }
 .results{
-float:right;
+float:left;
 width:50%;
 height:100%;
 //background:lightyellow;
 }
 .formarea{
-float:right;
+float:left;
 width:50%;
 height:100%;
 //background:lightgreen;
@@ -232,6 +232,12 @@ td.button{
 button{
   font-size:12px;
 }
+button.update{
+ position:absolute;
+ top:35px;
+ right:30px;
+}
+
 input{
  background:white;
  height:30px;
@@ -242,6 +248,13 @@ input{
   font-weight:bold;
   font-size:14px;
  }
+
+iframe{
+ width:100%;
+ scrolling:false;
+ border:0px;
+}
+
 </style>
 CSS;
 ?>
