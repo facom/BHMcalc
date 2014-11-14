@@ -36,7 +36,7 @@ C;
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 $CONTENT.=<<<C
 <h1>
-<a style='font-size:32' href="?">Binary Habitability Calculator</a><sup> <b style='color:red'>2.0</b></sup>
+<a style='font-size:32' href="?TABID=0">Binary Habitability Calculator</a><sup> <b style='color:red'>2.0</b></sup>
 </h1>
 C;
 
@@ -75,14 +75,9 @@ $ajaxform_interaction_Update=ajaxFromCode($code,"'#interaction_Update'","click")
 $code=ajaxMultipleForm(array("summary"),"summary_form");
 $ajaxform_summary_Update=ajaxFromCode($code,"'#summary_Update'","click");
 
-echo "<pre>$ajaxform_summary_Update</pre>";
+//echo "<pre>$ajaxform_summary_Update</pre>";
 
 //LOAD ALL
-//$code=ajaxMultipleForm(array("binary"),"allforms");
-//$code=ajaxMultipleForm(array("hz"),"allforms");
-//$code=ajaxMultipleForm(array("star1"),"allforms");
-//$code=ajaxMultipleForm(array("rotation"),"allforms");
-//$code=ajaxMultipleForm(array("interaction"),"allforms");
 $code=ajaxMultipleForm(array("interaction","rotation","hz","binary","star1","star2","planet"),"allforms");
 $ajax_all_Update=ajaxFromCode($code,"'#all_Update'","click");
 $ajax_all_Load=ajaxFromCode($code,"document","ready");
@@ -97,11 +92,12 @@ if(!is_dir($SESSDIR)){
 }else{
   $source_dir=$SYSDIR."$SESSID/";
   echoVerbose("Session directory already exist.");
-  $TABID=1;
-  //========================================
-  //LOADING RESULTS
-  //========================================
+  if(!isset($TABID)){$TABID=2;}
 }
+
+//========================================
+//LOADING RESULTS
+//========================================
 $CONTENT.="$ajax_all_Load";
 echoVerbose("<br/>");
 echoVerbose("Source dir: $source_dir<br/>");
@@ -123,18 +119,30 @@ loadConfiguration("$source_dir/interaction.conf","interaction");
 $CONTENT.=<<<C
 <div style="position:fixed;top:10px;right:10px">
 <form id="allforms" action="JavaScript:void(0)">
-  <button id="all_Update">Update All</button> 
+  <!--<button id="all_Update">Update All</button>-->
   $ajax_all_Update
 </form>
 </div>
 <div class="tabber maintabber" id="$TABID">
+
+  <!-- //////////////////////////////////////////////////////////// -->
+  <!-- INTRODUCTION -->
+  <!-- //////////////////////////////////////////////////////////// -->
   <div class="tabbertab" id="Introduction" title="Introduction">
     <div class="tabcontent">
     </div>
   </div>
 
   <!-- //////////////////////////////////////////////////////////// -->
-  <!-- STAR 1
+  <!-- CATALOGUE -->
+  <!-- //////////////////////////////////////////////////////////// -->
+  <div class="tabbertab" id="Introduction" title="BHM Catalogue">
+    <div class="tabcontent">
+    </div>
+  </div>
+
+  <!-- //////////////////////////////////////////////////////////// -->
+  <!-- STAR 1 -->
   <!-- //////////////////////////////////////////////////////////// -->
   <div class="tabbertab" id="star1" title="Star 1">
     <form id="star1_form" action="BHMrun.php">
@@ -221,8 +229,8 @@ $CONTENT.=<<<C
 	  <div class="download" id="star1_download">Hola</div>
 	  <div id="star1_results_status_loader" style="background-color:white;">
 	    <div id="star1_results_status" style="background-color:white;">
-	      <iframe id="star1_results_frame" src="web/blank.html" 
-		      scrolling="no" onload="adjustiFrame(this);">
+	      <iframe class="iframe" id="star1_results_frame" src="web/blank.html" 
+		      scrolling="yes" onload="adjustiFrame(this);">
 	      </iframe>
 	    </div>
 	  </div>
@@ -320,8 +328,8 @@ $CONTENT.=<<<C
 	  <div class="download" id="star2_download"></div>
 	  <div id="star2_results_status_loader" style="background-color:white;">
 	    <div id="star2_results_status" style="background-color:white;">
-	      <iframe id="star2_results_frame" src="web/blank.html" 
-		      scrolling="no" onload="adjustiFrame(this);">
+	      <iframe class="iframe" id="star2_results_frame" src="web/blank.html" 
+		      scrolling="yes" onload="adjustiFrame(this);">
 	      </iframe>
 	    </div>
 	  </div>
@@ -476,8 +484,8 @@ $CONTENT.=<<<C
 	  <div class="download" id="planet_download"></div>
 	  <div id="planet_results_status_loader" style="background-color:white;">
 	    <div id="planet_results_status" style="background-color:white;">
-	      <iframe id="planet_results_frame" src="web/blank.html" 
-		      scrolling="no" onload="adjustiFrame(this);">
+	      <iframe class="iframe" id="planet_results_frame" src="web/blank.html" 
+		      scrolling="yes" onload="adjustiFrame(this);">
 	      </iframe>
 	    </div>
 	  </div>
@@ -549,7 +557,7 @@ $CONTENT.=<<<C
 	  <div class="download" id="binary_download"></div>
 	  <div id="binary_results_status_loader" style="background-color:white;">
 	    <div id="binary_results_status" style="background-color:white;">
-	      <iframe id="binary_results_frame" src="web/blank.html" 
+	      <iframe class="iframe" id="binary_results_frame" src="web/blank.html" 
 		      scrolling="yes" onload="adjustiFrame(this);">
 	      </iframe>
 	    </div>
@@ -637,8 +645,8 @@ $CONTENT.=<<<C
 	  <div class="download" id="hz_download"></div>
 	  <div id="hz_results_status_loader" style="background-color:white;">
 	    <div id="hz_results_status" style="background-color:white;">
-	      <iframe id="hz_results_frame" src="web/blank.html" 
-		      scrolling="no" onload="adjustiFrame(this);">
+	      <iframe class="iframe" id="hz_results_frame" src="web/blank.html" 
+		      scrolling="yes" onload="adjustiFrame(this);">
 	      </iframe>
 	    </div>
 	  </div>
@@ -687,8 +695,8 @@ $CONTENT.=<<<C
 	  <div class="download" id="rotation_download"></div>
 	  <div id="rotation_results_status_loader" style="background-color:white;">
 	    <div id="rotation_results_status" style="background-color:white;">
-	      <iframe id="rotation_results_frame" src="web/blank.html" 
-		      scrolling="no" onload="adjustiFrame(this);">
+	      <iframe class="iframe" id="rotation_results_frame" src="web/blank.html" 
+		      scrolling="yes" onload="adjustiFrame(this);">
 	      </iframe>
 	    </div>
 	  </div>
@@ -834,7 +842,7 @@ $CONTENT.=<<<C
 	      </tr>
 	      <tr>
 		<td class="help" colspan=2>
-		  Earth's atmosphere, &mu;<sub>atm</sub>=44 g/mol
+		  Earth atmosphere, &mu;<sub>atm</sub>=44 g/mol
 		</td>
 	      </tr>
 	      <!-- ---------------------------------------- -->
@@ -852,8 +860,8 @@ $CONTENT.=<<<C
 	  <div class="download" id="interaction_download"></div>
 	  <div id="interaction_results_status_loader" style="background-color:white;">
 	    <div id="interaction_results_status" style="background-color:white;">
-	      <iframe id="interaction_results_frame" src="web/blank.html" 
-		      scrolling="no" onload="adjustiFrame(this);">
+	      <iframe class="iframe" id="interaction_results_frame" src="web/blank.html" 
+		      scrolling="yes" onload="adjustiFrame(this);">
 	      </iframe>
 	    </div>
 	  </div>
@@ -880,8 +888,8 @@ $CONTENT.=<<<C
 	  <div class="download" id="summary_download"></div>
 	  <div id="summary_results_status_loader" style="background-color:white;">
 	    <div id="summary_results_status" style="background-color:white;">
-	      <iframe id="summary_results_frame" src="web/blank.html" 
-		      scrolling="no" onload="adjustiFrame(this);">
+	      <iframe class="iframe" id="summary_results_frame" src="web/blank.html" 
+		      scrolling="yes" onload="adjustiFrame(this);">
 	      </iframe>
 	    </div>
 	  </div>

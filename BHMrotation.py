@@ -310,6 +310,9 @@ ax.legend(loc='lower right',prop=dict(size=12))
 ###################################################
 fh=open(rot_dir+"rotation.html","w")
 fh.write("""\
+<head>
+  <link rel="stylesheet" type="text/css" href="%s/web/BHM.css">
+</head>
 <h2>Rotational Evolution in Binary</h2>
 <center>
   <a target="_blank" href="%s/rot-evolution.png">
@@ -333,7 +336,7 @@ fh.write("""\
   <tr><td>P<sub>rot,1,ini</sub> (days):</td><td>%.3f</td></tr>
   <tr><td>t<sub>sync,2,ini</sub> (Gyr):</td><td>%.3f</td></tr>
 </table>
-"""%(rot_webdir,rot_webdir,rot_webdir,WEB_DIR,
+"""%(WEB_DIR,rot_webdir,rot_webdir,rot_webdir,WEB_DIR,
      rot.k,
      star1.Pini,star1.tsync,
      star2.Pini,star2.tsync

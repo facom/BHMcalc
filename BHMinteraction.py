@@ -808,6 +808,9 @@ PRINTERR("Creating html report...")
 
 fh=open(env_dir+"interaction.html","w")
 fh.write("""\
+<head>
+  <link rel="stylesheet" type="text/css" href="%s/web/BHM.css">
+</head>
 <h2>Binary-Planet Interaction</h2>
 <center>
   <a target="_blank" href="%s/flux-XUV-absolute.png">
@@ -913,7 +916,7 @@ fh.write("""\
 	)
   </td></tr>
 </table>
-"""%(env_webdir,env_webdir,env_webdir,WEB_DIR,#FLUX XUV ABSOLUTE (INTRO)
+"""%(WEB_DIR,env_webdir,env_webdir,env_webdir,WEB_DIR,#FLUX XUV ABSOLUTE (INTRO)
      env_webdir,env_webdir,env_webdir,WEB_DIR,#FLUX XUV ABSOLUTE
      env_webdir,env_webdir,env_webdir,WEB_DIR,#INT XUV ABSOLUTE
      env_webdir,env_webdir,env_webdir,WEB_DIR,#FLUX SW ABSOLUTE

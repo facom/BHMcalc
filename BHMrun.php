@@ -53,29 +53,7 @@ $parts=preg_split("/--sig--\s*/",$out);
 //GET OBJECT HASH
 $hash=rtrim(end($parts));
 $src_file="objs/$module-$hash/$module.html";
-$tgt_file="objs/$module-$hash/$module-out.html";
-
-//READ OUTPUT CONTENT
-$src_content=shell_exec("cat $src_file");
-
-//CREATE OUTPUT CONTENT
-$tgt_content=<<<C
-<html>
-<head>
-$CSS
-</head>
-<body>
-$src_content
-</body>
-</html>
-C;
-$ft=fopen($tgt_file,"w");
-
-
-//WRITE OUTPUT
-fwrite($ft,$tgt_content);
-fclose($ft);
 
 //RETURN OUTPUT
-echo $tgt_file;
+echo $src_file;
 ?>

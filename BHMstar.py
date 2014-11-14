@@ -407,6 +407,9 @@ ax.legend(loc='best')
 ###################################################
 fh=open(star_dir+"star.html","w")
 fh.write("""\
+<head>
+  <link rel="stylesheet" type="text/css" href="%s/web/BHM.css">
+</head>
 <h2>Stellar Properties</h2>
 <center>
   <a href="%s/radius-schematic.png" target="_blank">
@@ -481,8 +484,7 @@ fh.write("""\
 	)
   </td></tr>
 </table>
-
-"""%(star_webdir,star_webdir,star_webdir,WEB_DIR,
+"""%(WEB_DIR,star_webdir,star_webdir,star_webdir,WEB_DIR,
 star.M,star.Z,star.FeH,star.tau,tau_max,tau_ms,star_hash,
 g,Teff,R,L,MoI,tdiss,
 lins[0],lins[1],lins[2],

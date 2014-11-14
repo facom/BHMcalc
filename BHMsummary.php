@@ -32,16 +32,6 @@ $stderr="BHMsummary-error-$SESSID";
 $out=shell_exec($cmd." 2> $TMPDIR/$stderr |tee $TMPDIR/$stdout");
 $objects=preg_split("/\s+/",rtrim($out));
 
-//CREATE OUTPUT CONTENT
-$tgt_content="";
-$tgt_content.=<<<C
-<html>
-<head>
-$CSS
-</head>
-<body>
-C;
-
 //READING HTML
 foreach($objects as $object){
   $parts=preg_split("/:/",$object);
@@ -60,12 +50,6 @@ $src_content
 <hr/>
 C;
 }
-
-//CREATE OUTPUT CONTENT
-$tgt_content.=<<<C
-</body>
-</html>
-C;
 
 //WRITE OUTPUT
 $tgt_file="sys/$SESSID/summary.html";
