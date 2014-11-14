@@ -472,7 +472,7 @@ fh.write("""\
 <table>
   <tr><td>
       <a href="%s/stellar-props.png">
-	<img width=50%% src="%s/stellar-props.png">
+	<img width=100%% src="%s/stellar-props.png">
       </a>
       <br/>
       <i>Evolution of stellar properties</i>
@@ -483,7 +483,7 @@ fh.write("""\
   </td></tr>
   <tr><td>
       <a href="%s/evol-track.png">
-	<img width=50%% src="%s/evol-track.png">
+	<img width=100%% src="%s/evol-track.png">
       </a>
       <br/>
       <i>Evolutionary Track</i>
@@ -494,7 +494,7 @@ fh.write("""\
   </td></tr>
   <tr><td>
       <a href="%s/evol-radius.png">
-	<img width=50%% src="%s/evol-radius.png">
+	<img width=100%% src="%s/evol-radius.png">
       </a>
       <br/>
       <i>Radius Evolution</i>
