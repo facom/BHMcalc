@@ -24,9 +24,11 @@ clean:
 	@find . -name "*#*" -exec rm -rf {} \;
 	@find . -name "*.pyc" -exec rm -rf {} \;
 
-cleansys:
+cleanall:
 	@echo "Cleaning session directories..."
-	@find sys -type d -and -not -name "template" -and -not -name "sys" -exec rm -rf {} \; &> /dev/null
+	@rm -r sys/*
+	@cp -r web/template sys/
+	@make permissions
 
 deepclean:clean
 	@echo "Cleaning temporary directories..."
