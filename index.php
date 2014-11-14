@@ -66,16 +66,16 @@ $ajax_all_Load=ajaxFromCode($code,"document","ready");
 if(!is_dir($SESSDIR)){
   $source_dir=$SYSDIR."template/";
   echoVerbose("No session directory.");
-  $TABID=0;
+  $TABID=1;
 }else{
   $source_dir=$SYSDIR."$SESSID/";
   echoVerbose("Session directory already exist.");
-  $TABID=3;
+  $TABID=1;
   //========================================
   //LOADING RESULTS
   //========================================
-  $CONTENT.="$ajax_all_Load";
 }
+$CONTENT.="$ajax_all_Load";
 echoVerbose("<br/>");
 echoVerbose("Source dir: $source_dir<br/>");
 
