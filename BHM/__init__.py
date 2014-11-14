@@ -454,6 +454,21 @@ def initialsString(string):
         initials+="%s"%part[0].upper()
     return initials
 
+def upTree(obj):
+    global OBJECT_PIPE,OBJECT_EPIP
+    epip=[]
+    for dobj in OBJECT_PIPE.keys():
+        if obj in OBJECT_PIPE[dobj]:
+            epip+=[dobj]+upTree(dobj)
+    OBJECT_EPIP[obj]=np.unique(epip)
+    return epip
+
+def initializeEPIP():
+    global OBJECTS_ALL
+    for obj in OBJECTS_ALL:upTree(obj)
+    
+
 #GET WORKING DIRECTORY
 PWD=System("pwd",out=True)
 WEB_DIR=PWD.replace(WEB_COMMON,"")+"/"
+

@@ -79,3 +79,14 @@ function refreshiFrame(iframe)
 {
     $(iframe).attr("src",$(iframe).attr("src"));
 }
+
+function display(element){
+    $('#'+element).toggle('fast',null);
+}
+
+function refreshiFrames(){
+    $("iframe").each(function() { 
+        var src=$(this).attr('src');
+        $(this).attr('src',src);  
+    });
+}

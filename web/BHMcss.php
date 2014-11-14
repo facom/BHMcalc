@@ -258,6 +258,8 @@ iframe{
 div.download{
  position:absolute;
  background:white;
+ padding:2px;
+ border:solid black 1px;
  z-index=100;
  top:15%;
  right:5%;

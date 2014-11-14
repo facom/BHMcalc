@@ -499,6 +499,9 @@ horizontalalignment='center',verticalalignment='bottom',transform=ax.transAxes)
 ###################################################
 fh=open(ihz_dir+"hz.html","w")
 fh.write("""\
+<head>
+  <link rel="stylesheet" type="text/css" href="%s/web/BHM.css">
+</head>
 <h2>Instantaneous Circumbinary Habitable Zone (HZ)</h2>
 <center>
   <a target="_blank" href="%s/iHZ.png">
@@ -554,7 +557,7 @@ fh.write("""\
 	)
   </td></tr>
 </table>
-"""%(ihz_webdir,ihz_webdir,ihz_webdir,WEB_DIR,
+"""%(WEB_DIR,ihz_webdir,ihz_webdir,ihz_webdir,WEB_DIR,
      leeq,
      ini_inwd,linwd,ini_outwd,loutwd,
      ini_innr,linnr,ini_outnr,loutnr,

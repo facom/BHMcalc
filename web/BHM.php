@@ -17,11 +17,6 @@
 ?>
 <?PHP
 //////////////////////////////////////////////////////////////
-//PACKAGES
-//////////////////////////////////////////////////////////////
-include_once("web/BHMcss.php");
-
-//////////////////////////////////////////////////////////////
 //GLOBAL VARIABLES
 //////////////////////////////////////////////////////////////
 $CONTENT="";
@@ -53,6 +48,21 @@ $POSTSTR=print_r($_POST,true);
 if(isset($VERBOSE)){$VERBOSE=1;}
 else{$VERBOSE=0;}
 
+$wCSSFILE="web/BHM.css";
+
+$CSSFILE=$DIR."web/BHM.css";
+
+//////////////////////////////////////////////////////////////
+//CSS
+//////////////////////////////////////////////////////////////
+if(!file_exists($CSSFILE) or isset($GENCSS)){
+  include_once($DIR."web/BHMcss.php");
+  $fc=fopen($CSSFILE,"w");
+  fwrite($fc,$CSS);
+  fclose($fc);
+}
+
+
 //////////////////////////////////////////////////////////////
 //SESSION ID
 //////////////////////////////////////////////////////////////
@@ -67,17 +77,15 @@ $SESSDIR=$ROOTDIR.$wSESSDIR;
 function mainHeader()
 {
   global $CSS;
-
+  
 $HEADER=<<<HEADER
 <head>
   <script src="web/jquery.js"></script>
   <script src="web/BHM.js"></script>
   <script src="web/tabber.js"></script>
-  $CSS
-  <script>
-  function display(element){
-      $('#'+element).toggle('fast',null);
-  }
+  <link rel="stylesheet" type="text/css" href="web/BHM.css">
+  <script type="text/javascript">
+  //setInterval("refreshiFrames()",2000);  
   </script>
 </head>
 HEADER;
@@ -205,6 +213,7 @@ $code.=<<<CODE
 	      $("#${id}_download").css("display","block");
 	      $("#${id}_download").html("<a href=JavaScript:refreshiFrame('#${id}_results_frame')>Refresh</a> | <a href="+data+" target='_blank'>Download</a>");
 	      $("#${id}_results_frame").attr("src",data);
+	      refreshiFrames();
 	    },
 	error: function(jqXHR, textStatus, errorThrown) 
 	    {

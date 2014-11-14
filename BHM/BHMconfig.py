@@ -52,11 +52,12 @@ exec("OBJECT_HASHABLES['interaction']=dict(tauini='%.4f',tauref='%.4f',str_early
 #PIPE TREE
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 exec("OBJECT_PIPE=dict()")
-exec("OBJECT_PIPE['star']=[]")
+exec("OBJECT_PIPE['star1']=[]")
+exec("OBJECT_PIPE['star2']=[]")
 exec("OBJECT_PIPE['planet']=[]")
 exec("OBJECT_PIPE['binary']=['star1','star2']")
 exec("OBJECT_PIPE['hz']=['binary','planet']")
 exec("OBJECT_PIPE['rotation']=['binary']")
 exec("OBJECT_PIPE['interaction']=['rotation','hz','planet']")
-
-exec("OBJECTS_ALL=['star1','star2','planet','binary','hz','rotation','interaction']")
+exec("OBJECT_EPIP=dict()")
+exec("OBJECTS_ALL=['star1','star2','planet','binary','rotation','hz','interaction']")
