@@ -218,7 +218,7 @@ $CONTENT.=<<<C
 	</div>
 	<div id="star1_results_panel" class="results">
 	  <div><center class="title">Results</center><hr width="90%"/></div>
-	  <div class="download" id="star1_download"></div>
+	  <div class="download" id="star1_download">Hola</div>
 	  <div id="star1_results_status_loader" style="background-color:white;">
 	    <div id="star1_results_status" style="background-color:white;">
 	      <iframe id="star1_results_frame" src="web/blank.html" 
@@ -550,7 +550,7 @@ $CONTENT.=<<<C
 	  <div id="binary_results_status_loader" style="background-color:white;">
 	    <div id="binary_results_status" style="background-color:white;">
 	      <iframe id="binary_results_frame" src="web/blank.html" 
-		      scrolling="no" onload="adjustiFrame(this);">
+		      scrolling="yes" onload="adjustiFrame(this);">
 	      </iframe>
 	    </div>
 	  </div>

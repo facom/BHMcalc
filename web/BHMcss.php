@@ -257,8 +257,10 @@ iframe{
 
 div.download{
  position:absolute;
- top:80px;
- right:30px;
+ background:white;
+ z-index=100;
+ top:15%;
+ right:5%;
  display:none;
 }
 
