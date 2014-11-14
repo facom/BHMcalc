@@ -59,9 +59,15 @@ $ajaxform_planet_Update=ajaxFromCode($code,"'#planet_Update'","click");
 $code=ajaxMultipleForm(array("binary"),"binary_form");
 $ajaxform_binary_Update=ajaxFromCode($code,"'#binary_Update'","click");
 
+//BINARY
+$code=ajaxMultipleForm(array("hz"),"hz_form");
+$ajaxform_hz_Update=ajaxFromCode($code,"'#hz_Update'","click");
+
 //LOAD ALL
-$code=ajaxMultipleForm(array("star1","star2","planet","binary"),"allforms");
+//$code=ajaxMultipleForm(array("star1","star2","planet","binary"),"allforms");
 //$code=ajaxMultipleForm(array("binary"),"allforms");
+$code=ajaxMultipleForm(array("hz"),"allforms");
+//$code=ajaxMultipleForm(array("star1"),"allforms");
 $ajax_all_Update=ajaxFromCode($code,"'#all_Update'","click");
 $ajax_all_Load=ajaxFromCode($code,"document","ready");
 
@@ -75,7 +81,7 @@ if(!is_dir($SESSDIR)){
 }else{
   $source_dir=$SYSDIR."$SESSID/";
   echoVerbose("Session directory already exist.");
-  $TABID=1;
+  $TABID=5;
   //========================================
   //LOADING RESULTS
   //========================================
@@ -534,11 +540,97 @@ $CONTENT.=<<<C
    </form>
   </div>
 
-  <div class="tabbertab" id="iHZ" title="Habitable Zone">
+  <!-- //////////////////////////////////////////////////////////// -->
+  <!-- HABITABLE ZONE -->
+  <!-- //////////////////////////////////////////////////////////// -->
+  <div class="tabbertab" id="hz" title="Habitable Zone">
+  <form id="hz_form" action="BHMrun.php">
     <div class="tabcontent">
-      Casa
+      <div class="wrapper">
+	<div id="hz_form" class="formarea">
+	  <div><center class="title">Input Form</center><hr width="90%"/></div>
+	    <input type="hidden" name="module" value="hz">
+	    <input type="hidden" name="object" value="hz">
+	    <table border=0px>
+	      <tr>
+		<!-- ---------------------------------------- -->
+		<td class="name">Inner edge (wider HZ):</td>
+		<td class="field">
+		  <input type="text" name="hz_str_incrit_wd" value="$hz_str_incrit_wd">
+		  days
+		</td>
+	      </tr>
+	      <tr>
+		<td class="help" colspan=2>
+		  Available: 'recent venus', 'moist greenhouse',
+		  'runaway greenhouse' (sustained lowercase)
+		</td>
+	      </tr>
+	      <!-- ---------------------------------------- -->
+		<td class="name">Outer edge (wider HZ):</td>
+		<td class="field">
+		  <input type="text" name="hz_str_outcrit_wd" value="$hz_str_outcrit_wd">
+		</td>
+	      </tr>
+	      <tr>
+		<td class="help" colspan=2>
+		  Available: 'maximum greenhouse', 'early mars' (sustained lowercase)
+		</td>
+	      </tr>
+	      <tr>
+		<!-- ---------------------------------------- -->
+		<td class="name">Inner edge (conservative HZ):</td>
+		<td class="field">
+		  <input type="text" name="hz_str_incrit_nr" value="$hz_str_incrit_nr">
+		  days
+		</td>
+	      </tr>
+	      <tr>
+		<td class="help" colspan=2>
+		  Available: 'recent venus', 'moist greenhouse',
+		  'runaway greenhouse' (sustained lowercase)
+		</td>
+	      </tr>
+	      <!-- ---------------------------------------- -->
+		<td class="name">Outer edge (conservative HZ):</td>
+		<td class="field">
+		  <input type="text" name="hz_str_outcrit_nr" value="$hz_str_outcrit_nr">
+		</td>
+	      </tr>
+	      <tr>
+		<td class="help" colspan=2>
+		  Available: 'maximum greenhouse', 'early mars' (sustained lowercase)
+		</td>
+	      </tr>
+	      <!-- ---------------------------------------- -->
+	      <tr>
+		<td class="button" colspan=2>
+		  <button class="update" id="hz_Update">Update</button> 
+		  $ajaxform_hz_Update
+		</td>
+	      </tr>
+	      <!-- ---------------------------------------- -->
+	    </table>
+	</div>
+	<div id="hz_results_panel" class="results">
+	  <div><center class="title">Results</center><hr width="90%"/></div>
+	  <div id="hz_results_status_loader" style="background-color:white;">
+	    <div id="hz_results_status" style="background-color:white;">
+	      <iframe id="hz_results_frame" src="web/blank.html" 
+		      scrolling="no" onload="adjustiFrame(this);">
+	      </iframe>
+	    </div>
+	  </div>
+	</div>
+      </div>
     </div>
+   </form>
   </div>
+
+
+
+
+
   <div class="tabbertab" id="rotEvo" title="Rotational Evolution">
     <div class="tabcontent">
       Casa

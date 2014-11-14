@@ -240,20 +240,20 @@ for t in ts:
     PSWin,FSWin=binaryWind(r,
                            tau_rot1,star1.M,star1.Rfunc(t),
                            tau_rot2,star2.M,star2.Rfunc(t),
-                           early=env.earlywind)
+                           early=env.str_earlywind)
     #OUTER
     r=ihz.loutwd
     PSWout,FSWout=binaryWind(r,
                              tau_rot1,star1.M,star1.Rfunc(t),
                              tau_rot2,star2.M,star2.Rfunc(t),
-                             early=env.earlywind)
+                             early=env.str_earlywind)
     
     #PLANET
     r=planet.aorb
     PSWp,FSWp=binaryWind(r,
                          tau_rot1,star1.M,star1.Rfunc(t),
                          tau_rot2,star2.M,star2.Rfunc(t),
-                         early=env.earlywind)
+                         early=env.str_earlywind)
     lumflux+=[PSWin,FSWin/SWPEL,PSWout,FSWout/SWPEL,PSWp,FSWp/SWPEL]
 
     #%%%%%%%%%%%%%%%%%%%%
@@ -266,20 +266,20 @@ for t in ts:
     ntPSWin,ntFSWin=binaryWind(r,
                                tau,star1.M,star1.Rfunc(t),
                                tau,star2.M,star2.Rfunc(t),
-                               early=env.earlywind)
+                               early=env.str_earlywind)
     #OUTER
     r=ihz.loutwd
     ntPSWout,ntFSWout=binaryWind(r,
                                  tau,star1.M,star1.Rfunc(t),
                                  tau,star2.M,star2.Rfunc(t),
-                                 early=env.earlywind)
+                                 early=env.str_earlywind)
     
     #PLANET
     r=planet.aorb
     ntPSWp,ntFSWp=binaryWind(r,
                              tau,star1.M,star1.Rfunc(t),
                              tau,star2.M,star2.Rfunc(t),
-                             early=env.earlywind)
+                             early=env.str_earlywind)
     lumflux+=[ntPSWin,ntFSWin/SWPEL,ntPSWout,ntFSWout/SWPEL,ntPSWp,ntFSWp/SWPEL]
 
     #%%%%%%%%%%%%%%%%%%%%
@@ -289,17 +289,17 @@ for t in ts:
     
     #INNER
     r=star1.lins[0]
-    v,n=vnGreissmeier(r,tau,star1.M,star1.Rfunc(t),early=env.earlywind)
+    v,n=vnGreissmeier(r,tau,star1.M,star1.Rfunc(t),early=env.str_earlywind)
     PSWins,FSWins=n*v**2,n*v
 
     #OUTER
     r=star1.louts[-1]
-    v,n=vnGreissmeier(r,tau,star1.M,star1.Rfunc(t),early=env.earlywind)
+    v,n=vnGreissmeier(r,tau,star1.M,star1.Rfunc(t),early=env.str_earlywind)
     PSWouts,FSWouts=n*v**2,n*v
     
     #LSUN
     r=star1.lsun
-    v,n=vnGreissmeier(r,tau,star1.M,star1.Rfunc(t),early=env.earlywind)
+    v,n=vnGreissmeier(r,tau,star1.M,star1.Rfunc(t),early=env.str_earlywind)
     PSWeeqs,FSWeeqs=n*v**2,n*v
     
     lumflux+=[PSWins,FSWins/SWPEL,PSWouts,FSWouts/SWPEL,PSWeeqs,FSWeeqs/SWPEL]
@@ -309,9 +309,9 @@ for t in ts:
     #//////////////////////////////
     Mdip=thermevol[9](t)
     Rs=StandoffDistance(Mdip*MDIPE,PSWp,planet.R*REARTH,
-                        objref=env.refobj,nM=env.nM,nP=env.nP)
+                        objref=env.str_refobj,nM=env.nM,nP=env.nP)
     ntRs=StandoffDistance(Mdip*MDIPE,ntPSWp,planet.R*REARTH,
-                          objref=env.refobj,nM=env.nM,nP=env.nP)
+                          objref=env.str_refobj,nM=env.nM,nP=env.nP)
     lumflux+=[Rs,ntRs]
 
     env.lumflux+=lumflux

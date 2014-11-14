@@ -45,5 +45,16 @@ exec("OBJECT_HASHABLES['star']=dict(M='%.4f',Z='%.4f',FeH='%.4f',tau='%.4f')")
 exec("OBJECT_HASHABLES['binary']=dict(Pbin='%.4f',abin='%.4f',ebin='%.4f')")
 exec("OBJECT_HASHABLES['planet']=dict(M='%.4f',fHHe='%.4f',CMF='%.4f',tau='%.4f',aorb='%.4f',eorb='%.4f',Porb='%.4f',worb='%.4f',Prot='%.4f')")
 exec("OBJECT_HASHABLES['rotation']=dict(k='%.4f')")
-exec("OBJECT_HASHABLES['hz']=dict(incrit_wd='%s',incrit_nr='%s',outcrit_wd='%s',outcrit_nr='%s')")
-exec("OBJECT_HASHABLES['interaction']=dict(tauini='%.4f',earlywind='%s',nM='%.2f',nP='%.2f',refobj='%s')")
+exec("OBJECT_HASHABLES['hz']=dict(str_incrit_wd='%s',str_incrit_nr='%s',str_outcrit_wd='%s',str_outcrit_nr='%s')")
+exec("OBJECT_HASHABLES['interaction']=dict(tauini='%.4f',str_earlywind='%s',nM='%.2f',nP='%.2f',str_refobj='%s')")
+
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+#PIPE TREE
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+exec("OBJECT_PIPE=dict()")
+exec("OBJECT_PIPE['star']=[]")
+exec("OBJECT_PIPE['planet']=[]")
+exec("OBJECT_PIPE['binary']=['star1','star2']")
+exec("OBJECT_PIPE['hz']=['binary','planet']")
+exec("OBJECT_PIPE['rotation']=['binary']")
+exec("OBJECT_PIPE['interaction']=['rotation','planet']")

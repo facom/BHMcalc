@@ -27,7 +27,7 @@ Usage:
 
    <module>.conf (file): Configuration file for the module.
 
-   <qoverride> (int 0/1): Override any existent object with the same hash.
+   <qoverride> (int 0/1): Override any existent moduleect with the same hash.
 """%argv[0]
 
 script,sys_dir,module_conf,qover=\
@@ -44,131 +44,51 @@ if not FILEEXISTS(module_file):
     PRINTERR("File '%s' does not exist."%module_file)
     errorCode("FILE_ERROR")
 PRINTERR("Error Output:")
+
 ###################################################
-#RUN STAR
+#RUN MODULE
 ###################################################
 PRINTOUT("System Directory: %s"%sys_dir)
 
-if False:pass
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+#HASH MODULE
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+module_type=module_conf
+module_type=module_type.replace(".conf","")
+module_type=module_type.replace("1","")
+module_type=module_type.replace("2","")
+module,module_dir,module_str,module_hash,module_liv,module_stg=\
+    signObject(module_type,sys_dir+"/"+module_conf)
+PRINTOUT("Module type: %s"%module_type)
 
-elif "star" in script:
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+#CHECK-OUT MODULES ON WHICH IT DEPENDS
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+for depmod in OBJECT_PIPE[module_type]:
 
-    #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    #CONFIGURATION FILES
-    #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    star_conf=module_conf
+    #========================================
+    #HASHING OBJECTS
+    #========================================
+    depmod_conf="%s.conf"%depmod
+    depmod_type=depmod
+    depmod_type=depmod_type.replace("1","")
+    depmod_type=depmod_type.replace("2","")
+    depmod,depmod_dir,depmod_str,depmod_hash,depmod_liv,depmod_stg=\
+        signObject(depmod_type,sys_dir+"/"+depmod_conf)
+
+    #========================================
+    #HASHING OBJECTS
+    #========================================
+    if depmod_stg<10 or qover==2:
+        PRINTOUT("Forcing %s"%depmod_type);
+        System("python BHMrun.py BHM%s.py %s %s %d"%(depmod_type,sys_dir,depmod_conf,qover),out=False)
+    else:PRINTOUT("%s ready."%depmod_type);
     
-    #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    #HASH OBJECT
-    #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    star,star_dir,star_str,star_hash,star_liv,star_stg=\
-        signObject("star",sys_dir+"/"+star_conf)
-    
-    #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    #RUN SCRIPT
-    #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    PRINTOUT("Running star script")
-    if star_stg<10:System("python BHMstar.py %s %s %d"%(sys_dir,star_conf,qover))
-    else:PRINTOUT("Planet ready.");
-    print "--sig--\n%s"%star_hash
-
-elif "planet" in script:
-
-    #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    #CONFIGURATION FILES
-    #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    planet_conf=module_conf
-    
-    #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    #HASH OBJECT
-    #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    planet,planet_dir,planet_str,planet_hash,planet_liv,planet_stg=\
-        signObject("planet",sys_dir+"/"+planet_conf)
-    
-    #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    #RUN SCRIPT
-    #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    PRINTOUT("Running planet script")
-    if planet_stg<10:System("python BHMplanet.py %s %s %d"%(sys_dir,planet_conf,qover))
-    else:PRINTOUT("Planet ready.");
-    #PRINTOUT("\n--START EXTERNAL--\n"+out+"\n--END EXTERNAL--")
-    print "--sig--\n%s"%planet_hash
-
-elif "binary" in script:
-
-    #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    #CONFIGURATION FILES
-    #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    binary_conf=module_conf
-    
-    #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    #HASH OBJECT
-    #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    binary,binary_dir,binary_str,binary_hash,binary_liv,binary_stg=\
-        signObject("binary",sys_dir+"/"+binary_conf)
-
-    #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    #CHECK-OUT OBJECTS ON WHICH IT DEPENDS
-    #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    star1_conf="star1.conf"
-    star1,star1_dir,star1_str,star1_hash,star1_liv,star1_stg=\
-        signObject("star",sys_dir+"/"+star1_conf)
-    star2_conf="star2.conf"
-    star2,star2_dir,star2_str,star2_hash,star2_liv,star2_stg=\
-        signObject("star",sys_dir+"/"+star2_conf)
-    
-    #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    #RUN SCRIPTS
-    #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    PRINTOUT("Running binary script")
-    if star1_stg<10:System("python BHMstar.py %s %s %d"%(sys_dir,"star1.conf",qover))
-    else:PRINTOUT("Star1 ready.");
-    if star2_stg<10:System("python BHMstar.py %s %s %d"%(sys_dir,"star2.conf",qover))
-    else:PRINTOUT("Star2 ready.");
-    if binary_stg<10:System("python BHMbinary.py %s %s %d"%(sys_dir,binary_conf,qover))
-    else:PRINTOUT("Binary ready.");
-    print "--sig--\n%s"%binary_hash
-
-elif "hz" in script:
-
-    #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    #CONFIGURATION FILES
-    #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    hz_conf=module_conf
-    
-    #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    #HASH OBJECT
-    #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    hz,hz_dir,hz_str,hz_hash,hz_liv,hz_stg=\
-        signObject("hz",sys_dir+"/"+hz_conf)
-
-    #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    #CHECK-OUT OBJECTS ON WHICH IT DEPENDS
-    #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    star1_conf="star1.conf"
-    star1,star1_dir,star1_str,star1_hash,star1_liv,star1_stg=\
-        signObject("star",sys_dir+"/"+star1_conf)
-    star2_conf="star2.conf"
-    star2,star2_dir,star2_str,star2_hash,star2_liv,star2_stg=\
-        signObject("star",sys_dir+"/"+star2_conf)
-    binary_conf="binary.conf"
-    binary,binary_dir,binary_str,binary_hash,binary_liv,binary_stg=\
-        signObject("binary",sys_dir+"/"+binary_conf)
-    planet_conf="planet.conf"
-    planet,planet_dir,planet_str,planet_hash,planet_liv,planet_stg=\
-        signObject("planet",sys_dir+"/"+planet_conf)
-    
-    #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    #RUN SCRIPTS
-    #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    PRINTOUT("Running hz script")
-    if star1_stg<10:System("python BHMstar.py %s %s %d"%(sys_dir,"star1.conf",qover))
-    else:PRINTOUT("Star1 ready.");
-    if star2_stg<10:System("python BHMstar.py %s %s %d"%(sys_dir,"star2.conf",qover))
-    else:PRINTOUT("Star2 ready.");
-    if hz_stg<10:System("python BHMhz.py %s %s %d"%(sys_dir,hz_conf,qover))
-    else:PRINTOUT("Hz ready.");
-    print "--sig--\n%s"%hz_hash
-
-else:
-    PRINTERR("Script '%s' not available."%script)
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+#EXECUTING MODULE
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+if module_stg<10 or qover>=1:
+    PRINTOUT("Forcing %s"%module_type);
+    System("python BHM%s.py %s %s %d"%(module_type,sys_dir,module_conf,qover),out=False)
+else:PRINTOUT("%s ready."%module_type);
+print "--sig--\n%s"%module_hash

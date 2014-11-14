@@ -89,19 +89,19 @@ ihz_webdir=WEB_DIR+ihz_dir
 ###################################################
 ihz.tau=star1.tau
 
-incrit_wd=ihz.incrit_wd.replace("'","")
-outcrit_wd=ihz.outcrit_wd.replace("'","")
+str_incrit_wd=ihz.str_incrit_wd.replace("'","")
+str_outcrit_wd=ihz.str_outcrit_wd.replace("'","")
 linwd,loutwd=HZbin(star2.M/star1.M,star1.L,star2.L,star1.T,
                    binary.abin,
-                   crits=[incrit_wd,outcrit_wd])
+                   crits=[str_incrit_wd,str_outcrit_wd])
 Pinwd=PKepler(linwd,star1.M,star2.M);ninwd=2*np.pi/Pinwd
 Poutwd=PKepler(loutwd,star1.M,star2.M);noutwd=2*np.pi/Poutwd
 
-incrit_nr=ihz.incrit_nr.replace("'","")
-outcrit_nr=ihz.outcrit_nr.replace("'","")
+str_incrit_nr=ihz.str_incrit_nr.replace("'","")
+str_outcrit_nr=ihz.str_outcrit_nr.replace("'","")
 linnr,loutnr,leeq=HZbin(star2.M/star1.M,star1.L,star2.L,star1.T,
                         binary.abin,
-                        crits=[incrit_nr,outcrit_nr],eeq=True)
+                        crits=[str_incrit_nr,str_outcrit_nr],eeq=True)
 Pinnr=PKepler(linnr,star1.M,star2.M);ninnr=2*np.pi/Pinnr
 Poutnr=PKepler(loutnr,star1.M,star2.M);noutnr=2*np.pi/Poutnr
 Peeq=PKepler(leeq,star1.M,star2.M);neeq=2*np.pi/Peeq
@@ -194,9 +194,9 @@ for tau in ts:
     lin,lout,leeq=HZbin(star2.M/star1.M,
                         star1.Lfunc(tau),star2.Lfunc(tau),star1.Tfunc(tau),
                         binary.abin,
-                        crits=[incrit_wd,outcrit_wd],eeq=True)
+                        crits=[str_incrit_wd,str_outcrit_wd],eeq=True)
     slin,sleeq,slout=HZ(star1.Lfunc(tau),star1.Tfunc(tau),
-                        lin=incrit_wd,lout=outcrit_wd)
+                        lin=str_incrit_wd,lout=str_outcrit_wd)
     hz+=[lin,leeq,lout]
     shz+=[slin,sleeq,slout]
 hz=toStack(ts)|hz
@@ -215,10 +215,10 @@ if clin<binary.acrit:
 ihz.title=r"$M_p=%.3f\,M_{\\rm Jup}$, $f_{\\rm H/He}=%.3f$, $\\tau=%.2f$ Gyr, $R_p=%.3f\,R_{\\rm Jup}$"%(planet.Mg,planet.fHHe,planet.tau,planet.Rg)
 
 #INITIALS
-ini_inwd=initialsString(ihz.incrit_wd)
-ini_outwd=initialsString(ihz.outcrit_wd)
-ini_innr=initialsString(ihz.incrit_nr)
-ini_outnr=initialsString(ihz.outcrit_nr)
+ini_inwd=initialsString(ihz.str_incrit_wd)
+ini_outwd=initialsString(ihz.str_outcrit_wd)
+ini_innr=initialsString(ihz.str_incrit_nr)
+ini_outnr=initialsString(ihz.str_outcrit_nr)
 
 fd=open(ihz_dir+"hz.data","w")
 fd.write("""\
@@ -504,7 +504,7 @@ horizontalalignment='center',verticalalignment='bottom',transform=ax.transAxes)
 ###################################################
 #GENERATE FULL REPORT
 ###################################################
-fh=open(ihz_dir+"ihz.html","w")
+fh=open(ihz_dir+"hz.html","w")
 fh.write("""\
 <h2>Instantaneous Circumbinary Habitable Zone (HZ)</h2>
 <center>
