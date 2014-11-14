@@ -28,27 +28,19 @@ from BHM.BHMastro import *
 Usage=\
 """
 Usage:
-   python %s <ihz>.conf <binary>.conf <star1>.conf <star1>.conf <planet>.conf <qoverride>
+   python %s <sysdir> <module>.conf <qoverride>
 
-   <ihz>.conf (file): Module configuration
+   <sysdir>: Directory where the system configuration files lie
 
-   <binary>.conf (file): Configuration file with data about binary.
+   <module>.conf (file): Configuration file for the module.
 
-   <star1>.conf,<star2>.conf (file): Configuration file with data
-   about stars.
-
-   <planet>.conf (file): Configuration file with data about planet.
-
-   <qoverride> (int 0/1): Override any previously existent
-   calculation.
+   <qoverride> (int 0/1): Override any existent object with the same hash.
 """%argv[0]
 
-ihz_conf,binary_conf,star1_conf,star2_conf,planet_conf,qover=\
+sys_dir,ihz_conf,qover=\
     readArgs(argv,
-             ["str","str","str","str","str","int"],
-             ["ihz.conf",
-              "binary.conf","star1.conf","star2.conf",
-              "planet.conf","0"],
+             ["str","str","int"],
+             ["sys/template","hz.conf","0"],
              Usage=Usage)
 
 ###################################################
@@ -56,35 +48,41 @@ ihz_conf,binary_conf,star1_conf,star2_conf,planet_conf,qover=\
 ###################################################
 PRINTOUT("Loading other objects...")
 #==================================================
-#LOADING BINARY
-binary,binary_dir,binary_str,binary_hash,binary_liv,binary_stg=\
-    signObject(binary_conf)
-binary+=loadConf(binary_dir+"binary.data")
-#==================================================
 #LOADING STAR 1
+star1_conf="star1.conf"
 star1,star1_dir,star1_str,star1_hash,star1_liv,star1_stg=\
-    signObject(star1_conf)
+    signObject("star",sys_dir+"/"+star1_conf)
 star1+=loadConf(star1_dir+"star.data")
 evoInterpFunctions(star1)
 #==================================================
 #LOADING STAR 2
+star2_conf="star2.conf"
 star2,star2_dir,star2_str,star2_hash,star2_liv,star2_stg=\
-    signObject(star2_conf)
+    signObject("star",sys_dir+"/"+star2_conf)
 star2+=loadConf(star2_dir+"star.data")
 evoInterpFunctions(star2)
 #==================================================
+#LOADING BINARY
+binary_conf="binary.conf"
+binary,binary_dir,binary_str,binary_hash,binary_liv,binary_stg=\
+    signObject("binary",sys_dir+"/"+binary_conf)
+binary+=loadConf(binary_dir+"binary.data")
+#==================================================
 #LOADING PLANET
+planet_conf="planet.conf"
 planet,planet_dir,planet_str,planet_hash,planet_liv,planet_stg=\
-    signObject(planet_conf)
+    signObject("planet",sys_dir+"/"+planet_conf)
 planet+=loadConf(planet_dir+"planet.data")
 
 ###################################################
 #LOAD IHZ OBJECT
 ###################################################
-ihz,ihz_str,ihz_hash,ihz_dir=\
-    makeObject(ihz_conf,qover=qover)
+PRINTOUT("Loading object from '%s'"%ihz_conf)
+ihz,ihz_str,ihz_hash,ihz_dir=makeObject("hz",
+                                        sys_dir+"/"+ihz_conf,
+                                        qover=qover)
+PRINTOUT("Object directory '%s' created"%ihz_dir)
 ihz_webdir=WEB_DIR+ihz_dir
-PRINTOUT("Object hash:%s"%ihz_hash)
 
 ###################################################
 #CALCULATE BINARY HABITABLE ZONE AT TAU
@@ -222,7 +220,7 @@ ini_outwd=initialsString(ihz.outcrit_wd)
 ini_innr=initialsString(ihz.incrit_nr)
 ini_outnr=initialsString(ihz.outcrit_nr)
 
-fd=open(ihz_dir+"ihz.data","w")
+fd=open(ihz_dir+"hz.data","w")
 fd.write("""\
 from numpy import array
 
@@ -296,8 +294,8 @@ planet=\
 loadConf("%s"+"planet.conf")+\
 loadConf("%s"+"planet.data")
 ihz=\
-loadConf("%s"+"ihz.conf")+\
-loadConf("%s"+"ihz.data")
+loadConf("%s"+"hz.conf")+\
+loadConf("%s"+"hz.data")
 
 fig=plt.figure(figsize=(8,8))
 ax=fig.add_axes([0.01,0.01,0.98,0.98])
@@ -393,8 +391,8 @@ planet=\
 loadConf("%s"+"planet.conf")+\
 loadConf("%s"+"planet.data")
 ihz=\
-loadConf("%s"+"ihz.conf")+\
-loadConf("%s"+"ihz.data")
+loadConf("%s"+"hz.conf")+\
+loadConf("%s"+"hz.data")
 
 fig=plt.figure(figsize=(8,6))
 ax=fig.add_axes([0.1,0.1,0.8,0.8])
@@ -456,8 +454,8 @@ planet=\
 loadConf("%s"+"planet.conf")+\
 loadConf("%s"+"planet.data")
 ihz=\
-loadConf("%s"+"ihz.conf")+\
-loadConf("%s"+"ihz.data")
+loadConf("%s"+"hz.conf")+\
+loadConf("%s"+"hz.data")
 
 fig=plt.figure(figsize=(8,6))
 ax=fig.add_axes([0.1,0.1,0.8,0.8])
@@ -509,8 +507,19 @@ horizontalalignment='center',verticalalignment='bottom',transform=ax.transAxes)
 fh=open(ihz_dir+"ihz.html","w")
 fh.write("""\
 <h2>Instantaneous Circumbinary Habitable Zone (HZ)</h2>
+<center>
+  <a target="_blank" href="%s/iHZ.png">
+    <img width=60%% src="%s/iHZ.png">
+  </a>
+  <br/>
+  <i>Instantaneous Habitable Zone</i>
+  (
+  <a target="_blank" href="%s/iHZ.png.txt">data</a>|
+  <a target="_blank" href="%s/web/replot.php?plot=iHZ.py">replot</a>
+  )
+</center>
 <h3>HZ Edges</h3>
-<table width=300>
+<table>
   <tr><td>l<sub>Earth,eq</sub> (AU):</td><td>%.3f</td></tr>
   <tr><td colspan=2><b>Wide HZ</b></td></tr>
   <tr><td>l<sub>in,%s</sub> (AU):</td><td>%.3f</td></tr>
@@ -518,55 +527,44 @@ fh.write("""\
   <tr><td colspan=2><b>Narrow HZ</b></td></tr>
   <tr><td>l<sub>in,%s</sub> (AU):</td><td>%.3f</td></tr>
   <tr><td>l<sub>out,%s</sub> (AU):</td><td>%.3f</td></tr>
-  <tr><td colspan=2>
-      <a href="%s/iHZ.png">
-	<img width=100%% src="%s/iHZ.png">
-      </a>
-      <br/>
-      <i>Instantaneous Habitable Zone</i>
-	(
-	<a href="%s/iHZ.png.txt">data</a>|
-	<a href="%s/web/replot.php?plot=iHZ.py">replot</a>
-	)
-  </td></tr>
 </table>
 <h3>Continuous Habitable Zone</h3>
-<table width=300>
+<table>
   <tr><td>&tau;<sub>MS</sub> (Gyr):</td><td>%.3f</td></tr>
   <tr><td>l<sub>in,max</sub> (AU):</td><td>%.3f</td></tr>
   <tr><td>l<sub>out,min</sub> (AU):</td><td>%.3f</td></tr>
   <tr><td colspan=2>
-      <a href="%s/hz-evolution.png">
+      <a target="_blank" href="%s/hz-evolution.png">
 	<img width=100%% src="%s/hz-evolution.png">
       </a>
       <br/>
       <i>Instantaneous Habitable Zone</i>
 	(
-	<a href="%s/hz-evolution.png.txt">data</a>|
-	<a href="%s/web/replot.php?plot=hz-evolution.py">replot</a>
+	<a target="_blank" href="%s/hz-evolution.png.txt">data</a>|
+	<a target="_blank" href="%s/web/replot.php?plot=hz-evolution.py">replot</a>
 	)
   </td></tr>
 </table>
 <h3>Insolation and Photon Flux</h3>
-<table width=500>
+<table>
   <tr><td>&lt;S(Planet,a=%.2f,e=%.2f)&gt; [W/m<sup>2</sup>,S<sub>Sun</sub>]:</td><td>%.3f, %.3f</td></tr>
   <tr><td>S(Planet)/S<sub>Sun</sub>(min,max,range,std):</td><td>%.3f,%.3f,%.3f,%.3f</td></tr>
   <tr><td colspan=2>
-      <a href="%s/insolation.png">
+      <a target="_blank" href="%s/insolation.png">
 	<img width=100%% src="%s/insolation.png">
       </a>
       <br/>
       <i>Instantaneous Habitable Zone</i>
 	(
-	<a href="%s/insolation.png.txt">data</a>|
-	<a href="%s/web/replot.php?plot=insolation.py">replot</a>
+	<a target="_blank" href="%s/insolation.png.txt">data</a>|
+	<a target="_blank" href="%s/web/replot.php?plot=insolation.py">replot</a>
 	)
   </td></tr>
 </table>
-"""%(leeq,
+"""%(ihz_webdir,ihz_webdir,ihz_webdir,WEB_DIR,
+     leeq,
      ini_inwd,linwd,ini_outwd,loutwd,
      ini_innr,linnr,ini_outnr,loutnr,
-     ihz_webdir,ihz_webdir,ihz_webdir,WEB_DIR,
      tms,clin,clout,
      ihz_webdir,ihz_webdir,ihz_webdir,WEB_DIR,
      planet.aorb,planet.eorb,fstats.array[0,0],fstats.array[0,0]/SOLAR_CONSTANT,
@@ -577,38 +575,6 @@ fh.write("""\
 fh.close()
 
 ###################################################
-#GENERATE SUMMARY REPORT
-###################################################
-fh=open(ihz_dir+"ihz-summary.html","w")
-fh.write("""\
-<table width=300>
-  <tr><td>l<sub>Earth,eq</sub> (AU):</td><td>%.3f</td></tr>
-  <tr><td colspan=2><b>Wide HZ</b></td></tr>
-  <tr><td>l<sub>in,%s</sub> (AU):</td><td>%.3f</td></tr>
-  <tr><td>l<sub>out,%s</sub> (AU):</td><td>%.3f</td></tr>
-  <tr><td colspan=2><b>Narrow HZ</b></td></tr>
-  <tr><td>l<sub>in,%s</sub> (AU):</td><td>%.3f</td></tr>
-  <tr><td>l<sub>out,%s</sub> (AU):</td><td>%.3f</td></tr>
-  <tr><td colspan=2>
-      <a href="%s/iHZ.png">
-	<img width=100%% src="%s/iHZ.png">
-      </a>
-  </td></tr>
-  <tr><td colspan=2>
-      <a href="%s/insolation.png">
-	<img width=100%% src="%s/insolation.png">
-      </a>
-  </td></tr>
-</table>
-"""%(leeq,
-     ini_inwd,linwd,ini_outwd,loutwd,
-     ini_innr,linnr,ini_outnr,loutnr,
-     ihz_webdir,ihz_webdir,
-     ihz_webdir,ihz_webdir,
-     ))
-fh.close()
-
-###################################################
 #CLOSE OBJECT
 ###################################################
-#closeObject(ihz_dir)
+closeObject(ihz_dir)
