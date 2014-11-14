@@ -97,12 +97,12 @@ if(!is_dir($SESSDIR)){
 }else{
   $source_dir=$SYSDIR."$SESSID/";
   echoVerbose("Session directory already exist.");
-  $TABID=8;
+  $TABID=1;
   //========================================
   //LOADING RESULTS
   //========================================
 }
-//$CONTENT.="$ajax_all_Load";
+$CONTENT.="$ajax_all_Load";
 echoVerbose("<br/>");
 echoVerbose("Source dir: $source_dir<br/>");
 
