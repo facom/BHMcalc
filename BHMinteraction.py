@@ -29,77 +29,64 @@ from BHM.BHMastro import *
 Usage=\
 """
 Usage:
-   python %s <env>.conf <rot>.conf <binary>.conf <star1>.conf <star1>.conf <planet>.conf <qoverride>
+   python %s <sysdir> <module>.conf <qoverride>
 
-   <env>.conf (file): Configuration of the environmental evolution model.
+   <sysdir>: Directory where the system configuration files lie
 
-   <binary>.conf (file): Configuration file with data about binary.
+   <module>.conf (file): Configuration file for the module.
 
-   <star1>.conf,<star2>.conf (file): Configuration file with data
-   about stars.
+   <qoverride> (int 0/1): Override any existent object with the same hash.
+"""%argv[0]
 
-   <planet>.conf (file): Configuration file with data about planet.
-
-   <qoverride> (int 0/1): Override any previously existent
-   calculation.
-"""%(argv[0])
-
-env_conf,rot_conf,binary_conf,ihz_conf,\
-    star1_conf,star2_conf,planet_conf,qover=\
+sys_dir,env_conf,qover=\
     readArgs(argv,
-             ["str","str","str","str",
-              "str","str","str",
-              "int"],
-             ["env.conf","rot.conf","binary.conf","ihz.conf",
-              "star1.conf","star2.conf","planet.conf","0"],
+             ["str","str","int"],
+             ["sys/template","hz.conf","0"],
              Usage=Usage)
-
-PRINTOUT("Executing for: env=%s, rot=%s, bin=%s, ihz=%s, star1=%s, star2=%s, planet=%s"%(\
-        env_conf,
-        rot_conf,
-        binary_conf,
-        ihz_conf,
-        star1_conf,
-        star2_conf,
-        planet_conf))
 
 ###################################################
 #LOAD PREVIOUS OBJECTS
 ###################################################
 PRINTOUT("Loading other objects...")
 #==================================================
-#LOADING ROTATIONAL EVOLUTION
+#LOADING ROTATION
+rot_conf="rotation.conf"
 rot,rot_dir,rot_str,rot_hash,rot_liv,rot_stg=\
-    signObject(rot_conf)
-rot+=loadConf(rot_dir+"rot.data")
+    signObject("rotation",sys_dir+"/"+rot_conf)
+rot+=loadConf(rot_dir+"rotation.data")
 tr,bin_rot1=interpMatrix(rot.star1_binrotevol)
 tr,bin_rot2=interpMatrix(rot.star2_binrotevol)
 #==================================================
-#LOADING HABITABLE ZONE
+#LOADING IHZ
+ihz_conf="hz.conf"
 ihz,ihz_dir,ihz_str,ihz_hash,ihz_liv,ihz_stg=\
-    signObject(ihz_conf)
-ihz+=loadConf(ihz_dir+"ihz.data")
-#==================================================
-#LOADING BINARY
-binary,binary_dir,binary_str,binary_hash,binary_liv,binary_stg=\
-    signObject(binary_conf)
-binary+=loadConf(binary_dir+"binary.data")
+    signObject("hz",sys_dir+"/"+ihz_conf)
+ihz+=loadConf(ihz_dir+"hz.data")
 #==================================================
 #LOADING STAR 1
+star1_conf="star1.conf"
 star1,star1_dir,star1_str,star1_hash,star1_liv,star1_stg=\
-    signObject(star1_conf)
+    signObject("star",sys_dir+"/"+star1_conf)
 star1+=loadConf(star1_dir+"star.data")
 evoInterpFunctions(star1)
 #==================================================
 #LOADING STAR 2
+star2_conf="star2.conf"
 star2,star2_dir,star2_str,star2_hash,star2_liv,star2_stg=\
-    signObject(star2_conf)
+    signObject("star",sys_dir+"/"+star2_conf)
 star2+=loadConf(star2_dir+"star.data")
 evoInterpFunctions(star2)
 #==================================================
+#LOADING BINARY
+binary_conf="binary.conf"
+binary,binary_dir,binary_str,binary_hash,binary_liv,binary_stg=\
+    signObject("binary",sys_dir+"/"+binary_conf)
+binary+=loadConf(binary_dir+"binary.data")
+#==================================================
 #LOADING PLANET
+planet_conf="planet.conf"
 planet,planet_dir,planet_str,planet_hash,planet_liv,planet_stg=\
-    signObject(planet_conf)
+    signObject("planet",sys_dir+"/"+planet_conf)
 planet+=loadConf(planet_dir+"planet.data")
 tp,thermevol=interpMatrix(planet.thermevol)
 
@@ -107,7 +94,7 @@ tp,thermevol=interpMatrix(planet.thermevol)
 #LOAD ENV OBJECT
 ###################################################
 env,env_str,env_hash,env_dir=\
-    makeObject(env_conf,qover=qover)
+    makeObject("interaction",sys_dir+"/"+env_conf,qover=qover)
 env_webdir=WEB_DIR+env_dir
 PRINTOUT("Object hash:%s"%env_hash)
 
@@ -413,7 +400,7 @@ massloss=toStack(Mps)|massloss
 env.title="$M_1/M_{\\rm Sun}=$%.3f, $M_2/M_{\\rm Sun}$=%.3f, $a_{\\rm bin}$=%.3f AU, $e_{\\rm bin}$=%.2f, $P_{\\rm bin}$=%.3f d"%(star1.M,star2.M,binary.abin,binary.ebin,binary.Pbin)
 
 PRINTERR("Storing rotational evolution data...")
-f=open(env_dir+"env.data","w")
+f=open(env_dir+"interaction.data","w")
 
 f.write("""\
 from numpy import array
@@ -457,14 +444,14 @@ plotFigure(env_dir,"flux-XUV-absolute",\
 """
 from BHM.BHMstars import *
 env=\
-loadConf("%s"+"env.conf")+\
-loadConf("%s"+"env.data")
+loadConf("%s"+"interaction.conf")+\
+loadConf("%s"+"interaction.data")
 planet=\
 loadConf("%s"+"planet.conf")+\
 loadConf("%s"+"planet.data")
 rot=\
-loadConf("%s"+"rot.conf")+\
-loadConf("%s"+"rot.data")
+loadConf("%s"+"rotation.conf")+\
+loadConf("%s"+"rotation.data")
 
 fig=plt.figure(figsize=(8,6))
 ax=fig.add_axes([0.1,0.1,0.8,0.8])
@@ -504,14 +491,14 @@ plotFigure(env_dir,"flux-SW-absolute",\
 """
 from BHM.BHMstars import *
 env=\
-loadConf("%s"+"env.conf")+\
-loadConf("%s"+"env.data")
+loadConf("%s"+"interaction.conf")+\
+loadConf("%s"+"interaction.data")
 planet=\
 loadConf("%s"+"planet.conf")+\
 loadConf("%s"+"planet.data")
 rot=\
-loadConf("%s"+"rot.conf")+\
-loadConf("%s"+"rot.data")
+loadConf("%s"+"rotation.conf")+\
+loadConf("%s"+"rotation.data")
 
 fig=plt.figure(figsize=(8,6))
 ax=fig.add_axes([0.1,0.1,0.8,0.8])
@@ -550,14 +537,14 @@ plotFigure(env_dir,"int-XUV-absolute",\
 """
 from BHM.BHMstars import *
 env=\
-loadConf("%s"+"env.conf")+\
-loadConf("%s"+"env.data")
+loadConf("%s"+"interaction.conf")+\
+loadConf("%s"+"interaction.data")
 planet=\
 loadConf("%s"+"planet.conf")+\
 loadConf("%s"+"planet.data")
 rot=\
-loadConf("%s"+"rot.conf")+\
-loadConf("%s"+"rot.data")
+loadConf("%s"+"rotation.conf")+\
+loadConf("%s"+"rotation.data")
 
 fig=plt.figure(figsize=(8,6))
 ax=fig.add_axes([0.14,0.1,0.80,0.8])
@@ -615,14 +602,14 @@ plotFigure(env_dir,"int-SW-absolute",\
 """
 from BHM.BHMstars import *
 env=\
-loadConf("%s"+"env.conf")+\
-loadConf("%s"+"env.data")
+loadConf("%s"+"interaction.conf")+\
+loadConf("%s"+"interaction.data")
 planet=\
 loadConf("%s"+"planet.conf")+\
 loadConf("%s"+"planet.data")
 rot=\
-loadConf("%s"+"rot.conf")+\
-loadConf("%s"+"rot.data")
+loadConf("%s"+"rotation.conf")+\
+loadConf("%s"+"rotation.data")
 
 fig=plt.figure(figsize=(8,6))
 ax=fig.add_axes([0.14,0.1,0.80,0.8])
@@ -680,8 +667,8 @@ plotFigure(env_dir,"standoff-distance",\
 """
 from BHM.BHMstars import *
 env=\
-loadConf("%s"+"env.conf")+\
-loadConf("%s"+"env.data")
+loadConf("%s"+"interaction.conf")+\
+loadConf("%s"+"interaction.data")
 planet=\
 loadConf("%s"+"planet.conf")+\
 loadConf("%s"+"planet.data")
@@ -713,8 +700,8 @@ plotFigure(env_dir,"mass-loss-absolute",\
 """
 from BHM.BHMstars import *
 env=\
-loadConf("%s"+"env.conf")+\
-loadConf("%s"+"env.data")
+loadConf("%s"+"interaction.conf")+\
+loadConf("%s"+"interaction.data")
 planet=\
 loadConf("%s"+"planet.conf")+\
 loadConf("%s"+"planet.data")
@@ -767,8 +754,8 @@ plotFigure(env_dir,"mass-loss-relative",\
 """
 from BHM.BHMstars import *
 env=\
-loadConf("%s"+"env.conf")+\
-loadConf("%s"+"env.data")
+loadConf("%s"+"interaction.conf")+\
+loadConf("%s"+"interaction.data")
 planet=\
 loadConf("%s"+"planet.conf")+\
 loadConf("%s"+"planet.data")
@@ -813,6 +800,130 @@ ax.set_yscale("log")
 """%(env_dir,env_dir,
      planet_dir,planet_dir),
            watermarkpos='outer')
+
+###################################################
+#GENERATE FULL REPORT
+###################################################
+PRINTERR("Creating html report...")
+
+fh=open(env_dir+"interaction.html","w")
+fh.write("""\
+<h2>Binary-Planet Interaction</h2>
+<center>
+  <a target="_blank" href="%s/flux-XUV-absolute.png">
+    <img width=60%% src="%s/flux-XUV-absolute.png">
+  </a>
+  <br/>
+  <i>Evolution of XUV flux</i>
+  (
+  <a target="_blank" href="%s/flux-XUV-absolute.png.txt">data</a>|
+  <a target="_blank" href="%s/web/replot.php?plot=flux-XUV-absolute.py">replot</a>
+  )
+</center>
+<h3>XUV Flux</h3>
+<table>
+  <tr><td>
+      <a href="%s/flux-XUV-absolute.png" target="_blank">
+	<img width=100%% src="%s/flux-XUV-absolute.png">
+      </a>
+      <br/>
+      <i>XUV Flux (absolute)</i>
+	(
+	<a href="%s/flux-XUV-absolute.png.txt" target="_blank">data</a>|
+	<a href="%s/web/replot.php?plot=flux-XUV-absolute.py" target="_blank">replot</a>
+	)
+  </td></tr>
+  <tr><td>
+      <a href="%s/int-XUV-absolute.png" target="_blank">
+	<img width=100%% src="%s/int-XUV-absolute.png">
+      </a>
+      <br/>
+      <i>Integrated XUV Flux (absolute)</i>
+	(
+	<a href="%s/int-XUV-absolute.png.txt" target="_blank">data</a>|
+	<a href="%s/web/replot.php?plot=int-XUV-absolute.py" target="_blank">replot</a>
+	)
+  </td></tr>
+</table>
+<h3>Stellar Wind Flux</h3>
+<table>
+  <tr><td>
+      <a href="%s/flux-SW-absolute.png" target="_blank">
+	<img width=100%% src="%s/flux-SW-absolute.png">
+      </a>
+      <br/>
+      <i>SW Flux (absolute)</i>
+	(
+	<a href="%s/flux-SW-absolute.png.txt" target="_blank">data</a>|
+	<a href="%s/web/replot.php?plot=flux-SW-absolute.py" target="_blank">replot</a>
+	)
+  </td></tr>
+  <tr><td>
+      <a href="%s/int-SW-absolute.png" target="_blank">
+	<img width=100%% src="%s/int-SW-absolute.png">
+      </a>
+      <br/>
+      <i>Integrated SW Flux (absolute)</i>
+	(
+	<a href="%s/int-SW-absolute.png.txt" target="_blank">data</a>|
+	<a href="%s/web/replot.php?plot=int-SW-absolute.py" target="_blank">replot</a>
+	)
+  </td></tr>
+</table>
+<h3>Standoff distance</h3>
+<table>
+  <tr><td>
+      <a href="%s/standoff-distance.png" target="_blank">
+	<img width=100%% src="%s/standoff-distance.png">
+      </a>
+      <br/>
+      <i>Standoff Distance</i>
+	(
+	<a href="%s/standoff-distance.png.txt" target="_blank">data</a>|
+	<a href="%s/web/replot.php?plot=standoff-distance.py" target="_blank">replot</a>
+	)
+  </td></tr>
+</table>
+<h3>Mass-loss</h3>
+<table>
+  <tr><td>M<sub>loss,planet</sub> (Tidal, kg):</td><td>%.3f</td></tr>
+  <tr><td>P<sub>loss,planet</sub> (Tidal, bars):</td><td>%.3f</td></tr>
+  <tr><td>M<sub>loss,planet</sub> (No tidal, kg):</td><td>%.3f</td></tr>
+  <tr><td>P<sub>loss,planet</sub> (No tidal, bars):</td><td>%.3f</td></tr>
+  <tr><td>
+      <a href="%s/mass-loss-absolute.png" target="_blank">
+	<img width=100%% src="%s/mass-loss-absolute.png">
+      </a>
+      <br/>
+      <i>Mass-loss (absolute)</i>
+	(
+	<a href="%s/mass-loss-absolute.png.txt" target="_blank">data</a>|
+	<a href="%s/web/replot.php?plot=mass-loss-absolute.py" target="_blank">replot</a>
+	)
+  </td></tr>
+  <tr><td>
+      <a href="%s/mass-loss-relative.png" target="_blank">
+	<img width=100%% src="%s/mass-loss-relative.png">
+      </a>
+      <br/>
+      <i>Mass-loss (absolute)</i>
+	(
+	<a href="%s/mass-loss-relative.png.txt" target="_blank">data</a>|
+	<a href="%s/web/replot.php?plot=mass-loss-relative.py" target="_blank">replot</a>
+	)
+  </td></tr>
+</table>
+"""%(env_webdir,env_webdir,env_webdir,WEB_DIR,#FLUX XUV ABSOLUTE (INTRO)
+     env_webdir,env_webdir,env_webdir,WEB_DIR,#FLUX XUV ABSOLUTE
+     env_webdir,env_webdir,env_webdir,WEB_DIR,#INT XUV ABSOLUTE
+     env_webdir,env_webdir,env_webdir,WEB_DIR,#FLUX SW ABSOLUTE
+     env_webdir,env_webdir,env_webdir,WEB_DIR,#INT SW ABSOLUTE
+     env_webdir,env_webdir,env_webdir,WEB_DIR,#STANDOFF DISTANCE
+     Mlp,Plp,ntMlp,ntPlp,
+     env_webdir,env_webdir,env_webdir,WEB_DIR,#MASS-LOSS ABSOLUTE
+     env_webdir,env_webdir,env_webdir,WEB_DIR#MASS-LOSS RELATIVE
+     ))
+fh.close()
 
 ###################################################
 #CLOSE OBJECT

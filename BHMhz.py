@@ -9,13 +9,7 @@
 ###################################################
 # 2014 [)] Jorge I. Zuluaga, Viva la BHM!
 ###################################################
-# Instantaneous Habitable Zone
-# Inputs: 
-# - Stellar properties (star1.conf,star2.conf)
-# - Binary properties (binary.conf)
-# - Planetary properties (planet.conf)
-# Outputs: 
-# - iHZ data (iHZ.data)
+# Habitable Zone
 ###################################################
 from BHM import *
 from BHM.BHMplot import *
@@ -78,9 +72,8 @@ planet+=loadConf(planet_dir+"planet.data")
 #LOAD IHZ OBJECT
 ###################################################
 PRINTOUT("Loading object from '%s'"%ihz_conf)
-ihz,ihz_str,ihz_hash,ihz_dir=makeObject("hz",
-                                        sys_dir+"/"+ihz_conf,
-                                        qover=qover)
+ihz,ihz_str,ihz_hash,ihz_dir=\
+     makeObject("hz",sys_dir+"/"+ihz_conf,qover=qover)
 PRINTOUT("Object directory '%s' created"%ihz_dir)
 ihz_webdir=WEB_DIR+ihz_dir
 

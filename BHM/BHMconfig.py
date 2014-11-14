@@ -46,7 +46,7 @@ exec("OBJECT_HASHABLES['binary']=dict(Pbin='%.4f',abin='%.4f',ebin='%.4f')")
 exec("OBJECT_HASHABLES['planet']=dict(M='%.4f',fHHe='%.4f',CMF='%.4f',tau='%.4f',aorb='%.4f',eorb='%.4f',Porb='%.4f',worb='%.4f',Prot='%.4f')")
 exec("OBJECT_HASHABLES['rotation']=dict(k='%.4f')")
 exec("OBJECT_HASHABLES['hz']=dict(str_incrit_wd='%s',str_incrit_nr='%s',str_outcrit_wd='%s',str_outcrit_nr='%s')")
-exec("OBJECT_HASHABLES['interaction']=dict(tauini='%.4f',str_earlywind='%s',nM='%.2f',nP='%.2f',str_refobj='%s')")
+exec("OBJECT_HASHABLES['interaction']=dict(tauini='%.4f',tauref='%.4f',str_earlywind='%s',nM='%.2f',nP='%.2f',str_refobj='%s')")
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 #PIPE TREE
@@ -57,4 +57,6 @@ exec("OBJECT_PIPE['planet']=[]")
 exec("OBJECT_PIPE['binary']=['star1','star2']")
 exec("OBJECT_PIPE['hz']=['binary','planet']")
 exec("OBJECT_PIPE['rotation']=['binary']")
-exec("OBJECT_PIPE['interaction']=['rotation','planet']")
+exec("OBJECT_PIPE['interaction']=['rotation','hz','planet']")
+
+exec("OBJECTS_ALL=['star1','star2','planet','binary','hz','rotation','interaction']")

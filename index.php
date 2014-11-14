@@ -59,15 +59,31 @@ $ajaxform_planet_Update=ajaxFromCode($code,"'#planet_Update'","click");
 $code=ajaxMultipleForm(array("binary"),"binary_form");
 $ajaxform_binary_Update=ajaxFromCode($code,"'#binary_Update'","click");
 
-//BINARY
+//HABITABLE ZONE
 $code=ajaxMultipleForm(array("hz"),"hz_form");
 $ajaxform_hz_Update=ajaxFromCode($code,"'#hz_Update'","click");
 
+//ROTATION
+$code=ajaxMultipleForm(array("rotation"),"rotation_form");
+$ajaxform_rotation_Update=ajaxFromCode($code,"'#rotation_Update'","click");
+
+//INTERACTION
+$code=ajaxMultipleForm(array("interaction"),"interaction_form");
+$ajaxform_interaction_Update=ajaxFromCode($code,"'#interaction_Update'","click");
+
+//INTERACTION
+$code=ajaxMultipleForm(array("summary"),"summary_form");
+$ajaxform_summary_Update=ajaxFromCode($code,"'#summary_Update'","click");
+
+echo "<pre>$ajaxform_summary_Update</pre>";
+
 //LOAD ALL
-//$code=ajaxMultipleForm(array("star1","star2","planet","binary"),"allforms");
 //$code=ajaxMultipleForm(array("binary"),"allforms");
-$code=ajaxMultipleForm(array("hz"),"allforms");
+//$code=ajaxMultipleForm(array("hz"),"allforms");
 //$code=ajaxMultipleForm(array("star1"),"allforms");
+//$code=ajaxMultipleForm(array("rotation"),"allforms");
+//$code=ajaxMultipleForm(array("interaction"),"allforms");
+$code=ajaxMultipleForm(array("interaction","rotation","hz","binary","star1","star2","planet"),"allforms");
 $ajax_all_Update=ajaxFromCode($code,"'#all_Update'","click");
 $ajax_all_Load=ajaxFromCode($code,"document","ready");
 
@@ -77,16 +93,16 @@ $ajax_all_Load=ajaxFromCode($code,"document","ready");
 if(!is_dir($SESSDIR)){
   $source_dir=$SYSDIR."template/";
   echoVerbose("No session directory.");
-  $TABID=1;
+  $TABID=0;
 }else{
   $source_dir=$SYSDIR."$SESSID/";
   echoVerbose("Session directory already exist.");
-  $TABID=5;
+  $TABID=8;
   //========================================
   //LOADING RESULTS
   //========================================
 }
-$CONTENT.="$ajax_all_Load";
+//$CONTENT.="$ajax_all_Load";
 echoVerbose("<br/>");
 echoVerbose("Source dir: $source_dir<br/>");
 
@@ -202,6 +218,7 @@ $CONTENT.=<<<C
 	</div>
 	<div id="star1_results_panel" class="results">
 	  <div><center class="title">Results</center><hr width="90%"/></div>
+	  <div class="download" id="star1_download"></div>
 	  <div id="star1_results_status_loader" style="background-color:white;">
 	    <div id="star1_results_status" style="background-color:white;">
 	      <iframe id="star1_results_frame" src="web/blank.html" 
@@ -300,6 +317,7 @@ $CONTENT.=<<<C
 	</div>
 	<div id="star2_results_panel" class="results">
 	  <div><center class="title">Results</center><hr width="90%"/></div>
+	  <div class="download" id="star2_download"></div>
 	  <div id="star2_results_status_loader" style="background-color:white;">
 	    <div id="star2_results_status" style="background-color:white;">
 	      <iframe id="star2_results_frame" src="web/blank.html" 
@@ -455,6 +473,7 @@ $CONTENT.=<<<C
 	</div>
 	<div id="planet_results_panel" class="results">
 	  <div><center class="title">Results</center><hr width="90%"/></div>
+	  <div class="download" id="planet_download"></div>
 	  <div id="planet_results_status_loader" style="background-color:white;">
 	    <div id="planet_results_status" style="background-color:white;">
 	      <iframe id="planet_results_frame" src="web/blank.html" 
@@ -527,6 +546,7 @@ $CONTENT.=<<<C
 	</div>
 	<div id="binary_results_panel" class="results">
 	  <div><center class="title">Results</center><hr width="90%"/></div>
+	  <div class="download" id="binary_download"></div>
 	  <div id="binary_results_status_loader" style="background-color:white;">
 	    <div id="binary_results_status" style="background-color:white;">
 	      <iframe id="binary_results_frame" src="web/blank.html" 
@@ -614,6 +634,7 @@ $CONTENT.=<<<C
 	</div>
 	<div id="hz_results_panel" class="results">
 	  <div><center class="title">Results</center><hr width="90%"/></div>
+	  <div class="download" id="hz_download"></div>
 	  <div id="hz_results_status_loader" style="background-color:white;">
 	    <div id="hz_results_status" style="background-color:white;">
 	      <iframe id="hz_results_frame" src="web/blank.html" 
@@ -627,20 +648,249 @@ $CONTENT.=<<<C
    </form>
   </div>
 
-
-
-
-
-  <div class="tabbertab" id="rotEvo" title="Rotational Evolution">
+  <!-- //////////////////////////////////////////////////////////// -->
+  <!-- EVOLUTION OF ROTATION -->
+  <!-- //////////////////////////////////////////////////////////// -->
+  <div class="tabbertab" id="rotation" title="Rotation and Activity">
+  <form id="rotation_form" action="BHMrun.php">
     <div class="tabcontent">
-      Casa
+      <div class="wrapper">
+	<div id="rotation_form" class="formarea">
+	  <div><center class="title">Input Form</center><hr width="90%"/></div>
+	    <input type="hidden" name="module" value="rotation">
+	    <input type="hidden" name="object" value="rotation">
+	    <table border=0px>
+	      <tr>
+		<!-- ---------------------------------------- -->
+		<td class="name">k:</td>
+		<td class="field">
+		  <input type="text" name="rotation_k" value="$rotation_k">
+		</td>
+	      </tr>
+	      <tr>
+		<td class="help" colspan=2>
+		  Exponent.
+		</td>
+	      </tr>
+	      <!-- ---------------------------------------- -->
+	      <tr>
+		<td class="button" colspan=2>
+		  <button class="update" id="rotation_Update">Update</button> 
+		  $ajaxform_rotation_Update
+		</td>
+	      </tr>
+	      <!-- ---------------------------------------- -->
+	    </table>
+	</div>
+	<div id="rotation_results_panel" class="results">
+	  <div><center class="title">Results</center><hr width="90%"/></div>
+	  <div class="download" id="rotation_download"></div>
+	  <div id="rotation_results_status_loader" style="background-color:white;">
+	    <div id="rotation_results_status" style="background-color:white;">
+	      <iframe id="rotation_results_frame" src="web/blank.html" 
+		      scrolling="no" onload="adjustiFrame(this);">
+	      </iframe>
+	    </div>
+	  </div>
+	</div>
+      </div>
     </div>
+   </form>
   </div>
-  <div class="tabbertab" id="envEvo" title="Stars-Planet Interaction">
+
+  <!-- //////////////////////////////////////////////////////////// -->
+  <!-- BINARY-PLANET INTERACTION -->
+  <!-- //////////////////////////////////////////////////////////// -->
+  <div class="tabbertab" id="summary" title="Binary-Planet Interaction">
+  <form id="interaction_form" action="BHMrun.php">
     <div class="tabcontent">
-      Casa
+      <div class="wrapper">
+	<div id="interaction_form" class="formarea">
+	  <div><center class="title">Input Form</center><hr width="90%"/></div>
+	    <input type="hidden" name="module" value="interaction">
+	    <input type="hidden" name="object" value="interaction">
+	    <table border=0px>
+	      <!-- ---------------------------------------- -->
+	      <tr>
+		<td class="name">Initial time:</td>
+		<td class="field">
+		  <input type="text" name="interaction_tauini" value="$interaction_tauini">
+		  Gyr
+		</td>
+	      </tr>
+	      <tr>
+		<td class="help" colspan=2>
+		  Initial time for integration.
+		</td>
+	      </tr>
+	      <!-- ---------------------------------------- -->
+	      <tr>
+		<td class="name">Reference time</td>
+		<td class="field">
+		  <input type="text" name="interaction_tauref" value="$interaction_tauref">
+		  Gyr
+		</td>
+	      </tr>
+	      <tr>
+		<td class="help" colspan=2>
+		  Reference time.
+		</td>
+	      </tr>
+	      <!-- ---------------------------------------- -->
+	      <tr>
+		<td class="name">Early-wind assumption:</td>
+		<td class="field">
+		  <input type="text" name="interaction_str_earlywind" value="$interaction_str_earlywind">
+		</td>
+	      </tr>
+	      <tr>
+		<td class="help" colspan=2>
+		  Available: 'trend', 'constant'
+		</td>
+	      </tr>
+	      <!-- ---------------------------------------- -->
+	      <tr>
+		<td class="name">Magnetosphere Reference Object:</td>
+		<td class="field">
+		  <input type="text" name="interaction_str_refobj" value="$interaction_str_refobj">
+		</td>
+	      </tr>
+	      <tr>
+		<td class="help" colspan=2>
+		  Available: 'Earth', 'Saturn'
+		</td>
+	      </tr>
+	      <!-- ---------------------------------------- -->
+	      <tr>
+		<td class="name">Standoff distance, M-exponent:</td>
+		<td class="field">
+		  <input type="text" name="interaction_nM" value="$interaction_nM">
+		</td>
+	      </tr>
+	      <tr>
+		<td class="help" colspan=2>
+		  For most magnetospheres n<sub>M</sub>=3.0.
+		</td>
+	      </tr>
+	      <!-- ---------------------------------------- -->
+	      <tr>
+		<td class="name">Standoff distance, P-exponent:</td>
+		<td class="field">
+		  <input type="text" name="interaction_nP" value="$interaction_nP">
+		</td>
+	      </tr>
+	      <tr>
+		<td class="help" colspan=2>
+		  For stiff magnetospheres (Earth-like to
+		  Neptune-like) n<sub>P</sub>=6.0, for responsive
+		  magnetospheres (gas giants) n<sub>P</sub>=4.5.
+		</td>
+	      </tr>
+	      <!-- ---------------------------------------- -->
+	      <tr>
+		<td class="name">Entrapment factor</td>
+		<td class="field">
+		  <input type="text" name="interaction_alpha" value="$interaction_alpha">
+		</td>
+	      </tr>
+	      <tr>
+		<td class="help" colspan=2>
+		  For Venus &alpha;=0.3 fits well early mass-loss.
+		</td>
+	      </tr>
+	      <!-- ---------------------------------------- -->
+	      <tr>
+		<td class="name">Atmospheric mean molecular weight</td>
+		<td class="field">
+		  <input type="text" name="interaction_muatm" value="$interaction_muatm">
+		  g/mol
+		</td>
+	      </tr>
+	      <tr>
+		<td class="help" colspan=2>
+		  Earth's atmosphere, &mu;<sub>atm</sub>=44 g/mol
+		</td>
+	      </tr>
+	      <!-- ---------------------------------------- -->
+	      <tr>
+		<td class="name">Minimum planetary mass for Mass-loss scaling</td>
+		<td class="field">
+		  <input type="text" name="interaction_Mmin" value="$interaction_Mmin">
+		  M<sub>Earth</sub>
+		</td>
+	      </tr>
+	      <tr>
+		<td class="help" colspan=2>
+		  Earth's atmosphere, &mu;<sub>atm</sub>=44 g/mol
+		</td>
+	      </tr>
+	      <!-- ---------------------------------------- -->
+	      <tr>
+		<td class="name">Maximum planetary mass for Mass-loss scaling</td>
+		<td class="field">
+		  <input type="text" name="interaction_Mmax" value="$interaction_Mmax">
+		  M<sub>Earth</sub>
+		</td>
+	      </tr>
+	      <tr>
+		<td class="help" colspan=2>
+		  Earth's atmosphere, &mu;<sub>atm</sub>=44 g/mol
+		</td>
+	      </tr>
+	      <!-- ---------------------------------------- -->
+	      <tr>
+		<td class="button" colspan=2>
+		  <button class="update" id="interaction_Update">Update</button> 
+		  $ajaxform_interaction_Update
+		</td>
+	      </tr>
+	      <!-- ---------------------------------------- -->
+	    </table>
+	</div>
+	<div id="interaction_results_panel" class="results">
+	  <div><center class="title">Results</center><hr width="90%"/></div>
+	  <div class="download" id="interaction_download"></div>
+	  <div id="interaction_results_status_loader" style="background-color:white;">
+	    <div id="interaction_results_status" style="background-color:white;">
+	      <iframe id="interaction_results_frame" src="web/blank.html" 
+		      scrolling="no" onload="adjustiFrame(this);">
+	      </iframe>
+	    </div>
+	  </div>
+	</div>
+      </div>
     </div>
+   </form>
   </div>
+
+  <!-- //////////////////////////////////////////////////////////// -->
+  <!-- SUMMARY -->
+  <!-- //////////////////////////////////////////////////////////// -->
+  <div class="tabbertab" id="summary" title="Summary">
+    <form id="summary_form" action="BHMsummary.php">
+    <div class="tabcontent">
+      <div class="wrapper">
+	<div id="summary_form" class="formarea">
+	  <div><center class="title">Additional Information</center><hr width="90%"/></div>
+	  <button class="update" id="summary_Update">Update</button> 
+	  $ajaxform_summary_Update
+	</div>
+	<div id="summary_results_panel" class="results">
+	  <div><center class="title">Summary of Results</center><hr width="90%"/></div>
+	  <div class="download" id="summary_download"></div>
+	  <div id="summary_results_status_loader" style="background-color:white;">
+	    <div id="summary_results_status" style="background-color:white;">
+	      <iframe id="summary_results_frame" src="web/blank.html" 
+		      scrolling="no" onload="adjustiFrame(this);">
+	      </iframe>
+	    </div>
+	  </div>
+	</div>
+      </div>
+    </div>
+    </form>
+  </div>
+
 </div>
 C;
 

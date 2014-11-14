@@ -9,14 +9,7 @@
 ###################################################
 # 2014 [)] Jorge I. Zuluaga, Viva la BHM!
 ###################################################
-# Binary Basic Properties
-# Inputs: 
-# - Rotational properties (rot.conf)
-# - Binary properties (binary.conf)
-# - Stars properties (<star1>.conf,<star2>.conf)
-# Outputs: 
-# - Binary data (rot.data)
-# - Html report (rot.html)
+# Stellar Rotational Evolution in Binaries
 ###################################################
 from BHM import *
 from BHM.BHMplot import *
@@ -29,49 +22,45 @@ from BHM.BHMastro import *
 Usage=\
 """
 Usage:
-   python %s <rot>.conf <binary>.conf <star1>.conf <star1>.conf <qoverride>
+   python %s <sysdir> <module>.conf <qoverride>
 
-   <rot>.conf (file): Configuration of the rotational evolution model.
+   <sysdir>: Directory where the system configuration files lie
 
-   <binary>.conf (file): Configuration file with data about binary.
+   <module>.conf (file): Configuration file for the module.
 
-   <star1>.conf,<star2>.conf (file): Configuration file with data
-   about stars.
+   <qoverride> (int 0/1): Override any existent object with the same hash.
+"""%argv[0]
 
-   <qoverride> (int 0/1): Override any previously existent
-   calculation.
-"""%(argv[0])
-
-rot_conf,binary_conf,star1_conf,star2_conf,qover=\
+sys_dir,rot_conf,qover=\
     readArgs(argv,
-             ["str","str","str","str","int"],
-             ["rot.conf","binary.conf","star1.conf","star2.conf","0"],
+             ["str","str","int"],
+             ["sys/template","hz.conf","0"],
              Usage=Usage)
-
-PRINTOUT("Executing for: %s, %s, %s, %s"%(rot_conf,
-                                          binary_conf,
-                                          star1_conf,
-                                          star2_conf))
 
 ###################################################
 #LOAD PREVIOUS OBJECTS
 ###################################################
 PRINTOUT("Loading other objects...")
 #==================================================
-#LOADING BINARY
-binary,binary_dir,binary_str,binary_hash,binary_liv,binary_stg=\
-    signObject(binary_conf)
-binary+=loadConf(binary_dir+"binary.data")
-#==================================================
 #LOADING STAR 1
+star1_conf="star1.conf"
 star1,star1_dir,star1_str,star1_hash,star1_liv,star1_stg=\
-    signObject(star1_conf)
+    signObject("star",sys_dir+"/"+star1_conf)
 star1+=loadConf(star1_dir+"star.data")
+evoInterpFunctions(star1)
 #==================================================
 #LOADING STAR 2
+star2_conf="star2.conf"
 star2,star2_dir,star2_str,star2_hash,star2_liv,star2_stg=\
-    signObject(star2_conf)
+    signObject("star",sys_dir+"/"+star2_conf)
 star2+=loadConf(star2_dir+"star.data")
+evoInterpFunctions(star2)
+#==================================================
+#LOADING BINARY
+binary_conf="binary.conf"
+binary,binary_dir,binary_str,binary_hash,binary_liv,binary_stg=\
+    signObject("binary",sys_dir+"/"+binary_conf)
+binary+=loadConf(binary_dir+"binary.data")
 #==================================================
 #CHECK IF TWINS
 qtwins=False
@@ -84,7 +73,7 @@ if star1_hash==star2_hash:
 #LOAD ROT OBJECT
 ###################################################
 rot,rot_str,rot_hash,rot_dir=\
-    makeObject(rot_conf,qover=qover)
+    makeObject("rotation",sys_dir+"/"+rot_conf,qover=qover)
 rot_webdir=WEB_DIR+rot_dir
 PRINTOUT("Object hash:%s"%rot_hash)
 
@@ -209,7 +198,7 @@ for star in stars:
 rot.title=r"$M_1/M_{\\rm Sun}=$%.3f, $M_2/M_{\\rm Sun}$=%.3f, $a_{\\rm bin}$=%.3f AU, $e_{\\rm bin}$=%.2f, $P_{\\rm bin}$=%.3f d"%(star1.M,star2.M,binary.abin,binary.ebin,binary.Pbin)
 
 PRINTERR("Storing rotational evolution data...")
-f=open(rot_dir+"rot.data","w")
+f=open(rot_dir+"rotation.data","w")
 
 f.write("""\
 from numpy import array
@@ -243,14 +232,14 @@ f.close()
 PRINTERR("Creating plots...")
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-#EFFECTIVE STELLAR AGES
+#ROTATIONAL EVOLUTION
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 plotFigure(rot_dir,"rot-evolution",\
 """
 from BHM.BHMstars import *
 rot=\
-loadConf("%s"+"rot.conf")+\
-loadConf("%s"+"rot.data")
+loadConf("%s"+"rotation.conf")+\
+loadConf("%s"+"rotation.data")
 binary=\
 loadConf("%s"+"binary.conf")+\
 loadConf("%s"+"binary.data")
@@ -316,9 +305,40 @@ ax.legend(loc='lower right',prop=dict(size=12))
      star2_dir,star2_dir
      ))
 
-#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-#ROTATIONAL EVOLUTION
-#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+###################################################
+#GENERATE FULL REPORT
+###################################################
+fh=open(rot_dir+"rotation.html","w")
+fh.write("""\
+<h2>Rotational Evolution in Binary</h2>
+<center>
+  <a target="_blank" href="%s/rot-evolution.png">
+    <img width=60%% src="%s/rot-evolution.png">
+  </a>
+  <br/>
+  <i>Rotational Evolution</i>
+  (
+  <a target="_blank" href="%s/rot-evolution.png.txt">data</a>|
+  <a target="_blank" href="%s/web/replot.php?plot=rot-evolution.py">replot</a>
+  )
+</center>
+<h3>Input Parameters</h3>
+<table>
+  <tr><td>k:</td><td>%.3f</td></tr>
+</table>
+<h3>Initial Conditions</h3>
+<table>
+  <tr><td>P<sub>rot,1,ini</sub> (days):</td><td>%.3f</td></tr>
+  <tr><td>t<sub>sync,1,ini</sub> (Gyr):</td><td>%.3f</td></tr>
+  <tr><td>P<sub>rot,1,ini</sub> (days):</td><td>%.3f</td></tr>
+  <tr><td>t<sub>sync,2,ini</sub> (Gyr):</td><td>%.3f</td></tr>
+</table>
+"""%(rot_webdir,rot_webdir,rot_webdir,WEB_DIR,
+     rot.k,
+     star1.Pini,star1.tsync,
+     star2.Pini,star2.tsync
+     ))
+fh.close()
        
 ###################################################
 #CLOSE OBJECT
