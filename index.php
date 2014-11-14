@@ -182,7 +182,7 @@ $CONTENT.=<<<C
 	      <!-- ---------------------------------------- -->
 	      <tr>
 		<td class="button" colspan=2>
-		  <button id="star1_Update">Update</button> 
+		  <button class="update" id="star1_Update">Update</button> 
 		  $ajaxform_star1_Update
 		</td>
 	      </tr>
@@ -280,7 +280,7 @@ $CONTENT.=<<<C
 	      <!-- ---------------------------------------- -->
 	      <tr>
 		<td class="button" colspan=2>
-		  <button id="star2_Update">Update</button> 
+		  <button class="update" id="star2_Update">Update</button> 
 		  $ajaxform_star2_Update
 		</td>
 	      </tr>
