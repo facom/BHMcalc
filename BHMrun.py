@@ -93,5 +93,40 @@ elif "planet" in script:
     #PRINTOUT("\n--START EXTERNAL--\n"+out+"\n--END EXTERNAL--")
     print "--sig--\n%s"%planet_hash
 
+elif "binary" in script:
+
+    #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    #CONFIGURATION FILES
+    #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    binary_conf=module_conf
+    
+    #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    #HASH OBJECT
+    #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    binary,binary_dir,binary_str,binary_hash,binary_liv,binary_stg=\
+        signObject("binary",sys_dir+"/"+binary_conf)
+
+    #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    #CHECK-OUT OBJECTS ON WHICH IT DEPENDS
+    #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    star1_conf="star1.conf"
+    star1,star1_dir,star1_str,star1_hash,star1_liv,star1_stg=\
+        signObject("star",sys_dir+"/"+star1_conf)
+    star2_conf="star2.conf"
+    star2,star2_dir,star2_str,star2_hash,star2_liv,star2_stg=\
+        signObject("star",sys_dir+"/"+star2_conf)
+    
+    #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    #RUN SCRIPTS
+    #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    PRINTOUT("Running binary script")
+    if star1_stg<10:System("python BHMstar.py %s %s %d"%(sys_dir,"star1.conf",qover))
+    else:PRINTOUT("Star1 ready.");
+    if star2_stg<10:System("python BHMstar.py %s %s %d"%(sys_dir,"star2.conf",qover))
+    else:PRINTOUT("Star2 ready.");
+    if binary_stg<10:System("python BHMbinary.py %s %s %d"%(sys_dir,binary_conf,qover))
+    else:PRINTOUT("Binary ready.");
+    print "--sig--\n%s"%binary_hash
+
 else:
     PRINTERR("Script '%s' not available."%script)
