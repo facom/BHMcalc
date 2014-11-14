@@ -449,5 +449,5 @@ def initialsString(string):
     return initials
 
 #GET WORKING DIRECTORY
-pwd=System("pwd",out=True)
-print pwd
+PWD=System("pwd",out=True)
+WEB_DIR=PWD.replace(WEB_COMMON,"")+"/"
