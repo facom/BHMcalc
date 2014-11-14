@@ -30,7 +30,7 @@ $CONTENT="";
 $PYTHONCMD="MPLCONFIGDIR=/tmp python";
 
 //LOCATION
-$ROOTDIR="/var/www/";
+$ROOTDIR=preg_replace("/BHMcalc/","",rtrim(shell_exec("pwd")));
 $wDIR="BHMcalc/";
 $DIR=$ROOTDIR.$wDIR;
 

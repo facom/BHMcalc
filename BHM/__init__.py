@@ -448,3 +448,6 @@ def initialsString(string):
         initials+="%s"%part[0].upper()
     return initials
 
+#GET WORKING DIRECTORY
+pwd=System("pwd",out=True)
+print pwd
