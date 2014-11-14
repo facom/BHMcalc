@@ -61,6 +61,7 @@ $ajaxform_binary_Update=ajaxFromCode($code,"'#binary_Update'","click");
 
 //LOAD ALL
 $code=ajaxMultipleForm(array("star1","star2","planet","binary"),"allforms");
+//$code=ajaxMultipleForm(array("binary"),"allforms");
 $ajax_all_Update=ajaxFromCode($code,"'#all_Update'","click");
 $ajax_all_Load=ajaxFromCode($code,"document","ready");
 
@@ -74,7 +75,7 @@ if(!is_dir($SESSDIR)){
 }else{
   $source_dir=$SYSDIR."$SESSID/";
   echoVerbose("Session directory already exist.");
-  $TABID=1;
+  $TABID=4;
   //========================================
   //LOADING RESULTS
   //========================================

@@ -49,16 +49,16 @@ sys_dir,binary_conf,qover=\
 PRINTOUT("Loading other objects...")
 #==================================================
 #LOADING STAR 1
-star1_conf="/star1.conf"
+star1_conf="star1.conf"
 star1,star1_dir,star1_str,star1_hash,star1_liv,star1_stg=\
-    signObject("star",star1_conf)
+    signObject("star",sys_dir+"/"+star1_conf)
 star1+=loadConf(star1_dir+"star.data")
 evoInterpFunctions(star1)
 #==================================================
 #LOADING STAR 2
-star2_conf="/star2.conf"
+star2_conf="star2.conf"
 star2,star2_dir,star2_str,star2_hash,star2_liv,star2_stg=\
-    signObject("star",star2_conf)
+    signObject("star",sys_dir+"/"+star2_conf)
 star2+=loadConf(star2_dir+"star.data")
 evoInterpFunctions(star2)
 
