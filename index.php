@@ -75,7 +75,7 @@ if(!is_dir($SESSDIR)){
 }else{
   $source_dir=$SYSDIR."$SESSID/";
   echoVerbose("Session directory already exist.");
-  $TABID=4;
+  $TABID=1;
   //========================================
   //LOADING RESULTS
   //========================================

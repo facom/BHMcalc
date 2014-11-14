@@ -129,5 +129,46 @@ elif "binary" in script:
     else:PRINTOUT("Binary ready.");
     print "--sig--\n%s"%binary_hash
 
+elif "hz" in script:
+
+    #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    #CONFIGURATION FILES
+    #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    hz_conf=module_conf
+    
+    #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    #HASH OBJECT
+    #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    hz,hz_dir,hz_str,hz_hash,hz_liv,hz_stg=\
+        signObject("hz",sys_dir+"/"+hz_conf)
+
+    #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    #CHECK-OUT OBJECTS ON WHICH IT DEPENDS
+    #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    star1_conf="star1.conf"
+    star1,star1_dir,star1_str,star1_hash,star1_liv,star1_stg=\
+        signObject("star",sys_dir+"/"+star1_conf)
+    star2_conf="star2.conf"
+    star2,star2_dir,star2_str,star2_hash,star2_liv,star2_stg=\
+        signObject("star",sys_dir+"/"+star2_conf)
+    binary_conf="binary.conf"
+    binary,binary_dir,binary_str,binary_hash,binary_liv,binary_stg=\
+        signObject("binary",sys_dir+"/"+binary_conf)
+    planet_conf="planet.conf"
+    planet,planet_dir,planet_str,planet_hash,planet_liv,planet_stg=\
+        signObject("planet",sys_dir+"/"+planet_conf)
+    
+    #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    #RUN SCRIPTS
+    #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    PRINTOUT("Running hz script")
+    if star1_stg<10:System("python BHMstar.py %s %s %d"%(sys_dir,"star1.conf",qover))
+    else:PRINTOUT("Star1 ready.");
+    if star2_stg<10:System("python BHMstar.py %s %s %d"%(sys_dir,"star2.conf",qover))
+    else:PRINTOUT("Star2 ready.");
+    if hz_stg<10:System("python BHMhz.py %s %s %d"%(sys_dir,hz_conf,qover))
+    else:PRINTOUT("Hz ready.");
+    print "--sig--\n%s"%hz_hash
+
 else:
     PRINTERR("Script '%s' not available."%script)
