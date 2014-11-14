@@ -57,3 +57,7 @@ pull:
 	@echo "Getting the lattest changes from branch $(BRANCH)..."
 	@git reset --hard HEAD	
 	@git pull
+
+seedtemplate:
+	python BHMrun.py BHMinteraction.py sys/template interaction.conf 
+	@make permissions
