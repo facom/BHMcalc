@@ -68,8 +68,8 @@ elif "star" in script:
     #RUN SCRIPT
     #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     PRINTOUT("Running star script")
-    out=System("python BHMstar.py %s %s %d"%(sys_dir,star_conf,qover),out=False)
-    #PRINTOUT("\n--START EXTERNAL--\n"+out+"\n--END EXTERNAL--")
+    if star_stg<10:System("python BHMstar.py %s %s %d"%(sys_dir,star_conf,qover))
+    else:PRINTOUT("Planet ready.");
     print "--sig--\n%s"%star_hash
 
 elif "planet" in script:
@@ -89,7 +89,8 @@ elif "planet" in script:
     #RUN SCRIPT
     #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     PRINTOUT("Running planet script")
-    out=System("python BHMplanet.py %s %s %d"%(sys_dir,planet_conf,qover),out=False)
+    if planet_stg<10:System("python BHMplanet.py %s %s %d"%(sys_dir,planet_conf,qover))
+    else:PRINTOUT("Planet ready.");
     #PRINTOUT("\n--START EXTERNAL--\n"+out+"\n--END EXTERNAL--")
     print "--sig--\n%s"%planet_hash
 
