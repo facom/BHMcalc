@@ -403,35 +403,23 @@ ax.legend(loc='best')
 """%(star_dir,star_dir))
 
 ###################################################
-#GENERATE SUMMARY
-###################################################
-PRINTERR("Creating HTML report...")
-fh=open(star_dir+"star_summary.html","w")
-fh.write("""\
-<table width=300>
-  <tr><td>g (m/s<sup>2</sup>):</td><td>%.2f</td></tr>
-  <tr><td>T<sub>eff</sub> (K):</td><td>%.2f</td></tr>
-  <tr><td>R/R<sub>sun</sub>:</td><td>%.3f</td></tr>
-  <tr><td>L/L<sub>sun</sub>:</td><td>%.3f</td></tr>
-  <tr><td>MoI=I/MR<sup>2</sup>:</td><td>%.3f</td></tr>
-  <tr><td>t<sub>diss</sub> (yr):</td><td>%.3f</td></tr>
-  <tr><td colspan=2>
-      <a href="%s/radius-schematic.png">
-	<img width=100%% src="%s/radius-schematic.png">
-      </a>
-  </td></tr>
-</table>
-"""%(g,Teff,R,L,MoI,tdiss,
-star_webdir,star_webdir
-))
-fh.close()
-
-###################################################
 #GENERATE FULL REPORT
 ###################################################
 fh=open(star_dir+"star.html","w")
 fh.write("""\
 <h2>Stellar Properties</h2>
+<center>
+  <a href="%s/radius-schematic.png" target="_blank">
+    <img width=60%% src="%s/radius-schematic.png">
+  </a>
+  <br/>
+  <i>Schematic Representation</i>
+  (
+  <a href="%s/radius-schematic.png.txt" target="_blank">data</a>|
+  <a href="%s/web/replot.php?plot=radius-schematic.py" target="_blank">replot</a>
+  )
+</center>
+</table>
 <h3>Input properties</h3>
 <table>
   <tr><td>Mass (M<sub>sun</sub>):</td><td>%.3f</td></tr>
@@ -443,18 +431,7 @@ fh.write("""\
   <tr><td>Hash:</td><td>%s</td></tr>
 </table>
 <h3>Instantaneous theoretical properties:</h3>
-<table width=300>
-  <tr><td colspan=2>
-      <a href="%s/radius-schematic.png">
-	<img width=100%% src="%s/radius-schematic.png">
-      </a>
-      <br/>
-      <i>Schematic Representation</i>
-	(
-	<a href="%s/radius-schematic.png.txt">data</a>|
-	<a href="%s/web/replot.php?plot=radius-schematic.py">replot</a>
-	)
-  </td></tr>
+<table>
   <tr><td>g (m/s<sup>2</sup>):</td><td>%.2f</td></tr>
   <tr><td>T<sub>eff</sub> (K):</td><td>%.2f</td></tr>
   <tr><td>R/R<sub>sun</sub>:</td><td>%.3f</td></tr>
@@ -471,42 +448,42 @@ fh.write("""\
 <h3>Properties Evolution:</h3>
 <table>
   <tr><td>
-      <a href="%s/stellar-props.png">
+      <a href="%s/stellar-props.png" target="_blank">
 	<img width=100%% src="%s/stellar-props.png">
       </a>
       <br/>
       <i>Evolution of stellar properties</i>
 	(
-	<a href="%s/stellar-props.png.txt">data</a>|
-	<a href="%s/web/replot.php?plot=stellar-props.py">replot</a>
+	<a href="%s/stellar-props.png.txt" target="_blank">data</a>|
+	<a href="%s/web/replot.php?plot=stellar-props.py" target="_blank">replot</a>
 	)
   </td></tr>
   <tr><td>
-      <a href="%s/evol-track.png">
+      <a href="%s/evol-track.png" target="_blank">
 	<img width=100%% src="%s/evol-track.png">
       </a>
       <br/>
       <i>Evolutionary Track</i>
 	(
-	<a href="%s/evol-track.png.txt">data</a>|
-	<a href="%s/web/replot.php?plot=evol-track.py">replot</a>
+	<a href="%s/evol-track.png.txt" target="_blank">data</a>|
+	<a href="%s/web/replot.php?plot=evol-track.py" target="_blank">replot</a>
 	)
   </td></tr>
   <tr><td>
-      <a href="%s/evol-radius.png">
+      <a href="%s/evol-radius.png" target="_blank">
 	<img width=100%% src="%s/evol-radius.png">
       </a>
       <br/>
       <i>Radius Evolution</i>
 	(
-	<a href="%s/evol-radius.png.txt">data</a>|
-	<a href="%s/web/replot.php?plot=evol-radius.py">replot</a>
+	<a href="%s/evol-radius.png.txt" target="_blank">data</a>|
+	<a href="%s/web/replot.php?plot=evol-radius.py" target="_blank">replot</a>
 	)
   </td></tr>
 </table>
 
-"""%(star.M,star.Z,star.FeH,star.tau,tau_max,tau_ms,star_hash,
-star_webdir,star_webdir,star_webdir,WEB_DIR,
+"""%(star_webdir,star_webdir,star_webdir,WEB_DIR,
+star.M,star.Z,star.FeH,star.tau,tau_max,tau_ms,star_hash,
 g,Teff,R,L,MoI,tdiss,
 lins[0],lins[1],lins[2],
 louts[0],louts[1],

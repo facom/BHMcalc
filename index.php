@@ -55,8 +55,12 @@ $ajaxform_star2_Update=ajaxFromCode($code,"'#star2_Update'","click");
 $code=ajaxMultipleForm(array("planet"),"planet_form");
 $ajaxform_planet_Update=ajaxFromCode($code,"'#planet_Update'","click");
 
+//BINARY
+$code=ajaxMultipleForm(array("binary"),"binary_form");
+$ajaxform_binary_Update=ajaxFromCode($code,"'#binary_Update'","click");
+
 //LOAD ALL
-$code=ajaxMultipleForm(array("star1","star2","planet"),"allforms");
+$code=ajaxMultipleForm(array("star1","star2","planet","binary"),"allforms");
 $ajax_all_Update=ajaxFromCode($code,"'#all_Update'","click");
 $ajax_all_Load=ajaxFromCode($code,"document","ready");
 
@@ -457,11 +461,78 @@ $CONTENT.=<<<C
    </form>
   </div>
 
-  <div class="tabbertab" id="plBas" title="Binary">
+  <!-- //////////////////////////////////////////////////////////// -->
+  <!-- BINARY -->
+  <!-- //////////////////////////////////////////////////////////// -->
+  <div class="tabbertab" id="binary" title="Binary">
+  <form id="binary_form" action="BHMrun.php">
     <div class="tabcontent">
-      Casa
+      <div class="wrapper">
+	<div id="binary_form" class="formarea">
+	  <div><center class="title">Input Form</center><hr width="90%"/></div>
+	    <input type="hidden" name="module" value="binary">
+	    <input type="hidden" name="object" value="binary">
+	    <table border=0px>
+	      <tr>
+		<!-- ---------------------------------------- -->
+		<td class="name">Binary period:</td>
+		<td class="field">
+		  <input type="text" name="binary_Pbin" value="$binary_Pbin">
+		  days
+		</td>
+	      </tr>
+	      <tr>
+		<td class="help" colspan=2>
+		  Longer than 0.
+		</td>
+	      </tr>
+	      <!-- ---------------------------------------- -->
+		<td class="name">Binary semimajor axis:</td>
+		<td class="field">
+		  <input type="text" name="binary_abin" value="$binary_abin">
+		</td>
+	      </tr>
+	      <tr>
+		<td class="help" colspan=2>
+		  Larger than 0.
+		</td>
+	      </tr>
+	      <!-- ---------------------------------------- -->
+		<td class="name">Binary Eccentricity:</td>
+		<td class="field">
+		  <input type="text" name="binary_ebin" value="$binary_ebin">
+		</td>
+	      </tr>
+	      <tr>
+		<td class="help" colspan=2>
+		  0&lt;e&gt;1
+		</td>
+	      </tr>
+	      <!-- ---------------------------------------- -->
+	      <tr>
+		<td class="button" colspan=2>
+		  <button class="update" id="binary_Update">Update</button> 
+		  $ajaxform_binary_Update
+		</td>
+	      </tr>
+	      <!-- ---------------------------------------- -->
+	    </table>
+	</div>
+	<div id="binary_results_panel" class="results">
+	  <div><center class="title">Results</center><hr width="90%"/></div>
+	  <div id="binary_results_status_loader" style="background-color:white;">
+	    <div id="binary_results_status" style="background-color:white;">
+	      <iframe id="binary_results_frame" src="web/blank.html" 
+		      scrolling="no" onload="adjustiFrame(this);">
+	      </iframe>
+	    </div>
+	  </div>
+	</div>
+      </div>
     </div>
+   </form>
   </div>
+
   <div class="tabbertab" id="iHZ" title="Habitable Zone">
     <div class="tabcontent">
       Casa

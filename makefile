@@ -28,6 +28,8 @@ cleanall:
 	@echo "Cleaning session directories..."
 	@rm -r sys/*
 	@cp -r web/template sys/
+	@rm -r tmp/*
+	@rm -r objs/*
 	@make permissions
 
 deepclean:clean

@@ -496,23 +496,23 @@ ax.set_yticklabels([])
 fh=open(planet_dir+"planet.html","w")
 fh.write("""\
 <h2>Planetary Properties</h2>
+<center>
+  <a target="_blank" href="%s/planet-schematic.png" target="_blank">
+    <img width=60%% src="%s/planet-schematic.png">
+  </a>
+  <br/>
+  <i>Schematic Representation</i>
+  (
+  <a target="_blank" href="%s/planet-schematic.png.txt">data</a>|
+  <a target="_blank" href="%s/web/replot.php?plot=planet-schematic.py">replot</a>
+  )
+</center>
 <h3>Input physical properties</h3>
 <table width=300>
   <tr><td>Mass (M<sub>E</sub>,M<sub>Jup</sub>):</td><td>%.3f, %.3f</td></tr>
   <tr><td>f<sub>H/He</sub>:</td><td>%.3f</td></tr>
   <tr><td>CMF (Earth = 0.34):</td><td>%.2f</td></tr>
   <tr><td>&tau; (Gyr):</td><td>%.2f</td></tr>
-  <tr><td colspan=2>
-      <a href="%s/planet-schematic.png">
-	<img width=100%% src="%s/planet-schematic.png">
-      </a>
-      <br/>
-      <i>Schematic Representation</i>
-	(
-	<a href="%s/planet-schematic.png.txt">data</a>|
-	<a href="%s/web/replot.php?plot=planet-schematic.py">replot</a>
-	)
-  </td></tr>
 </table>
 <h3>Planetary Orbit Properties:</h3>
 <table width=300>
@@ -522,14 +522,14 @@ fh.write("""\
   <tr><td>P<sub>orb</sub> (days):</td><td>%.2f</td></tr>
   <tr><td>P<sub>rot</sub> (days):</td><td>%.3f</td></tr>
   <tr><td colspan=2>
-      <a href="%s/planet-orbit.png">
+      <a target="_blank" href="%s/planet-orbit.png">
 	<img width=100%% src="%s/planet-orbit.png">
       </a>
       <br/>
       <i>Orbit</i>
 	(
-	<a href="%s/planet-orbit.png.txt">data</a>|
-	<a href="%s/web/replot.php?plot=planet-orbit.py">replot</a>
+	<a target="_blank" href="%s/planet-orbit.png.txt">data</a>|
+	<a target="_blank" href="%s/web/replot.php?plot=planet-orbit.py">replot</a>
 	)
   </td></tr>
 </table>
@@ -540,13 +540,13 @@ fh.write("""\
   <tr><td>&rho; (kg/m<sup>3</sup>:</td><td>%.3f</td></tr>
 </table>
 <h3>Interior Properties:</h3>
-<table width=300>
+<table>
   <tr><td>R<sub>core</sub> (R<sub>p</sub>):</td><td>%.2f</td></tr>
   <tr><td>R<sub>inner,core</sub> (R<sub>p</sub>):</td><td>%.2f</td></tr>
   <tr><td>&rho;<sub>core</sub> (R<sub>p</sub>):</td><td>%.1f</td></tr>
 </table>
 <h3>Thermal and magnetic properties:</h3>
-<table width=300>
+<table>
   <tr><td>Q (W):</td><td>%.2e</td></tr>
   <tr><td>T<sub>eff</sub> (K):</td><td>%.2f</td></tr>
   <tr><td>Q<sub>dyn</sub> (W):</td><td>%.2e</td></tr>
@@ -556,22 +556,22 @@ fh.write("""\
   <tr><td>t<sub>dip,max</sub> (Gyr):</td><td>%.2f</td></tr>
 </table>
 <h3>Thermal and magnetic evolution:</h3>
-<table width=300>
+<table>
   <tr><td>
-      <a href="%s/thermal-evolution.png">
+      <a target="_blank" href="%s/thermal-evolution.png">
 	<img width=100%% src="%s/thermal-evolution.png">
       </a>
       <br/>
       <i>Evolution of stellar properties</i>
 	(
-	<a href="%s/thermal-evolution.png.txt">data</a>|
-	<a href="%s/web/replot.php?plot=thermal-evolution.py">replot</a>
+	<a target="_blank" href="%s/thermal-evolution.png.txt">data</a>|
+	<a target="_blank" href="%s/web/replot.php?plot=thermal-evolution.py">replot</a>
 	)
   </td></tr>
 </table>
-"""%(planet.M,planet.Mg,
+"""%(planet_webdir,planet_webdir,planet_webdir,WEB_DIR,
+     planet.M,planet.Mg,
      planet.fHHe,planet.CMF,planet.tau,
-     planet_webdir,planet_webdir,planet_webdir,WEB_DIR,
      planet.aorb,planet.eorb,planet.worb,planet.Porb,planet.Prot,
      planet_webdir,planet_webdir,planet_webdir,WEB_DIR,
      planet.A,planet.g,planet.rho,
@@ -580,30 +580,6 @@ fh.write("""\
      planet.tdyn,planet.Mdip,planet.Mdipmax,planet.tMdipmax,
      planet_webdir,planet_webdir,planet_webdir,WEB_DIR     
      ))
-fh.close()
-
-###################################################
-#GENERATE SUMMARY
-###################################################
-fh=open(planet_dir+"planet_summary.html","w")
-fh.write("""\
-<table width=300>
-  <tr><td>Q (W):</td><td>%.2e</td></tr>
-  <tr><td>T<sub>eff</sub> (K):</td><td>%.2f</td></tr>
-  <tr><td>Q<sub>dyn</sub> (W):</td><td>%.2e</td></tr>
-  <tr><td>t<sub>dyn</sub> (Gyr):</td><td>%.2f</td></tr>
-  <tr><td>M<sub>dip</sub> (M<sub>dip,Earth</sub>):</td><td>%.2f</td></tr>
-  <tr><td>M<sub>dip,max</sub> (M<sub>dip,Earth</sub>):</td><td>%.2f</td></tr>
-  <tr><td>t<sub>dip,max</sub> (Gyr):</td><td>%.2f</td></tr>
-  <tr><td colspan=2>
-      <a href="%s/planet-schematic.png">
-	<img width=100%% src="%s/planet-schematic.png">
-      </a>
-  </td></tr>
-</table>
-"""%(planet.Q,planet.T,planet.Qconv,
-     planet.tdyn,planet.Mdip,planet.Mdipmax,planet.tMdipmax,
-     planet_webdir,planet_webdir))
 fh.close()
 
 ###################################################

@@ -39,7 +39,7 @@ fclose($fc);
 //////////////////////////////////////////////////////////////
 
 //COMMAND
-$cmd="$PYTHONCMD BHMrun.py BHM${module}.py $SESSDIR $object.conf";
+$cmd="$PYTHONCMD BHMrun.py BHM${module}.py $SESSDIR $object.conf 0";
 
 //OUTPUT
 $stdout="BHMrun-stdout-$SESSID";

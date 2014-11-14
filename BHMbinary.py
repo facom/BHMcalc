@@ -19,6 +19,7 @@
 ###################################################
 from BHM import *
 from BHM.BHMplot import *
+from BHM.BHMstars import *
 from BHM.BHMastro import *
 
 ###################################################
@@ -27,25 +28,20 @@ from BHM.BHMastro import *
 Usage=\
 """
 Usage:
-   python %s <binary>.conf <star1>.conf <star1>.conf <qoverride>
+   python %s <sysdir> <module>.conf <qoverride>
 
-   <binary>.conf (file): Configuration file with data about star.
+   <sysdir>: Directory where the system configuration files lie
 
-   <star1>.conf,<star2>.conf (file): Configuration file with data
-   about stars.
+   <module>.conf (file): Configuration file for the module.
 
-   <qoverride> (int 0/1): Override any previously existent
-   calculation.
-"""%(argv[0])
+   <qoverride> (int 0/1): Override any existent object with the same hash.
+"""%argv[0]
 
-binary_conf,star1_conf,star2_conf,qover=\
+sys_dir,binary_conf,qover=\
     readArgs(argv,
-             ["str","str","str","int"],
-             ["binary.conf","star1.conf","star2.conf","0"],
+             ["str","str","int"],
+             ["sys/template","binary.conf","0"],
              Usage=Usage)
-PRINTOUT("Executing for: %s, %s, %s"%(binary_conf,
-                                      star1_conf,
-                                      star2_conf))
 
 ###################################################
 #LOAD PREVIOUS OBJECTS
@@ -53,20 +49,27 @@ PRINTOUT("Executing for: %s, %s, %s"%(binary_conf,
 PRINTOUT("Loading other objects...")
 #==================================================
 #LOADING STAR 1
+star1_conf="/star1.conf"
 star1,star1_dir,star1_str,star1_hash,star1_liv,star1_stg=\
-    signObject(star1_conf)
+    signObject("star",star1_conf)
 star1+=loadConf(star1_dir+"star.data")
+evoInterpFunctions(star1)
 #==================================================
 #LOADING STAR 2
+star2_conf="/star2.conf"
 star2,star2_dir,star2_str,star2_hash,star2_liv,star2_stg=\
-    signObject(star2_conf)
+    signObject("star",star2_conf)
 star2+=loadConf(star2_dir+"star.data")
+evoInterpFunctions(star2)
 
 ###################################################
 #LOAD BINARY OBJECT
 ###################################################
-binary,binary_str,binary_hash,binary_dir=\
-    makeObject(binary_conf,qover=qover)
+PRINTOUT("Loading object from '%s'"%binary_conf)
+binary,binary_str,binary_hash,binary_dir=makeObject("binary",
+                                            sys_dir+"/"+binary_conf,
+                                            qover=qover)
+PRINTOUT("Object directory '%s' created"%binary_dir)
 binary_webdir=WEB_DIR+binary_dir
 
 ###################################################
@@ -197,6 +200,17 @@ ax.set_yticklabels([])
 fh=open(binary_dir+"binary.html","w")
 fh.write("""\
 <h2>Binary Properties</h2>
+<center>
+  <a target="_blank" href="%s/binary-orbit.png">
+    <img width=100%% src="%s/binary-orbit.png">
+  </a>
+  <br/>
+  <i>Schematic Representation</i>
+  (
+  <a target="_blank" href="%s/binary-orbit.png.txt">data</a>|
+  <a target="_blank" href="%s/web/replot.php?plot=binary-orbit.py">replot</a>
+  )
+</center>
 <h3>Basic Properties</h3>
 <table width=300>
   <tr><td>M (M<sub>Sun</sub>):</td><td>%.3f</td></tr>
@@ -205,17 +219,6 @@ fh.write("""\
   <tr><td>P<sub>bin</sub> (days):</td><td>%.3f</td></tr>
   <tr><td>a<sub>bin</sub> (AU):</td><td>%.3f</td></tr>
   <tr><td>e<sub>bin</sub>:</td><td>%.3f</td></tr>
-  <tr><td colspan=2>
-      <a href="%s/binary-orbit.png">
-	<img width=100%% src="%s/binary-orbit.png">
-      </a>
-      <br/>
-      <i>Schematic Representation</i>
-	(
-	<a href="%s/binary-orbit.png.txt">data</a>|
-	<a href="%s/web/replot.php?plot=binary-orbit.py">replot</a>
-	)
-  </td></tr>
 </table>
 <h3>Derivative properties:</h3>
 <table width=300>
@@ -223,33 +226,10 @@ fh.write("""\
   <tr><td>n<sub>sync</a> (P<sub>sync</sub>/P<sub>bin</sub>):</td><td>%.3f</td></tr>
   <tr><td>P<sub>sync</a> (days):</td><td>%.3f</td></tr>
 </table>
-"""%(binary.M,binary.mu,binary.q,
+"""%(binary_webdir,binary_webdir,binary_webdir,WEB_DIR,
+     binary.M,binary.mu,binary.q,
      binary.Pbin,binary.abin,binary.ebin,
-     binary_webdir,binary_webdir,binary_webdir,WEB_DIR,
      binary.acrit,binary.nsync,binary.Psync
-     ))
-fh.close()
-
-###################################################
-#GENERATE SUMMARY
-###################################################
-fh=open(binary_dir+"binary_summary.html","w")
-fh.write("""\
-<table width=300>
-  <tr><td>M (M<sub>Sun</sub>):</td><td>%.3f</td></tr>
-  <tr><td>&mu; (M<sub>1</sub>/M<sub>Sun</sub>):</td><td>%.3f</td></tr>
-  <tr><td>q (M<sub>2</sub>/M<sub>1</sub>):</td><td>%.3f</td></tr>
-  <tr><td>P<sub>bin</sub> (days):</td><td>%.3f</td></tr>
-  <tr><td>a<sub>bin</sub> (AU):</td><td>%.3f</td></tr>
-  <tr><td>e<sub>bin</sub>:</td><td>%.3f</td></tr>
-  <tr><td colspan=2>
-      <a href="%s/binary-orbit.png">
-	<img width=100%% src="%s/binary-orbit.png">
-      </a>
-  </td></tr>
-"""%(binary.M,binary.mu,binary.q,
-     binary.Pbin,binary.abin,binary.ebin,
-     binary_webdir,binary_webdir
      ))
 fh.close()
 
