@@ -122,7 +122,7 @@ ul.tabbernav li a:hover
 ul.tabbernav li.tabberactive a
 {
   background-color:#fff;
-  border-bottom:2px solid #fff;
+  border-bottom:3px solid #fff;
 }
 ul.tabbernav li.tabberactive a:hover
 {
