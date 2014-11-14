@@ -45,7 +45,8 @@ ERROR_CODES=dict(FILE_ERROR=1,
                  INPUT_ERROR=2,
                  DATA_ERROR=3,
                  PARAMETER_ERROR=3,
-                 RANGE_ERROR=4
+                 RANGE_ERROR=4,
+                 KEY_ERROR=5
                  )
 
 ###################################################
@@ -331,7 +332,12 @@ def hashObject(obj):
 def signObject(obj_type,obj_conf):
     obj=loadConf(obj_conf)
     obj.type=obj_type
-    obj.__dict__["hashable"]=OBJECT_HASHABLES[obj_type]
+    try:
+        obj.__dict__["hashable"]=OBJECT_HASHABLES[obj_type]
+    except KeyError:
+        PRINTERR("Object type %s does not exist."%obj_type)
+        errorCode("KEY_ERROR")
+
     obj_str,obj_hash=hashObject(obj)
     obj_dir=OBJ_DIR+"%s-%s/"%(obj.type,obj_hash)
     obj_stg=0
