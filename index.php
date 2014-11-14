@@ -25,6 +25,7 @@ $CONTENT.="<html>$header<body>";
 if($VERBOSE){
 $CONTENT.=<<<C
 Sessid:$SESSID<br/>
+ROOTDIR: $ROOTDIR
 GET: $GETSTR<br/>
 POST: $POSTSTR<br/>
 C;
