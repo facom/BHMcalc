@@ -74,3 +74,8 @@ function adjustiFrame(iframe)
     height=iframe.contentWindow.document.body.offsetHeight+"px";
     $(iframe).attr("height",height);
 }
+
+function refreshiFrame(iframe)
+{
+    $(iframe).attr("src",$(iframe).attr("src"));
+}
