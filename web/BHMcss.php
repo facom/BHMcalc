@@ -255,6 +255,13 @@ iframe{
  border:0px;
 }
 
+div.download{
+ position:absolute;
+ top:80px;
+ right:30px;
+ display:none;
+}
+
 </style>
 CSS;
 ?>

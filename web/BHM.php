@@ -202,6 +202,8 @@ $code.=<<<CODE
 	    {
 	      $("#${id}_results_status").attr("style","background-color:white");
 	      $("#$sval").attr("style","background-color:white");
+	      $("#${id}_download").css("display","block");
+	      $("#${id}_download").html("<a href="+data+" target='_blank'>Download</a>");
 	      $("#${id}_results_frame").attr("src",data);
 	    },
 	error: function(jqXHR, textStatus, errorThrown) 

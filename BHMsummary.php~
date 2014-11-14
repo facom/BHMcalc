@@ -71,7 +71,6 @@ $src_content
 C;
 $ft=fopen($tgt_file,"w");
 
-
 //WRITE OUTPUT
 fwrite($ft,$tgt_content);
 fclose($ft);
