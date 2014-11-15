@@ -33,7 +33,7 @@ font-size:12px;
 body{
 background-color:white;
 font-family:Arial,Helvetica;
-font-size:12px;
+font-size:16px;
 padding:10px;
 }
 
@@ -264,6 +264,16 @@ div.download{
  top:15%;
  right:5%;
  display:none;
+}
+
+a.activelink{
+  text-weight:bold;
+}
+
+div.target{
+ padding:10px;
+ width:90%;
+ overflow:auto;
 }
 
 </style>

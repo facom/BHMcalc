@@ -17,9 +17,31 @@
 include_once("web/BHM.php");
 ?>
 <?PHP
-//////////////////////////////////////////////////////////////////////////////////
+//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+//ACTION PREVIOUS TO LOAD INDEX
+//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+if(isset($LOADCONFIG)){
+  //========================================
+  //LOAD CONFIGURATION FROM QUERY STRING
+  //========================================
+  saveConfiguration($SESSDIR,$QUERY_STRING);
+  $header=mainHeader("1");
+  echo "$header<body>Loading configuration...</body>";
+  return;
+}
+if(isset($ADMINMODE)){
+  //========================================
+  //ENTERING ADMIN MODE
+  //========================================
+  saveConfiguration($SESSDIR,$QUERY_STRING);
+  $header=mainHeader("1");
+  echo "$header<body>Loading configuration...</body>";
+  return;
+}
+
+//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 //HEADER
-//////////////////////////////////////////////////////////////////////////////////
+//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 $header=mainHeader();
 $CONTENT.="<html>$header<body>";
 if($VERBOSE){
@@ -83,6 +105,25 @@ $ajax_all_Update=ajaxFromCode($code,"'#all_Update'","click");
 $ajax_all_Load=ajaxFromCode($code,"document","ready");
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+//CHANGE OTHER THINGS IN DOCUMENT WHEN LOAD
+//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+$changeFeH=<<<C
+  changeAjax('/BHMcalc/BHMmetals.php?ZtoFeH','.star_Z','.star_FeH');
+C;
+$changeZ=<<<C
+  changeAjax('/BHMcalc/BHMmetals.php?FeHtoZ','.star_FeH','.star_Z');
+C;
+$CONTENT.=<<<C
+<script>
+  $(document).ready(function(){
+      $changeFeH
+      changeValues(['.star_Z'],'input[name=star1_Z]');
+      changeValues(['.star_FeH'],'input[name=star1_FeH]');
+    });
+</script>
+C;
+
+//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 //LOAD DATA
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 if(!is_dir($SESSDIR)){
@@ -98,7 +139,7 @@ if(!is_dir($SESSDIR)){
 //========================================
 //LOADING RESULTS
 //========================================
-$CONTENT.="$ajax_all_Load";
+//$CONTENT.="$ajax_all_Load";
 echoVerbose("<br/>");
 echoVerbose("Source dir: $source_dir<br/>");
 
@@ -119,7 +160,7 @@ loadConfiguration("$source_dir/interaction.conf","interaction");
 $CONTENT.=<<<C
 <div style="position:fixed;top:10px;right:10px">
 <form id="allforms" action="JavaScript:void(0)">
-  <!--<button id="all_Update">Update All</button>-->
+  <button id="all_Update">Update All</button>
   $ajax_all_Update
 </form>
 </div>
@@ -169,7 +210,8 @@ $CONTENT.=<<<C
 	      <!-- ---------------------------------------- -->
 		<td class="name">Metallicity, Z:</td>
 		<td class="field">
-		  <input type="text" class="star_Z" name="star1_Z" value="$star1_Z" onchange="changeAjax('/BHMcalc/BHMmetals.php?ZtoFeH',this,'.star_FeH');changeValues(['.star_Z'],this);">
+		  <input type="text" class="star_Z" name="star1_Z" value="$star1_Z" 
+			 onchange="$changeFeH;changeValues(['.star_Z'],this);">
 		</td>
 	      </tr>
 	      <tr>
@@ -180,7 +222,8 @@ $CONTENT.=<<<C
 	      <!-- ---------------------------------------- -->
 		<td class="name">Metallicity, [Fe/H]:</td>
 		<td class="field">
-		  <input type="text" class="star_FeH" name="star1_FeH" value="$star1_FeH" onchange="changeAjax('/BHMcalc/BHMmetals.php?FeHtoZ',this,'.star_Z');changeValues(['.star_FeH'],this);">
+		  <input type="text" class="star_FeH" name="star1_FeH" value="$star1_FeH" 
+			 onchange="$changeZ;changeValues(['.star_FeH'],this);">
 		  dex
 		</td>
 	      </tr>
@@ -268,7 +311,8 @@ $CONTENT.=<<<C
 	      <!-- ---------------------------------------- -->
 		<td class="name">Metallicity, Z:</td>
 		<td class="field">
-		  <input type="text" class="star_Z" name="star2_Z" value="$star2_Z" onchange="changeAjax('/BHMcalc/BHMmetals.php?ZtoFeH',this,'.star_FeH');changeValues(['.star_Z'],this);">
+		  <input type="text" class="star_Z" name="star2_Z" value="$star2_Z" 
+			 onchange="$changeFeH;changeValues(['.star_Z'],this);">
 		</td>
 	      </tr>
 	      <tr>
@@ -279,7 +323,8 @@ $CONTENT.=<<<C
 	      <!-- ---------------------------------------- -->
 		<td class="name">Metallicity, [Fe/H]:</td>
 		<td class="field">
-		  <input type="text" class="star_FeH" name="star2_FeH" value="$star2_FeH" onchange="changeAjax('/BHMcalc/BHMmetals.php?FeHtoZ',this,'.star_Z');changeValues(['.star_FeH'],this);">
+		  <input type="text" class="star_FeH" name="star2_FeH" value="$star2_FeH" 
+			 onchange="$changeZ;changeValues(['.star_FeH'],this);">
 		  dex
 		</td>
 	      </tr>
@@ -882,13 +927,29 @@ $CONTENT.=<<<C
 	  <div><center class="title">Additional Information</center><hr width="90%"/></div>
 	  <button class="update" id="summary_Update">Update</button> 
 	  $ajaxform_summary_Update
+	  <ul>
+	    <li>
+	      <a class="activelink" href="">Download configuration files.</a>
+	      <div class="target" id="downlad_config"></div>
+	    </li>
+	    <li>
+	      <a class="activelink" href="">Download all files.</a>
+	      <div class="target" id="downlad_allfiles"></div>
+	    </li>
+	    <li>
+	      <a class="activelink" 
+		 href="JavaScript:loadAjax('/$wDIR/BHMutil.php?ACTION=MasterLink','#download_systemlink');">
+		Generate system link.</a>
+	      <div class="target" id="download_systemlink"></div>
+	    </li>
+	  </ul>
 	</div>
 	<div id="summary_results_panel" class="results">
 	  <div><center class="title">Summary of Results</center><hr width="90%"/></div>
 	  <div class="download" id="summary_download"></div>
 	  <div id="summary_results_status_loader" style="background-color:white;">
 	    <div id="summary_results_status" style="background-color:white;">
-	      <iframe class="iframe" id="summary_results_frame" src="web/blank.html" 
+	      <iframe id="summary_results_frame" src="web/blank.html" 
 		      scrolling="yes" onload="adjustiFrame(this);">
 	      </iframe>
 	    </div>

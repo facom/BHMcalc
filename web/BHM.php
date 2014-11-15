@@ -52,6 +52,12 @@ $wCSSFILE="web/BHM.css";
 
 $CSSFILE=$DIR."web/BHM.css";
 
+//QUERY STRING
+$QUERY_STRING=$_SERVER["QUERY_STRING"];
+
+//QUERYSTRING FOR CONFIGURATION
+$PARSE_STRING="";
+
 //////////////////////////////////////////////////////////////
 //CSS
 //////////////////////////////////////////////////////////////
@@ -74,12 +80,16 @@ $SESSDIR=$ROOTDIR.$wSESSDIR;
 //////////////////////////////////////////////////////////////
 //ROUTINES
 //////////////////////////////////////////////////////////////
-function mainHeader()
+function mainHeader($refresh="")
 {
   global $CSS;
-  
+  $refreshcode="";
+  if(preg_match("/\d+/",$refresh)){
+    $refreshcode="<meta http-equiv='refresh' content='$refresh;URL=?'>";
+  }
 $HEADER=<<<HEADER
 <head>
+  $refreshcode
   <script src="web/jquery.js"></script>
   <script src="web/BHM.js"></script>
   <script src="web/tabber.js"></script>
@@ -152,7 +162,38 @@ function loadConfiguration($file,$prefix)
   $conf=parse_ini_file($file);
   foreach(array_keys($conf) as $key){
     $varname="${prefix}_$key";
-    $GLOBALS[$varname]=$conf[$key];
+    $value=$conf[$key];
+    $GLOBALS["PARSE_STRING"].="$varname=$value&";
+    $GLOBALS[$varname]=$value;
+  }
+}
+
+function saveConfiguration($dir,$qstring)
+{
+  $fields=preg_split("/&/",$qstring);
+  $data=array();
+  foreach($fields as $field){
+    if(!preg_match("/_/",$field)){continue;}
+    $parts=preg_split("/_/",$field);
+    $module=$parts[0];
+    preg_match("/${module}_(.+)=(.+)/",$field,$matches);
+    $key=$matches[1];
+    $value=$matches[2];
+    $value=preg_replace("/%27/","'",$value);
+    $value=preg_replace("/%20/"," ",$value);
+    $data["$module"]["$key"]=$value;
+  }
+  foreach(array_keys($data) as $module){
+    $fmodule="$dir/$module.conf";
+    $fm=fopen($fmodule,"w");
+    foreach(array_keys($data["$module"]) as $key){
+      $value=$data["$module"]["$key"];
+      $value=preg_replace("/^'/","\"'",$value);
+      $value=preg_replace("/'$/","'\"",$value);
+      $entry="$key=$value";
+      fwrite($fm,"$entry\n");
+    }
+    fclose($fm);
   }
 }
 
