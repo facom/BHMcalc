@@ -274,6 +274,7 @@ div.target{
  padding:10px;
  width:90%;
  overflow:auto;
+ background:lightgray;
 }
 
 </style>

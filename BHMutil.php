@@ -18,11 +18,11 @@ include_once("web/BHM.php");
 ?>
 
 <?PHP
-if(false){
+if(false){}
 ////////////////////////////////////////////////////
 //GENERATE MASTER LINK
 ////////////////////////////////////////////////////
-}else if($ACTION=="MasterLink"){
+else if($ACTION=="MasterLink"){
   if(!is_dir($SESSDIR)){$source_dir=$SYSDIR."template/";}
   else{$source_dir=$SYSDIR."$SESSID/";}
   loadConfiguration("$source_dir/star1.conf","star1");
@@ -37,11 +37,28 @@ if(false){
 <a href="$masterlink" target="_blank">Copy this link</a>
 LINK;
 }
-
+////////////////////////////////////////////////////
+//GENERATE MASTER LINK
+////////////////////////////////////////////////////
+else if($ACTION=="CommandLine"){
+  if(!is_dir($SESSDIR)){$source_dir=$SYSDIR."template/";}
+  else{$source_dir=$SYSDIR."$SESSID/";}
+  loadConfiguration("$source_dir/star1.conf","star1");
+  loadConfiguration("$source_dir/star2.conf","star2");
+  loadConfiguration("$source_dir/binary.conf","binary");
+  loadConfiguration("$source_dir/hz.conf","hz");
+  loadConfiguration("$source_dir/rotation.conf","rotation");
+  loadConfiguration("$source_dir/planet.conf","planet");
+  loadConfiguration("$source_dir/interaction.conf","interaction");
+  $id=md5($PARSE_STRING);
+  $sessdir="$TMPDIR$id";
+  $cmd="$PYTHONCMD BHMrun.py BHMinteraction.py $sessdir \"CONFIG:$PARSE_STRING\"";
+  echo $cmd;
+}
 ////////////////////////////////////////////////////
 //DEFAULT BEHAVIOR
 ////////////////////////////////////////////////////
 else{
-  echo "0";
+  echo "<i>Unrecognized option</i>";
 }
 ?>
