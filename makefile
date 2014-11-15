@@ -23,6 +23,7 @@ clean:
 	@find . -name "*~" -exec rm -rf {} \;
 	@find . -name "*#*" -exec rm -rf {} \;
 	@find . -name "*.pyc" -exec rm -rf {} \;
+	@find . -name "screenlog*" -exec rm -rf {} \;
 
 cleanall:
 	@echo "Cleaning session directories..."
