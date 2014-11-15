@@ -929,18 +929,30 @@ $CONTENT.=<<<C
 	  $ajaxform_summary_Update
 	  <ul>
 	    <li>
-	      <a class="activelink" href="">Download configuration files.</a>
-	      <div class="target" id="downlad_config"></div>
-	    </li>
-	    <li>
-	      <a class="activelink" href="">Download all files.</a>
-	      <div class="target" id="downlad_allfiles"></div>
+	      <a class="activelink" 
+		 href="JavaScript:loadAjax('/$wDIR/BHMutil.php?ACTION=DownloadConfig','#download_config');">
+		Download configuration files.
+	      </a>
+	      <div class="target" id="download_config"></div>
 	    </li>
 	    <li>
 	      <a class="activelink" 
-		 href="JavaScript:loadAjax('/$wDIR/BHMutil.php?ACTION=MasterLink','#download_systemlink');">
+		 href="JavaScript:loadAjax('/$wDIR/BHMutil.php?ACTION=DownloadAll','#download_allfiles');">
+		Download all files.
+	      </a>
+	      <div class="target" id="download_allfiles"></div>
+	    </li>
+	    <li>
+	      <a class="activelink" 
+		 href="JavaScript:loadAjax('/$wDIR/BHMutil.php?ACTION=MasterLink','#systemlink');">
 		Generate system link.</a>
-	      <div class="target" id="download_systemlink"></div>
+	      <div class="target" id="systemlink"></div>
+	    </li>
+	    <li>
+	      <a class="activelink" 
+		 href="JavaScript:loadAjax('/$wDIR/BHMutil.php?ACTION=CommandLine','#commandline');">
+		Generate command line.</a>
+	      <div class="target" id="commandline"></div>
 	    </li>
 	  </ul>
 	</div>

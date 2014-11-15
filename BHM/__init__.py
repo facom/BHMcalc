@@ -17,6 +17,7 @@ from BHMconfig import *
 ###################################################
 #PACKAGES
 ###################################################
+import re
 import hashlib,commands,numpy as np
 import scipy.constants as const
 from copy import copy

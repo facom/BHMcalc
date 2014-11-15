@@ -20,13 +20,18 @@ initializeEPIP()
 Usage=\
 """
 Usage:
-   python %s <script>.py <sysdir> <module>.conf <qoverride>
+   python %s <script>.py <sysdir> [<module>.conf|CONFIG:<config_string>] <qoverride>
 
    <script>.py: Script to run
 
    <systdir>: Directory where the system configuration files lie
 
    <module>.conf (file): Configuration file for the module.
+
+   or
+
+   CONFIG:<config_string>: Configuration string.  Load system from a
+   string instead of doing it from conf files.
 
    <qoverride> (int 0/1): Override any existent moduleect with the same hash.
 """%argv[0]
@@ -40,6 +45,46 @@ script,sys_dir,module_conf,qover=\
 ###################################################
 #PRELIMINARY VERIFICATIONS
 ###################################################
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+#CHECK IF CONFIG STRING HAS BEEN PASSED
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+if 'CONFIG:' in module_conf:
+    PRINTOUT("Parsing configuration script...")
+    conf=module_conf
+    conf=conf.replace("CONFIG:","")
+
+    fields=conf.split("&")
+    data=dict()
+    for field in fields:
+        if '_' not in field:continue
+        parts=field.split("_")
+        module=parts[0]
+        if module not in data.keys():data[module]=dict()
+        entry="_".join(parts[1:])
+        vals=entry.split("=")
+        key=vals[0]
+        values=vals[1]
+        data[module][key]=values
+
+    if not DIREXISTS(sys_dir):System("mkdir -p %s"%sys_dir)
+    for module in data.keys():
+        print "Module:",module
+        fm=open("%s/%s.conf"%(sys_dir,module),"w")
+        for key in data[module].keys():
+            value=data[module][key]
+            if 'str' in key:
+                entry="%s=\"'%s'\"\n"%(key,value)
+            else:
+                entry="%s=%s\n"%(key,value)
+            fm.write(entry)
+        fm.close()
+    script="BHMinteraction.py"
+    module_conf="interaction.conf"
+    qover=2
+
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+#HASH MODULE
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 module_file="%s/%s"%(sys_dir,module_conf)
 if not FILEEXISTS(module_file):
     PRINTERR("File '%s' does not exist."%module_file)
@@ -80,13 +125,12 @@ for depmod in OBJECT_PIPE[module_name]:
     depmod_type=depmod_type.replace("2","")
     depmod,depmod_dir,depmod_str,depmod_hash,depmod_liv,depmod_stg=\
         signObject(depmod_type,sys_dir+"/"+depmod_conf)
-
     #========================================
     #HASHING OBJECTS
     #========================================
     if depmod_stg<10 or qover==2:
         if qover:PRINTOUT("Forcing %s"%depmod_type);
-        System("python BHMrun.py BHM%s.py %s %s %d"%(depmod_type,sys_dir,depmod_conf,qover),out=False)
+        System("python BHMrun.py BHM%s.py %s %s %d"%(depmod_type,sys_dir,depmod_conf,1),out=False)
     else:PRINTOUT("%s ready."%depmod_type);
     
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
