@@ -98,6 +98,7 @@ linnr,loutnr,leeq=HZbin(star2.M/star1.M,star1.L,star2.L,star1.T,
 Pinnr=PKepler(linnr,star1.M,star2.M);ninnr=2*np.pi/Pinnr
 Poutnr=PKepler(loutnr,star1.M,star2.M);noutnr=2*np.pi/Poutnr
 Peeq=PKepler(leeq,star1.M,star2.M);neeq=2*np.pi/Peeq
+ihz.leeq=leeq
 
 ###################################################
 #CALCULATE INSOLATION AND PHOTON FLUXES
@@ -197,10 +198,22 @@ shz=toStack(ts)|shz
 
 #CONTINUOUS HABITABLE ZONE
 tms=star1.taums
-clout=min(hz[:,3])
+clout=min(hz[10:,3])
 clin=np.interp(tms,ts,hz[:,1])
 if clin<binary.acrit:
     clin=binary.acrit
+
+#HZ PLANETARY EXIT TIME
+ts=hz[:,0]
+cond=hz[:,1]<planet.aorb
+try:texit=ts[cond][-1]
+except:texit=tms
+
+#MAXIMUM OUTER LIMIT
+cond=ts<tms
+louts=hz[:,3]
+try:loutmax=louts[cond][-1]
+except:loutmax=max(ihz.hz[:,3])
 
 ###################################################
 #STORE iHZ DATA
@@ -237,8 +250,10 @@ loutnr = %.17e #AU
 
 #CHZ
 taums = %.17e #Gyr
+tauhl = %.17e #Gyr
 clin = %.17e #Gyr
 clout = %.17e #Gyr
+loutmax = %.17e #Gyr
 
 #FLUX AND PHOTON DENSITY STATS
 #COLS:mean,min,max,range,st.dev.
@@ -257,10 +272,10 @@ shz=%s
 """%(ihz.title,
      ini_inwd,ini_outwd,ini_innr,ini_outnr,
      taumax,ihz.tau,
-     leeq,
+     ihz.leeq,
      linwd,loutwd,
      linnr,loutnr,
-     tms,clin,clout,
+     tms,texit,clin,clout,loutmax,
      array2str(fstats.array),
      array2str(pstats.array),
      array2str(insolation),
@@ -469,9 +484,12 @@ ax.fill_between(ts,ihz.hz[:,1],ihz.hz[:,3],color='g',alpha=0.3)
 #CRITICAL DISTANCE
 ax.axhline(binary.acrit,linewidth=2)
 
+#PLANET ORBIT
+ax.axhline(planet.aorb,color='k',linewidth=2,label='Planet')
+
 #DECORATION
 ax.set_xlim((0.0,ihz.taums))
-ax.set_ylim((min(ihz.shz[:,1]),max(ihz.hz[:,3])))
+ax.set_ylim((min(ihz.shz[:,1]),ihz.loutmax))
 
 ax.set_xlabel(r"$\\tau$ (Gyr)",fontsize=12)
 ax.set_ylabel(r"$r$ (AU)",fontsize=12)
@@ -488,7 +506,7 @@ ax.text(0.05,rchz,"%%.2f AU"%%(ihz.clout),fontsize=10,
 horizontalalignment='center',verticalalignment='top',transform=ax.transAxes)
 ax.text(0.05,rihz,"%%.2f AU"%%(ihz.clin),fontsize=10,
 horizontalalignment='center',verticalalignment='bottom',transform=ax.transAxes)
-
+ax.legend(loc='best',prop=dict(size=12))
 """%(binary_dir,binary_dir,
      planet_dir,planet_dir,
      ihz_dir,ihz_dir
@@ -527,6 +545,7 @@ fh.write("""\
 <h3>Continuous Habitable Zone</h3>
 <table>
   <tr><td>&tau;<sub>MS</sub> (Gyr):</td><td>%.3f</td></tr>
+  <tr><td>&tau;<sub>p,HL</sub> (Gyr):</td><td>%.3f</td></tr>
   <tr><td>l<sub>in,max</sub> (AU):</td><td>%.3f</td></tr>
   <tr><td>l<sub>out,min</sub> (AU):</td><td>%.3f</td></tr>
   <tr><td colspan=2>
@@ -561,7 +580,7 @@ fh.write("""\
      leeq,
      ini_inwd,linwd,ini_outwd,loutwd,
      ini_innr,linnr,ini_outnr,loutnr,
-     tms,clin,clout,
+     tms,texit,clin,clout,
      ihz_webdir,ihz_webdir,ihz_webdir,WEB_DIR,
      planet.aorb,planet.eorb,fstats.array[0,0],fstats.array[0,0]/SOLAR_CONSTANT,
      fstats.array[0,1]/SOLAR_CONSTANT,fstats.array[0,2]/SOLAR_CONSTANT,

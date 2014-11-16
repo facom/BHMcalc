@@ -98,7 +98,7 @@ saveFig('%s%s.png',watermarkpos="%s")
     #EXECUTE COMMANDS
     exec(plotcmd)
 
-def saveFig(filename,watermark="BHMcalc",watermarkpos="outer",dxw=0.01,dyw=0.01,va='top'):
+def saveFig(filename,watermark="BHMcalc2",watermarkpos="outer",dxw=0.01,dyw=0.01,va='top'):
     """
     Save figure with the respective data
     """
@@ -117,7 +117,7 @@ def saveFig(filename,watermark="BHMcalc",watermarkpos="outer",dxw=0.01,dyw=0.01,
     ax.text(xw,yw,watermark,
             horizontalalignment=ha,
             verticalalignment=va,
-            rotation=90,color='b',alpha=0.3,fontsize=12,
+            rotation=90,color='r',alpha=0.3,fontsize=12,
             transform=ax.transAxes)
 
     plt.savefig(filename)

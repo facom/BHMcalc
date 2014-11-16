@@ -264,6 +264,7 @@ div.download{
  top:15%;
  right:5%;
  display:none;
+ font-size:10px
 }
 
 a.activelink{

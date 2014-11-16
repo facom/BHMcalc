@@ -35,16 +35,16 @@ foreach(array_keys($_GET) as $key){
   fwrite($fc,"$var = $val\n");
 }
 fclose($fc);
+
 //////////////////////////////////////////////////////////////
 //SUBMIT EXECUTION
 //////////////////////////////////////////////////////////////
-
 //COMMAND
 $cmd="$PYTHONCMD BHMrun.py BHM${module}.py $SESSDIR $object.conf 0";
 
 //OUTPUT
 $stdout="BHMrun-stdout-$SESSID";
-$stderr="BHMrun-error-$SESSID";
+$stderr="BHMrun-stderr-$SESSID";
 
 //EXCECUTE COMMAND
 $out=shell_exec($cmd." 2> $TMPDIR/$stderr |tee $TMPDIR/$stdout");
@@ -54,6 +54,26 @@ $parts=preg_split("/--sig--\s*/",$out);
 $hash=rtrim(end($parts));
 $src_file="objs/$module-$hash/$module.html";
 
-//RETURN OUTPUT
-echo $src_file;
+if(file_exists($DIR.$src_file)){
+  //RETURN OUTPUT
+  echo $src_file;
+}else{
+  //GENERATE REPORT
+  $err_file=$wSESSDIR."error-report.hml";
+  $fe=fopen($ROOTDIR.$err_file,"w");
+$error=<<<ERROR
+  <head>
+  <link rel="stylesheet" type="text/css" href="web/BHM.css">
+  </head>
+  <i>An error has been raised when executing the calculator scripts.
+  Check the standard and error outputs of the scripts:</i>
+  <p>
+  <a href="$wDIR/$wTMPDIR/$stdout">Standard output</a><br/>
+  <a href="$wDIR/$wTMPDIR/$stderr">Error output</a><br/>
+  </p>
+ERROR;
+  fwrite($fe,$error);
+  fclose($fe);
+  echo $err_file;
+}
 ?>
