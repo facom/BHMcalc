@@ -5,8 +5,16 @@ Model Assumptions
 
 - MoI is calculated at ZAMS
 
+
+
+
 To Do List
 ==========
+
+- Include rotation evolution plots for single stars.
+
+Old
+===
 
 - Create a way to submit a set of calculations from the command line
   without filling the whole form.

@@ -342,7 +342,6 @@ ax.legend(loc='lower right')
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 plotFigure(star_dir,"radius-schematic",\
 """
-
 from BHM.BHMstars import *
 fig=plt.figure(figsize=(8,8))
 ax=fig.add_axes([0.0,0.0,1.0,1.0])
@@ -408,7 +407,7 @@ ax.legend(loc='best')
 fh=open(star_dir+"star.html","w")
 fh.write("""\
 <head>
-  <link rel="stylesheet" type="text/css" href="%s/web/BHM.css">
+  <link rel="stylesheet" type="text/css" href="%s/BHM.css">
 </head>
 <h2>Stellar Properties</h2>
 <center>
@@ -419,7 +418,7 @@ fh.write("""\
   <i>Schematic Representation</i>
   (
   <a href="%s/radius-schematic.png.txt" target="_blank">data</a>|
-  <a href="%s/web/replot.php?plot=radius-schematic.py" target="_blank">replot</a>
+  <a href="%s/BHMreplot.php?dir=%s&plot=radius-schematic.py" target="_blank">replot</a>
   )
 </center>
 </table>
@@ -458,7 +457,7 @@ fh.write("""\
       <i>Evolution of stellar properties</i>
 	(
 	<a href="%s/stellar-props.png.txt" target="_blank">data</a>|
-	<a href="%s/web/replot.php?plot=stellar-props.py" target="_blank">replot</a>
+	<a href="%s/BHMreplot.php?plot=stellar-props.py" target="_blank">replot</a>
 	)
   </td></tr>
   <tr><td>
@@ -469,7 +468,7 @@ fh.write("""\
       <i>Evolutionary Track</i>
 	(
 	<a href="%s/evol-track.png.txt" target="_blank">data</a>|
-	<a href="%s/web/replot.php?plot=evol-track.py" target="_blank">replot</a>
+	<a href="%s/BHMreplot.php?plot=evol-track.py" target="_blank">replot</a>
 	)
   </td></tr>
   <tr><td>
@@ -480,11 +479,11 @@ fh.write("""\
       <i>Radius Evolution</i>
 	(
 	<a href="%s/evol-radius.png.txt" target="_blank">data</a>|
-	<a href="%s/web/replot.php?plot=evol-radius.py" target="_blank">replot</a>
+	<a href="%s/BHMreplot.php?plot=evol-radius.py" target="_blank">replot</a>
 	)
   </td></tr>
 </table>
-"""%(WEB_DIR,star_webdir,star_webdir,star_webdir,WEB_DIR,
+"""%(WEB_DIR,star_webdir,star_webdir,star_webdir,WEB_DIR,star_webdir,
 star.M,star.Z,star.FeH,star.tau,tau_max,tau_ms,star_hash,
 g,Teff,R,L,MoI,tdiss,
 lins[0],lins[1],lins[2],

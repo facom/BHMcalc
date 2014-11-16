@@ -22,11 +22,12 @@
 $CONTENT="";
 
 //PYTHON COMMAND
-$PYTHONCMD="MPLCONFIGDIR=/tmp python";
+$PYTHONCMD="PYTHONPATH=$PYTHONPATH:. MPLCONFIGDIR=/tmp python";
 
 //LOCATION
-$ROOTDIR=preg_replace("/BHMcalc/","",rtrim(shell_exec("pwd")));
-$wDIR="BHMcalc/";
+if(!isset($RELATIVE)){$RELATIVE=".";}
+$ROOTDIR=preg_replace("/BHMcalc/","",rtrim(shell_exec("cd $RELATIVE;pwd")));
+$wDIR="/BHMcalc/";
 $DIR=$ROOTDIR.$wDIR;
 
 //OTHER DIRECTORIES
@@ -67,7 +68,6 @@ if(!file_exists($CSSFILE) or isset($GENCSS)){
   fwrite($fc,$CSS);
   fclose($fc);
 }
-
 
 //////////////////////////////////////////////////////////////
 //SESSION ID
