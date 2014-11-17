@@ -76,7 +76,7 @@ foreach($systems as $system){
 	  if($module!="planet"){$value=$system["$field"];}
 	  else{$value=$planet["$field"];}
 	}
-	if($value==-1){$value=$default;}
+	if($value<0){$value=$default;}
 	$qstring.="${module}_$parameter=$value&";
 	//echo "${module}_$parameter=$value<br/>";
       }
