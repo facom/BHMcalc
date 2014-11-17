@@ -65,6 +65,11 @@ C;
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 //AJAX FORM
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+//CATALOGUE
+$code=ajaxMultipleForm(array("cat"),"cat_form");
+$ajaxform_cat_Update=ajaxFromCode($code,"'#cat_Update'","click");
+echo "<pre>$ajaxform_cat_Update</pre>";
+
 //STAR1
 $code=ajaxMultipleForm(array("star1"),"star1_form");
 $ajaxform_star1_Update=ajaxFromCode($code,"'#star1_Update'","click");
@@ -178,8 +183,21 @@ $CONTENT.=<<<C
   <!-- CATALOGUE -->
   <!-- //////////////////////////////////////////////////////////// -->
   <div class="tabbertab" id="Introduction" title="BHM Catalogue">
-    <div class="tabcontent">
-    </div>
+    <p><b>Binary Habitability Catalogue</b></p>
+    <form id="cat_form" action="BHMcat.php">
+      <button class="update" id="cat_Update">Update</button> 
+      $ajaxform_cat_Update
+      <div id="cat_results_panel" class="catalogue">
+	<div class="download" id="cat_download"></div>
+	<div id="cat_results_status_loader" style="background-color:white;">
+	  <div id="cat_results_status" style="background-color:white;">
+	    <iframe class="iframe" id="cat_results_frame" src="BHMcatalogue.html" 
+		    scrolling="yes" onload="adjustiFrame(this);">
+	    </iframe>
+	  </div>
+	</div>
+      </div>
+    </form>
   </div>
 
   <!-- //////////////////////////////////////////////////////////// -->
@@ -269,7 +287,7 @@ $CONTENT.=<<<C
 	</div>
 	<div id="star1_results_panel" class="results">
 	  <div><center class="title">Results</center><hr width="90%"/></div>
-	  <div class="download" id="star1_download">Hola</div>
+	  <div class="download" id="star1_download"></div>
 	  <div id="star1_results_status_loader" style="background-color:white;">
 	    <div id="star1_results_status" style="background-color:white;">
 	      <iframe class="iframe" id="star1_results_frame" src="web/blank.html" 

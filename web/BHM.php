@@ -22,7 +22,7 @@
 $CONTENT="";
 
 //PYTHON COMMAND
-$PYTHONCMD="PYTHONPATH=$PYTHONPATH:. MPLCONFIGDIR=/tmp python";
+$PYTHONCMD="PYTHONPATH=. MPLCONFIGDIR=/tmp python";
 
 //LOCATION
 if(!isset($RELATIVE)){$RELATIVE=".";}
@@ -58,6 +58,62 @@ $QUERY_STRING=$_SERVER["QUERY_STRING"];
 
 //QUERYSTRING FOR CONFIGURATION
 $PARSE_STRING="";
+
+$DATA_STRUCTURE=array(
+	       "binary"=>array(
+			       "Pbin"=>array("Pbin",0),
+			       "abin"=>array("abin",0.125),
+			       "ebin"=>array("ebin",0.0),
+			       ),
+	       "hz"=>array(
+			   "str_incrit_wd"=>array("","'recent venus'"),
+			   "str_outcrit_wd"=>array("","'early mars'"),
+			   "str_incrit_nr"=>array("","'runaway greenhouse'"),
+			   "str_outcrit_nr"=>array("","'maximum greenhouse'"),
+			   ),
+	       "interaction"=>array(
+				    "tauini"=>array("",0.1),
+				    "tauref"=>array("taumax",2.5),
+				    "str_earlywind"=>array("","'trend'"),
+				    "str_refobj"=>array("","'Earth'"),
+				    "nM"=>array("",3.0),
+				    "nP"=>array("",6.0),
+				    "alpha"=>array("",0.3),
+				    "muatm"=>array("",44.0),
+				    "Mmin"=>array("",0.01),
+				    "Mmax"=>array("",10.0),
+				    ),
+	       "planet"=>array(
+			       "M"=>array("Mp",1.0),
+			       "fHHe"=>array("",1.0),
+			       "CMF"=>array("",0.34),
+			       "tau"=>array("",1.0),
+			       "Morb"=>array("",2.0),
+			       "aorb"=>array("aorb",1.47),
+			       "Porb"=>array("Porb",0.0),
+			       "eorb"=>array("eorb",0.0167),
+			       "worb"=>array("worb",0.0),
+			       "Prot"=>array("",1.0),
+			       ),
+	       "rotation"=>array(
+				 "k"=>array("",1),
+				 ),
+	       "star1"=>array(
+			      "M"=>array("M1",1.0),
+			      "Z"=>array("Z",0.03),
+			      "FeH"=>array("FeH",0.3042),
+			      "tau"=>array("taumin",1.0),
+			      "taums"=>array("",0.0)
+			      ),
+	       "star2"=>array(
+			      "M"=>array("M2",1.0),
+			      "Z"=>array("Z",0.03),
+			      "FeH"=>array("FeH",0.3042),
+			      "tau"=>array("taumin",1.0),
+			      "taums"=>array("",0.0),
+			      ),
+	       );
+$MODULES=array_keys($DATA_STRUCTURE);
 
 //////////////////////////////////////////////////////////////
 //CSS
@@ -242,7 +298,6 @@ CODE;
     $sname="statusidload$i";
     $sval=$$sname;
 $code.=<<<CODE
-
       $.ajax({
 	url : formURL$i,
 	type: "GET",
@@ -292,6 +347,89 @@ CODE;
 
 function echoVerbose($string){
   if($GLOBALS["VERBOSE"]){echo $string;}
+}
+
+function readCSV($csvfile,$key=""){
+  if(($fc=fopen($csvfile,"r"))==FALSE){
+    echo "File $cvsfile is not reachable.";
+    return;
+  }
+  $i=0;
+  $data=array();
+  $keys=array();
+  while(($row=fgetcsv($fc,1000,";"))!=FALSE){
+    $ncols=count($row);
+    if($i==0){
+      $col=0;
+      $fields=array();
+      foreach($row as $field){
+	$fields[$col]=$field;
+	$col++;
+      }
+    }else{
+      $data[$i]=array();
+      for($c=0;$c<$ncols;$c++){
+	$value=$row[$c];
+	$value=preg_replace("/\*/","",$value);
+	if(preg_match("/\d+,\d+/",$value)){
+	  $value=preg_replace("/,/",".",$value);
+	}
+	$data[$i][$fields[$c]]=$value;
+      }
+      if(preg_match("/\w/",$key)){
+	$valkey=$data[$i][$key];
+	$keys[$valkey]=$i;
+      }else{
+	$keys[$i]=$i;
+      }
+    }
+    $i++;
+  }
+  fclose($fc);
+  return array($data,$keys);
+}
+
+function loadSystems()
+{
+  global $DIR;
+  $sys_csvfile="$DIR/BHM/data/BHMcat-systems.csv";
+  $pla_csvfile="$DIR/BHM/data/BHMcat-planets.csv";
+
+  $data=readCSV($sys_csvfile,"BHMCat");
+  $systems=$data[0];
+  $sys_keys=$data[1];
+  $sys_fields=array_keys($systems[1]);
+  $sys_num=count($systems);
+
+  $data=readCSV($pla_csvfile,"BHMCatP");
+  $planets=$data[0];
+  $pla_keys=$data[1];
+  $pla_fields=array_keys($planets[1]);
+  $pla_num=count($planets);
+
+  //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  //LOAD PLANETS INTO SYSTEMS
+  //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  for($i=1;$i<=$sys_num;$i++){
+    $planetids=$systems[$i]["Planets"];
+    $planetids=preg_split("/;/",$planetids);
+    $systems[$i]["PlanetsData"]=array();
+    $j=0;
+    foreach($planetids as $planetid){
+      if(!preg_match("/\w/",$planetid)){continue;}
+      $planet=$planets[$pla_keys["$planetid"]];
+      array_push($systems[$i]["PlanetsData"],$planet);
+      $j++;
+    }
+    if($j==0){
+      $systems[$i]["NumPlanets"]=1;
+      $planet=$planets[$pla_keys["BHMCatP0000"]];
+      array_push($systems[$i]["PlanetsData"],$planet);
+      $j=1;
+    }
+    $systems[$i]["NumPlanets"]=$j;
+  }
+  return $systems;
 }
 
 ?>

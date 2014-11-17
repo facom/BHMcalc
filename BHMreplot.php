@@ -30,6 +30,7 @@ $file_stdout="$wTMPDIR/plot-stdout-$SESSID";
 $file_stderr="$wTMPDIR/plot-stderr-$SESSID";
 
 echo<<<C
+<html>
 <head>
   <link rel="stylesheet" type="text/css" href="$RELATIVE/web/BHM.css">
 </head>
@@ -83,5 +84,6 @@ $script
 </div>
 </form>
 </body>
+</html>
 C;
 ?>
