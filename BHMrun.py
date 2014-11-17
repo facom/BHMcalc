@@ -130,6 +130,7 @@ for depmod in OBJECT_PIPE[module_name]:
     #========================================
     if depmod_stg<10 or qover==2:
         if qover:PRINTOUT("Forcing %s"%depmod_type);
+        else:PRINTOUT("Running %s (%s)"%(depmod_type,depmod_hash));
         System("python BHMrun.py BHM%s.py %s %s %d"%(depmod_type,sys_dir,depmod_conf,1),out=False)
     else:PRINTOUT("%s ready."%depmod_type);
     
@@ -140,6 +141,10 @@ PRINTOUT("V"*60)
 if module_stg<10 or qover>=1:
     if qover:PRINTOUT("Forcing %s"%module_type);
     System("python BHM%s.py %s %s %d"%(module_type,sys_dir,module_conf,qover),out=False)
+    stage=System("cat %s/.stage"%module_dir,out=True)
+    print "Stage:",stage
+    if int(stage)<10:
+        PRINTOUT("Task has ended with an error.")
     qupdate=True
 else:
     qupdate=False

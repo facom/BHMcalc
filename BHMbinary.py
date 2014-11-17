@@ -88,8 +88,8 @@ else:
 
 #OTHER PARAMETERS
 binary.M=star1.M+star2.M
-binary.mu=star1.M/binary.M
-binary.q=star2.M/star1.M
+binary.mu=float(star1.M)/binary.M
+binary.q=float(star2.M)/star1.M
 binary.acrit=aCritical(binary.mu,binary.abin,binary.ebin)
 binary.nsync=nSync(binary.ebin)
 binary.Psync=binary.Pbin/binary.nsync
@@ -176,7 +176,7 @@ ax.plot(xs2,ys2,'r-',label='Secondary')
 ax.plot([xs1[0]],[ys1[0]],'bo',markersize=5,markeredgecolor='none')
 ax.plot([xs2[0]],[ys2[0]],'ro',markersize=5,markeredgecolor='none')
 
-rang=1.5*binary.mu*binary.abin*(1+binary.ebin)
+rang=1.5*binary.abin*(1+binary.ebin)
 ax.set_xlim((-rang,rang))
 ax.set_ylim((-rang,rang))
 
@@ -211,11 +211,11 @@ fh.write("""\
   <i>Schematic Representation</i>
   (
   <a target="_blank" href="%s/binary-orbit.png.txt">data</a>|
-  <a target="_blank" href="%s/web/replot.php?plot=binary-orbit.py">replot</a>
+  <a target="_blank" href="%s/BHMreplot.php?dir=%s&plot=binary-orbit.py">replot</a>
   )
 </center>
 <h3>Basic Properties</h3>
-<table width=300>
+<table>
   <tr><td>M (M<sub>Sun</sub>):</td><td>%.3f</td></tr>
   <tr><td>&mu; (M<sub>1</sub>/M<sub>Sun</sub>):</td><td>%.3f</td></tr>
   <tr><td>q (M<sub>2</sub>/M<sub>1</sub>):</td><td>%.3f</td></tr>
@@ -224,12 +224,12 @@ fh.write("""\
   <tr><td>e<sub>bin</sub>:</td><td>%.3f</td></tr>
 </table>
 <h3>Derivative properties:</h3>
-<table width=300>
+<table>
   <tr><td>a<sub>crit</a> (AU):</td><td>%.3f</td></tr>
   <tr><td>n<sub>sync</a> (P<sub>sync</sub>/P<sub>bin</sub>):</td><td>%.3f</td></tr>
   <tr><td>P<sub>sync</a> (days):</td><td>%.3f</td></tr>
 </table>
-"""%(WEB_DIR,binary_webdir,binary_webdir,binary_webdir,WEB_DIR,
+"""%(WEB_DIR,binary_webdir,binary_webdir,binary_webdir,WEB_DIR,binary_webdir,
      binary.M,binary.mu,binary.q,
      binary.Pbin,binary.abin,binary.ebin,
      binary.acrit,binary.nsync,binary.Psync

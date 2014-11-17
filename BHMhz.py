@@ -87,6 +87,7 @@ str_outcrit_wd=ihz.str_outcrit_wd.replace("'","")
 linwd,loutwd=HZbin(star2.M/star1.M,star1.L,star2.L,star1.T,
                    binary.abin,
                    crits=[str_incrit_wd,str_outcrit_wd])
+
 Pinwd=PKepler(linwd,star1.M,star2.M);ninwd=2*np.pi/Pinwd
 Poutwd=PKepler(loutwd,star1.M,star2.M);noutwd=2*np.pi/Poutwd
 
@@ -452,6 +453,7 @@ ax.set_ylabel('Insolation, PPFD (PEL)',fontsize=12)
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 #EVOLUTION AND CONTINUOUS HABITABLE ZONE
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+PRINTOUT("Creating plots...");
 plotFigure(ihz_dir,"hz-evolution",\
 """
 from BHM.BHMstars import *
@@ -520,7 +522,7 @@ fh.write("""\
 <head>
   <link rel="stylesheet" type="text/css" href="%s/web/BHM.css">
 </head>
-<h2>Instantaneous Circumbinary Habitable Zone (HZ)</h2>
+<h2>Circumbinary Habitable Zone (HZ)</h2>
 <center>
   <a target="_blank" href="%s/iHZ.png">
     <img width=60%% src="%s/iHZ.png">
@@ -529,7 +531,7 @@ fh.write("""\
   <i>Instantaneous Habitable Zone</i>
   (
   <a target="_blank" href="%s/iHZ.png.txt">data</a>|
-  <a target="_blank" href="%s/web/replot.php?plot=iHZ.py">replot</a>
+  <a target="_blank" href="%s/BHMreplot.php?dir=%s&plot=iHZ.py">replot</a>
   )
 </center>
 <h3>HZ Edges</h3>
@@ -556,7 +558,7 @@ fh.write("""\
       <i>Instantaneous Habitable Zone</i>
 	(
 	<a target="_blank" href="%s/hz-evolution.png.txt">data</a>|
-	<a target="_blank" href="%s/web/replot.php?plot=hz-evolution.py">replot</a>
+	<a target="_blank" href="%s/BHMreplot.php?dir=%s&plot=hz-evolution.py">replot</a>
 	)
   </td></tr>
 </table>
@@ -572,20 +574,20 @@ fh.write("""\
       <i>Instantaneous Habitable Zone</i>
 	(
 	<a target="_blank" href="%s/insolation.png.txt">data</a>|
-	<a target="_blank" href="%s/web/replot.php?plot=insolation.py">replot</a>
+	<a target="_blank" href="%s/BHMreplot.php?dir=%s&plot=insolation.py">replot</a>
 	)
   </td></tr>
 </table>
-"""%(WEB_DIR,ihz_webdir,ihz_webdir,ihz_webdir,WEB_DIR,
+"""%(WEB_DIR,ihz_webdir,ihz_webdir,ihz_webdir,WEB_DIR,ihz_webdir,
      leeq,
      ini_inwd,linwd,ini_outwd,loutwd,
      ini_innr,linnr,ini_outnr,loutnr,
      tms,texit,clin,clout,
-     ihz_webdir,ihz_webdir,ihz_webdir,WEB_DIR,
+     ihz_webdir,ihz_webdir,ihz_webdir,WEB_DIR,ihz_webdir,
      planet.aorb,planet.eorb,fstats.array[0,0],fstats.array[0,0]/SOLAR_CONSTANT,
      fstats.array[0,1]/SOLAR_CONSTANT,fstats.array[0,2]/SOLAR_CONSTANT,
      fstats.array[0,3]/SOLAR_CONSTANT,fstats.array[0,4]/SOLAR_CONSTANT,
-     ihz_webdir,ihz_webdir,ihz_webdir,WEB_DIR
+     ihz_webdir,ihz_webdir,ihz_webdir,WEB_DIR,ihz_webdir
      ))
 fh.close()
 

@@ -61,7 +61,7 @@ $PARSE_STRING="";
 
 $DATA_STRUCTURE=array(
 	       "binary"=>array(
-			       "Pbin"=>array("Pbin",0),
+			       "Pbin"=>array("Pbin",0.0),
 			       "abin"=>array("abin",0.125),
 			       "ebin"=>array("ebin",0.0),
 			       ),
@@ -100,15 +100,15 @@ $DATA_STRUCTURE=array(
 				 ),
 	       "star1"=>array(
 			      "M"=>array("M1",1.0),
-			      "Z"=>array("Z",0.03),
-			      "FeH"=>array("FeH",0.3042),
+			      "Z"=>array("Z",0.0154),
+			      "FeH"=>array("FeH",0.0),
 			      "tau"=>array("taumin",1.0),
 			      "taums"=>array("",0.0)
 			      ),
 	       "star2"=>array(
 			      "M"=>array("M2",1.0),
-			      "Z"=>array("Z",0.03),
-			      "FeH"=>array("FeH",0.3042),
+			      "Z"=>array("Z",0.0154),
+			      "FeH"=>array("FeH",0.0),
 			      "tau"=>array("taumin",1.0),
 			      "taums"=>array("",0.0),
 			      ),
@@ -136,12 +136,12 @@ $SESSDIR=$ROOTDIR.$wSESSDIR;
 //////////////////////////////////////////////////////////////
 //ROUTINES
 //////////////////////////////////////////////////////////////
-function mainHeader($refresh="")
+function mainHeader($refresh="",$options="?")
 {
   global $CSS;
   $refreshcode="";
   if(preg_match("/\d+/",$refresh)){
-    $refreshcode="<meta http-equiv='refresh' content='$refresh;URL=?'>";
+    $refreshcode="<meta http-equiv='refresh' content='$refresh;URL=$options'>";
   }
 $HEADER=<<<HEADER
 <head>

@@ -241,8 +241,14 @@ button{
 }
 button.update{
  position:absolute;
- top:35px;
+ top:40px;
  right:30px;
+}
+a.force{
+ position:absolute;
+ top:25px;
+ right:30px;
+ font-size:10px;
 }
 
 input{
@@ -268,7 +274,7 @@ div.download{
  padding:2px;
  border:solid black 1px;
  z-index=100;
- top:35px;
+ top:40px;
  right:90px;
  display:none;
  font-size:12px

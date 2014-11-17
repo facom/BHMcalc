@@ -388,8 +388,8 @@ ax=fig.add_axes([0.1,0.1,0.8,0.8])
 ts=star.protevol[:,0]
 Psemi=star.protevol[:,1]
 Panal=star.protevol[:,2]
-ax.plot(ts,Psemi,label="Model")
-ax.plot(ts,Panal,label="Fit")
+ax.plot(ts,Psemi,label="Fit")
+ax.plot(ts,Panal,label="Model")
 ax.axvline(star.taums,color='k',linestyle='--',label='Turn over')
 ax.axvline(star.tau,color='k',label='Stellar Age')
 
@@ -457,7 +457,7 @@ fh.write("""\
       <i>Evolution of stellar properties</i>
 	(
 	<a href="%s/stellar-props.png.txt" target="_blank">data</a>|
-	<a href="%s/BHMreplot.php?plot=stellar-props.py" target="_blank">replot</a>
+	<a href="%s/BHMreplot.php?dir=%s&plot=stellar-props.py" target="_blank">replot</a>
 	)
   </td></tr>
   <tr><td>
@@ -468,7 +468,7 @@ fh.write("""\
       <i>Evolutionary Track</i>
 	(
 	<a href="%s/evol-track.png.txt" target="_blank">data</a>|
-	<a href="%s/BHMreplot.php?plot=evol-track.py" target="_blank">replot</a>
+	<a href="%s/BHMreplot.php?dir=%s&plot=evol-track.py" target="_blank">replot</a>
 	)
   </td></tr>
   <tr><td>
@@ -479,7 +479,21 @@ fh.write("""\
       <i>Radius Evolution</i>
 	(
 	<a href="%s/evol-radius.png.txt" target="_blank">data</a>|
-	<a href="%s/BHMreplot.php?plot=evol-radius.py" target="_blank">replot</a>
+	<a href="%s/BHMreplot.php?dir=%s&plot=evol-radius.py" target="_blank">replot</a>
+	)
+  </td></tr>
+</table>
+<h3>Properties Evolution:</h3>
+<table>
+  <tr><td>
+      <a href="%s/stellar-rotation.png" target="_blank">
+	<img width=100%% src="%s/stellar-rotation.png">
+      </a>
+      <br/>
+      <i>Stellar Rotation Evolution</i>
+	(
+	<a href="%s/stellar-rotation.png.txt" target="_blank">data</a>|
+	<a href="%s/BHMreplot.php?dir=%s&plot=stellar-rotation.py" target="_blank">replot</a>
 	)
   </td></tr>
 </table>
@@ -488,9 +502,10 @@ star.M,star.Z,star.FeH,star.tau,tau_max,tau_ms,star_hash,
 g,Teff,R,L,MoI,tdiss,
 lins[0],lins[1],lins[2],
 louts[0],louts[1],
-star_webdir,star_webdir,star_webdir,WEB_DIR,
-star_webdir,star_webdir,star_webdir,WEB_DIR,
-star_webdir,star_webdir,star_webdir,WEB_DIR,
+star_webdir,star_webdir,star_webdir,WEB_DIR,star_webdir,
+star_webdir,star_webdir,star_webdir,WEB_DIR,star_webdir,
+star_webdir,star_webdir,star_webdir,WEB_DIR,star_webdir,
+star_webdir,star_webdir,star_webdir,WEB_DIR,star_webdir,
 ))
 fh.close()
 
