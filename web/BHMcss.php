@@ -246,7 +246,7 @@ button.update{
 }
 a.force{
  position:absolute;
- top:25px;
+ top:65px;
  right:30px;
  font-size:10px;
 }
