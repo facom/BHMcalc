@@ -88,6 +88,25 @@ function loadAjax(script,target)
 		-1,true);
 }
 
+function loadAjax(script,target)
+{
+    loadContent(script,
+		$(target),
+		function(element,rtext){
+		    //element.css('background','yellow');
+		    element.html(rtext);
+		},
+		function(element,rtext){
+		    //element.css('background','lightgreen');
+		    element.html("Loading...");
+		},
+		function(element,rtext){
+		    //element.css('background','pink');
+		    element.html("Error...");
+		},
+		-1,true);
+}
+
 function adjustiFrame(iframe)
 {
     height=iframe.contentWindow.document.body.offsetHeight+"px";

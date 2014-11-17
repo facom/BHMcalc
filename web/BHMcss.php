@@ -204,6 +204,13 @@ width:50%;
 height:20%;
 //background:lightblue;
 }
+.catalogue{
+float:left;
+width:100%;
+height:100%;
+ border:1px solid black;
+//background:lightyellow;
+}
 
 /*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%*/
 /*FORM TABLE*/
@@ -261,10 +268,10 @@ div.download{
  padding:2px;
  border:solid black 1px;
  z-index=100;
- top:15%;
- right:5%;
+ top:35px;
+ right:90px;
  display:none;
- font-size:10px
+ font-size:12px
 }
 
 a.activelink{
@@ -275,6 +282,21 @@ div.target{
  padding:10px;
  width:90%;
  overflow:auto;
+ background:lightgray;
+}
+
+td.field_cat{
+  font-size:14px;
+}
+tr.header{
+ background:gray;
+ color:white;
+ font-weight:bold;
+}
+tr.row_light{
+ background:white;
+}
+tr.row_dark{
  background:lightgray;
 }
 
