@@ -30,7 +30,7 @@ $content="";
 $content.=<<<C
 <html>
 <head>
-  <link rel="stylesheet" type="text/css" href="$RELATIVE/web/BHM.css">
+  <link rel="stylesheet" type="text/css" href="web/BHM.css">
 </head>
 <body>
 C;
