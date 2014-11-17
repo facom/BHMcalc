@@ -98,6 +98,8 @@ env,env_str,env_hash,env_dir=\
 env_webdir=WEB_DIR+env_dir
 PRINTOUT("Object hash:%s"%env_hash)
 
+env.str_earlywind=env.str_earlywind.replace("'","")
+env.str_refobj=env.str_refobj.replace("'","")
 ###################################################
 #CALCULATE ENVIRONMENTAL CONDITIONS
 ###################################################
@@ -273,7 +275,7 @@ for t in ts:
     #SINGLE STAR
     #%%%%%%%%%%%%%%%%%%%%
     tau=t
-    
+
     #INNER
     r=star1.lins[0]
     v,n=vnGreissmeier(r,tau,star1.M,star1.Rfunc(t),early=env.str_earlywind)
@@ -820,7 +822,7 @@ fh.write("""\
   <i>Evolution of XUV flux</i>
   (
   <a target="_blank" href="%s/flux-XUV-absolute.png.txt">data</a>|
-  <a target="_blank" href="%s/web/replot.php?plot=flux-XUV-absolute.py">replot</a>
+  <a target="_blank" href="%s/BHMreplot.php?dir=%s&plot=flux-XUV-absolute.py">replot</a>
   )
 </center>
 <h3>XUV Flux</h3>
@@ -833,7 +835,7 @@ fh.write("""\
       <i>XUV Flux (absolute)</i>
 	(
 	<a href="%s/flux-XUV-absolute.png.txt" target="_blank">data</a>|
-	<a href="%s/web/replot.php?plot=flux-XUV-absolute.py" target="_blank">replot</a>
+	<a href="%s/BHMreplot.php?dir=%s&plot=flux-XUV-absolute.py" target="_blank">replot</a>
 	)
   </td></tr>
   <tr><td>
@@ -844,7 +846,7 @@ fh.write("""\
       <i>Integrated XUV Flux (absolute)</i>
 	(
 	<a href="%s/int-XUV-absolute.png.txt" target="_blank">data</a>|
-	<a href="%s/web/replot.php?plot=int-XUV-absolute.py" target="_blank">replot</a>
+	<a href="%s/BHMreplot.php?dir=%s&plot=int-XUV-absolute.py" target="_blank">replot</a>
 	)
   </td></tr>
 </table>
@@ -858,7 +860,7 @@ fh.write("""\
       <i>SW Flux (absolute)</i>
 	(
 	<a href="%s/flux-SW-absolute.png.txt" target="_blank">data</a>|
-	<a href="%s/web/replot.php?plot=flux-SW-absolute.py" target="_blank">replot</a>
+	<a href="%s/BHMreplot.php?dir=%s&plot=flux-SW-absolute.py" target="_blank">replot</a>
 	)
   </td></tr>
   <tr><td>
@@ -869,7 +871,7 @@ fh.write("""\
       <i>Integrated SW Flux (absolute)</i>
 	(
 	<a href="%s/int-SW-absolute.png.txt" target="_blank">data</a>|
-	<a href="%s/web/replot.php?plot=int-SW-absolute.py" target="_blank">replot</a>
+	<a href="%s/BHMreplot.php?dir=%s&plot=int-SW-absolute.py" target="_blank">replot</a>
 	)
   </td></tr>
 </table>
@@ -883,7 +885,7 @@ fh.write("""\
       <i>Standoff Distance</i>
 	(
 	<a href="%s/standoff-distance.png.txt" target="_blank">data</a>|
-	<a href="%s/web/replot.php?plot=standoff-distance.py" target="_blank">replot</a>
+	<a href="%s/BHMreplot.php?dir=%s&plot=standoff-distance.py" target="_blank">replot</a>
 	)
   </td></tr>
 </table>
@@ -901,7 +903,7 @@ fh.write("""\
       <i>Mass-loss (absolute)</i>
 	(
 	<a href="%s/mass-loss-absolute.png.txt" target="_blank">data</a>|
-	<a href="%s/web/replot.php?plot=mass-loss-absolute.py" target="_blank">replot</a>
+	<a href="%s/BHMreplot.php?dir=%s&plot=mass-loss-absolute.py" target="_blank">replot</a>
 	)
   </td></tr>
   <tr><td>
@@ -912,19 +914,19 @@ fh.write("""\
       <i>Mass-loss (absolute)</i>
 	(
 	<a href="%s/mass-loss-relative.png.txt" target="_blank">data</a>|
-	<a href="%s/web/replot.php?plot=mass-loss-relative.py" target="_blank">replot</a>
+	<a href="%s/BHMreplot.php?dir=%s&plot=mass-loss-relative.py" target="_blank">replot</a>
 	)
   </td></tr>
 </table>
-"""%(WEB_DIR,env_webdir,env_webdir,env_webdir,WEB_DIR,#FLUX XUV ABSOLUTE (INTRO)
-     env_webdir,env_webdir,env_webdir,WEB_DIR,#FLUX XUV ABSOLUTE
-     env_webdir,env_webdir,env_webdir,WEB_DIR,#INT XUV ABSOLUTE
-     env_webdir,env_webdir,env_webdir,WEB_DIR,#FLUX SW ABSOLUTE
-     env_webdir,env_webdir,env_webdir,WEB_DIR,#INT SW ABSOLUTE
-     env_webdir,env_webdir,env_webdir,WEB_DIR,#STANDOFF DISTANCE
+"""%(WEB_DIR,env_webdir,env_webdir,env_webdir,WEB_DIR,env_webdir,#FLUX XUV ABSOLUTE (INTRO)
+     env_webdir,env_webdir,env_webdir,WEB_DIR,env_webdir,#FLUX XUV ABSOLUTE
+     env_webdir,env_webdir,env_webdir,WEB_DIR,env_webdir,#INT XUV ABSOLUTE
+     env_webdir,env_webdir,env_webdir,WEB_DIR,env_webdir,#FLUX SW ABSOLUTE
+     env_webdir,env_webdir,env_webdir,WEB_DIR,env_webdir,#INT SW ABSOLUTE
+     env_webdir,env_webdir,env_webdir,WEB_DIR,env_webdir,#STANDOFF DISTANCE
      Mlp,Plp,ntMlp,ntPlp,
-     env_webdir,env_webdir,env_webdir,WEB_DIR,#MASS-LOSS ABSOLUTE
-     env_webdir,env_webdir,env_webdir,WEB_DIR#MASS-LOSS RELATIVE
+     env_webdir,env_webdir,env_webdir,WEB_DIR,env_webdir,#MASS-LOSS ABSOLUTE
+     env_webdir,env_webdir,env_webdir,WEB_DIR,env_webdir#MASS-LOSS RELATIVE
      ))
 fh.close()
 

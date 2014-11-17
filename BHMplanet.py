@@ -507,18 +507,18 @@ fh.write("""\
   <i>Schematic Representation</i>
   (
   <a target="_blank" href="%s/planet-schematic.png.txt">data</a>|
-  <a target="_blank" href="%s/web/replot.php?plot=planet-schematic.py">replot</a>
+  <a target="_blank" href="%s/BHMreplot?dir=%s&plot=planet-schematic.py">replot</a>
   )
 </center>
 <h3>Input physical properties</h3>
-<table width=300>
+<table >
   <tr><td>Mass (M<sub>E</sub>,M<sub>Jup</sub>):</td><td>%.3f, %.3f</td></tr>
   <tr><td>f<sub>H/He</sub>:</td><td>%.3f</td></tr>
   <tr><td>CMF (Earth = 0.34):</td><td>%.2f</td></tr>
   <tr><td>&tau; (Gyr):</td><td>%.2f</td></tr>
 </table>
 <h3>Planetary Orbit Properties:</h3>
-<table width=300>
+<table >
   <tr><td>a (AU):</td><td>%.2f</td></tr>
   <tr><td>e:</td><td>%.2f</td></tr>
   <tr><td>&omega; (<sup>o</sup>):</td><td>%.1f</td></tr>
@@ -532,12 +532,12 @@ fh.write("""\
       <i>Orbit</i>
 	(
 	<a target="_blank" href="%s/planet-orbit.png.txt">data</a>|
-	<a target="_blank" href="%s/web/replot.php?plot=planet-orbit.py">replot</a>
+	<a target="_blank" href="%s/BHMreplot?dir=%s&plot=planet-orbit.py">replot</a>
 	)
   </td></tr>
 </table>
 <h3>Other Bulk Properties:</h3>
-<table width=300>
+<table>
   <tr><td>A (m<sup>2</sup>)):</td><td>%.2e</td></tr>
   <tr><td>g (m/s<sup>2</sup>):</td><td>%.3f</td></tr>
   <tr><td>&rho; (kg/m<sup>3</sup>:</td><td>%.3f</td></tr>
@@ -568,20 +568,20 @@ fh.write("""\
       <i>Evolution of stellar properties</i>
 	(
 	<a target="_blank" href="%s/thermal-evolution.png.txt">data</a>|
-	<a target="_blank" href="%s/web/replot.php?plot=thermal-evolution.py">replot</a>
+	<a target="_blank" href="%s/BHMreplot?dir=%s&plot=thermal-evolution.py">replot</a>
 	)
   </td></tr>
 </table>
-"""%(WEB_DIR,planet_webdir,planet_webdir,planet_webdir,WEB_DIR,
+"""%(WEB_DIR,planet_webdir,planet_webdir,planet_webdir,WEB_DIR,planet_webdir,
      planet.M,planet.Mg,
      planet.fHHe,planet.CMF,planet.tau,
      planet.aorb,planet.eorb,planet.worb,planet.Porb,planet.Prot,
-     planet_webdir,planet_webdir,planet_webdir,WEB_DIR,
+     planet_webdir,planet_webdir,planet_webdir,WEB_DIR,planet_webdir,
      planet.A,planet.g,planet.rho,
      planet.Rc,planet.Ric,planet.rhoc,
      planet.Q,planet.T,planet.Qconv,
      planet.tdyn,planet.Mdip,planet.Mdipmax,planet.tMdipmax,
-     planet_webdir,planet_webdir,planet_webdir,WEB_DIR     
+     planet_webdir,planet_webdir,planet_webdir,WEB_DIR,planet_webdir
      ))
 fh.close()
 

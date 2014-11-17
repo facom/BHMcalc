@@ -107,6 +107,18 @@ function loadAjax(script,target)
 		-1,true);
 }
 
+function forceUpdate(force,qover)
+{
+    status=$(force).html();
+    if(status=="Force"){
+	$(force).html("Smart");
+	$(qover).attr("value",0);
+    }else{
+	$(force).html("Force");
+	$(qover).attr("value",1);
+    }
+}
+
 function adjustiFrame(iframe)
 {
     height=iframe.contentWindow.document.body.offsetHeight+"px";

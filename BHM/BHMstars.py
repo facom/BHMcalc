@@ -553,18 +553,21 @@ def HZbin(q,Ls1,Ls2,Teffbin,abin,
 
     #INNER LIMIT
     AF=lambda x:AverageFlux(x,**args)-Seffin
-    lin=newton(AF,1.0)
+    #lin=newton(AF,1.0)
+    lin=brentq(AF,1.0E-3,10.0)
     limits=lin,
 
     #OUTER LIMIT
     AF=lambda x:AverageFlux(x,**args)-Seffout
-    lout=newton(AF,1.0)
+    #lout=newton(AF,1.0)
+    lout=brentq(AF,1.0E-3,10.0)
     limits+=lout,
 
     if eeq:
         #EARTH EQUIVALENT
         AF=lambda x:AverageFlux(x,**args)-1.0
-        aeeq=newton(AF,1.0)
+        #aeeq=newton(AF,1.0)
+        aeeq=brentq(AF,1.0E-3,10.0)
         limits+=aeeq,
 
     return limits
@@ -798,7 +801,10 @@ def tfromProt(P,x):
     a=x[0]
     b=x[1]
     c=x[2]
-    t=((P-c)/a)**(1./b)
+    if P-c>0:
+        t=((P-c)/a)**(1./b)
+    else:
+        t=0
     return t
 
 def totalAcceleration(t,star,starf,binary,verbose=False,qreturn=False):

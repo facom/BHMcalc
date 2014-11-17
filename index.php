@@ -25,7 +25,7 @@ if(isset($LOADCONFIG)){
   //LOAD CONFIGURATION FROM QUERY STRING
   //========================================
   saveConfiguration($SESSDIR,$QUERY_STRING);
-  $header=mainHeader("1");
+  $header=mainHeader("1","?LOAD");
   echo "$header<body>Loading configuration...</body>";
   return;
 }
@@ -109,6 +109,12 @@ $code=ajaxMultipleForm(array("interaction","rotation","hz","binary","star1","sta
 $ajax_all_Update=ajaxFromCode($code,"'#all_Update'","click");
 $ajax_all_Load=ajaxFromCode($code,"document","ready");
 
+//FORCE UPDATE
+$force_update=<<<F
+  <input class="qover" type="hidden" name="qover" value="0">
+  <a href="JavaScript:void(0)" class="force" onclick="forceUpdate('.force','.qover')">Smart</a> 
+F;
+
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 //CHANGE OTHER THINGS IN DOCUMENT WHEN LOAD
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -134,17 +140,21 @@ C;
 if(!is_dir($SESSDIR)){
   $source_dir=$SYSDIR."template/";
   echoVerbose("No session directory.");
-  $TABID=0;
+  $qdir="No session directory";
+  if(!isset($TABID)){$TABID=0;}
 }else{
   $source_dir=$SYSDIR."$SESSID/";
   echoVerbose("Session directory already exist.");
+  $qdir="Existing session directory.";
   if(!isset($TABID)){$TABID=2;}
 }
 
 //========================================
 //LOADING RESULTS
 //========================================
-//$CONTENT.="$ajax_all_Load";
+if(isset($LOAD) and False){
+  $CONTENT.="$ajax_all_Load";
+}
 echoVerbose("<br/>");
 echoVerbose("Source dir: $source_dir<br/>");
 
@@ -278,8 +288,9 @@ $CONTENT.=<<<C
 	      <!-- ---------------------------------------- -->
 	      <tr>
 		<td class="button" colspan=2>
-		  <button class="update" id="star1_Update">Update</button> 
+		  <button class="update" id="star1_Update">Update</button>
 		  $ajaxform_star1_Update
+		  $force_update
 		</td>
 	      </tr>
 	      <!-- ---------------------------------------- -->
@@ -381,6 +392,7 @@ $CONTENT.=<<<C
 		<td class="button" colspan=2>
 		  <button class="update" id="star2_Update">Update</button> 
 		  $ajaxform_star2_Update
+		  $force_update
 		</td>
 	      </tr>
 	      <!-- ---------------------------------------- -->
@@ -537,6 +549,7 @@ $CONTENT.=<<<C
 		<td class="button" colspan=2>
 		  <button class="update" id="planet_Update">Update</button> 
 		  $ajaxform_planet_Update
+		  $force_update
 		</td>
 	      </tr>
 	      <!-- ---------------------------------------- -->
@@ -610,6 +623,7 @@ $CONTENT.=<<<C
 		<td class="button" colspan=2>
 		  <button class="update" id="binary_Update">Update</button> 
 		  $ajaxform_binary_Update
+		  $force_update
 		</td>
 	      </tr>
 	      <!-- ---------------------------------------- -->
@@ -698,6 +712,7 @@ $CONTENT.=<<<C
 		<td class="button" colspan=2>
 		  <button class="update" id="hz_Update">Update</button> 
 		  $ajaxform_hz_Update
+		  $force_update
 		</td>
 	      </tr>
 	      <!-- ---------------------------------------- -->
@@ -748,6 +763,7 @@ $CONTENT.=<<<C
 		<td class="button" colspan=2>
 		  <button class="update" id="rotation_Update">Update</button> 
 		  $ajaxform_rotation_Update
+		  $force_update
 		</td>
 	      </tr>
 	      <!-- ---------------------------------------- -->
@@ -913,6 +929,7 @@ $CONTENT.=<<<C
 		<td class="button" colspan=2>
 		  <button class="update" id="interaction_Update">Update</button> 
 		  $ajaxform_interaction_Update
+		  $force_update
 		</td>
 	      </tr>
 	      <!-- ---------------------------------------- -->
@@ -991,6 +1008,12 @@ $CONTENT.=<<<C
   </div>
 
 </div>
+<center>
+  <i style="font-size:10px">Session ID: $SESSID. $qdir |  
+  <a href=tmp/BHMrun-stdout-$SESSID target=_blank>stdout</a> | <a href=tmp/BHMrun-stderr-$SESSID target=_blank>stderr</a>
+  </i>
+
+</center>
 C;
 
 //////////////////////////////////////////////////////////////////////////////////

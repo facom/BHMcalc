@@ -62,6 +62,10 @@ binary,binary_dir,binary_str,binary_hash,binary_liv,binary_stg=\
     signObject("binary",sys_dir+"/"+binary_conf)
 binary+=loadConf(binary_dir+"binary.data")
 #==================================================
+
+#ROTATION
+PRINTOUT("Rotation interaction between M1 = %.2f and M2 = %.2f at a = %.2f"%(star1.M,star2.M,binary.abin))
+
 #CHECK IF TWINS
 qtwins=False
 if star1_hash==star2_hash:
@@ -112,7 +116,7 @@ for star in stars:
     acc,acc_tid,acc_ML=totalAcceleration(TAU_MIN,star,
                                          stars[NEXT(i,2)],binary,
                                          verbose=False,qreturn=True)
-    star.tsync=-(star.W/acc)/GYR
+    star.tsync=(star.W/abs(acc))/GYR
     h=min(h,star.tsync/50)
     
     #IF TWINS AVOID REPEAT
@@ -141,21 +145,28 @@ for star in stars:
     star.binrotevol=stack(2)
     star.binrotevol+=[TAU_MIN,star.P/DAY]
     for t in ts[:-1]:
-        if verbose:
+        if verbose and i==1:
             print "*"*40
             print "t = %.17e"%t
             print "\tW = %.17e"%star.W
             print "\tP = %.5e"%(star.P/DAY)
+
         ti=t
         tn=t+dt[j]
         while ti<tn:
+
+            if verbose and i==1:
+                print star.protfit
+                print "W = ",star.W
+                print "P = ",star.P/DAY
+
             W=star.W
             
             #RUNGE-KUTTA4
             star.W=W
             star.P=2*PI/star.W
             acc=totalAcceleration(t,star,stars[NEXT(i,2)],binary,
-                                  verbose=verbose)
+                                  verbose=False)
             k1=acc*(h*GYR)
 
             dW=k1
@@ -164,26 +175,31 @@ for star in stars:
             star.W=W+0.5*k1
             star.P=2*PI/star.W
             acc=totalAcceleration(t+0.5*h,star,stars[NEXT(i,2)],binary,
-                                  verbose=verbose)
+                                  verbose=False)
             k2=acc*(h*GYR)
 
             star.W=W+0.5*k2
             star.P=2*PI/star.W
             acc=totalAcceleration(t+0.5*h,star,stars[NEXT(i,2)],binary,
-                                  verbose=verbose)
+                                  verbose=False)
             k3=acc*(h*GYR)
 
             star.W=W+k3
             star.P=2*PI/star.W
             acc=totalAcceleration(t+h,star,stars[NEXT(i,2)],binary,
-                                  verbose=verbose)
+                                  verbose=False)
             k4=acc*(h*GYR)
 
             dW=1./6*(k1+2*k2+2*k3+k4)
 
+            if verbose and i==1:
+                print "k1 = ",k1
+                raw_input()
+
             star.W=W+dW
             star.P=2*PI/star.W
             ti+=h
+
         tau_rot=tfromProt(star.P/DAY,star.protfit)
         star.binrotevol+=[tau_rot,star.P/DAY]
         j+=1
@@ -229,7 +245,7 @@ f.close()
 ###################################################
 #GENERATE PLOTS
 ###################################################
-PRINTERR("Creating plots...")
+PRINTOUT("Creating plots...")
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 #ROTATIONAL EVOLUTION
@@ -322,7 +338,7 @@ fh.write("""\
   <i>Rotational Evolution</i>
   (
   <a target="_blank" href="%s/rot-evolution.png.txt">data</a>|
-  <a target="_blank" href="%s/web/replot.php?plot=rot-evolution.py">replot</a>
+  <a target="_blank" href="%s/BHMreplot.php?dir=%s&plot=rot-evolution.py">replot</a>
   )
 </center>
 <h3>Input Parameters</h3>
@@ -336,7 +352,7 @@ fh.write("""\
   <tr><td>P<sub>rot,1,ini</sub> (days):</td><td>%.3f</td></tr>
   <tr><td>t<sub>sync,2,ini</sub> (Gyr):</td><td>%.3f</td></tr>
 </table>
-"""%(WEB_DIR,rot_webdir,rot_webdir,rot_webdir,WEB_DIR,
+"""%(WEB_DIR,rot_webdir,rot_webdir,rot_webdir,WEB_DIR,rot_webdir,
      rot.k,
      star1.Pini,star1.tsync,
      star2.Pini,star2.tsync
