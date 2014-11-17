@@ -27,10 +27,13 @@ clean:
 
 cleanall:
 	@echo "Cleaning session directories..."
+	@touch sys/seed
 	@rm -r sys/*
 	@cp -r web/template sys/
+	@touch objs/seed
 	@rm -r objs/*
 	@make permissions
+	@touch tmp/seed
 	@rm -r tmp/*
 
 deepclean:clean
