@@ -392,8 +392,8 @@ function readCSV($csvfile,$key=""){
 function loadSystems()
 {
   global $DIR;
-  $sys_csvfile="$DIR/BHM/data/BHMcat-systems.csv";
-  $pla_csvfile="$DIR/BHM/data/BHMcat-planets.csv";
+  $sys_csvfile="$DIR/BHM/data/BHMcat/BHMcat-systems.csv";
+  $pla_csvfile="$DIR/BHM/data/BHMcat/BHMcat-planets.csv";
 
   $data=readCSV($sys_csvfile,"BHMCat");
   $systems=$data[0];
