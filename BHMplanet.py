@@ -43,7 +43,7 @@ sys_dir,planet_conf,qover=\
 ###################################################
 #LOAD PLANETARY OBJECT
 ###################################################
-PRINTOUT("Loading object from '%s'"%planet_conf)
+PRINTOUT("Loading object from '%s'"%(planet_conf))
 planet,planet_str,planet_hash,planet_dir=makeObject("planet",
                                             sys_dir+"/"+planet_conf,
                                             qover=qover)

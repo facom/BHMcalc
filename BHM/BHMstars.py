@@ -554,20 +554,20 @@ def HZbin(q,Ls1,Ls2,Teffbin,abin,
     #INNER LIMIT
     AF=lambda x:AverageFlux(x,**args)-Seffin
     #lin=newton(AF,1.0)
-    lin=brentq(AF,1.0E-3,10.0)
+    lin=brentq(AF,1.0E-3,100.0)
     limits=lin,
 
     #OUTER LIMIT
     AF=lambda x:AverageFlux(x,**args)-Seffout
     #lout=newton(AF,1.0)
-    lout=brentq(AF,1.0E-3,10.0)
+    lout=brentq(AF,1.0E-3,100.0)
     limits+=lout,
 
     if eeq:
         #EARTH EQUIVALENT
         AF=lambda x:AverageFlux(x,**args)-1.0
         #aeeq=newton(AF,1.0)
-        aeeq=brentq(AF,1.0E-3,10.0)
+        aeeq=brentq(AF,1.0E-3,100.0)
         limits+=aeeq,
 
     return limits
@@ -756,6 +756,7 @@ def tidalAcceleration(Mtarg,Rtarg,Ltarg,MoItarg,
     if verbose:print "R=%e,L=%e"%(Rtarg,Ltarg)
     if verbose:print "abin:",abin
 
+    Rtarg=Rtarg*1.0
     #Eccentricity function
     f2=1+(15./2.)*e**2+(45./8.)*e**4+(5./16.)*e**6
     f5=1+3*e**2+(3./8.)*e**4

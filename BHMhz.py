@@ -328,20 +328,30 @@ innr=patches.Circle((0,0),ihz.linnr,facecolor='r',edgecolor='r',
                     alpha=0.2,linewidth=2,zorder=-5)
 ax.add_patch(innr)
 
+#CONTINUOUS HZ
+ccolor=cm.autumn(0.3)
+cin=patches.Circle((0,0),ihz.clin,facecolor='none',edgecolor=ccolor,linestyle='solid',
+                    alpha=1,linewidth=1,zorder=-5)
+ax.add_patch(cin)
+
+cout=patches.Circle((0,0),ihz.clout,facecolor='none',edgecolor=ccolor,linestyle='solid',
+                    alpha=1,linewidth=1,zorder=-5)
+ax.add_patch(cout)
+
 #WHITE INNER AREA
-inwd=patches.Circle((0,0),ihz.linwd,facecolor='w',edgecolor='r',
+inwd=patches.Circle((0,0),ihz.linwd,facecolor='w',edgecolor='g',
                     linewidth=2,zorder=0)
 ax.add_patch(inwd)
 
 #EARTH EQUIVALENT DISTANCE
-aeq=patches.Circle((0,0),ihz.leeq,facecolor='none',edgecolor=cm.gray(0.5),
-                   linewidth=2,linestyle='dotted',zorder=20)
+aeq=patches.Circle((0,0),ihz.leeq,facecolor='none',edgecolor=cm.gray(0.0),
+                   linewidth=1,linestyle='dotted',zorder=20)
 ax.add_patch(aeq)
 
 #PLANET ORBIT
 xs=planet.ephemeris[:,1]
 ys=planet.ephemeris[:,2]
-ax.plot(xs,ys,'k-',label='Planet Orbit')
+ax.plot(xs,ys,'k-',linewidth=2,label='Planet Orbit')
 ax.plot([xs[0]],[ys[0]],'ko',markersize=5,markeredgecolor='none')
 
 #BINARY ORBIT

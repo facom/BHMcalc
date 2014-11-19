@@ -32,9 +32,11 @@ else if($ACTION=="MasterLink"){
   loadConfiguration("$source_dir/rotation.conf","rotation");
   loadConfiguration("$source_dir/planet.conf","planet");
   loadConfiguration("$source_dir/interaction.conf","interaction");
-  $masterlink="/$wDIR?LOADCONFIG&$PARSE_STRING";
+  $masterlink="?LOADCONFIG&$PARSE_STRING";
   echo<<<LINK
 <a href="$masterlink" target="_blank">Copy this link</a>
+SYS=$binary_str_sys<br/>
+<div style="width:300px;overflow:auto">$masterlink</div>
 LINK;
 }
 ////////////////////////////////////////////////////
@@ -50,6 +52,7 @@ else if($ACTION=="CommandLine"){
   loadConfiguration("$source_dir/rotation.conf","rotation");
   loadConfiguration("$source_dir/planet.conf","planet");
   loadConfiguration("$source_dir/interaction.conf","interaction");
+
   $id=md5($PARSE_STRING);
   $sessdir="$TMPDIR$id";
   $cmd="$PYTHONCMD BHMrun.py BHMinteraction.py $sessdir \"CONFIG:$PARSE_STRING\"";

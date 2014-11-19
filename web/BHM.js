@@ -88,25 +88,6 @@ function loadAjax(script,target)
 		-1,true);
 }
 
-function loadAjax(script,target)
-{
-    loadContent(script,
-		$(target),
-		function(element,rtext){
-		    //element.css('background','yellow');
-		    element.html(rtext);
-		},
-		function(element,rtext){
-		    //element.css('background','lightgreen');
-		    element.html("Loading...");
-		},
-		function(element,rtext){
-		    //element.css('background','pink');
-		    element.html("Error...");
-		},
-		-1,true);
-}
-
 function forceUpdate(force,qover)
 {
     status=$(force).html();
@@ -141,3 +122,8 @@ function refreshiFrames(){
     });
 }
 
+/*
+function calcMD5(str){
+    return str;
+}
+*/

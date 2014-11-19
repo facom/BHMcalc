@@ -17,6 +17,7 @@ from BHMconfig import *
 ###################################################
 #PACKAGES
 ###################################################
+import csv
 import re
 import hashlib,commands,numpy as np
 import scipy.constants as const
@@ -217,8 +218,8 @@ PDYNSAT=1E-11 #arbitrary dyn/cm^2
 RSSAT=(9.7)*(PDYNSAT/1E-9)**(-0.24)*RSAT 
 
 #ROCKY PLANETS AND MOONS
-MMARS=3.3022E23
-MMERCURY=6.4185E23
+MMARS=6.4185E23
+MMERCURY=3.3022E23
 MGANYMEDE=1.4819E23
 MVENUS=4.867E24
 
