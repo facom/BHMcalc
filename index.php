@@ -132,6 +132,27 @@ $CONTENT.=<<<C
       changeValues(['.star_FeH'],'input[name=star1_FeH]');
     });
 </script>
+<script>
+function idSystem(){
+  //IT SHOULD BE THE WHOLE FORM
+  var forms=["star1_form","star2_form","planet_form"];
+  var sysid="";
+  for(i=0;i<3;i++){
+    elements=document.forms[forms[i]].elements;
+    for(j=0;j<elements.length;j++){
+      clase=elements[j].getAttribute("class")+"";
+      if(clase.search("sensitive")>=0){
+	val=elements[j].value;
+	sysid=sysid+val;
+      }
+    }
+  }
+  //alert(sysid);
+  var sys=calcMD5(sysid);
+  $('.sys_input').attr("value","\"\'"+sys+"\'\"");
+  //alert($("input[name=binary_str_sys]").val());
+}
+</script>
 C;
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -168,6 +189,17 @@ loadConfiguration("$source_dir/hz.conf","hz");
 loadConfiguration("$source_dir/rotation.conf","rotation");
 loadConfiguration("$source_dir/planet.conf","planet");
 loadConfiguration("$source_dir/interaction.conf","interaction");
+
+//ADJUST VALUES
+$planet_Morb=$star1_M+$star2_M;
+$CONTENT.=<<<C
+<script>
+function changePlanetMorb(){
+  Morb=parseFloat($("input[name=star1_M]").val())+parseFloat($("input[name=star2_M]").val());
+  $("input[name=planet_Morb]").attr("value",Morb);
+}
+</script>
+C;
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 //TABBED FORM
@@ -226,7 +258,7 @@ $CONTENT.=<<<C
 		<!-- ---------------------------------------- -->
 		<td class="name">Mass:</td>
 		<td class="field">
-		  <input type="text" name="star1_M" value="$star1_M">
+		  <input class="sensitive" type="text" name="star1_M" value="$star1_M" onchange="changePlanetMorb();idSystem();">
 		  M<sub>Sun</sub>
 		</td>
 	      </tr>
@@ -238,8 +270,8 @@ $CONTENT.=<<<C
 	      <!-- ---------------------------------------- -->
 		<td class="name">Metallicity, Z:</td>
 		<td class="field">
-		  <input type="text" class="star_Z" name="star1_Z" value="$star1_Z" 
-			 onchange="$changeFeH;changeValues(['.star_Z'],this);">
+		  <input type="text" class="star_Z sensitive" name="star1_Z" value="$star1_Z" 
+			 onchange="$changeFeH;changeValues(['.star_Z'],this);idSystem();">
 		</td>
 	      </tr>
 	      <tr>
@@ -250,8 +282,8 @@ $CONTENT.=<<<C
 	      <!-- ---------------------------------------- -->
 		<td class="name">Metallicity, [Fe/H]:</td>
 		<td class="field">
-		  <input type="text" class="star_FeH" name="star1_FeH" value="$star1_FeH" 
-			 onchange="$changeZ;changeValues(['.star_FeH'],this);">
+		  <input type="text" class="star_FeH sensitive" name="star1_FeH" value="$star1_FeH" 
+			 onchange="$changeZ;changeValues(['.star_FeH'],this);idSystem();">
 		  dex
 		</td>
 	      </tr>
@@ -263,7 +295,7 @@ $CONTENT.=<<<C
 	      <!-- ---------------------------------------- -->
 		<td class="name">Age:</td>
 		<td class="field">
-		  <input id="ini" type="text" class="star_tau" name="star1_tau" value="$star1_tau" onchange="changeValues(['.star_tau'],this)">
+		  <input id="ini" type="text" class="star_tau sensitive" name="star1_tau" value="$star1_tau" onchange="changeValues(['.star_tau'],this);idSystem();">
 		  Gyr
 		</td>
 	      </tr>
@@ -275,7 +307,7 @@ $CONTENT.=<<<C
 	      <!-- ---------------------------------------- -->
 		<td class="name">Main Sequence:</td>
 		<td class="field">
-		  <input type="text" id="test" name="star1_taums" value="$star1_taums">
+		  <input class="sensistive" type="text" id="test" name="star1_taums" value="$star1_taums" onchange="idSystem();">
 		  Gyr
 		</td>
 	      </tr>
@@ -328,7 +360,7 @@ $CONTENT.=<<<C
 		<!-- ---------------------------------------- -->
 		<td class="name">Mass:</td>
 		<td class="field">
-		  <input type="text" name="star2_M" value="$star2_M">
+		  <input class="sensitive" type="text" name="star2_M" value="$star2_M" onchange="changePlanetMorb();idSystem();">
 		  M<sub>Sun</sub>
 		</td>
 	      </tr>
@@ -340,8 +372,8 @@ $CONTENT.=<<<C
 	      <!-- ---------------------------------------- -->
 		<td class="name">Metallicity, Z:</td>
 		<td class="field">
-		  <input type="text" class="star_Z" name="star2_Z" value="$star2_Z" 
-			 onchange="$changeFeH;changeValues(['.star_Z'],this);">
+		  <input type="text" class="star_Z sensitive" name="star2_Z" value="$star2_Z" 
+			 onchange="$changeFeH;changeValues(['.star_Z'],this);idSystem();">
 		</td>
 	      </tr>
 	      <tr>
@@ -352,8 +384,8 @@ $CONTENT.=<<<C
 	      <!-- ---------------------------------------- -->
 		<td class="name">Metallicity, [Fe/H]:</td>
 		<td class="field">
-		  <input type="text" class="star_FeH" name="star2_FeH" value="$star2_FeH" 
-			 onchange="$changeZ;changeValues(['.star_FeH'],this);">
+		  <input type="text" class="star_FeH sensitive" name="star2_FeH" value="$star2_FeH" 
+			 onchange="$changeZ;changeValues(['.star_FeH'],this);idSystem();">
 		  dex
 		</td>
 	      </tr>
@@ -365,7 +397,7 @@ $CONTENT.=<<<C
 	      <!-- ---------------------------------------- -->
 		<td class="name">Age:</td>
 		<td class="field">
-		  <input id="ini" type="text" class='star_tau' name="star2_tau" value="$star2_tau" onchange="changeValues(['.star_tau'],this)">
+		  <input id="ini" type="text" class='star_tau sensitive' name="star2_tau" value="$star2_tau" onchange="changeValues(['.star_tau'],this);idSystem();">
 		  Gyr
 		</td>
 	      </tr>
@@ -377,7 +409,7 @@ $CONTENT.=<<<C
 	      <!-- ---------------------------------------- -->
 		<td class="name">Main Sequence:</td>
 		<td class="field">
-		  <input type="text" id="test" name="star2_taums" value="$star2_taums">
+		  <input type="text" id="test" class="sensitive" name="star2_taums" value="$star2_taums" onchange="idSystem();">
 		  Gyr
 		</td>
 	      </tr>
@@ -430,7 +462,7 @@ $CONTENT.=<<<C
 		<!-- ---------------------------------------- -->
 		<td class="name">Mass:</td>
 		<td class="field">
-		  <input type="text" name="planet_M" value="$planet_M">
+		  <input type="text" class="sensitive" name="planet_M" value="$planet_M" onchange="idSystem();">
 		  M<sub>Earth</sub>
 		</td>
 	      </tr>
@@ -442,7 +474,7 @@ $CONTENT.=<<<C
 	      <!-- ---------------------------------------- -->
 		<td class="name">H/He Mass Fraction:</td>
 		<td class="field">
-		  <input type="text" name="planet_fHHe" value="$planet_fHHe">
+		  <input type="text" class="sensitive" name="planet_fHHe" value="$planet_fHHe" onchange="idSystem();">
 		</td>
 	      </tr>
 	      <tr>
@@ -453,7 +485,7 @@ $CONTENT.=<<<C
 	      <!-- ---------------------------------------- -->
 		<td class="name">Core Mass Fraction:</td>
 		<td class="field">
-		  <input type="text" name="planet_CMF" value="$planet_CMF">
+		  <input type="text" class="sensitive" name="planet_CMF" value="$planet_CMF" onchange="idSystem();">
 		</td>
 	      </tr>
 	      <tr>
@@ -464,7 +496,7 @@ $CONTENT.=<<<C
 	      <!-- ---------------------------------------- -->
 		<td class="name">Planetary Age:</td>
 		<td class="field">
-		  <input type="text" class="star_tau" name="planet_tau" value="$planet_tau" onchange="changeValues(['.star_tau'],this)">
+		  <input type="text" class="star_tau sensitive" name="planet_tau" value="$planet_tau" onchange="changeValues(['.star_tau'],this);idSystem();">
 		  Gyr
 		</td>
 	      </tr>
@@ -476,7 +508,7 @@ $CONTENT.=<<<C
 	      <!-- ---------------------------------------- -->
 		<td class="name">Orbiting Mass:</td>
 		<td class="field">
-		  <input type="text" id="test" name="planet_Morb" value="$planet_Morb">
+		  <input type="text" id="planet_Morb" class="sensistive" name="planet_Morb" value="$planet_Morb" onchange="idSystem();">
 		  M<sub>Sun</sub>
 		</td>
 	      </tr>
@@ -488,7 +520,7 @@ $CONTENT.=<<<C
 	      <!-- ---------------------------------------- -->
 		<td class="name">Orbital semimajor axis:</td>
 		<td class="field">
-		  <input type="text" id="test" name="planet_aorb" value="$planet_aorb">
+		  <input type="text" id="test" class="sensitive" name="planet_aorb" value="$planet_aorb" onchange="idSystem();">
 		  AU
 		</td>
 	      </tr>
@@ -500,7 +532,7 @@ $CONTENT.=<<<C
 	      <!-- ---------------------------------------- -->
 		<td class="name">Orbital period:</td>
 		<td class="field">
-		  <input type="text" id="test" name="planet_Porb" value="$planet_Porb">
+		  <input type="text" id="test" class="sensistive" name="planet_Porb" value="$planet_Porb" onchange="idSystem();">
 		  days
 		</td>
 	      </tr>
@@ -512,7 +544,7 @@ $CONTENT.=<<<C
 	      <!-- ---------------------------------------- -->
 		<td class="name">Orbital eccentricity:</td>
 		<td class="field">
-		  <input type="text" id="test" name="planet_eorb" value="$planet_eorb">
+		  <input type="text" id="test" class="sensitive" name="planet_eorb" value="$planet_eorb" onchange="idSystem();">
 		</td>
 	      </tr>
 	      <tr>
@@ -523,7 +555,7 @@ $CONTENT.=<<<C
 	      <!-- ---------------------------------------- -->
 		<td class="name">Argument of periapsis:</td>
 		<td class="field">
-		  <input type="text" id="test" name="planet_worb" value="$planet_worb">
+		  <input type="text" id="test" class="sensitive" name="planet_worb" value="$planet_worb" onchange="idSystem();">
 		  degrees
 		</td>
 	      </tr>
@@ -535,7 +567,7 @@ $CONTENT.=<<<C
 	      <!-- ---------------------------------------- -->
 		<td class="name">Rotational Period:</td>
 		<td class="field">
-		  <input type="text" id="test" name="planet_Prot" value="$planet_Prot">
+		  <input type="text" id="test" class="sensitive" name="planet_Prot" value="$planet_Prot" onchange="idSystem();">
 		  days
 		</td>
 	      </tr>
@@ -642,6 +674,7 @@ $CONTENT.=<<<C
 	</div>
       </div>
     </div>
+   <input class="sys_input" type="hidden" name="binary_str_sys" value="$binary_str_sys">
    </form>
   </div>
 
@@ -731,6 +764,7 @@ $CONTENT.=<<<C
 	</div>
       </div>
     </div>
+   <input class="sys_input" type="hidden" name="hz_str_sys" value="$hz_str_sys">
    </form>
   </div>
 
@@ -782,6 +816,7 @@ $CONTENT.=<<<C
 	</div>
       </div>
     </div>
+   <input class="sys_input" type="hidden" name="rotation_str_sys" value="$rotation_str_sys">
    </form>
   </div>
 
@@ -948,7 +983,9 @@ $CONTENT.=<<<C
 	</div>
       </div>
     </div>
+    <input class="sys_input" type="hidden" name="interaction_str_sys" value="$interaction_str_sys">
    </form>
+   <input class="sys_input" type="hidden" name="interaction_str_sys" value="$interaction_str_sys">
   </div>
 
   <!-- //////////////////////////////////////////////////////////// -->
@@ -965,22 +1002,25 @@ $CONTENT.=<<<C
 	  <ul>
 	    <li>
 	      <a class="activelink" 
-		 href="JavaScript:loadAjax('/$wDIR/BHMutil.php?ACTION=DownloadConfig','#download_config');">
+		 href="JavaScript:loadAjax('BHMutil.php?ACTION=DownloadConfig','#download_config');">
 		Download configuration files.
 	      </a>
 	      <div class="target" id="download_config"></div>
 	    </li>
 	    <li>
 	      <a class="activelink" 
-		 href="JavaScript:loadAjax('/$wDIR/BHMutil.php?ACTION=DownloadAll','#download_allfiles');">
+		 href="JavaScript:loadAjax('BHMutil.php?ACTION=DownloadAll','#download_allfiles');">
 		Download all files.
 	      </a>
 	      <div class="target" id="download_allfiles"></div>
 	    </li>
 	    <li>
 	      <a class="activelink" 
-		 href="JavaScript:loadAjax('/$wDIR/BHMutil.php?ACTION=MasterLink','#systemlink');">
+		 href="JavaScript:loadAjax('BHMutil.php?ACTION=MasterLink','#systemlink');">
 		Generate system link.</a>
+	      <!--<a class="activelink" 
+		 href="JavaScript:alert('hola');">
+		Generate system link.</a>-->
 	      <div class="target" id="systemlink"></div>
 	    </li>
 	    <li>

@@ -40,7 +40,7 @@ Usage:
 sys_dir,binary_conf,qover=\
     readArgs(argv,
              ["str","str","int"],
-             ["sys/template","binary.conf","0"],
+             ["sys/template","star1.conf","0"],
              Usage=Usage)
 
 ###################################################
@@ -65,7 +65,7 @@ evoInterpFunctions(star2)
 ###################################################
 #LOAD BINARY OBJECT
 ###################################################
-PRINTOUT("Loading object from '%s'"%binary_conf)
+PRINTOUT("Loading object from '%s'"%(binary_conf))
 binary,binary_str,binary_hash,binary_dir=makeObject("binary",
                                             sys_dir+"/"+binary_conf,
                                             qover=qover)

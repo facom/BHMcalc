@@ -39,7 +39,7 @@ sys_dir,star_conf,qover=\
 ###################################################
 #LOAD STAR PROPERTIES
 ###################################################
-PRINTOUT("Loading object from '%s'"%star_conf)
+PRINTOUT("Loading object from '%s'"%(star_conf))
 star,star_str,star_hash,star_dir=makeObject("star",
                                             sys_dir+"/"+star_conf,
                                             qover=qover)

@@ -31,7 +31,11 @@ foreach(array_keys($_GET) as $key){
   if(!preg_match("/${object}_(.+)/",$key,$matches)){continue;}
   $var=$matches[1];
   $val=$$key;
-  if(preg_match('/str_/',$key)){$val="\"$val\"";}
+  if(preg_match('/str_/',$key)){
+    preg_match('/([\w\d\s]+)/',$val,$matches);
+    $string=$matches[1];
+    $val="\"'$string'\"";
+  }
   fwrite($fc,"$var = $val\n");
 }
 fclose($fc);

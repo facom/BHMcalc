@@ -115,6 +115,8 @@ PRINTOUT("Module type: %s"%module_type)
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 #CHECK-OUT MODULES ON WHICH IT DEPENDS
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+depseed="";
+PRINTOUT("Objects to precheck:"+str(OBJECT_PIPE[module_name]))
 for depmod in OBJECT_PIPE[module_name]:
     #========================================
     #HASHING OBJECTS
@@ -125,6 +127,8 @@ for depmod in OBJECT_PIPE[module_name]:
     depmod_type=depmod_type.replace("2","")
     depmod,depmod_dir,depmod_str,depmod_hash,depmod_liv,depmod_stg=\
         signObject(depmod_type,sys_dir+"/"+depmod_conf)
+    depseed+=depmod_hash;
+
     #========================================
     #HASHING OBJECTS
     #========================================
@@ -139,7 +143,9 @@ for depmod in OBJECT_PIPE[module_name]:
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 PRINTOUT("V"*60)
 if module_stg<10 or qover>=1:
+    stage=System("cat %s/.stage"%module_dir,out=True)
     if qover:PRINTOUT("Forcing %s"%module_type);
+    else:PRINTOUT("Executing module %s for %s in stage %s"%(module_type,module_hash,stage));
     System("python BHM%s.py %s %s %d"%(module_type,sys_dir,module_conf,qover),out=False)
     stage=System("cat %s/.stage"%module_dir,out=True)
     print "Stage:",stage

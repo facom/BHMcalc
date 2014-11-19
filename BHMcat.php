@@ -73,15 +73,22 @@ foreach($systems as $system){
 	$default=$module_str["$parameter"][1];
 	if($field==""){$value=$default;}
 	else{
-	  if($module!="planet"){$value=$system["$field"];}
+	  if($module!="planet"){
+	    $value=$system["$field"];
+	  }
 	  else{$value=$planet["$field"];}
 	}
-	if($value<0 or !preg_match("/[\d\w]+/",$value)){$value=$default;}
+	if($value==-1 or  $value==-2 or !preg_match("/[\d\w]+/",$value)){$value=$default;}
 	$qstring.="${module}_$parameter=$value&";
 	//echo "${module}_$parameter=$value<br/>";
       }
     }
-    //echo "$qstring<br/>";
+    $M=$system["M1"]+$system["M2"];
+    $qstring.="planet_Morb=$M";
+    $seed=md5($qstring);
+    $qstring.="&sys=$seed";
+    //echo "$qstring<br/><br/>";
+
     //==================================================
     //CREATE TABLE
     //==================================================

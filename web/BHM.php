@@ -147,6 +147,7 @@ $HEADER=<<<HEADER
 <head>
   $refreshcode
   <script src="web/jquery.js"></script>
+  <script src="web/md5.js"></script>
   <script src="web/BHM.js"></script>
   <script src="web/tabber.js"></script>
   <link rel="stylesheet" type="text/css" href="web/BHM.css">
@@ -227,6 +228,7 @@ function loadConfiguration($file,$prefix)
 function saveConfiguration($dir,$qstring)
 {
   $fields=preg_split("/&/",$qstring);
+
   $data=array();
   foreach($fields as $field){
     if(!preg_match("/_/",$field)){continue;}
@@ -239,6 +241,8 @@ function saveConfiguration($dir,$qstring)
     $value=preg_replace("/%20/"," ",$value);
     $data["$module"]["$key"]=$value;
   }
+  preg_match("/sys=(.+)/",$field,$matches);
+  $sys=$matches[1];
   foreach(array_keys($data) as $module){
     $fmodule="$dir/$module.conf";
     $fm=fopen($fmodule,"w");
@@ -248,6 +252,9 @@ function saveConfiguration($dir,$qstring)
       $value=preg_replace("/'$/","'\"",$value);
       $entry="$key=$value";
       fwrite($fm,"$entry\n");
+    }
+    if(!preg_match("/star/",$module) and !preg_match("/planet/",$module)){
+      fwrite($fm,"str_sys=\"'$sys'\"\n");
     }
     fclose($fm);
   }
