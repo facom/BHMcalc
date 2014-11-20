@@ -233,7 +233,7 @@ $CONTENT.=<<<C
 	<div class="download" id="cat_download"></div>
 	<div id="cat_results_status_loader" style="background-color:white;">
 	  <div id="cat_results_status" style="background-color:white;">
-	    <iframe class="iframe" id="cat_results_frame" src="BHMcatalogue.html" 
+	    <iframe class="iframe" id="cat_results_frame" src="BHMcat.html" 
 		    scrolling="yes" onload="adjustiFrame(this);">
 	    </iframe>
 	  </div>
