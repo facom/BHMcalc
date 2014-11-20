@@ -22,6 +22,16 @@ if(false){}
 ////////////////////////////////////////////////////
 //GENERATE MASTER LINK
 ////////////////////////////////////////////////////
+else if($ACTION=="Metals"){
+  $qstring=preg_replace("/ACTION=Metals&/","",$_SERVER["QUERY_STRING"]);
+  $cmd=$PYTHONCMD." BHMmetals.py '$qstring' 2> $TMPDIR/BHMmetals.log";
+  $out=shell_exec($cmd);
+  $out=sprintf("%.4f",$out);
+  echo "$out";
+}
+////////////////////////////////////////////////////
+//GENERATE MASTER LINK
+////////////////////////////////////////////////////
 else if($ACTION=="MasterLink"){
   if(!is_dir($SESSDIR)){$source_dir=$SYSDIR."template/";}
   else{$source_dir=$SYSDIR."$SESSID/";}

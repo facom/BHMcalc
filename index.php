@@ -42,7 +42,7 @@ if(isset($ADMINMODE)){
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 //CATALOGUE KEYS
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-$keys=file("BHMcat.keys");
+$keys=file($SESSDIR."BHMcat.keys");
 $catfields="";
 foreach($keys as $key){
    $key=rtrim($key);
@@ -78,7 +78,6 @@ C;
 //CATALOGUE
 $code=ajaxMultipleForm(array("cat"),"cat_form");
 $ajaxform_cat_Update=ajaxFromCode($code,"'#cat_Update'","click");
-echo "<pre>$ajaxform_cat_Update</pre>";
 
 //STAR1
 $code=ajaxMultipleForm(array("star1"),"star1_form");
@@ -115,7 +114,8 @@ $ajaxform_summary_Update=ajaxFromCode($code,"'#summary_Update'","click");
 //echo "<pre>$ajaxform_summary_Update</pre>";
 
 //LOAD ALL
-$code=ajaxMultipleForm(array("interaction","rotation","hz","binary","star1","star2","planet"),"allforms");
+//$code=ajaxMultipleForm(array("interaction","rotation","hz","binary","star1","star2","planet"),"allforms");
+$code=ajaxMultipleForm(array("interaction","cat"),"allforms");
 $ajax_all_Update=ajaxFromCode($code,"'#all_Update'","click");
 $ajax_all_Load=ajaxFromCode($code,"document","ready");
 
@@ -129,10 +129,10 @@ F;
 //CHANGE OTHER THINGS IN DOCUMENT WHEN LOAD
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 $changeFeH=<<<C
-  changeAjax('/BHMcalc/BHMmetals.php?ZtoFeH','.star_Z','.star_FeH');
+  changeAjax('/BHMcalc/BHMutil.php?ACTION=Metals&ZtoFeH','.star_Z','.star_FeH');
 C;
 $changeZ=<<<C
-  changeAjax('/BHMcalc/BHMmetals.php?FeHtoZ','.star_FeH','.star_Z');
+  changeAjax('/BHMcalc/BHMutil.php?ACTION=Metals&FeHtoZ','.star_FeH','.star_Z');
 C;
 $CONTENT.=<<<C
 <script>
@@ -174,7 +174,7 @@ if(!is_dir($SESSDIR)){
   $qdir="No session directory";
   if(!isset($TABID)){$TABID=0;}
 }else{
-  $source_dir=$SYSDIR."$SESSID/";
+  $source_dir=$SESSDIR;
   echoVerbose("Session directory already exist.");
   $qdir="Existing session directory.";
   if(!isset($TABID)){$TABID=2;}

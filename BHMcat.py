@@ -256,7 +256,7 @@ for system in sortCatalogue(systems,sortfield,reverse=sortorder):
         valueADS=adjustValue("ADS",valueADS,"str")
         row+="<td class='field_cat' style='width:1px;white-space:nowrap'>%s</td>"%(valueADS)
         row+="</tr>\n"
-        exec("row=row.replace('%s','<a href=%s?%s>%s</a>')"%(system["BHMCatS"],
+        exec("row=row.replace('%s','<a href=%s?%s target=_parent>%s</a>')"%(system["BHMCatS"],
                                                              WEB_DIR,
                                                              qstring,
                                                              system["BHMCatS"]))
@@ -267,6 +267,7 @@ for system in sortCatalogue(systems,sortfield,reverse=sortorder):
 
 fk.close()
 table+="</table>"
+table+="<p>Number of objects: <b>%d</b></p>"%i
 table+="</body></html>"
 ft=open("%s/BHMcat.html"%catdir,"w")
 ft.write(table)

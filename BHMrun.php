@@ -15,7 +15,10 @@
 ###################################################
 */
 include_once("web/BHM.php");
-if(!is_dir($SESSDIR)){
+if(preg_match("/template/",$SESSDIR)){
+  $SESSID=session_id();
+  $wSESSDIR=$wSYSDIR."$SESSID/";
+  $SESSDIR=$ROOTDIR.$wSESSDIR;
   shell_exec("mkdir -p $SESSDIR");
   shell_exec("cp -rf $SYSDIR/template/*.conf $SESSDIR/");
 }
