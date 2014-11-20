@@ -132,6 +132,10 @@ if(!isset($_SESSION)){session_start();}
 $SESSID=session_id();
 $wSESSDIR=$wSYSDIR."$SESSID/";
 $SESSDIR=$ROOTDIR.$wSESSDIR;
+if(!is_dir($SESSDIR)){
+  $wSESSDIR=$wSYSDIR."template/";
+  $SESSDIR=$ROOTDIR.$wSESSDIR;
+}
 
 //////////////////////////////////////////////////////////////
 //ROUTINES
