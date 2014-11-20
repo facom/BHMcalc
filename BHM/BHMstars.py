@@ -866,3 +866,38 @@ def binaryWind(a,tau1,M1,R1,tau2,M2,R2,early='constant'):
     Psw=n1*v1**2+n2*v2**2
     Fsw=n1*v1+n2*v2
     return Psw,Fsw
+
+def starLuminosity(R,T):
+    L=R**2*(T/TSUN)**4
+    return L
+
+def starDistance(L,V,BCV):
+    """
+    Estimate stellar distance
+    """
+    MV=MBOLSUN-2.5*np.log10(L)-BCV
+    d=10**((V-MV)/5+1)
+    return d
+
+def starProt(vsini,i,R):
+    if vsini>0:
+        Prot=2*np.pi*R*(RSUN/1E3)/(vsini/np.sin(i*DEG))/DAY
+    else:
+        PRINTOUT("Trying to calculate rotational period o a star without rotation '%e,%e'."%(vsini,R))
+        errorCode("DATA_ERROR")
+    return Prot
+
+def bolometricCorrection(Teff):
+    #Torres (2010), Flower (1996)
+    a=[-0.190537291496456E+05,-0.370510203809015E+05,-0.118115450538963E+06]
+    b=[+0.155144866764412E+05,+0.385672629965804E+05,+0.137145973583929E+06]
+    c=[-0.421278819301717E+04,-0.150651486316025E+05,-0.636233812100225E+05]
+    d=[+0.381476328422343E+03,+0.261724637119416E+04,+0.147412923562646E+05]
+    e=[+0.000000000000000E+00,-0.170623810323864E+03,-0.170587278406872E+04]
+    f=[+0.000000000000000E+00,+0.000000000000000E+00,+0.788731721804990E+02]
+    logTeff=np.log10(Teff)
+    if logTeff<3.70:i=0
+    elif logTeff<3.90:i=1
+    else:i=2
+    BCV=a[i]+b[i]*logTeff+c[i]*logTeff**2+d[i]*logTeff**3+e[i]*logTeff**4+f[i]*logTeff**5
+    return BCV
