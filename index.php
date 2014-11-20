@@ -237,7 +237,6 @@ $CONTENT.=<<<C
   <div class="tabbertab" id="Introduction" title="BHM Catalogue">
     <p><b>Binary Habitability Catalogue</b></p>
     <form id="cat_form" action="BHMcat.php">
-      <input type="hidden" name="recalculate" value="0">
       Sort field:
       <select name="sortfield">
 	$catfields
@@ -251,6 +250,7 @@ $CONTENT.=<<<C
       <p></p>
       <button class="update" id="cat_Update">Update</button> 
       $ajaxform_cat_Update
+      $force_update
       <div id="cat_results_panel" class="catalogue">
 	<div class="download" id="cat_download"></div>
 	<div id="cat_results_status_loader" style="background-color:white;">

@@ -46,7 +46,10 @@ catdir,recalculate,sortfield,sortorder,catfilter=\
 ###################################################
 #CATALOGUE LOCATION
 ###################################################
+#GET THE LAST STYLE SHEET
 System("cp web/BHM.css %s"%catdir)
+
+#PICKLE FILE
 fpickle="BHM/data/BHMcat/BHMcat.pickle"
 
 if recalculate:
