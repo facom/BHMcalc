@@ -17,8 +17,8 @@ from BHMconfig import *
 ###################################################
 #PACKAGES
 ###################################################
-import csv
 import re
+import csv
 import hashlib,commands,numpy as np
 import scipy.constants as const
 from copy import copy
@@ -50,6 +50,7 @@ ERROR_CODES=dict(FILE_ERROR=1,
                  RANGE_ERROR=4,
                  KEY_ERROR=5
                  )
+TAB="\t"
 
 ###################################################
 #COMMON OPERATIONS
@@ -166,6 +167,8 @@ TSUN=5780.0 #K
 RSUN=6.955E8 #m
 #SOLAR LUMINOSITY
 LSUN=3.842E26
+#SOLAR ABSOLUTE MAGNITUDE
+MBOLSUN=+4.83
 #SOLAR GRAVITY
 GRAVSUN=GCONST*MSUN/(RSUN**2)
 #SOLAR AVERAGE ROTATION PERIOD
