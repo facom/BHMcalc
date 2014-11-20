@@ -18,9 +18,10 @@ include_once("web/BHM.php");
 ?>
 
 <?PHP
+shell_exec("echo 'Parameters: $recalculate $sortfield $sortorder $catfilter' > /tmp/c");
 $stdout="BHMcat-stdout-$SESSID";
 $stderr="BHMcat-stderr-$SESSID";
-$cmd="$PYTHONCMD BHMcat.py $recalculate $sortfield $sortorder";
+$cmd="$PYTHONCMD BHMcat.py $SESSDIR $recalculate $sortfield $sortorder \"$catfilter\"";
 $out=shell_exec($cmd." 2> $TMPDIR/$stderr |tee $TMPDIR/$stdout");
-echo "BHMcat.html";
+echo "$wSESSDIR/BHMcat.html";
 ?>

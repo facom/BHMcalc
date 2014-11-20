@@ -23,7 +23,9 @@ from BHM.BHMnum import *
 Usage=\
 """
 Usage:
-   python %s [<recalculate>] [<sort_field>] [<sort_order>]
+   python %s <cat_dir> [<recalculate>] [<sort_field>] [<sort_order>] [<filter>]
+
+   <cat_dir>: location of the catalogue
 
    <recalculate>: 1/0.  Recalculate derivative properties.
 
@@ -31,17 +33,20 @@ Usage:
 
    <sort_order>: order of sort, 1: reverse, 0: normal
 
+   <filter>: Filter.  Ex. binary_Pbin > 0.  Python syntax.
+
 """%argv[0]
 
-recalculate,sortfield,sortorder=\
+catdir,recalculate,sortfield,sortorder,catfilter=\
     readArgs(argv,
-             ["int","str","int"],
-             ["1","BHMCatS","0"],
+             ["str","int","str","int","str"],
+             [".","1","BHMCatS","0","binary_Pbin>0"],
              Usage=Usage)
 
 ###################################################
 #CATALOGUE LOCATION
 ###################################################
+System("cp web/BHM.css %s"%catdir)
 fpickle="BHM/data/BHMcat/BHMcat.pickle"
 
 if recalculate:
@@ -179,7 +184,7 @@ table=""
 table+="""
 <html>
 <head>
-  <link rel="stylesheet" type="text/css" href="web/BHM.css">
+  <link rel="stylesheet" type="text/css" href="BHM.css">
 </head>
 <body>
 <table>
@@ -217,6 +222,7 @@ table+="</tr>\n"
 #////////////////////////////////////////
 i=0
 PRINTOUT("Generating table sorting by field '%s'..."%sortfield)
+fk=open("%s/BHMcat.keys"%catdir,"w")
 for system in sortCatalogue(systems,sortfield,reverse=sortorder):
     for planet in system["PlanetsData"]:
         if ((i%2)==0):clase="row_light"
@@ -229,12 +235,16 @@ for system in sortCatalogue(systems,sortfield,reverse=sortorder):
                 for pkey in pfields[6:-1]:
                     ptipo=pfieldstyp[pkey]
                     pvalue=planet[pkey]
+                    exec("%s=%s('%s')"%(pkey,ptipo,pvalue))
                     qstring+="%s=%s&"%(pkey,pvalue)
                     pvalue=adjustValue(pkey,pvalue,ptipo)
                     row+="<td class='field_cat' style='width:1px;white-space:nowrap'>%s</td>"%(pvalue)
+                    if i==0:fk.write("%s\n"%pkey)
             else:
+                if i==0:fk.write("%s\n"%key)
                 tipo=sfieldstyp[key]
                 value=system[key]
+                exec("%s=%s('%s')"%(key,tipo,value))
                 qstring+="%s=%s&"%(key,value)
                 value=adjustValue(key,value,tipo)
                 row+="<td class='field_cat' style='width:1px;white-space:nowrap'>%s</td>"%(value)
@@ -247,13 +257,15 @@ for system in sortCatalogue(systems,sortfield,reverse=sortorder):
                                                              WEB_DIR,
                                                              qstring,
                                                              system["BHMCatS"]))
-        table+=row
-        i+=1
+        exec("cond=%s"%catfilter)
+        if cond:
+            table+=row
+            i+=1
 
-
+fk.close()
 table+="</table>"
 table+="</body></html>"
-ft=open("BHMcat.html","w")
+ft=open("%s/BHMcat.html"%catdir,"w")
 ft.write(table)
 ft.close()
-
+print "Number of objects after filter: ",i

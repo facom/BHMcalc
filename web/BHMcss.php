@@ -251,6 +251,10 @@ a.force{
  font-size:10px;
 }
 
+input.cat{
+ background:white;
+}
+
 input{
  background:white;
  height:30px;

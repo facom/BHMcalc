@@ -40,6 +40,16 @@ if(isset($ADMINMODE)){
 }
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+//CATALOGUE KEYS
+//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+$keys=file("BHMcat.keys");
+$catfields="";
+foreach($keys as $key){
+   $key=rtrim($key);
+   $catfields.="<option value='$key'>$key</option>";
+}
+
+//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 //HEADER
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 $header=mainHeader();
@@ -227,13 +237,25 @@ $CONTENT.=<<<C
   <div class="tabbertab" id="Introduction" title="BHM Catalogue">
     <p><b>Binary Habitability Catalogue</b></p>
     <form id="cat_form" action="BHMcat.php">
+      <input type="hidden" name="recalculate" value="0">
+      Sort field:
+      <select name="sortfield">
+	$catfields
+      </select>
+      Sort order:
+      <select name="sortorder">
+	<option value="0">Ascending</option>
+	<option value="1">Descending</option>
+      </select>
+      Filter : <input type="text" name="catfilter" value="binary_Pbin>0">
+      <p></p>
       <button class="update" id="cat_Update">Update</button> 
       $ajaxform_cat_Update
       <div id="cat_results_panel" class="catalogue">
 	<div class="download" id="cat_download"></div>
 	<div id="cat_results_status_loader" style="background-color:white;">
 	  <div id="cat_results_status" style="background-color:white;">
-	    <iframe class="iframe" id="cat_results_frame" src="BHMcat.html" 
+	    <iframe class="iframe" id="cat_results_frame" src="web/blank.html" 
 		    scrolling="yes" onload="adjustiFrame(this);">
 	    </iframe>
 	  </div>
