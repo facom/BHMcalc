@@ -55,10 +55,12 @@ if sleep_before>0:
 #PRELIMINARY VERIFICATIONS
 ###################################################
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-#CHECK IF CONFIG STRING HAS BEEN PASSED
+#CHECK IF CONFIG STRING HAS BEEN PROVIDED
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-if 'CONFIG:' in module_conf:
+if 'LOADCONFIG' in module_conf:
     PRINTOUT("Parsing configuration script...")
+
+    """
     conf=module_conf
     conf=conf.replace("CONFIG:","")
 
@@ -90,6 +92,9 @@ if 'CONFIG:' in module_conf:
     script="BHMinteraction.py"
     module_conf="interaction.conf"
     qover=2
+    """
+
+if script=='-':exit(0)
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 #HASH MODULE
