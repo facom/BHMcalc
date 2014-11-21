@@ -192,7 +192,6 @@ del(systems["Fields"],systems["FieldsType"],
 prilevel=[0]
 for level in xrange(1,5):
     if level<=displaylevel:
-        print level
         pri='block'
     else:pri='none'
     prilevel+=[pri]
