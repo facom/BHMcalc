@@ -67,8 +67,8 @@ C;
 //AJAX FORM
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 //CATALOGUE
-$code=ajaxMultipleForm(array("cat"),"cat_form");
-$ajaxform_cat_Update=ajaxFromCode($code,"'#cat_Update'","click");
+$codecat=ajaxMultipleForm(array("cat"),"cat_form");
+$ajaxform_cat_Update=ajaxFromCode($codecat,"'#cat_Update'","click");
 
 //STAR1
 $code=ajaxMultipleForm(array("star1"),"star1_form");
@@ -104,13 +104,16 @@ $ajaxform_summary_Update=ajaxFromCode($code,"'#summary_Update'","click");
 
 //echo "<pre>$ajaxform_summary_Update</pre>";
 
-//LOAD ALL
+//UPDATE ALL
 if(isset($LOAD)){$slope=1.0;}
 else{$slope=1.0;}
-$code=ajaxMultipleForm(array("interaction","rotation","hz","binary","star1","star2","planet","cat"),"allforms",$slope);
-//$code=ajaxMultipleForm(array("interaction","cat"),"allforms");
+$code=ajaxMultipleForm(array("interaction","rotation","hz",
+			     "binary","star1","star2","planet","cat"),"allforms",$slope);
 $ajax_all_Update=ajaxFromCode($code,"'#all_Update'","click");
 $ajax_all_Load=ajaxFromCode($code,"document","ready");
+
+//LOAD CATALOGUE
+$ajax_cat_Load=ajaxFromCode($codecat,"document","ready");
 
 //FORCE UPDATE
 $force_update=<<<F
@@ -176,8 +179,10 @@ if(!is_dir($SESSDIR)){
 //========================================
 //LOADING RESULTS
 //========================================
-if(isset($LOAD) and False){
+if(isset($LOAD)){
   $CONTENT.="$ajax_all_Load";
+}else{
+  $CONTENT.="$ajax_cat_Load";
 }
 echoVerbose("<br/>");
 echoVerbose("Source dir: $source_dir<br/>");
