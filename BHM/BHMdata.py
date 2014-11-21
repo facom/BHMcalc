@@ -101,6 +101,17 @@ def readCatalogue(file,idcol=0):
                 j+=1
 
         #########################################
+        #PRIORITY
+        #########################################
+        elif i==4:
+            row=array(row)
+            fieldspri=dict()
+            j=0
+            for pri in row:
+                fieldspri[fields[j]]=int(pri)
+                j+=1
+
+        #########################################
         #TABLE
         #########################################
         else:
@@ -114,7 +125,7 @@ def readCatalogue(file,idcol=0):
                 j+=1
             data[rid]=obj
 
-    return fields,fieldstyp,fieldstxt,data
+    return fields,fieldstyp,fieldstxt,fieldspri,data
 
 def sortCatalogue(catalogue,key,reverse=False):
     ids=sorted(catalogue,key=lambda k:catalogue[k][key],reverse=reverse)
