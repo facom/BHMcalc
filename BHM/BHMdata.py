@@ -46,7 +46,7 @@ def dms(string):
     d=float(parts[0])+float(parts[1])/60.0+float(parts[2])/3600;
     return d
 
-def readCatalogue(file,idcol=0):
+def readCatalogue(file,idcol=0,pritype='priority'):
     """
     Read catalogue from a csv file with the following structure:
     - Line 1: Fields.
@@ -108,7 +108,12 @@ def readCatalogue(file,idcol=0):
             fieldspri=dict()
             j=0
             for pri in row:
-                fieldspri[fields[j]]=int(pri)
+                if pritype=="priority":
+                    fieldspri[fields[j]]=int(pri)
+                else:
+                    tipo=fieldstyp[fields[j]]
+                    pri=pri.replace(",",".")
+                    exec("fieldspri[fields[j]]=%s(pri)"%tipo)
                 j+=1
 
         #########################################
@@ -121,7 +126,7 @@ def readCatalogue(file,idcol=0):
             for value in row:
                 tipo=fieldstyp[fields[j]]
                 if tipo=="float" or tipo=="dms":value=value.replace(",",".")
-                exec "obj[fields[j]]=%s(value)"%tipo in locals(),globals()
+                exec "obj[fields[j]]=%s(value.strip())"%tipo in locals(),globals()
                 j+=1
             data[rid]=obj
 

@@ -24,14 +24,12 @@ if(isset($LOADCONFIG)){
   //========================================
   //LOAD CONFIGURATION FROM QUERY STRING
   //========================================
-  //saveConfiguration($SESSDIR,$QUERY_STRING);
   $stdout="BHMrun-load-$SESSID";
   $stderr="BHMrun-load-$SESSID";
-  $cmd="$PYTHONCMD BHMrun.py - $SESSDIR '$QUERY_STRING'";
+  $cmd="$PYTHONCMD BHMrun.py - $SESSDIR \"$QUERY_STRING\"";
   $out=shell_exec($cmd." 2> $TMPDIR/$stderr |tee $TMPDIR/$stdout");
-  //shell_exec($cmd);
-  //$header=mainHeader("1","?LOAD");
-  echo "$cmd<br/>";
+  $header=mainHeader("1","?LOAD");
+  //echo "$cmd<br/>";
   echo "$header<body>Loading configuration...</body>";
   return;
 }
@@ -139,7 +137,7 @@ C;
 $CONTENT.=<<<C
 <script>
   $(document).ready(function(){
-      $changeFeH
+      $changeZ
       changeValues(['.star_Z'],'input[name=star1_Z]');
       changeValues(['.star_FeH'],'input[name=star1_FeH]');
     });
@@ -185,7 +183,7 @@ if(!is_dir($SESSDIR)){
 //========================================
 //LOADING RESULTS
 //========================================
-if(isset($LOAD)){
+if(isset($LOAD) and False){
   $CONTENT.="$ajax_all_Load";
 }else{
   $CONTENT.="$ajax_cat_Load";
@@ -254,8 +252,8 @@ $CONTENT.=<<<C
       <select name="displaylevel">
 	<option value="1">Basic Properties</option>
 	<option value="2">Detailed</option>
-	<option value="3">All Properties</option>
-	<option value="4">Errors</option>
+	<option value="3">All properties</option>
+	<option value="4">All properties and errors</option>
       </select>
       Filter : <input type="text" name="catfilter" value="binary_Pbin>0">
       <a href=JavaScript:$('.help').toggle('fast',null) style="font-size:10px">Show/Hide Help</a>

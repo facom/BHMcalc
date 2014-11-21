@@ -538,15 +538,16 @@ fh.write("""\
 </table>
 <h3>Other Bulk Properties:</h3>
 <table>
+  <tr><td>R<sub>p</sub> (R<sub>Earth</sub>,R<sub>Jupiter</sub>):</td><td>%.3f,%.3f</td></tr>
   <tr><td>A (m<sup>2</sup>)):</td><td>%.2e</td></tr>
   <tr><td>g (m/s<sup>2</sup>):</td><td>%.3f</td></tr>
-  <tr><td>&rho; (kg/m<sup>3</sup>:</td><td>%.3f</td></tr>
+  <tr><td>&rho; (kg/m<sup>3</sup>):</td><td>%.3f</td></tr>
 </table>
 <h3>Interior Properties:</h3>
 <table>
   <tr><td>R<sub>core</sub> (R<sub>p</sub>):</td><td>%.2f</td></tr>
   <tr><td>R<sub>inner,core</sub> (R<sub>p</sub>):</td><td>%.2f</td></tr>
-  <tr><td>&rho;<sub>core</sub> (R<sub>p</sub>):</td><td>%.1f</td></tr>
+  <tr><td>&rho;<sub>core</sub> (kg/m<sup>3</sup>):</td><td>%.1f</td></tr>
 </table>
 <h3>Thermal and magnetic properties:</h3>
 <table>
@@ -577,7 +578,7 @@ fh.write("""\
      planet.fHHe,planet.CMF,planet.tau,
      planet.aorb,planet.eorb,planet.worb,planet.Porb,planet.Prot,
      planet_webdir,planet_webdir,planet_webdir,WEB_DIR,planet_webdir,
-     planet.A,planet.g,planet.rho,
+     planet.R,planet.Rg,planet.A,planet.g,planet.rho,
      planet.Rc,planet.Ric,planet.rhoc,
      planet.Q,planet.T,planet.Qconv,
      planet.tdyn,planet.Mdip,planet.Mdipmax,planet.tMdipmax,
