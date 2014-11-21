@@ -247,6 +247,16 @@ $CONTENT.=<<<C
 	<option value="4">Errors</option>
       </select>
       Filter : <input type="text" name="catfilter" value="binary_Pbin>0">
+      <a href=JavaScript:$('.help').toggle('fast',null) style="font-size:10px">Show/Hide Help</a>
+      <div class="help" style="display:none">
+	<b>Filter examples</b>:<br/>
+	Periods in a given range: binary_Pbin>10 and binary_Pbin<40<br/>
+	Primary stars with measured rotational velocity: star1_Protv>0<br/>
+	Both stars with measured rotational velocity: star1_Protv>0 and star2_Protv<br/>
+	Kepler planets: 'Kepler' in PlanetID<br/>
+	Systems in DEBCat: 'DEB' in SourceCat<br/>
+	Systems in Ekar catalogue with measured distance: 'Ek' in SourceCat and binary_d>0<br/>
+      </div>
       <p></p>
       <button class="update" id="cat_Update">Update</button> 
       $ajaxform_cat_Update
