@@ -309,7 +309,13 @@ tr.row_light{
 tr.row_dark{
  background:lightgray;
 }
-
+div.help{
+ font-style:italic;
+ display:block;
+ font-size:12px;
+ background:lightyellow;
+ padding:10px;
+}
 </style>
 CSS;
 ?>

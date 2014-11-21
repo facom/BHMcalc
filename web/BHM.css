@@ -223,6 +223,10 @@ a.force{
  font-size:10px;
 }
 
+input.cat{
+ background:white;
+}
+
 input{
  background:white;
  height:30px;
@@ -277,5 +281,11 @@ tr.row_light{
 tr.row_dark{
  background:lightgray;
 }
-
+div.help{
+ font-style:italic;
+ display:block;
+ font-size:12px;
+ background:lightyellow;
+ padding:10px;
+}
 </style>
