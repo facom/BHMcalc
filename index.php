@@ -24,8 +24,14 @@ if(isset($LOADCONFIG)){
   //========================================
   //LOAD CONFIGURATION FROM QUERY STRING
   //========================================
-  saveConfiguration($SESSDIR,$QUERY_STRING);
-  $header=mainHeader("1","?LOAD");
+  //saveConfiguration($SESSDIR,$QUERY_STRING);
+  $stdout="BHMrun-load-$SESSID";
+  $stderr="BHMrun-load-$SESSID";
+  $cmd="$PYTHONCMD BHMrun.py - $SESSDIR '$QUERY_STRING'";
+  $out=shell_exec($cmd." 2> $TMPDIR/$stderr |tee $TMPDIR/$stdout");
+  //shell_exec($cmd);
+  //$header=mainHeader("1","?LOAD");
+  echo "$cmd<br/>";
   echo "$header<body>Loading configuration...</body>";
   return;
 }
