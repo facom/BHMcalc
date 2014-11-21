@@ -65,8 +65,11 @@ if recalculate:
     pfields,pfieldstyp,pfieldstxt,pfieldspri,planets=\
         readCatalogue("BHM/data/BHMcat/BHMcat-Planets.csv",3)
 
-    pfields,pfieldstyp,pfieldstxt,pfieldspri,planets=\
-        readCatalogue("BHM/data/BHMcat/BHMcat-Planets.csv",3)
+    cfields,cfieldstyp,cfieldstxt,cfieldsdef,smodels=\
+        readCatalogue("BHM/data/BHMcat/BHMcat-ModelSystem.csv",0,pritype="default")
+
+    cfields,cfieldstyp,cfieldstxt,cfieldsdef,pmodels=\
+        readCatalogue("BHM/data/BHMcat/BHMcat-ModelPlanet.csv",0,pritype="default")
 
     #############################################################
     #CALCULATE DERIVARIVE MISSING PROPERTIES
@@ -119,20 +122,33 @@ if recalculate:
                 system["star2_Protverr"]=system["star2_Protv"]*system["star2_vsinierr"]/system["star2_vsini"]
 
         #========================================
+        #ADD MODEL PARAMETERS
+        #========================================
+        smodel=smodels[system["BHMCatS"]]
+
+        #========================================
         #ADD PLANETS DATA FIELD
         #========================================
         splanets=system["Planets"].split(";")
+        system["PlanetsModel"]=dict()
         if '-' in splanets:
             #DEFAULT PLANET
-            system["PlanetsData"]=[planets["BHMCatP0000"]]
+            defplanet="BHMCatP0000"
+            pmodel=dict()
+            pmodel.update(smodel)
+            system["PlanetsData"]=[planets[defplanet]]
+            pmodel.update(pmodels[defplanet])
+            system["PlanetsModel"][defplanet]=pmodel
         else:
             system["PlanetsData"]=[]
             for splanet in splanets:
                 if splanet=='':break
-                #print "Adding %s to %s..."%(splanet,system["BHMCatS"])
+                pmodel=dict()
+                pmodel.update(smodel)
                 system["PlanetsData"]+=[planets[splanet]]
-            #print system["PlanetsData"]
-            
+                pmodel.update(pmodels[splanet])
+                system["PlanetsModel"][splanet]=pmodel
+
     #////////////////////////////////////////
     #PLANETS
     #////////////////////////////////////////
@@ -257,6 +273,7 @@ PRINTOUT("Generating table sorting by field '%s'..."%sortfield)
 fk=open("%s/BHMcat.keys"%catdir,"w")
 for system in sortCatalogue(systems,sortfield,reverse=sortorder):
     for planet in system["PlanetsData"]:
+        planetcat=planet["BHMCatP"]
         if ((i%2)==0):clase="row_light"
         else:clase="row_dark";
         row=""
@@ -271,7 +288,7 @@ for system in sortCatalogue(systems,sortfield,reverse=sortorder):
                     exec("%s=%s('%s')"%(pkey,ptipo,pvalue))
                     qstring+="%s=%s&"%(pkey,pvalue)
                     pvalue=adjustValue(pkey,pvalue,ptipo)
-                    row+="<td class='field_cat pri%s' style='width:1px;white-space:nowrap'>%s</td>"%(pprior,pvalue)
+                    row+="<td class='field_cat pri%s' style='width:1px;white-space:nowrap'>%s</td>"%(pprior,pvalue)                    
                     if i==0:fk.write("%s\n"%pkey)
             else:
                 if i==0:fk.write("%s\n"%key)
@@ -282,15 +299,19 @@ for system in sortCatalogue(systems,sortfield,reverse=sortorder):
                 qstring+="%s=%s&"%(key,value)
                 value=adjustValue(key,value,tipo)
                 row+="<td class='field_cat pri%s' style='width:1px;white-space:nowrap'>%s</td>"%(prior,value)
-                
+               
+        for key in system["PlanetsModel"][planetcat].keys():
+            value=system["PlanetsModel"][planetcat][key]
+            qstring+="%s=%s&"%(key,value)
+
         valueADS=system["binary_ADS"]+";"+planet["planet_ADS"] 
         valueADS=adjustValue("ADS",valueADS,"str")
         row+="<td class='field_cat' style='width:1px;white-space:nowrap'>%s</td>"%(valueADS)
         row+="</tr>\n"
-        exec("row=row.replace('%s','<a href=%s?%s target=_parent>%s</a>')"%(system["BHMCatS"],
-                                                                            WEB_DIR,
-                                                                            qstring,
-                                                                            system["BHMCatS"]))
+        exec("row=row.replace(\"%s\",\"<a href=\\\"%s?%s\\\" target=_parent>%s</a>\")"%(system["BHMCatS"],
+                                                                                WEB_DIR,
+                                                                                qstring,
+                                                                                system["BHMCatS"]))
         exec("cond=%s"%catfilter)
         if cond:
             table+=row

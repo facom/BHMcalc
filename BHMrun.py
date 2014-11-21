@@ -58,14 +58,14 @@ if sleep_before>0:
 #CHECK IF CONFIG STRING HAS BEEN PROVIDED
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 if 'LOADCONFIG' in module_conf:
-    PRINTOUT("Parsing configuration script...")
-
-    """
+    PRINTOUT("Parsing query string...")
     conf=module_conf
-    conf=conf.replace("CONFIG:","")
-
     fields=conf.split("&")
+    sys_str=MD5STR(conf)
+
+    #LOAD DATA IN QSTRING INTO DICTIONARY
     data=dict()
+    PRINTOUT("Loading variables into dictionary...")
     for field in fields:
         if '_' not in field:continue
         parts=field.split("_")
@@ -75,9 +75,13 @@ if 'LOADCONFIG' in module_conf:
         vals=entry.split("=")
         key=vals[0]
         values=vals[1]
+        values=values.replace("%20"," ")
+        values=values.replace("%27","")
         data[module][key]=values
 
+    #CREATE CONFIGURATION FILE
     if not DIREXISTS(sys_dir):System("mkdir -p %s"%sys_dir)
+    PRINTOUT("Saving parameters into configuration file...")
     for module in data.keys():
         print "Module:",module
         fm=open("%s/%s.conf"%(sys_dir,module),"w")
@@ -88,11 +92,8 @@ if 'LOADCONFIG' in module_conf:
             else:
                 entry="%s=%s\n"%(key,value)
             fm.write(entry)
+        fm.write("str_sys=\"'%s'\"\n"%sys_str)
         fm.close()
-    script="BHMinteraction.py"
-    module_conf="interaction.conf"
-    qover=2
-    """
 
 if script=='-':exit(0)
 
