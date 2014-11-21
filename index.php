@@ -29,15 +29,6 @@ if(isset($LOADCONFIG)){
   echo "$header<body>Loading configuration...</body>";
   return;
 }
-if(isset($ADMINMODE)){
-  //========================================
-  //ENTERING ADMIN MODE
-  //========================================
-  saveConfiguration($SESSDIR,$QUERY_STRING);
-  $header=mainHeader("1");
-  echo "$header<body>Loading configuration...</body>";
-  return;
-}
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 //CATALOGUE KEYS
@@ -114,8 +105,10 @@ $ajaxform_summary_Update=ajaxFromCode($code,"'#summary_Update'","click");
 //echo "<pre>$ajaxform_summary_Update</pre>";
 
 //LOAD ALL
-//$code=ajaxMultipleForm(array("interaction","rotation","hz","binary","star1","star2","planet"),"allforms");
-$code=ajaxMultipleForm(array("interaction","cat"),"allforms");
+if(isset($LOAD)){$slope=1.0;}
+else{$slope=1.0;}
+$code=ajaxMultipleForm(array("interaction","rotation","hz","binary","star1","star2","planet","cat"),"allforms",$slope);
+//$code=ajaxMultipleForm(array("interaction","cat"),"allforms");
 $ajax_all_Update=ajaxFromCode($code,"'#all_Update'","click");
 $ajax_all_Load=ajaxFromCode($code,"document","ready");
 
@@ -245,6 +238,13 @@ $CONTENT.=<<<C
       <select name="sortorder">
 	<option value="0">Ascending</option>
 	<option value="1">Descending</option>
+      </select>
+      Detail level:
+      <select name="displaylevel">
+	<option value="1">Basic Properties</option>
+	<option value="2">Detailed</option>
+	<option value="3">All Properties</option>
+	<option value="4">Errors</option>
       </select>
       Filter : <input type="text" name="catfilter" value="binary_Pbin>0">
       <p></p>

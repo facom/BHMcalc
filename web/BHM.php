@@ -264,7 +264,7 @@ function saveConfiguration($dir,$qstring)
   }
 }
 
-function ajaxMultipleForm($ids,$element)
+function ajaxMultipleForm($ids,$element,$slope=1)
 {
   $code="";
   $i=0;
@@ -283,12 +283,13 @@ CODE;
   foreach($ids as $id){
     $sname="statusidload$i";
     $sval=$$sname;
+    $pipepos=$i*$slope;
 
 $code.=<<<CODE
 
  //alert("Submit All");
  var postData$i = $("#${id}_form").serializeArray();
- var formURL$i = $("#${id}_form").attr("action");
+ var formURL$i = $("#${id}_form").attr("action")+"?pipepos=$pipepos";
  $("#${id}_results_status").attr("style","opacity:0.1;background:white");
  $("#$sval").attr("style","background-image:url('web/load.gif');background-position:center top;background-repeat:no-repeat;z-index:100");
  

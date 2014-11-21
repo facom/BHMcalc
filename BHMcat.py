@@ -23,7 +23,7 @@ from BHM.BHMnum import *
 Usage=\
 """
 Usage:
-   python %s <cat_dir> [<recalculate>] [<sort_field>] [<sort_order>] [<filter>]
+   python %s <cat_dir> [<recalculate>] [<sort_field>] [<sort_order>] [<display_level>] [<filter>]
 
    <cat_dir>: location of the catalogue
 
@@ -33,14 +33,16 @@ Usage:
 
    <sort_order>: order of sort, 1: reverse, 0: normal
 
+   <display_level>: Level of details in catalogue
+
    <filter>: Filter.  Ex. binary_Pbin > 0.  Python syntax.
 
 """%argv[0]
 
-catdir,recalculate,sortfield,sortorder,catfilter=\
+catdir,recalculate,sortfield,sortorder,displaylevel,catfilter=\
     readArgs(argv,
-             ["str","int","str","int","str"],
-             [".","1","BHMCatS","0","binary_Pbin>0"],
+             ["str","int","str","int","int","str"],
+             [".","1","BHMCatS","0","1","binary_Pbin>0"],
              Usage=Usage)
 
 ###################################################
@@ -57,10 +59,10 @@ if recalculate:
     #LOAD CATALOGUES: SYSTEMS AND PLANETS
     ###################################################
     PRINTOUT("Loading catalogues...")
-    sfields,sfieldstyp,sfieldstxt,systems=\
+    sfields,sfieldstyp,sfieldstxt,sfieldspri,systems=\
         readCatalogue("BHM/data/BHMcat/BHMcat-Systems.csv",3)
 
-    pfields,pfieldstyp,pfieldstxt,planets=\
+    pfields,pfieldstyp,pfieldstxt,pfieldspri,planets=\
         readCatalogue("BHM/data/BHMcat/BHMcat-Planets.csv",3)
 
     #############################################################
@@ -156,9 +158,11 @@ if recalculate:
     systems["Fields"]=sfields
     systems["FieldsType"]=sfieldstyp
     systems["FieldsText"]=sfieldstxt
+    systems["FieldsPriority"]=sfieldspri
     systems["PlanetFields"]=pfields
     systems["PlanetFieldsType"]=pfieldstyp
     systems["PlanetFieldsText"]=pfieldstxt
+    systems["PlanetFieldsPriority"]=pfieldspri
     fl=open(fpickle,'w')
     pickle.dump(systems,fl)
     fl.close()
@@ -170,16 +174,29 @@ else:
 sfields=systems["Fields"]
 sfieldstyp=systems["FieldsType"]
 sfieldstext=systems["FieldsText"]
+sfieldspri=systems["FieldsPriority"]
 pfields=systems["PlanetFields"]
 pfieldstyp=systems["PlanetFieldsType"]
 pfieldstext=systems["PlanetFieldsText"]
+pfieldspri=systems["PlanetFieldsPriority"]
 
-del(systems["Fields"],systems["FieldsType"],systems["FieldsText"],
-    systems["PlanetFields"],systems["PlanetFieldsType"],systems["PlanetFieldsText"])
+del(systems["Fields"],systems["FieldsType"],
+    systems["FieldsText"],systems["FieldsPriority"],
+    systems["PlanetFields"],systems["PlanetFieldsType"],
+    systems["PlanetFieldsText"],systems["PlanetFieldsPriority"])
 
 #############################################################
 #CREATING HTML TABLE
 #############################################################
+#DISPLAY LEVEL
+prilevel=[0]
+for level in xrange(1,5):
+    if level<=displaylevel:
+        print level
+        pri='block'
+    else:pri='none'
+    prilevel+=[pri]
+
 table=""
 #////////////////////////////////////////
 #TABLE HEADER
@@ -188,14 +205,23 @@ table+="""
 <html>
 <head>
   <link rel="stylesheet" type="text/css" href="BHM.css">
+  <style>
+    td.pri1{display:block;}
+    td.pri2{display:%s;}
+    td.pri3{display:%s;}
+    td.pri4{display:%s;}
+    td.pri100{display:none;}
+  </style>
 </head>
 <body>
 <table>
-"""
+"""%(prilevel[2],prilevel[3],prilevel[4])
+
 table+="<tr class='header'>"
 #SYSTEM
-for key in sfields[:-2]:
+for key in sfields[:-3]:
     text=sfieldstext[key]
+    prior=sfieldspri[key]
     if "_" in text:
         text=text.replace("_","<sub>")
         text=text+"</sub>"
@@ -204,10 +230,11 @@ for key in sfields[:-2]:
         text="&Delta;"+text
     if "\\" in text:
         text=re.sub(r"\\(\w+)",r"&\1;",text)
-    table+="<td class='field_cat' style='width:1px;white-space:nowrap'>%s</td>"%text
+    table+="<td class='field_cat pri%s' style='width:1px;white-space:nowrap'>%s</td>"%(prior,text)
 #PLANET
 for key in pfields[6:-1]:
     text=pfieldstext[key]
+    prior=pfieldspri[key]
     if "_" in text:
         text=text.replace("_","<sub>")
         text=text+"</sub>"
@@ -216,7 +243,7 @@ for key in pfields[6:-1]:
         text="&Delta;"+text
     if "\\" in text:
         text=re.sub(r"\\(\w+)",r"&\1;",text)
-    table+="<td class='field_cat' style='width:1px;white-space:nowrap'>%s</td>"%text
+    table+="<td class='field_cat pri%s' style='width:1px;white-space:nowrap'>%s</td>"%(prior,text)
 table+="<td class='field_cat' style='width:1px;white-space:nowrap'>References</td>"
 table+="</tr>\n"
 
@@ -233,24 +260,26 @@ for system in sortCatalogue(systems,sortfield,reverse=sortorder):
         row=""
         row+="<tr class='%s'>"%clase
         qstring="LOADCONFIG&"
-        for key in sfields[:-1]:
+        for key in sfields[:-2]:
             if key=="Planets":
                 for pkey in pfields[6:-1]:
                     ptipo=pfieldstyp[pkey]
                     pvalue=planet[pkey]
+                    pprior=pfieldspri[pkey]
                     exec("%s=%s('%s')"%(pkey,ptipo,pvalue))
                     qstring+="%s=%s&"%(pkey,pvalue)
                     pvalue=adjustValue(pkey,pvalue,ptipo)
-                    row+="<td class='field_cat' style='width:1px;white-space:nowrap'>%s</td>"%(pvalue)
+                    row+="<td class='field_cat pri%s' style='width:1px;white-space:nowrap'>%s</td>"%(pprior,pvalue)
                     if i==0:fk.write("%s\n"%pkey)
             else:
                 if i==0:fk.write("%s\n"%key)
                 tipo=sfieldstyp[key]
                 value=system[key]
+                prior=sfieldspri[key]
                 exec("%s=%s('%s')"%(key,tipo,value))
                 qstring+="%s=%s&"%(key,value)
                 value=adjustValue(key,value,tipo)
-                row+="<td class='field_cat' style='width:1px;white-space:nowrap'>%s</td>"%(value)
+                row+="<td class='field_cat pri%s' style='width:1px;white-space:nowrap'>%s</td>"%(prior,value)
                 
         valueADS=system["binary_ADS"]+";"+planet["planet_ADS"] 
         valueADS=adjustValue("ADS",valueADS,"str")

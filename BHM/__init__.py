@@ -21,6 +21,7 @@ import re
 import csv
 import hashlib,commands,numpy as np
 import scipy.constants as const
+from time import sleep
 from copy import copy
 from os import system,path
 from sys import exit,stderr,stdout,argv

@@ -20,7 +20,7 @@ initializeEPIP()
 Usage=\
 """
 Usage:
-   python %s <script>.py <sysdir> [<module>.conf|CONFIG:<config_string>] <qoverride>
+   python %s <script>.py <sysdir> [<module>.conf|CONFIG:<config_string>] <sleep_before> <qoverride>
 
    <script>.py: Script to run
 
@@ -33,14 +33,23 @@ Usage:
    CONFIG:<config_string>: Configuration string.  Load system from a
    string instead of doing it from conf files.
 
+   <sleep_before>: wait this seconds to start.
+
    <qoverride> (int 0/1): Override any existent moduleect with the same hash.
 """%argv[0]
 
-script,sys_dir,module_conf,qover=\
+script,sys_dir,module_conf,sleep_before,qover=\
     readArgs(argv,
-             ["str","str","str","int"],
-             ["BHMstar.py","sys/template","star1.conf","0"],
+             ["str","str","str","int","int"],
+             ["BHMstar.py","sys/template","star1.conf","0","0"],
              Usage=Usage)
+
+###################################################
+#SLEEP BEFORE
+###################################################
+if sleep_before>0:
+    PRINTOUT("Sleeping %d seconds before start..."%sleep_before)
+    sleep(sleep_before)
 
 ###################################################
 #PRELIMINARY VERIFICATIONS
@@ -112,6 +121,27 @@ module,module_dir,module_str,module_hash,module_liv,module_stg=\
     signObject(module_type,sys_dir+"/"+module_conf)
 PRINTOUT("Module type: %s"%module_type)
 
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+#CHECK IF MODULES DEPENDING ON THIS ARE RUNNING
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+MAXTRIALS=10
+for depmod in OBJECT_EPIP[module_name]:
+    PRINTOUT("Checking for blocks over %s."%depmod)
+    depmod_name=depmod
+    depmod_conf="%s.conf"%depmod
+    depmod_type=depmod
+    depmod_type=depmod_type.replace("1","")
+    depmod_type=depmod_type.replace("2","")
+    depmod,depmod_dir,depmod_str,depmod_hash,depmod_liv,depmod_stg=\
+        signObject(depmod_type,sys_dir+"/"+depmod_conf)
+    trials=0
+    fblock=depmod_dir+".block"
+    PRINTOUT("\tLooking for blocking file: %s"%fblock)
+    while FILEEXISTS(fblock) and trials<MAXTRIALS:
+        PRINTOUT("Waiting for %s to finish (trial %d)..."%(depmod_name,trials))
+        sleep(1.0)
+        trials+=1
+
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 #CHECK-OUT MODULES ON WHICH IT DEPENDS
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -146,7 +176,9 @@ if module_stg<10 or qover>=1:
     stage=System("cat %s/.stage"%module_dir,out=True)
     if qover:PRINTOUT("Forcing %s"%module_type);
     else:PRINTOUT("Executing module %s for %s in stage %s"%(module_type,module_hash,stage));
+    System("touch %s/.block"%module_dir)
     System("python BHM%s.py %s %s %d"%(module_type,sys_dir,module_conf,qover),out=False)
+    System("rm %s/.block"%module_dir)
     stage=System("cat %s/.stage"%module_dir,out=True)
     print "Stage:",stage
     if int(stage)<10:

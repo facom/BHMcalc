@@ -47,11 +47,11 @@ fclose($fc);
 //SUBMIT EXECUTION
 //////////////////////////////////////////////////////////////
 //COMMAND
-$cmd="$PYTHONCMD BHMrun.py BHM${module}.py $SESSDIR $object.conf $qover";
+$cmd="$PYTHONCMD BHMrun.py BHM${module}.py $SESSDIR $object.conf $pipepos $qover";
 
 //OUTPUT
-$stdout="BHMrun-stdout-$SESSID";
-$stderr="BHMrun-stderr-$SESSID";
+$stdout="BHMrun-stdout-$SESSID-${module}";
+$stderr="BHMrun-stderr-$SESSID-${module}";
 
 //EXCECUTE COMMAND
 $out=shell_exec($cmd." 2> $TMPDIR/$stderr |tee $TMPDIR/$stdout");
