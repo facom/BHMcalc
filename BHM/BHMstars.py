@@ -389,6 +389,9 @@ def evoInterpFunctions(star):
     star.__dict__['Tfunc']=lambda t:funcs[1](np.log10(t))
     star.__dict__['Rfunc']=lambda t:10**funcs[2](np.log10(t))
     star.__dict__['Lfunc']=lambda t:10**funcs[3](np.log10(t))
+    rmoi=star.RMoI
+    star.__dict__['Ifunc']=interp1d(rmoi[:,0],rmoi[:,3],kind='slinear')
+    star.__dict__['dIdtfunc']=interp1d(rmoi[:,0],rmoi[:,4],kind='slinear')
 
 ###################################################
 #TEST
@@ -827,6 +830,60 @@ def totalAcceleration(t,star,starf,binary,verbose=False,qreturn=False):
     else:
         return acc
 
+def rotationalAcceleration(Omega,t,params):
+    star=params['star']
+    starf=params['starf']
+    binary=params['binary']
+
+    t=t/GYR
+    if t>star.taums:t=star.taums
+    M=star.M
+    R=star.Rfunc(t)
+
+    if t<star.taudisk:
+        dOdt_cont=0.0
+        dOdt_wind=0.0
+    else:
+        I=star.Ifunc(t)
+        #========================================
+        #CONTRACTION ACCELERATION
+        #========================================
+        dOdt_cont=-Omega*star.dIdtfunc(t)/I/GYR
+        #print star.Ifunc(t)*MSUN*RSUN**2,star.dIdtfunc(t)*MSUN*RSUN**2/GYR,Omega,dOdt_cont
+
+        #========================================
+        #WIND BREAKING
+        #========================================
+        facw=R**0.5/M**0.5
+        if Omega<=star.wsat:
+            dJdtw=-star.Kw*Omega**3*facw
+        else:
+            dJdtw=-star.Kw*Omega*star.wsat**2*facw
+
+        dOdt_wind=dJdtw/(I*MSUN*RSUN**2)
+
+    #========================================
+    #TIDAL ACCELERATION
+    #========================================
+    if starf is None:
+        dOdt_tide=0.0
+    else:
+        dOdt_tide=tidalAcceleration(M,R,
+                                    star.Lfunc(t),star.MoI,
+                                    starf.M,
+                                    binary.abin,binary.ebin,
+                                    binary.nbin/DAY,star.W,
+                                    verbose=verbose)
+
+    #========================================
+    #TOTAL ACCELERATION
+    #========================================
+    dOdt=dOdt_tide+dOdt_cont+dOdt_wind
+
+    #print "t,w = ",t,Omega
+    #print "dOdt = ",dOdt
+    return dOdt
+
 def starLXUV(Ls,t):
     """
     Stellar XUV Luminosity
@@ -888,6 +945,10 @@ def starProt(vsini,i,R):
     return Prot
 
 def bolometricCorrection(Teff):
+    """
+    Torres (2010), 2010AJ....140.1158T
+    Flower (1996), 1996ApJ...469..355F
+    """
     #Torres (2010), Flower (1996)
     a=[-0.190537291496456E+05,-0.370510203809015E+05,-0.118115450538963E+06]
     b=[+0.155144866764412E+05,+0.385672629965804E+05,+0.137145973583929E+06]
@@ -901,3 +962,19 @@ def bolometricCorrection(Teff):
     else:i=2
     BCV=a[i]+b[i]*logTeff+c[i]*logTeff**2+d[i]*logTeff**3+e[i]*logTeff**4+f[i]*logTeff**5
     return BCV
+
+def mainSequenceDuration(Ms):
+    """
+    Handbook of Space Astronomy and Astrophysics
+    Zombeck
+    """
+    logM=np.log10(Ms)
+    Tms=array([[0.36,8.62,0.56],
+               [0.26,8.93,0.64],
+               [0.17,9.24,0.78],
+               [0.08,9.60,0.98],
+               [-0.02,9.83,1.00],
+               [-0.11,10.28,1.00]])
+    if logM<Tms[-1,0] or logM>Tms[0,0]:logTms=13*Ms**(-2.5)
+    else:logTms=np.interp(logM,Tms[::-1,0],Tms[::-1,1])
+    return logTms

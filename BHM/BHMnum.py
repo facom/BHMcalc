@@ -18,6 +18,7 @@ from BHM import *
 ###################################################
 from scipy.interpolate import interp1d
 from scipy.integrate import quad as integrate,odeint
+from scipy.misc import derivative
 from scipy.linalg import norm
 from scipy.optimize import newton,brentq 
 try:
