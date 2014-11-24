@@ -142,27 +142,6 @@ $CONTENT.=<<<C
       changeValues(['.star_FeH'],'input[name=star1_FeH]');
     });
 </script>
-<script>
-function idSystem(){
-  //IT SHOULD BE THE WHOLE FORM
-  var forms=["star1_form","star2_form","planet_form"];
-  var sysid="";
-  for(i=0;i<3;i++){
-    elements=document.forms[forms[i]].elements;
-    for(j=0;j<elements.length;j++){
-      clase=elements[j].getAttribute("class")+"";
-      if(clase.search("sensitive")>=0){
-	val=elements[j].value;
-	sysid=sysid+val;
-      }
-    }
-  }
-  //alert(sysid);
-  var sys=calcMD5(sysid);
-  $('.sys_input').attr("value","\"\'"+sys+"\'\"");
-  //alert($("input[name=binary_str_sys]").val());
-}
-</script>
 C;
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -214,75 +193,13 @@ function changePlanetMorb(){
 C;
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-//TABBED FORM
+//FORMS
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-$CONTENT.=<<<C
-<div style="position:fixed;top:10px;right:10px">
-<form id="allforms" action="JavaScript:void(0)">
-  <button id="all_Update">Update All</button>
-  $ajax_all_Update
-</form>
-</div>
-<div class="tabber maintabber" id="$TABID">
 
-  <!-- //////////////////////////////////////////////////////////// -->
-  <!-- INTRODUCTION -->
-  <!-- //////////////////////////////////////////////////////////// -->
-  <div class="tabbertab" id="Introduction" title="Introduction">
-    <div class="tabcontent">
-    </div>
-  </div>
-
-  <!-- //////////////////////////////////////////////////////////// -->
-  <!-- CATALOGUE -->
-  <!-- //////////////////////////////////////////////////////////// -->
-  <div class="tabbertab" id="Introduction" title="BHM Catalogue">
-    <p><b>Binary Habitability Catalogue</b></p>
-    <form id="cat_form" action="BHMcat.php">
-      Sort field:
-      <select name="sortfield">
-	$catfields
-      </select>
-      Sort order:
-      <select name="sortorder">
-	<option value="0">Ascending</option>
-	<option value="1">Descending</option>
-      </select>
-      Detail level:
-      <select name="displaylevel">
-	<option value="1">Basic Properties</option>
-	<option value="2">Detailed</option>
-	<option value="3">All properties</option>
-	<option value="4">All properties and errors</option>
-      </select>
-      Filter : <input type="text" name="catfilter" value="binary_Pbin>0">
-      <a href=JavaScript:$('.help').toggle('fast',null) style="font-size:10px">Show/Hide Help</a>
-      <div class="help" style="display:none">
-	<b>Filter examples</b>:<br/>
-	Periods in a given range: binary_Pbin>10 and binary_Pbin<40<br/>
-	Primary stars with measured rotational velocity: star1_Protv>0<br/>
-	Both stars with measured rotational velocity: star1_Protv>0 and star2_Protv<br/>
-	Kepler planets: 'Kepler' in PlanetID<br/>
-	Systems in DEBCat: 'DEB' in SourceCat<br/>
-	Systems in Ekar catalogue with measured distance: 'Ek' in SourceCat and binary_d>0<br/>
-      </div>
-      <p></p>
-      <button class="update" id="cat_Update">Update</button> 
-      $ajaxform_cat_Update
-      $force_update
-      <div id="cat_results_panel" class="catalogue">
-	<div class="download" id="cat_download"></div>
-	<div id="cat_results_status_loader" style="background-color:white;">
-	  <div id="cat_results_status" style="background-color:white;">
-	    <iframe class="iframe" id="cat_results_frame" src="web/blank.html" 
-		    scrolling="yes" onload="adjustiFrame(this);">
-	    </iframe>
-	  </div>
-	</div>
-      </div>
-    </form>
-  </div>
-
+//&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+//STARS
+//&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+$star_form1=<<<F
   <!-- //////////////////////////////////////////////////////////// -->
   <!-- STAR 1 -->
   <!-- //////////////////////////////////////////////////////////// -->
@@ -384,9 +301,11 @@ $CONTENT.=<<<C
     </div>
    </form>
   </div>
+F;
 
+$star_form2=<<<F
   <!-- //////////////////////////////////////////////////////////// -->
-  <!-- STAR 2
+  <!-- STAR 2 -->
   <!-- //////////////////////////////////////////////////////////// -->
   <div class="tabbertab" id="star2" title="Star 2">
     <form id="star2_form" action="BHMrun.php">
@@ -438,7 +357,7 @@ $CONTENT.=<<<C
 	      <!-- ---------------------------------------- -->
 		<td class="name">Age:</td>
 		<td class="field">
-		  <input id="ini" type="text" class='star_tau sensitive' name="star2_tau" value="$star2_tau" onchange="changeValues(['.star_tau'],this);idSystem();">
+		  <input id="ini" type="text" class="star_tau sensitive" name="star2_tau" value="$star2_tau" onchange="changeValues(['.star_tau'],this);idSystem();">
 		  Gyr
 		</td>
 	      </tr>
@@ -450,7 +369,7 @@ $CONTENT.=<<<C
 	      <!-- ---------------------------------------- -->
 		<td class="name">Main Sequence:</td>
 		<td class="field">
-		  <input type="text" id="test" class="sensitive" name="star2_taums" value="$star2_taums" onchange="idSystem();">
+		  <input class="sensistive" type="text" id="test" name="star2_taums" value="$star2_taums" onchange="idSystem();">
 		  Gyr
 		</td>
 	      </tr>
@@ -463,7 +382,7 @@ $CONTENT.=<<<C
 	      <!-- ---------------------------------------- -->
 	      <tr>
 		<td class="button" colspan=2>
-		  <button class="update" id="star2_Update">Update</button> 
+		  <button class="update" id="star2_Update">Update</button>
 		  $ajaxform_star2_Update
 		  $force_update
 		</td>
@@ -486,10 +405,12 @@ $CONTENT.=<<<C
     </div>
    </form>
   </div>
-  
-  <!-- //////////////////////////////////////////////////////////// -->
-  <!-- PLANET -->
-  <!-- //////////////////////////////////////////////////////////// -->
+F;
+
+//&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+//PLANET
+//&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+$planet_form=<<<F
   <div class="tabbertab" id="planet" title="Planet">
   <form id="planet_form" action="BHMrun.php">
     <div class="tabcontent">
@@ -643,10 +564,12 @@ $CONTENT.=<<<C
     </div>
    </form>
   </div>
+F;
 
-  <!-- //////////////////////////////////////////////////////////// -->
-  <!-- BINARY -->
-  <!-- //////////////////////////////////////////////////////////// -->
+//&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+//BINARY
+//&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+$binary_form=<<<F
   <div class="tabbertab" id="binary" title="Binary">
   <form id="binary_form" action="BHMrun.php">
     <div class="tabcontent">
@@ -718,10 +641,12 @@ $CONTENT.=<<<C
    <input class="sys_input" type="hidden" name="binary_str_sys" value="$binary_str_sys">
    </form>
   </div>
+F;
 
-  <!-- //////////////////////////////////////////////////////////// -->
-  <!-- HABITABLE ZONE -->
-  <!-- //////////////////////////////////////////////////////////// -->
+//&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+//HABITABLE ZONE
+//&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+$hz_form=<<<F
   <div class="tabbertab" id="hz" title="Habitable Zone">
   <form id="hz_form" action="BHMrun.php">
     <div class="tabcontent">
@@ -808,10 +733,12 @@ $CONTENT.=<<<C
    <input class="sys_input" type="hidden" name="hz_str_sys" value="$hz_str_sys">
    </form>
   </div>
+F;
 
-  <!-- //////////////////////////////////////////////////////////// -->
-  <!-- EVOLUTION OF ROTATION -->
-  <!-- //////////////////////////////////////////////////////////// -->
+//&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+//ROTATION
+//&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+$rot_form=<<<F
   <div class="tabbertab" id="rotation" title="Rotation and Activity">
   <form id="rotation_form" action="BHMrun.php">
     <div class="tabcontent">
@@ -860,10 +787,12 @@ $CONTENT.=<<<C
    <input class="sys_input" type="hidden" name="rotation_str_sys" value="$rotation_str_sys">
    </form>
   </div>
+F;
 
-  <!-- //////////////////////////////////////////////////////////// -->
-  <!-- BINARY-PLANET INTERACTION -->
-  <!-- //////////////////////////////////////////////////////////// -->
+//&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+//INTERACTION
+//&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+$int_form=<<<F
   <div class="tabbertab" id="summary" title="Binary-Planet Interaction">
   <form id="interaction_form" action="BHMrun.php">
     <div class="tabcontent">
@@ -1028,6 +957,112 @@ $CONTENT.=<<<C
    </form>
    <input class="sys_input" type="hidden" name="interaction_str_sys" value="$interaction_str_sys">
   </div>
+F;
+
+//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+//TABBED FORM
+//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+$CONTENT.=<<<C
+<div style="position:fixed;top:10px;right:10px">
+<form id="allforms" action="JavaScript:void(0)">
+  <button id="all_Update">Update All</button>
+  $ajax_all_Update
+</form>
+</div>
+<div class="tabber maintabber" id="$TABID">
+
+  <!-- //////////////////////////////////////////////////////////// -->
+  <!-- INTRODUCTION -->
+  <!-- //////////////////////////////////////////////////////////// -->
+  <div class="tabbertab" id="Introduction" title="Introduction">
+    <div class="tabcontent">
+    </div>
+  </div>
+
+  <!-- //////////////////////////////////////////////////////////// -->
+  <!-- CATALOGUE -->
+  <!-- //////////////////////////////////////////////////////////// -->
+  <div class="tabbertab" id="Introduction" title="BHM Catalogue">
+    <p><b>Binary Habitability Catalogue</b></p>
+    <form id="cat_form" action="BHMcat.php">
+      Sort field:
+      <select name="sortfield">
+	$catfields
+      </select>
+      Sort order:
+      <select name="sortorder">
+	<option value="0">Ascending</option>
+	<option value="1">Descending</option>
+      </select>
+      Detail level:
+      <select name="displaylevel">
+	<option value="1">Basic Properties</option>
+	<option value="2">Detailed</option>
+	<option value="3">All properties</option>
+	<option value="4">All properties and errors</option>
+      </select>
+      Filter : <input type="text" name="catfilter" value="binary_Pbin>0">
+      <a href=JavaScript:$('.help').toggle('fast',null) style="font-size:10px">Show/Hide Help</a>
+      <div class="help" style="display:none">
+	<b>Filter examples</b>:<br/>
+	Periods in a given range: binary_Pbin>10 and binary_Pbin<40<br/>
+	Primary stars with measured rotational velocity: star1_Protv>0<br/>
+	Both stars with measured rotational velocity: star1_Protv>0 and star2_Protv<br/>
+	Kepler planets: 'Kepler' in PlanetID<br/>
+	Systems in DEBCat: 'DEB' in SourceCat<br/>
+	Systems in Ekar catalogue with measured distance: 'Ek' in SourceCat and binary_d>0<br/>
+      </div>
+      <p></p>
+      <button class="update" id="cat_Update">Update</button> 
+      $ajaxform_cat_Update
+      $force_update
+      <div id="cat_results_panel" class="catalogue">
+	<div class="download" id="cat_download"></div>
+	<div id="cat_results_status_loader" style="background-color:white;">
+	  <div id="cat_results_status" style="background-color:white;">
+	    <iframe class="iframe" id="cat_results_frame" src="web/blank.html" 
+		    scrolling="yes" onload="adjustiFrame(this);">
+	    </iframe>
+	  </div>
+	</div>
+      </div>
+    </form>
+  </div>
+
+  <!-- //////////////////////////////////////////////////////////// -->
+  <!-- STAR 1 -->
+  <!-- //////////////////////////////////////////////////////////// -->
+  $star_form1
+
+  <!-- //////////////////////////////////////////////////////////// -->
+  <!-- STAR 2
+  <!-- //////////////////////////////////////////////////////////// -->
+  $star_form2
+  
+  <!-- //////////////////////////////////////////////////////////// -->
+  <!-- PLANET -->
+  <!-- //////////////////////////////////////////////////////////// -->
+  $planet_form
+
+  <!-- //////////////////////////////////////////////////////////// -->
+  <!-- BINARY -->
+  <!-- //////////////////////////////////////////////////////////// -->
+  $binary_form
+
+  <!-- //////////////////////////////////////////////////////////// -->
+  <!-- HABITABLE ZONE -->
+  <!-- //////////////////////////////////////////////////////////// -->
+  $hz_form
+
+  <!-- //////////////////////////////////////////////////////////// -->
+  <!-- EVOLUTION OF ROTATION -->
+  <!-- //////////////////////////////////////////////////////////// -->
+  $rot_form
+
+  <!-- //////////////////////////////////////////////////////////// -->
+  <!-- BINARY-PLANET INTERACTION -->
+  <!-- //////////////////////////////////////////////////////////// -->
+  $int_form
 
   <!-- //////////////////////////////////////////////////////////// -->
   <!-- SUMMARY -->
@@ -1066,7 +1101,7 @@ $CONTENT.=<<<C
 	    </li>
 	    <li>
 	      <a class="activelink" 
-		 href="JavaScript:loadAjax('/$wDIR/BHMutil.php?ACTION=CommandLine','#commandline');">
+		 href="JavaScript:loadAjax('BHMutil.php?ACTION=CommandLine','#commandline');">
 		Generate command line.</a>
 	      <div class="target" id="commandline"></div>
 	    </li>

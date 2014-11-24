@@ -88,14 +88,20 @@ if 'LOADCONFIG' in module_conf:
         for key in data[module].keys():
             value=data[module][key]
             if 'str' in key:
-                entry="%s=\"'%s'\"\n"%(key,value)
+                if "'" not in value:
+                    entry="%s=\"'%s'\"\n"%(key,value)
+                else:
+                    entry="%s=\"%s\"\n"%(key,value)
             else:
                 entry="%s=%s\n"%(key,value)
             fm.write(entry)
         fm.write("str_sys=\"'%s'\"\n"%sys_str)
         fm.close()
-
-if script=='-':exit(0)
+        
+    #PREPARE TO RUN
+    if script=='-':exit(0)
+    else:
+        module_conf="interaction.conf"
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 #HASH MODULE

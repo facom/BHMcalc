@@ -70,7 +70,7 @@ except:
 #CALCULATE EVOLUTIONARY TRACK
 ###################################################
 #DETERMINING APPROXIMATELY THE MAXIMUM AGE
-PRINTERR("Estimating maximum age...")
+PRINTOUT("Estimating maximum age...")
 tau_max=TAU_MAX
 ts=np.linspace(TAU_MIN,TAU_MAX,NTIMES)
 for t in ts:
@@ -85,17 +85,16 @@ exp_ts2=-np.linspace(-np.log10(min(TAU_MAX,1.5*tau_max)),-np.log10(tau_max/2),NT
 ts=np.unique(np.concatenate((10**exp_ts1,(10**exp_ts2)[::-1])))
 
 #EVOLUTIONARY MATRIX
-PRINTERR("Calculating Evolutionary Matrix...")
+PRINTOUT("Calculating Evolutionary Matrix...")
 evodata=np.array([np.array([t]+list(StellarGTRL(star.Z,star.M,t))) for t in ts])
 maxdata=evodata[:,1]>0
 evodata=evodata[maxdata]
 evodata_str=array2str(evodata)
 star.evotrack=evodata
-evoInterpFunctions(star)
 
 #MAXIMUM ALLOWABLE TIME
 tau_max=evodata[-1,0]
-PRINTERR("Maximum age = %.3f"%tau_max)
+PRINTOUT("Maximum age = %.3f"%tau_max)
 
 #DETECTING THE END OF HYDROGEN BURNING
 ts=evodata[:,0]
@@ -105,15 +104,74 @@ if star.taums==0:
                         tausys=tau_max/2,
                         iper=3,dimax=10)
 else:tau_ms=star.taums
+star.taums=tau_ms
 
 ###################################################
-#CALCULATE DERIVATIVE PROPERTIES
+#RADIUS AND MOMENT OF INERTIA EVOLUTION
+###################################################
+#GIRATION RADIUS
+Nfine=500
+star.MoI=np.sqrt(stellarMoI(star.M))
+tsmoi=np.logspace(np.log10(TAU_MIN),np.log10(tau_ms),Nfine)
+
+#========================================
+#RADIUS EVOLUTION
+#========================================
+PRINTOUT("Calculating radius evolution...")
+star.RMoI=stack(1)
+for t in tsmoi:
+     logg=StellarProperty('logGravitation',star.Z,star.M,t)
+     g=10**logg/100
+     R=StellarRadius(star.M,g)
+     star.RMoI+=[R]
+star.RMoI=toStack(tsmoi)|star.RMoI
+Rfunc=interp1d(star.RMoI[:,0],star.RMoI[:,1],kind='slinear')
+
+dRdt=[0]
+for i in range(1,Nfine-1):
+     dt=(tsmoi[i+1]-tsmoi[i-1])/4
+     dRdt+=[(Rfunc(tsmoi[i]+dt)-Rfunc(tsmoi[i]-dt))/(2*dt)]
+dRdt[0]=dRdt[1]
+dRdt+=[dRdt[-1]]
+star.RMoI=toStack(star.RMoI)|toStack(dRdt)
+
+#========================================
+#MOMENT OF INERTIA EVOLUTION
+#========================================
+Ievo=stack(2)
+for i in range(Nfine):
+     R=star.RMoI[i,1]
+     dRdt=star.RMoI[i,2]
+     facI=star.MoI*star.M
+     I=facI*R**2
+     dIdt=2**facI*R*dRdt
+     Ievo+=[I,dIdt]
+star.RMoI=toStack(star.RMoI)|Ievo
+
+###################################################
+#ROTATION EVOLUTION
+###################################################
+evoInterpFunctions(star)
+
+wini=2*PI/(star.Pini*DAY)
+rotpars=dict(\
+     star=star,
+     starf=None,binary=None,
+     taudisk=star.taudisk,
+     Kw=star.Kw,
+     wsat=star.wsat*OMEGASUN
+     )
+star.rotevol=odeint(rotationalAcceleration,wini,tsmoi*GYR,args=(rotpars,))
+star.rotevol=toStack(tsmoi)|toStack(star.rotevol)
+
+###################################################
+#CALCULATE DERIVATIVE INSTANTANEOUS PROPERTIES
 ###################################################
 #BASIC PROPERTIES
 g,Teff,R,L=StellarGTRL(star.Z,star.M,star.tau)
 
 #HABITABLE ZONE LIMITS
-PRINTERR("Calculating HZ...")
+PRINTOUT("Calculating HZ...")
 lins=[]
 for incrit in IN_CRITS:
     lin,lsun,lout=HZ(L,Teff,lin=incrit)
@@ -122,9 +180,6 @@ louts=[]
 for outcrit in OUT_CRITS:
     lin,lsun,lout=HZ(L,Teff,lout=outcrit)
     louts+=[lout]
-
-#GIRATION RADIUS
-MoI=np.sqrt(stellarMoI(star.M))
 
 #DISSIPATION TIME
 tdiss=dissipationTime(star.M,R,L)
@@ -164,7 +219,7 @@ star.protevol=toStack(ts)|toStack(star.protevol)
 ###################################################
 #STORE STELLAR DATA
 ###################################################
-PRINTERR("Storing stellar data...")
+PRINTOUT("Storing stellar data...")
 f=open(star_dir+"star.data","w")
 f.write("""\
 from numpy import array
@@ -197,19 +252,26 @@ evotrack=%s
 #ROTATIONAL EVOLUTION
 protevol=%s
 
+#ROTATIONAL EVOLUTION
+RMoI=%s
+
+#ROTATIONAL EVOLUTION
+rotevol=%s
 """%(tau_max,tau_ms,title,
-     g,Teff,R,L,MoI,tdiss,
+     g,Teff,R,L,star.MoI,tdiss,
      array2str(prot_fit),
      array2str(lins),lsun,array2str(louts),
      evodata_str,
-     array2str(star.protevol)
+     array2str(star.protevol),
+     array2str(star.RMoI),
+     array2str(star.rotevol),
      ))
 f.close()
 
 ###################################################
 #GENERATE PLOTS
 ###################################################
-PRINTERR("Creating plots...")
+PRINTOUT("Creating plots...")
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 #STELLAR PROPERTIES
@@ -225,6 +287,7 @@ fig=plt.figure(figsize=(8,6))
 ax=fig.add_axes([0.1,0.1,0.8,0.8])
 evodata=%s
 ts=evodata[:,0]
+ts=ts[ts<star.taums]
 logrho_func,Teff_func,logR_func,logL_func=evoFunctions(evodata)
 
 ax.plot(ts,10**logrho_func(np.log10(ts))/GRAVSUN,label=r"$g_{\\rm surf}$")
@@ -243,12 +306,12 @@ ax.set_xlabel(r"$\\tau$ (Gyr)")
 ax.set_ylabel(r"Property in Solar Units")
 
 ymin,ymax=ax.get_ylim()
-ax.set_xlim((0,%.17e))
+ax.set_xlim((0,star.taumax))
 ax.set_ylim((0.1,10.0))
 ax.set_ylim((ymin,ymax))
 
 ax.legend(loc='best',prop=dict(size=12))
-"""%(star_dir,star_dir,evodata_str,tau_max))
+"""%(star_dir,star_dir,evodata_str))
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 #EVOLUTIONARY TRACK
@@ -259,6 +322,11 @@ from BHM.BHMstars import *
 
 fig=plt.figure(figsize=(8,6))
 ax=fig.add_axes([0.1,0.1,0.8,0.8])
+
+star=\
+loadConf("%s"+"star.conf")+\
+loadConf("%s"+"star.data")
+
 evodata=%s
 ts=evodata[:,0]
 logrho_func,Teff_func,logR_func,logL_func=evoFunctions(evodata)
@@ -284,7 +352,7 @@ ax.plot(Teffs,Leffs,"ko",label='Steps of %%.1f Gyr'%%dt,markersize=3)
 ax.text(TSUN,1.0,r"$\odot$",fontsize=14)
 
 ax.set_yscale('log')
-ax.set_title("Evolutionary Track",position=(0.5,1.02))
+ax.set_title(star.title,position=(0.5,1.02))
 ax.set_xlabel(r"$T_{\\rm eff}$ (K)")
 ax.set_ylabel(r"$L/L_{\\rm Sun}$")
 
@@ -292,7 +360,8 @@ Tmin,Tmax=ax.get_xlim()
 ax.set_xlim((1E4,1E3))
 
 ax.legend(loc='lower right')
-"""%(evodata_str,tau_max,tau_max,tau_max))
+"""%(star_dir,star_dir,
+     evodata_str,tau_max,tau_max,tau_max))
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 #RADIUS EVOLUTION
@@ -303,6 +372,11 @@ from BHM.BHMstars import *
 
 fig=plt.figure(figsize=(8,6))
 ax=fig.add_axes([0.1,0.1,0.8,0.8])
+
+star=\
+loadConf("%s"+"star.conf")+\
+loadConf("%s"+"star.data")
+
 evodata=%s
 ts=evodata[:,0]
 logrho_func,Teff_func,logR_func,logL_func=evoFunctions(evodata)
@@ -327,7 +401,7 @@ Rs=10**logR_func(logts)
 ax.plot(Teffs,Rs,"ko",label='Steps of %%.1f Gyr'%%dt,markersize=3)
 ax.text(1.0,1.0,r"$\odot$",fontsize=14)
 
-ax.set_title("Evolutionary Track in Radius",position=(0.5,1.02))
+ax.set_title(star.title,position=(0.5,1.02))
 ax.set_xlabel(r"$T_{\\rm eff}$ (K)")
 ax.set_ylabel(r"$R/R_{\\rm Sun}$")
 
@@ -335,7 +409,63 @@ Tmin,Tmax=ax.get_xlim()
 ax.set_xlim((Tmax,Tmin))
 
 ax.legend(loc='lower right')
-"""%(evodata_str,tau_max,tau_max,tau_max))
+"""%(star_dir,star_dir,
+     evodata_str,tau_max,tau_max,tau_max))
+
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+#RADIUS EVOLUTION
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+plotFigure(star_dir,"evol-RMoI",\
+"""
+from BHM.BHMstars import *
+
+fig=plt.figure(figsize=(8,8))
+l=0.1;b=0.1;w=0.85;h=0.55;ho=0.01
+ax_dI=fig.add_axes([l,b,w,h/2])
+b+=h/2+ho
+ax_I=fig.add_axes([l,b,w,h])
+
+star=\
+loadConf("%s"+"star.conf")+\
+loadConf("%s"+"star.data")
+evoInterpFunctions(star)
+
+#MAIN PLOT
+ts=star.RMoI[:,0]
+I=star.RMoI[:,3]*MSUN*RSUN**2
+Imin=min(I);Imax=max(I)
+dIdt=star.RMoI[:,4]*MSUN*RSUN**2/GYR
+
+ax_dI.plot(ts,np.abs(dIdt)/I,'-')
+ax_I.plot(ts,I,'-')
+
+#DECORATIONS
+for ax in ax_I,ax_dI:
+    ax.set_xscale('log')
+    ax.set_yscale('log')
+
+#I-TICKS
+ax_I.set_ylim((Imin,Imax))
+It=[];Il=[]
+for I in np.linspace(Imin,Imax,10):
+    It+=[I]
+    Il+=["%%.2f"%%np.log10(I)]
+ax_I.set_yticks(It)
+ax_I.set_yticklabels(Il,fontsize=10)
+
+ax_I.set_xticklabels([])
+dIl=ax_dI.get_yticks()
+ax_dI.set_yticks(dIl[:-1])
+
+ax_I.set_title(star.title,position=(0.5,1.02))
+ax_dI.set_xlabel(r"$\\tau$ (Gyr)")
+ax_I.set_ylabel(r"$\log\,I$ (kg m$^2$)")
+ax_dI.set_ylabel(r"$-|dI/dt|/I$ (s$^{-1}$)")
+
+ax_I.grid()
+ax_dI.grid()
+
+"""%(star_dir,star_dir))
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 #RADIUS SCHEMATIC
@@ -447,7 +577,7 @@ fh.write("""\
   <tr><td>l<sub>out</sub> (AU):</td><td>(Maximum Greenhouse) %.2f, (Early Mars) %.2f</td></tr>
 </table>
 
-<h3>Properties Evolution:</h3>
+<h3>Evolution of Stellar Properties:</h3>
 <table>
   <tr><td>
       <a href="%s/stellar-props.png" target="_blank">
@@ -476,15 +606,26 @@ fh.write("""\
 	<img width=100%% src="%s/evol-radius.png">
       </a>
       <br/>
-      <i>Radius Evolution</i>
+      <i>Radius Track</i>
 	(
 	<a href="%s/evol-radius.png.txt" target="_blank">data</a>|
 	<a href="%s/BHMreplot.php?dir=%s&plot=evol-radius.py" target="_blank">replot</a>
 	)
   </td></tr>
 </table>
-<h3>Properties Evolution:</h3>
+<h3>Evolution of Rotational Properties:</h3>
 <table>
+  <tr><td>
+      <a href="%s/evol-RMoI.png" target="_blank">
+	<img width=100%% src="%s/evol-RMoI.png">
+      </a>
+      <br/>
+      <i>Moment of Inertia Evolution</i>
+	(
+	<a href="%s/evol-RMoI.png.txt" target="_blank">data</a>|
+	<a href="%s/BHMreplot.php?dir=%s&plot=evol-RMoI.py" target="_blank">replot</a>
+	)
+  </td></tr>
   <tr><td>
       <a href="%s/stellar-rotation.png" target="_blank">
 	<img width=100%% src="%s/stellar-rotation.png">
@@ -499,9 +640,10 @@ fh.write("""\
 </table>
 """%(WEB_DIR,star_webdir,star_webdir,star_webdir,WEB_DIR,star_webdir,
 star.M,star.Z,star.FeH,star.tau,tau_max,tau_ms,star_hash,
-g,Teff,R,L,MoI,tdiss,
+g,Teff,R,L,star.MoI,tdiss,
 lins[0],lins[1],lins[2],
 louts[0],louts[1],
+star_webdir,star_webdir,star_webdir,WEB_DIR,star_webdir,
 star_webdir,star_webdir,star_webdir,WEB_DIR,star_webdir,
 star_webdir,star_webdir,star_webdir,WEB_DIR,star_webdir,
 star_webdir,star_webdir,star_webdir,WEB_DIR,star_webdir,
