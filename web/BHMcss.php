@@ -188,19 +188,19 @@ height:100%;
 }
 .results{
 float:left;
-width:60%;
+width:55%;
 height:100%;
 //background:lightyellow;
 }
 .formarea{
 float:left;
-width:40%;
+width:45%;
 height:100%;
 //background:lightgreen;
 }
 .status{
 float:right;
-width:50%;
+width:45%;
 height:20%;
 //background:lightblue;
 }
@@ -220,8 +220,15 @@ td.name{
  font-size:12px;
  padding:10px;
 }
+td.section{
+ background:lightgray;
+ text-align:center;
+ font-weight:bold;
+ font-size:12px;
+}
 td.field{
  padding:10px;
+ font-size:10px;
 }
 td.help{
  font-style:italic;

@@ -68,6 +68,7 @@ if 'LOADCONFIG' in module_conf:
     PRINTOUT("Loading variables into dictionary...")
     for field in fields:
         if '_' not in field:continue
+        print field
         parts=field.split("_")
         module=parts[0]
         if module not in data.keys():data[module]=dict()

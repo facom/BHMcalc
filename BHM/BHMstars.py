@@ -834,13 +834,16 @@ def rotationalAcceleration(Omega,t,params):
     star=params['star']
     starf=params['starf']
     binary=params['binary']
+    taudisk=params['taudisk']
+    Kw=params['Kw']
+    wsat=params['wsat']
 
     t=t/GYR
     if t>star.taums:t=star.taums
     M=star.M
     R=star.Rfunc(t)
 
-    if t<star.taudisk:
+    if t<taudisk:
         dOdt_cont=0.0
         dOdt_wind=0.0
     else:
@@ -848,17 +851,19 @@ def rotationalAcceleration(Omega,t,params):
         #========================================
         #CONTRACTION ACCELERATION
         #========================================
-        dOdt_cont=-Omega*star.dIdtfunc(t)/I/GYR
+        if t>12:dOdt_cont=0.0
+        else:
+            dOdt_cont=-Omega*star.dIdtfunc(t)/I/GYR
         #print star.Ifunc(t)*MSUN*RSUN**2,star.dIdtfunc(t)*MSUN*RSUN**2/GYR,Omega,dOdt_cont
 
         #========================================
         #WIND BREAKING
         #========================================
         facw=R**0.5/M**0.5
-        if Omega<=star.wsat:
-            dJdtw=-star.Kw*Omega**3*facw
+        if Omega<=(wsat*OMEGASUN):
+            dJdtw=-Kw*Omega**3*facw
         else:
-            dJdtw=-star.Kw*Omega*star.wsat**2*facw
+            dJdtw=-Kw*Omega*(wsat*OMEGASUN)**2*facw
 
         dOdt_wind=dJdtw/(I*MSUN*RSUN**2)
 

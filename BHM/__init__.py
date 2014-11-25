@@ -474,6 +474,13 @@ def initializeEPIP():
     global OBJECTS_ALL
     for obj in OBJECTS_ALL:upTree(obj)
     
+def exp2pow(value):
+    sgn=np.sign(value)
+    value=np.abs(value)
+    exponent=np.floor(np.log10(value))
+    mantissa=value/10**exponent
+    string="%.2f$\times$10$^$%d"%(sgn*mantissa,exponent)
+    return string
 
 #GET WORKING DIRECTORY
 PWD=System("pwd",out=True)

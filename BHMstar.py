@@ -159,7 +159,7 @@ rotpars=dict(\
      starf=None,binary=None,
      taudisk=star.taudisk,
      Kw=star.Kw,
-     wsat=star.wsat*OMEGASUN
+     wsat=star.wsat
      )
 star.rotevol=odeint(rotationalAcceleration,wini,tsmoi*GYR,args=(rotpars,))
 star.rotevol=toStack(tsmoi)|toStack(star.rotevol)
@@ -515,20 +515,46 @@ loadConf("%s"+"star.data")
 fig=plt.figure(figsize=(8,6))
 ax=fig.add_axes([0.1,0.1,0.8,0.8])
 
-ts=star.protevol[:,0]
-Psemi=star.protevol[:,1]
-Panal=star.protevol[:,2]
-ax.plot(ts,Psemi,label="Fit")
-ax.plot(ts,Panal,label="Model")
-ax.axvline(star.taums,color='k',linestyle='--',label='Turn over')
-ax.axvline(star.tau,color='k',label='Stellar Age')
+ts=star.rotevol[:,0]
+w=star.rotevol[:,1]
+
+ax.plot(ts,w/OMEGASUN)
+ax.plot(ts,(ts/TAGE)**(-0.5),label='Skumanich Relationship')
+ax.plot([],[],'r--',label='Saturation')
+
+ax.set_xscale("log")
+ax.set_yscale("log")
 
 ax.set_title(star.title,position=(0.5,1.02))
-ax.set_ylabel("Period (days)")
-ax.set_xlabel(r"$\\tau$ (Gyr)")
 
-ax.set_xlim((0,min(12,star.taumax)))
+bbox=dict(fc='w',ec='none')
+ax.text(0.5,0.08,r"$\\tau_{\\rm disk}$=%%.3f Gyr, $\Omega_{\\rm sat}$ = %%.2f $\Omega_\odot$, $K_{\\rm W}$ = %%.2e"%%(star.taudisk,star.wsat,star.Kw),
+transform=ax.transAxes,horizontalalignment='center',bbox=bbox)
+
+ax.set_xlim((TAU_MIN,star.taums))
+
+#PERIODS
+tmin,tmax=ax.get_xlim()
+wmin,wmax=ax.get_ylim()
+Pmin=2*PI/(wmax*OMEGASUN)/DAY
+Pmax=2*PI/(wmin*OMEGASUN)/DAY
+
+for P in np.logspace(np.log10(Pmin),np.log10(Pmax),10):
+    P=np.ceil(P)
+    if P>Pmax:break
+    w=2*PI/(P*DAY)/OMEGASUN
+    ax.axhline(w,xmin=0.98,xmax=1.00,color='k')
+    ax.text(tmax,w,"%%d"%%P,transform=offSet(5,0),verticalalignment='center',horizontalalignment='left',fontsize=10)
+
+ax.text(1.07,0.5,r"$P$ (days)",rotation=90,verticalalignment='center',horizontalalignment='center',transform=ax.transAxes)
+ax.axhline(star.wsat,linestyle='--',linewidth=2,color='r')
+
+ax.text(4.56,1.0,r"$\odot$",horizontalalignment='center',verticalalignment='center',fontsize=20)
+ax.set_ylabel("$\Omega/\Omega_\odot$")
+ax.set_xlabel(r"$\\tau$ (Gyr)")
+ax.grid(which='both')
 ax.legend(loc='best')
+
 """%(star_dir,star_dir))
 
 ###################################################

@@ -212,6 +212,8 @@ $star_form1=<<<F
 	    <input type="hidden" name="module" value="star">
 	    <input type="hidden" name="object" value="star1">
 	    <table border=0px>
+	      <!-- ====================== BASIC =========================== -->
+	      <tr><td colspan=2 class="section">Basic Properties</td></tr>
 	      <tr>
 		<!-- ---------------------------------------- -->
 		<td class="name">Mass:</td>
@@ -226,6 +228,7 @@ $star_form1=<<<F
 		</td>
 	      </tr>
 	      <!-- ---------------------------------------- -->
+	      <tr>
 		<td class="name">Metallicity, Z:</td>
 		<td class="field">
 		  <input type="text" class="star_Z sensitive" name="star1_Z" value="$star1_Z" 
@@ -238,6 +241,7 @@ $star_form1=<<<F
 		</td>
 	      </tr>
 	      <!-- ---------------------------------------- -->
+	      <tr>
 		<td class="name">Metallicity, [Fe/H]:</td>
 		<td class="field">
 		  <input type="text" class="star_FeH sensitive" name="star1_FeH" value="$star1_FeH" 
@@ -263,6 +267,7 @@ $star_form1=<<<F
 		</td>
 	      </tr>
 	      <!-- ---------------------------------------- -->
+	      <tr>
 		<td class="name">Main Sequence:</td>
 		<td class="field">
 		  <input class="sensistive" type="text" id="test" name="star1_taums" value="$star1_taums" onchange="idSystem();">
@@ -275,6 +280,63 @@ $star_form1=<<<F
 		  the tool calculate it by itself.
 		</td>
 	      </tr>
+
+	      <!-- ====================== ROTATIONAL EVOLUTION =========================== -->
+	      <tr><td colspan=2 class="section">Rotational Evolution</td></tr>
+	      <!-- ---------------------------------------- -->
+	      <tr><td class="name">PMS period:</td><td class="field"><input type="text" name="star1_Pini" value="$star1_Pini"> days</td></tr>
+	      <tr><td class="help" colspan=2>Help.</td></tr>
+	      <!-- ---------------------------------------- -->
+	      <tr><td class="name">Saturation period:</td><td class="field"><input type="text" name="star1_wsat" value="$star1_wsat"> &Omega;<sub>Sun</sub></td></tr>
+	      <tr><td class="help" colspan=2>Help.</td></tr>
+	      <!-- ---------------------------------------- -->
+	      <tr><td class="name">Wind torque scaling:</td><td class="field"><input type="text" name="star1_Kw" value="$star1_Kw"></td></tr>
+	      <tr><td class="help" colspan=2>Help.</td></tr>
+	      <!-- ---------------------------------------- -->
+	      <tr><td class="name">Disk age:</td><td class="field"><input type="text" name="star1_taudisk" value="$star1_taudisk"> Gyr</td></tr>
+	      <tr><td class="help" colspan=2>Help.</td></tr>
+	      <!-- ---------------------------------------- -->
+	      <tr><td class="name">Dynamo exponent, a:</td><td class="field"><input type="text" name="star1_a" value="$star1_a"></td></tr>
+	      <tr><td class="help" colspan=2>Help.</td></tr>
+	      <!-- ---------------------------------------- -->
+	      <tr><td class="name">Field geometry exponent, n:</td><td class="field"><input type="text" name="star1_n" value="$star1_n"></td></tr>
+	      <tr><td class="help" colspan=2>Help.</td></tr>
+
+	      <!-- ====================== OBSERVED =========================== -->
+	      <tr><td colspan=2 class="section">Observed Properties</td></tr>
+	      <!-- ---------------------------------------- -->
+	      <tr><td class="name">Period (velocity):</td><td class="field"><input type="text" name="star1_Protv" value="$star1_Protv"> days</td></tr>
+	      <tr><td class="help" colspan=2>Help.</td></tr>
+	      <!-- ---------------------------------------- -->
+	      <tr><td class="name">Period (photometry):</td><td class="field"><input type="text" name="star1_Prot" value="$star1_Prot"> days</td></tr>
+	      <tr><td class="help" colspan=2>Help.</td></tr>
+	      <!-- ---------------------------------------- -->
+	      <tr><td class="name">Period (photometry,error):</td><td class="field"><input type="text" name="star1_Proterr" value="$star1_Proterr"> days</td></tr>
+	      <tr><td class="help" colspan=2>Help.</td></tr>
+	      <!-- ---------------------------------------- -->
+	      <tr><td class="name">Radius:</td><td class="field"><input type="text" name="star1_R" value="$star1_R"> R<sub>Sun</sub></td></tr>
+	      <tr><td class="help" colspan=2>Help.</td></tr>
+	      <!-- ---------------------------------------- -->
+	      <tr><td class="name">Radius (error):</td><td class="field"><input type="text" name="star1_Rerr" value="$star1_Rerr"> R<sub>Sun</sub></td></tr>
+	      <tr><td class="help" colspan=2>Help.</td></tr>
+	      <!-- ---------------------------------------- -->
+	      <tr><td class="name">Effective Temperature:</td><td class="field"><input type="text" name="star1_T" value="$star1_T"> K</sub></td></tr>
+	      <tr><td class="help" colspan=2>Help.</td></tr>
+	      <!-- ---------------------------------------- -->
+	      <tr><td class="name">Effective Temperature (error):</td><td class="field"><input type="text" name="star1_Terr" value="$star1_Terr"> K</td></tr>
+	      <tr><td class="help" colspan=2>Help.</td></tr>
+	      <!-- ---------------------------------------- -->
+	      <tr><td class="name">Surface Gravity:</td><td class="field"><input type="text" name="star1_logg" value="$star1_logg"> dex (cm s<sup>-2</sup>)</td></tr>
+	      <tr><td class="help" colspan=2>Help.</td></tr>
+	      <!-- ---------------------------------------- -->
+	      <tr><td class="name">Surface Gravity (error):</td><td class="field"><input type="text" name="star1_loggerr" value="$star1_loggerr"> dex (cm s<sup>-2</sup>)</td></tr>
+	      <tr><td class="help" colspan=2>Help.</td></tr>
+
+	      <!-- ====================== HIDDEN =========================== -->
+	      <input type="hidden" name="star1_str_Stype" value="$star1_str_Stype">
+	      <input type="hidden" name="star1_vsini" value="$star1_vsini">
+	      <input type="hidden" name="star1_vsinierr" value="$star1_vsinierr">
+
 	      <!-- ---------------------------------------- -->
 	      <tr>
 		<td class="button" colspan=2>
@@ -305,7 +367,7 @@ F;
 
 $star_form2=<<<F
   <!-- //////////////////////////////////////////////////////////// -->
-  <!-- STAR 2 -->
+  <!-- STAR 1 -->
   <!-- //////////////////////////////////////////////////////////// -->
   <div class="tabbertab" id="star2" title="Star 2">
     <form id="star2_form" action="BHMrun.php">
@@ -316,6 +378,8 @@ $star_form2=<<<F
 	    <input type="hidden" name="module" value="star">
 	    <input type="hidden" name="object" value="star2">
 	    <table border=0px>
+	      <!-- ====================== BASIC =========================== -->
+	      <tr><td colspan=2 class="section">Basic Properties</td></tr>
 	      <tr>
 		<!-- ---------------------------------------- -->
 		<td class="name">Mass:</td>
@@ -330,6 +394,7 @@ $star_form2=<<<F
 		</td>
 	      </tr>
 	      <!-- ---------------------------------------- -->
+	      <tr>
 		<td class="name">Metallicity, Z:</td>
 		<td class="field">
 		  <input type="text" class="star_Z sensitive" name="star2_Z" value="$star2_Z" 
@@ -342,6 +407,7 @@ $star_form2=<<<F
 		</td>
 	      </tr>
 	      <!-- ---------------------------------------- -->
+	      <tr>
 		<td class="name">Metallicity, [Fe/H]:</td>
 		<td class="field">
 		  <input type="text" class="star_FeH sensitive" name="star2_FeH" value="$star2_FeH" 
@@ -367,6 +433,7 @@ $star_form2=<<<F
 		</td>
 	      </tr>
 	      <!-- ---------------------------------------- -->
+	      <tr>
 		<td class="name">Main Sequence:</td>
 		<td class="field">
 		  <input class="sensistive" type="text" id="test" name="star2_taums" value="$star2_taums" onchange="idSystem();">
@@ -379,6 +446,63 @@ $star_form2=<<<F
 		  the tool calculate it by itself.
 		</td>
 	      </tr>
+
+	      <!-- ====================== ROTATIONAL EVOLUTION =========================== -->
+	      <tr><td colspan=2 class="section">Rotational Evolution</td></tr>
+	      <!-- ---------------------------------------- -->
+	      <tr><td class="name">PMS period:</td><td class="field"><input type="text" name="star2_Pini" value="$star2_Pini"> days</td></tr>
+	      <tr><td class="help" colspan=2>Help.</td></tr>
+	      <!-- ---------------------------------------- -->
+	      <tr><td class="name">Saturation period:</td><td class="field"><input type="text" name="star2_wsat" value="$star2_wsat"> &Omega;<sub>Sun</sub></td></tr>
+	      <tr><td class="help" colspan=2>Help.</td></tr>
+	      <!-- ---------------------------------------- -->
+	      <tr><td class="name">Wind torque scaling:</td><td class="field"><input type="text" name="star2_Kw" value="$star2_Kw"></td></tr>
+	      <tr><td class="help" colspan=2>Help.</td></tr>
+	      <!-- ---------------------------------------- -->
+	      <tr><td class="name">Disk age:</td><td class="field"><input type="text" name="star2_taudisk" value="$star2_taudisk"> Gyr</td></tr>
+	      <tr><td class="help" colspan=2>Help.</td></tr>
+	      <!-- ---------------------------------------- -->
+	      <tr><td class="name">Dynamo exponent, a:</td><td class="field"><input type="text" name="star2_a" value="$star2_a"></td></tr>
+	      <tr><td class="help" colspan=2>Help.</td></tr>
+	      <!-- ---------------------------------------- -->
+	      <tr><td class="name">Field geometry exponent, n:</td><td class="field"><input type="text" name="star2_n" value="$star2_n"></td></tr>
+	      <tr><td class="help" colspan=2>Help.</td></tr>
+
+	      <!-- ====================== OBSERVED =========================== -->
+	      <tr><td colspan=2 class="section">Observed Properties</td></tr>
+	      <!-- ---------------------------------------- -->
+	      <tr><td class="name">Period (velocity):</td><td class="field"><input type="text" name="star2_Protv" value="$star2_Protv"> days</td></tr>
+	      <tr><td class="help" colspan=2>Help.</td></tr>
+	      <!-- ---------------------------------------- -->
+	      <tr><td class="name">Period (photometry):</td><td class="field"><input type="text" name="star2_Prot" value="$star2_Prot"> days</td></tr>
+	      <tr><td class="help" colspan=2>Help.</td></tr>
+	      <!-- ---------------------------------------- -->
+	      <tr><td class="name">Period (photometry,error):</td><td class="field"><input type="text" name="star2_Proterr" value="$star2_Proterr"> days</td></tr>
+	      <tr><td class="help" colspan=2>Help.</td></tr>
+	      <!-- ---------------------------------------- -->
+	      <tr><td class="name">Radius:</td><td class="field"><input type="text" name="star2_R" value="$star2_R"> R<sub>Sun</sub></td></tr>
+	      <tr><td class="help" colspan=2>Help.</td></tr>
+	      <!-- ---------------------------------------- -->
+	      <tr><td class="name">Radius (error):</td><td class="field"><input type="text" name="star2_Rerr" value="$star2_Rerr"> R<sub>Sun</sub></td></tr>
+	      <tr><td class="help" colspan=2>Help.</td></tr>
+	      <!-- ---------------------------------------- -->
+	      <tr><td class="name">Effective Temperature:</td><td class="field"><input type="text" name="star2_T" value="$star2_T"> K</sub></td></tr>
+	      <tr><td class="help" colspan=2>Help.</td></tr>
+	      <!-- ---------------------------------------- -->
+	      <tr><td class="name">Effective Temperature (error):</td><td class="field"><input type="text" name="star2_Terr" value="$star2_Terr"> K</td></tr>
+	      <tr><td class="help" colspan=2>Help.</td></tr>
+	      <!-- ---------------------------------------- -->
+	      <tr><td class="name">Surface Gravity:</td><td class="field"><input type="text" name="star2_logg" value="$star2_logg"> dex (cm s<sup>-2</sup>)</td></tr>
+	      <tr><td class="help" colspan=2>Help.</td></tr>
+	      <!-- ---------------------------------------- -->
+	      <tr><td class="name">Surface Gravity (error):</td><td class="field"><input type="text" name="star2_loggerr" value="$star2_loggerr"> dex (cm s<sup>-2</sup>)</td></tr>
+	      <tr><td class="help" colspan=2>Help.</td></tr>
+
+	      <!-- ====================== HIDDEN =========================== -->
+	      <input type="hidden" name="star2_str_Stype" value="$star2_str_Stype">
+	      <input type="hidden" name="star2_vsini" value="$star2_vsini">
+	      <input type="hidden" name="star2_vsinierr" value="$star2_vsinierr">
+
 	      <!-- ---------------------------------------- -->
 	      <tr>
 		<td class="button" colspan=2>

@@ -309,9 +309,9 @@ for system in sortCatalogue(systems,sortfield,reverse=sortorder):
         row+="<td class='field_cat' style='width:1px;white-space:nowrap'>%s</td>"%(valueADS)
         row+="</tr>\n"
         exec("row=row.replace(\"%s\",\"<a href=\\\"%s?%s\\\" target=_parent>%s</a>\")"%(system["BHMCatS"],
-                                                                                WEB_DIR,
-                                                                                qstring,
-                                                                                system["BHMCatS"]))
+                                                                                        WEB_DIR,
+                                                                                        qstring,
+                                                                                        system["BHMCatS"]))
         exec("cond=%s"%catfilter)
         if cond:
             table+=row

@@ -61,7 +61,7 @@ echo<<<C
 <input type="hidden" name="dir" value="$dir">
 <input type="hidden" name="plot" value="$plot">
 <div class="wrapper">
-  <div class="formarea">
+  <div class="formarea" style="width:60%">
     <h3>Script</h3>
     <b>Name:</b>$plot<br/>
     <!--<b>Command:</b>$cmd<br/>-->
@@ -78,7 +78,7 @@ $script
       <button>Replot</button>
     </div>
   </div>
-  <div class="results">
+  <div class="results" style="width:40%">
     <img src="$image" width="100%">
   </div>
 </div>
