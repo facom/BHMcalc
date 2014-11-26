@@ -13,6 +13,7 @@
 ###################################################
 from BHM import *
 from BHM.BHMnum import *
+from BHM.BHMboreas import pyBoreas
 
 ###################################################
 #PACKAGES
@@ -52,11 +53,29 @@ ZSVEC_coarse=np.array([0.0001,0.0010,0.0050,0.0100,0.0152,0.0200,0.0300,0.0400,0
 ZSVEC_siblings=np.array([0.0100,0.0152,0.0200])
 ZSVEC_solar=np.array([0.0152])
 
+ROTAGE_STARS={r"Sun":dict(FeH=0.0,M=1.0,tau=4.56,Prot=25.4,up=5),
+              r"Proxima":dict(FeH=+0.21,M=0.123,tau=6.0,Prot=83.5,up=10),
+              r"Barnard":dict(FeH=-0.39,M=0.144,tau=10.0,Prot=130.4,up=-10),
+              r"EK Dra":dict(FeH=0.00,M=1.06,tau=0.1,Prot=2.68,up=10),
+              r"$\pi^1$ UMi":dict(FeH=0.00,M=1.03,tau=0.3,Prot=4.90,up=10),
+              r"$\kappa^1$ Cet":dict(FeH=0.00,M=1.02,tau=0.65,Prot=9.21,up=10),
+              r"$\beta$ Com":dict(FeH=0.00,M=1.10,tau=1.6,Prot=12.00,up=10),
+              r"$\beta$ Hyi":dict(FeH=0.00,M=1.10,tau=6.7,Prot=28.00,up=10)
+              }
+
 ###################################################
 #ROUTINES
 ###################################################
+def chooseZsvecSingle(Z):
+    ZF=ZSVEC_full
+    Z1=ZF[ZF<=Z][-1]
+    Z2=ZF[ZF>Z][0]
+    Zs=np.array([Z1,Z2])
+    return Zs
+
 def chooseZsvec(Z,zsdef=ZSVEC_DEF):
-    ZSs=["ZSVEC_siblings","ZSVEC_coarse","ZSVEC_full"]
+    #ZSs=["ZSVEC_siblings","ZSVEC_coarse","ZSVEC_full"]
+    ZSs=["ZSVEC_siblings","ZSVEC_coarse"]
     qoutdef=False;qoutoth=False
     #if Z==ZSVEC_solar[0]:zsvec="ZSVEC_solar"
     if False:pass
@@ -877,8 +896,11 @@ def rotationalAcceleration(Omega,t,params):
                                     star.Lfunc(t),star.MoI,
                                     starf.M,
                                     binary.abin,binary.ebin,
-                                    binary.nbin/DAY,star.W,
-                                    verbose=verbose)
+                                    binary.nbin/DAY,Omega,
+                                    verbose=False)
+        #print t,M,R,star.MoI,binary.abin,binary.ebin
+        #print dOdt_cont,dOdt_wind,dOdt_tide
+        #raw_input()
 
     #========================================
     #TOTAL ACCELERATION
@@ -983,3 +1005,66 @@ def mainSequenceDuration(Ms):
     if logM<Tms[-1,0] or logM>Tms[0,0]:logTms=13*Ms**(-2.5)
     else:logTms=np.interp(logM,Tms[::-1,0],Tms[::-1,1])
     return logTms
+
+def convectiveTurnoverTime(Teff):
+    """
+    Fit of Convective Turnover Time to Teff (Gunn et al.,1998)
+    Taken from Cranmer & Saar (2011)
+    """
+    tauc = 314.241*np.exp(-Teff/1952.5)*np.exp(-(Teff/6250.)**18.)+0.002
+    return tauc
+
+TAUCSUN=convectiveTurnoverTime(5770.2)
+WSATSUN=30.0
+
+def starRX(Ro,regime='middle'):
+    """
+    Lbol: Bolometric Luminosity
+    Ro: Rossby number
+    From Wright et al. (2013)
+    """
+    if regime=='middle':
+        Rosat=0.13
+        RXsat=10**(-3.13)
+    elif regime=='high':
+        Rosat=0.13+2*0.02
+        RXsat=10**(-3.13+2*0.08)
+    else:
+        Rosat=0.13-2*0.02
+        RXsat=10**(-3.13-2*0.08)
+        
+    if Ro<Rosat:
+        RX=RXsat
+    else:
+        RX=RXsat*(Ro/Rosat)**(-2.70)
+    return RX
+
+def starLXEUV(LX):
+    """
+    LEUV=10**(4.8+0.86*np.log10(LX))
+    LXEUV=LX+LEUV
+    """
+    LXEUV=LX
+    return LXEUV
+        
+if __name__=="__main__":
+    from matplotlib import pyplot as plt
+
+
+    print RXSUN
+    print RXSUN*LSUN*1E7/(4*PI*(AU*1E2)**2)
+
+    Ros=np.logspace(np.log10(1E-3),np.log10(1E1),50)
+    RXs_mid=np.array([starRX(Ro) for Ro in Ros])
+    RXs_hig=np.array([starRX(Ro,regime='high') for Ro in Ros])
+    RXs_low=np.array([starRX(Ro,regime='low') for Ro in Ros])
+    fig=plt.figure()
+    plt.plot(Ros,RXs_mid)
+    plt.plot(Ros,RXs_low)
+    plt.plot(Ros,RXs_hig)
+    plt.plot([2.0],[RXSUN],'o',color='y',markersize=10)
+    plt.xscale("log")
+    plt.yscale("log")
+    plt.savefig("tests/RosRX.png")
+
+    

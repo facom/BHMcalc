@@ -30,20 +30,29 @@
 """
 from numpy import *
 from scipy.interpolate import interp1d
+from matplotlib import pyplot as plt
 
 #################################################################################
 #PHOTOSPHERIC MASS DENSITY INTERPOLANT
 #################################################################################
-C0fit = interp1d(linspace(2500.0,6000.0,18),
+NTEFFS=19
+C0fit = interp1d(linspace(2500.0,7000.0,NTEFFS),
                  [-9.0329342,-8.8057005,-8.6187019,-8.5343736,-8.5792239,
                    -8.6915425,-8.8033701,-8.8791533,-8.9288180,-8.9604793,
                    -8.9954977,-9.0593624,-9.1566287,-9.2743908,-9.4120161,
-                   -9.5781877,-9.7290674,-9.8972636])
-C1fit = interp1d(linspace(2500.0,6000.0,18),
+                   -9.5781877,-9.7290674,-9.8972636,-10.1])
+C1fit = interp1d(linspace(2500.0,7000.0,NTEFFS),
                  [0.78081830,0.68284416,0.60471646,0.56629124,0.57113263,
                   0.59584083,0.61352883,0.61218030,0.59646729,0.57949132,
                   0.56963417,0.57219919,0.58595944,0.60671743,0.63103575,
-                  0.65574884,0.67753323,0.69808401])
+                  0.65574884,0.67753323,0.69808401,0.72])
+
+def rhoPhoto(Teff,logg):
+    global C0fit,C1fit
+    C0now = C0fit(Teff)
+    C1now = C1fit(Teff)
+    rhophoto = 10.**(C0now + C1now*logg)
+    return rhophoto
                  
 def pyBoreas(Mstar,Rstar,Lstar,Protday,FeH):
     """
@@ -125,6 +134,7 @@ def pyBoreas(Mstar,Rstar,Lstar,Protday,FeH):
     #################################################################################
     #COMPUTE PHOTOSPHERIC MASS DENSITY
     #################################################################################
+    #print Teff,logg
     C0now = C0fit(Teff)
     C1now = C1fit(Teff)
     rhophoto = 10.**(C0now + C1now*logg)
@@ -282,8 +292,36 @@ def pyBoreas(Mstar,Rstar,Lstar,Protday,FeH):
     #################################################################################
     Mdot = Mdot_cold + (Mdot_hot*exp(-4.*MATR**2))
 
-    return Rossby,fstar,Mdot,Mdot_hot,Mdot_cold,MATR
+    return tauc,fstar,Bequi,Bphoto,BTR,Rossby,Mdot,Mdot_hot,Mdot_cold,MATR
 
 if __name__=="__main__":
     Rossby,fstar,Mdot,Mdot_hot,Mdot_cold,MATR=pyBoreas(1.0,1.0,1.0,25.4,0.0)
     print Rossby,fstar,Mdot,Mdot_hot,Mdot_cold,MATR
+    
+    Teffs=linspace(2500,6000,60)
+    Teffs2=linspace(6000,7000,10)
+
+    fig=plt.figure()
+    plt.plot(Teffs,C0fit(Teffs),'b+-')
+    plt.plot(Teffs2,C0fit(Teffs2),'r+-')
+    plt.xlim((2500,8000))
+    plt.ylim((-11.0,-8.4))
+    plt.grid()
+    fig.savefig("tests/C0fit.png")
+
+    fig=plt.figure()
+    plt.plot(Teffs,C1fit(Teffs),'b+-')
+    plt.plot(Teffs2,C1fit(Teffs2),'r+-')
+    plt.xlim((2500,8000))
+    plt.grid()
+    fig.savefig("tests/C1fit.png")
+
+    fig=plt.figure()
+    logg=4.35
+    plt.plot(Teffs,rhoPhoto(Teffs,logg),'b+-')
+    plt.plot(Teffs2,rhoPhoto(Teffs2,logg),'r+-')
+    plt.xlim((2500,8000))
+    plt.yscale("log")
+    plt.grid()
+    fig.savefig("tests/C-rhophoto.png")
+

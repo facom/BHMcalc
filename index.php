@@ -199,6 +199,7 @@ C;
 //&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
 //STARS
 //&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+$system=preg_replace("/'/","",$binary_str_SysID);
 $star_form1=<<<F
   <!-- //////////////////////////////////////////////////////////// -->
   <!-- STAR 1 -->
@@ -214,8 +215,16 @@ $star_form1=<<<F
 	    <table border=0px>
 	      <!-- ====================== BASIC =========================== -->
 	      <tr><td colspan=2 class="section">Basic Properties</td></tr>
+	      <!-- ---------------------------------------- -->
 	      <tr>
-		<!-- ---------------------------------------- -->
+		<td class="name">Star ID:</td>
+		<td class="field">
+		  <input type="text" name="star1_str_StarID" value="$star1_str_StarID" >
+		</td>
+	      </tr>
+	      <tr><td class="help" colspan=2></td></tr>
+	      <!-- ---------------------------------------- -->
+	      <tr>
 		<td class="name">Mass:</td>
 		<td class="field">
 		  <input class="sensitive" type="text" name="star1_M" value="$star1_M" onchange="changePlanetMorb();idSystem();">
@@ -380,8 +389,16 @@ $star_form2=<<<F
 	    <table border=0px>
 	      <!-- ====================== BASIC =========================== -->
 	      <tr><td colspan=2 class="section">Basic Properties</td></tr>
+	      <!-- ---------------------------------------- -->
 	      <tr>
-		<!-- ---------------------------------------- -->
+		<td class="name">Star ID:</td>
+		<td class="field">
+		  <input type="text" name="star2_str_StarID" value="$star2_str_StarID" >
+		</td>
+	      </tr>
+	      <tr><td class="help" colspan=2></td></tr>
+	      <!-- ---------------------------------------- -->
+	      <tr>
 		<td class="name">Mass:</td>
 		<td class="field">
 		  <input class="sensitive" type="text" name="star2_M" value="$star2_M" onchange="changePlanetMorb();idSystem();">
@@ -544,6 +561,8 @@ $planet_form=<<<F
 	    <input type="hidden" name="module" value="planet">
 	    <input type="hidden" name="object" value="planet">
 	    <table border=0px>
+	      <!-- ====================== OBSERVED =========================== -->
+	      <tr><td colspan=2 class="section">Basic Properties</td></tr>
 	      <tr>
 		<!-- ---------------------------------------- -->
 		<td class="name">Mass:</td>
@@ -670,7 +689,20 @@ $planet_form=<<<F
 		  $force_update
 		</td>
 	      </tr>
+	      <!-- ====================== OBSERVED =========================== -->
+	      <tr><td colspan=2 class="section">Observed Properties</td></tr>
 	      <!-- ---------------------------------------- -->
+	      <tr><td class="name">Radius:</td><td class="field"><input type="text" name="planet_R" value="$planet_R"> R<sub>Earth</sub></td></tr>
+	      <tr><td class="help" colspan=2>Help.</td></tr>
+
+	      <!-- ====================== HIDDEN =========================== -->
+	      <input type="hidden" name="planet_Porberr" value="$planet_Porberr">
+	      <input type="hidden" name="planet_aorberr" value="$planet_aorberr">
+	      <input type="hidden" name="planet_eorberr" value="$planet_eorberr">
+	      <input type="hidden" name="planet_worberr" value="$planet_worberr">
+	      <input type="hidden" name="planet_Merr" value="$planet_Merr">
+	      <input type="hidden" name="planet_Rerr" value="$planet_Rerr">
+
 	    </table>
 	</div>
 	<div id="planet_results_panel" class="results">
@@ -707,7 +739,7 @@ $binary_form=<<<F
 		<!-- ---------------------------------------- -->
 		<td class="name">Binary period:</td>
 		<td class="field">
-		  <input type="text" name="binary_Pbin" value="$binary_Pbin">
+		  <input class="sensitive" type="text" name="binary_Pbin" value="$binary_Pbin" onchange="idSystem();">
 		  days
 		</td>
 	      </tr>
@@ -719,7 +751,7 @@ $binary_form=<<<F
 	      <!-- ---------------------------------------- -->
 		<td class="name">Binary semimajor axis:</td>
 		<td class="field">
-		  <input type="text" name="binary_abin" value="$binary_abin">
+		  <input  class="sensitive" type="text" name="binary_abin" value="$binary_abin" onchange="idSystem();">
 		</td>
 	      </tr>
 	      <tr>
@@ -728,15 +760,36 @@ $binary_form=<<<F
 		</td>
 	      </tr>
 	      <!-- ---------------------------------------- -->
+	      <tr>
 		<td class="name">Binary Eccentricity:</td>
 		<td class="field">
-		  <input type="text" name="binary_ebin" value="$binary_ebin">
+		  <input class="sensitive" type="text" name="binary_ebin" value="$binary_ebin" onchange="idSystem();">
 		</td>
 	      </tr>
 	      <tr>
 		<td class="help" colspan=2>
 		  0&lt;e&gt;1
 		</td>
+	      </tr>
+	      <!-- ---------------------------------------- -->
+	      <tr>
+		<td class="name">Binary Argument of Periastron:</td>
+		<td class="field">
+		  <input type="text" name="binary_wbin" value="$binary_wbin"> deg
+		</td>
+	      </tr>
+	      <tr>
+		<td class="help" colspan=2></td>
+	      </tr>
+	      <!-- ---------------------------------------- -->
+	      <tr>
+		<td class="name">Binary Inclination:</td>
+		<td class="field">
+		  <input type="text" name="binary_ibin" value="$binary_ibin"> deg
+		</td>
+	      </tr>
+	      <tr>
+		<td class="help" colspan=2></td>
 	      </tr>
 	      <!-- ---------------------------------------- -->
 	      <tr>
@@ -747,6 +800,42 @@ $binary_form=<<<F
 		</td>
 	      </tr>
 	      <!-- ---------------------------------------- -->
+	      <!-- ====================== OBSERVED =========================== -->
+	      <tr><td colspan=2 class="section">Observed Properties</td></tr>
+	      <!-- ---------------------------------------- -->
+	      <tr><td class="name">Visual Magnitude:</td><td class="field"><input type="text" name="binary_V" value="$binary_V"> mag</td></tr>
+	      <tr><td class="help" colspan=2>Help.</td></tr>
+	      <!-- ---------------------------------------- -->
+	      <tr><td class="name">Color Index, B-V:</td><td class="field"><input type="text" name="binary_BV" value="$binary_BV"> mag</td></tr>
+	      <tr><td class="help" colspan=2>Help.</td></tr>
+	      <!-- ---------------------------------------- -->
+	      <tr><td class="name">Distance (photometric):</td><td class="field"><input type="text" name="binary_dmod" value="$binary_dmod"> pc</td></tr>
+	      <tr><td class="help" colspan=2>Help.</td></tr>
+	      <!-- ---------------------------------------- -->
+	      <tr><td class="name">Distance (parallax):</td><td class="field"><input type="text" name="binary_d" value="$binary_d"> pc</td></tr>
+	      <tr><td class="help" colspan=2>Help.</td></tr>
+	      <!-- ---------------------------------------- -->
+	      <tr><td class="name">Distance (parallax, error):</td><td class="field"><input type="text" name="binary_derr" value="$binary_derr"> pc</td></tr>
+	      <tr><td class="help" colspan=2>Help.</td></tr>
+	      <!-- ---------------------------------------- -->
+	      <tr><td class="name">Minimum age:</td><td class="field"><input type="text" name="binary_taumin" value="$binary_taumin"> Gyr</td></tr>
+	      <tr><td class="help" colspan=2>Help.</td></tr>
+	      <!-- ---------------------------------------- -->
+	      <tr><td class="name">Maximum age:</td><td class="field"><input type="text" name="binary_taumax" value="$binary_taumax"> Gyr</td></tr>
+	      <tr><td class="help" colspan=2>Help.</td></tr>
+	      <!-- ---------------------------------------- -->
+	      <tr><td class="name">X-Ray Luminosity:</td><td class="field"><input type="text" name="binary_Lx" value="$binary_Lx"> L<sub>Sun</sub></td></tr>
+	      <tr><td class="help" colspan=2>Help.</td></tr>
+
+	      <!-- ====================== HIDDEN =========================== -->
+	      <input type="hidden" name="binary_Zfit" value="$binary_Zfit">
+	      <input type="hidden" name="binary_FeHfit" value="$binary_FeHfit">
+	      <input type="hidden" name="binary_FeHfiterr" value="$binary_FeHfiterr">
+	      <input type="hidden" name="binary_Zobs" value="$binary_Zobs">
+	      <input type="hidden" name="binary_FeHobs" value="$binary_FeHobs">
+	      <input type="hidden" name="binary_q" value="$binary_q">
+	      <!-- ---------------------------------------- -->
+
 	    </table>
 	</div>
 	<div id="binary_results_panel" class="results">

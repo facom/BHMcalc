@@ -296,6 +296,7 @@ for system in sortCatalogue(systems,sortfield,reverse=sortorder):
                 value=system[key]
                 prior=sfieldspri[key]
                 exec("%s=%s('%s')"%(key,tipo,value))
+                #if 'str_' in key:value="'%s'"%value
                 qstring+="%s=%s&"%(key,value)
                 value=adjustValue(key,value,tipo)
                 row+="<td class='field_cat pri%s' style='width:1px;white-space:nowrap'>%s</td>"%(prior,value)

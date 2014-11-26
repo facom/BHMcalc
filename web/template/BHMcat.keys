@@ -4,7 +4,9 @@ Type
 BHMCatS
 SourceCat
 SourceID
-SysID
+binary_str_SysID
+star1_str_StarID
+star2_str_StarID
 RA
 DEC
 binary_Pbin
@@ -54,8 +56,8 @@ star1_loggerr
 star2_logg
 star2_loggerr
 binary_Lx
-star1_Stype
-star2_Stype
+star1_str_Stype
+star2_str_Stype
 PlanetID
 planet_M
 planet_Merr

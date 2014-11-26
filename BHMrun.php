@@ -35,7 +35,7 @@ foreach(array_keys($_GET) as $key){
   $var=$matches[1];
   $val=$$key;
   if(preg_match('/str_/',$key)){
-    preg_match('/([\w\d\s]+)/',$val,$matches);
+    preg_match('/([^\']+)/',$val,$matches);
     $string=$matches[1];
     $val="\"'$string'\"";
   }

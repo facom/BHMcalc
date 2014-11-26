@@ -95,6 +95,7 @@ if 'LOADCONFIG' in module_conf:
                     entry="%s=\"%s\"\n"%(key,value)
             else:
                 entry="%s=%s\n"%(key,value)
+            print "Entry: ",entry
             fm.write(entry)
         fm.write("str_sys=\"'%s'\"\n"%sys_str)
         fm.close()

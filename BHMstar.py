@@ -57,14 +57,13 @@ else:
 ###################################################
 #LOAD ISOCHRONES
 ###################################################
-zsvec=chooseZsvec(star.Z)
-PRINTOUT("Loading isochrone set: %s"%(zsvec))
 try:
-    zsvec=chooseZsvec(star.Z)
-    exec("num=loadIsochroneSet(verbose=False,Zs=%s)"%zsvec)
+     zsvec=chooseZsvecSingle(star.Z)
+     PRINTOUT("Loading isochrones: %s"%str(zsvec))
+     num=loadIsochroneSet(Zs=zsvec,verbose=False)
 except:
-    PRINTERR("Error loading isochrones.")
-    errorCode("FILE_ERROR")
+     PRINTERR("Error loading isochrones.")
+     errorCode("FILE_ERROR")
 
 ###################################################
 #CALCULATE EVOLUTIONARY TRACK
@@ -151,18 +150,72 @@ star.RMoI=toStack(star.RMoI)|Ievo
 ###################################################
 #ROTATION EVOLUTION
 ###################################################
+PRINTOUT("Calculating rotation evolution...")
 evoInterpFunctions(star)
+tauconv=convectiveTurnoverTime(star.Tfunc(0.2))
 
 wini=2*PI/(star.Pini*DAY)
+wsat_scaled=WSATSUN*TAUCSUN/tauconv
+
 rotpars=dict(\
      star=star,
      starf=None,binary=None,
      taudisk=star.taudisk,
      Kw=star.Kw,
-     wsat=star.wsat
+     wsat=wsat_scaled
      )
 star.rotevol=odeint(rotationalAcceleration,wini,tsmoi*GYR,args=(rotpars,))
 star.rotevol=toStack(tsmoi)|toStack(star.rotevol)
+
+###################################################
+#EVOLUTION OF ACTIVITY
+###################################################
+#CRANMER & SAAR (2011)
+PRINTOUT("Calculating evolution of activity...")
+
+"""
+Columns:
+0:Time
+1:Convective overturn time (Gyr)
+2:filling factor (fstar)
+3:Equipartition magnetic field (G)
+4:Photospheric magnetic field (G)
+5:Transition Region magnetic field (G)
+6:Rossby number
+7:Total mass-loss
+8:Mass-loss due to a hot corona
+9:Mass-loss due to wave pressure in chromosphee
+10:Mach number at transition region
+11:Ratio X-Ray luminosity to Bolometric Luminosity
+12:X-Ray Luminosity
+13:XUV (X+EUV) Luminosity
+"""
+star.activity=stack(13)
+for i in range(0,Nfine):
+     t=tsmoi[i]
+     M=star.M
+     R=star.Rfunc(t)
+     L=star.Lfunc(t)
+     Prot=2*PI/star.rotevol[i,1]/DAY
+     #print M,R,L,Prot
+
+     #SURFICIAL MAGNETIC CONDITIONS
+     tauc,fstar,Bequi,Bphoto,BTR,Rossby,Mdot,Mdot_hot,Mdot_cold,MATR=\
+         pyBoreas(M,R,L,Prot,star.FeH)
+     
+     #X-RAY EMMISION
+     RX=starRX(Rossby)
+     LX=L*RX*LSUN
+     LXUV=starLXEUV(LX)
+     #print LX,LXUV
+
+     star.activity+=[tauc,fstar,Bequi,Bphoto,BTR,Rossby,
+                     Mdot,Mdot_hot,Mdot_cold,MATR,
+                     RX,LX,LXUV]
+     #print star.activity.array[i]
+     #exit(0)
+     
+star.activity=toStack(tsmoi)|star.activity
 
 ###################################################
 #CALCULATE DERIVATIVE INSTANTANEOUS PROPERTIES
@@ -184,37 +237,10 @@ for outcrit in OUT_CRITS:
 #DISSIPATION TIME
 tdiss=dissipationTime(star.M,R,L)
 
-title=r"$M_{\\rm star}/M_{\odot}$=%.2f, $Z$=%.4f, $[Fe/H]$=%.2f, $\\tau$=%.2f Gyr"%(star.M,star.Z,star.FeH,star.tau)
-
-###################################################
-#FIT ROTATIONAL PERIOD FOR THIS MASS
-###################################################
-ts=evodata[:,0]
-ms=ts<0.9*tau_ms
-Rs=evodata[:,3]
-prots=stack(1)
-
-for i in xrange(len(ts)):
-    t=ts[i]
-    Rstar=Rs[i]
-    prot=Prot(t,Ms=star.M,Rs=Rstar)/DAY
-    prots+=[prot]
-prots=prots.array
-
-def chiSquare(x):
-    #WEIGHTED BY PERIOD TO ENHANCE EARLY FIT
-    residuals=(theoProt(ts[ms],x)-prots[ms])/theoProt(ts[ms],x)
-    chisquare=(residuals**2).sum()
-    return chisquare
-
-prot_fit=minimize(chiSquare,[1,1.0,1.0]).x
-
-#==============================
-#ROTATION EVOLUTION
-#==============================
-star.protevol=toStack(prots)
-star.protevol=toStack(theoProt(ts,prot_fit))|star.protevol
-star.protevol=toStack(ts)|toStack(star.protevol)
+PRINTOUT("Star ID: %s"%star.str_StarID)
+star.str_StarID=star.str_StarID.replace("'","")
+PRINTOUT("Star ID: %s"%star.str_StarID)
+title=r"%s:$M_{\\rm star}/M_{\odot}$=%.2f, $Z$=%.4f, $[Fe/H]$=%.2f, $\\tau$=%.2f Gyr"%(star.str_StarID,star.M,star.Z,star.FeH,star.tau)
 
 ###################################################
 #STORE STELLAR DATA
@@ -231,15 +257,16 @@ taums=%.17e #Gyr
 title="%s"
 
 #INSTANTANEOUS PROPERTIES
-g=%.17e #m/s^2
-T=%.17e #L
-R=%.17e #Rsun
-L=%.17e #Lsun
+gins=%.17e #m/s^2
+Tins=%.17e #L
+Rins=%.17e #Rsun
+Lins=%.17e #Lsun
 MoI=%.17e #Gyration radius (I/M R^2)
+tauconv=%.17e #days, Convective turnover time
 tdiss=%.17e #s
 
 #ROTATION FIT
-protfit=%s
+wsat_scaled=%e
 
 #OTHER PROPERTIES
 lins=%s #AU
@@ -249,22 +276,22 @@ louts=%s #AU
 #EVOLUTIONARY TRACK
 evotrack=%s
 
-#ROTATIONAL EVOLUTION
-protevol=%s
-
-#ROTATIONAL EVOLUTION
+#MOMENT OF INERTIA EVOLUTION
 RMoI=%s
 
 #ROTATIONAL EVOLUTION
 rotevol=%s
+
+#MASS-LOSS EVOLUTION
+activity=%s
 """%(tau_max,tau_ms,title,
-     g,Teff,R,L,star.MoI,tdiss,
-     array2str(prot_fit),
+     g,Teff,R,L,star.MoI,tauconv,tdiss,
+     wsat_scaled,
      array2str(lins),lsun,array2str(louts),
      evodata_str,
-     array2str(star.protevol),
      array2str(star.RMoI),
      array2str(star.rotevol),
+     array2str(star.activity)
      ))
 f.close()
 
@@ -301,7 +328,7 @@ ax.set_xscale('log')
 ax.set_yscale('log')
 
 logTickLabels(ax,-2,1,(3,),axis='x',frm='%%.2f')
-ax.set_title(star.title,position=(0.5,1.02))
+ax.set_title(star.title,position=(0.5,1.02),fontsize=12)
 ax.set_xlabel(r"$\\tau$ (Gyr)")
 ax.set_ylabel(r"Property in Solar Units")
 
@@ -343,6 +370,14 @@ ax.text(Teffs[0],Leffs[0],r"$t_{\\rm ini}$=10 Myr",transform=offSet(5,5),bbox=bb
 ax.plot([Teffs[-1]],[Leffs[-1]],"ko",markersize=5)
 ax.text(Teffs[-1],Leffs[-1],r"$t_{\\rm end}=$%.1f Gyr",horizontalalignment='right',transform=offSet(-5,5),bbox=bbox)
 
+if star.R>0 and star.T>0:
+   star.Terr=max(star.Terr,0.0)
+   L=star.R**2*(star.T/5770)**4
+   star.Rerr=max(star.Rerr,0.0)
+   Lerr=L*(2*star.Rerr/star.R+4*star.Terr/star.T)
+   ax.errorbar(star.T,L,xerr=star.Terr,yerr=Lerr,linewidth=2,color='b')
+   ax.plot([star.T],[L],'o',markersize=5,markeredgecolor='none',color='b')
+
 #MARKS
 dt=round(%.17e/20,1)
 logts=np.log10(np.arange(TAU_MIN,%.17e,dt))
@@ -352,12 +387,13 @@ ax.plot(Teffs,Leffs,"ko",label='Steps of %%.1f Gyr'%%dt,markersize=3)
 ax.text(TSUN,1.0,r"$\odot$",fontsize=14)
 
 ax.set_yscale('log')
-ax.set_title(star.title,position=(0.5,1.02))
+ax.set_title(star.title,position=(0.5,1.02),fontsize=12)
 ax.set_xlabel(r"$T_{\\rm eff}$ (K)")
 ax.set_ylabel(r"$L/L_{\\rm Sun}$")
 
 Tmin,Tmax=ax.get_xlim()
-ax.set_xlim((1E4,1E3))
+xmin,xmax=ax.get_xlim()
+ax.set_xlim((xmax,xmin))
 
 ax.legend(loc='lower right')
 """%(star_dir,star_dir,
@@ -401,7 +437,13 @@ Rs=10**logR_func(logts)
 ax.plot(Teffs,Rs,"ko",label='Steps of %%.1f Gyr'%%dt,markersize=3)
 ax.text(1.0,1.0,r"$\odot$",fontsize=14)
 
-ax.set_title(star.title,position=(0.5,1.02))
+if star.R>0 and star.T>0:
+   star.Terr=max(star.Terr,0.0)
+   star.Rerr=max(star.Rerr,0.0)
+   ax.errorbar(star.T,star.R,xerr=star.Terr,yerr=star.Rerr,linewidth=2,color='b')
+   ax.plot([star.T],[star.R],'o',markersize=5,markeredgecolor='none',color='b')
+
+ax.set_title(star.title,position=(0.5,1.02),fontsize=12)
 ax.set_xlabel(r"$T_{\\rm eff}$ (K)")
 ax.set_ylabel(r"$R/R_{\\rm Sun}$")
 
@@ -414,6 +456,59 @@ ax.legend(loc='lower right')
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 #RADIUS EVOLUTION
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+plotFigure(star_dir,"evol-logg",\
+"""
+from BHM.BHMstars import *
+
+fig=plt.figure(figsize=(8,6))
+ax=fig.add_axes([0.1,0.1,0.8,0.8])
+
+star=\
+loadConf("%s"+"star.conf")+\
+loadConf("%s"+"star.data")
+evoInterpFunctions(star)
+ts=star.evotrack[:,0]
+
+bbox=dict(fc='w',ec='none')
+
+#LINES
+Teffs=star.Tfunc(ts)
+loggs=np.log10(star.gfunc(ts)*100)
+ax.plot(Teffs,loggs,"k-")
+ax.plot(Teffs[0:1],loggs[0:1],"ko",markersize=5)
+ax.text(Teffs[0],loggs[0],r"$t_{\\rm ini}$=10 Myr",transform=offSet(5,5),bbox=bbox)
+ax.plot([Teffs[-1]],[loggs[-1]],"ko",markersize=5)
+ax.text(Teffs[-1],loggs[-1],r"$t_{\\rm end}=$%.1f Gyr",horizontalalignment='right',transform=offSet(-5,5),bbox=bbox)
+
+#EVOLUTIONARY TRACK
+dt=round(%.17e/20,1)
+ts=np.arange(TAU_MIN,%.17e,dt)
+Teffs=star.Tfunc(ts)
+loggs=np.log10(star.gfunc(ts)*100)
+ax.plot(Teffs,loggs,"ko",label='Steps of %%.1f Gyr'%%dt,markersize=3)
+ax.text(1.0,1.0,r"$\odot$",fontsize=14)
+
+if star.logg>0 and star.T>0:
+   star.Terr=max(star.Terr,0.0)
+   star.loggerr=max(star.loggerr,0.0)
+   ax.errorbar(star.T,star.logg,xerr=star.Terr,yerr=star.loggerr,linewidth=2,color='b')
+   ax.plot([star.T],[star.logg],'o',markersize=5,markeredgecolor='none',color='b')
+
+ax.set_title(star.title,position=(0.5,1.02),fontsize=12)
+ax.set_xlabel(r"$T_{\\rm eff}$ (K)")
+ax.set_ylabel(r"$\log\ g$")
+
+Tmin,Tmax=ax.get_xlim()
+ax.set_xlim((Tmax,Tmin))
+ymin,ymax=ax.get_ylim()
+ax.set_ylim((ymax,ymin))
+
+ax.legend(loc='lower right')
+"""%(star_dir,star_dir,tau_max,tau_max,tau_max))
+
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+#MOMENT OF INERTIA EVOLUTION
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 plotFigure(star_dir,"evol-RMoI",\
 """
@@ -457,10 +552,13 @@ ax_I.set_xticklabels([])
 dIl=ax_dI.get_yticks()
 ax_dI.set_yticks(dIl[:-1])
 
-ax_I.set_title(star.title,position=(0.5,1.02))
+ax_I.set_title(star.title,position=(0.5,1.02),fontsize=12)
 ax_dI.set_xlabel(r"$\\tau$ (Gyr)")
 ax_I.set_ylabel(r"$\log\,I$ (kg m$^2$)")
 ax_dI.set_ylabel(r"$-|dI/dt|/I$ (s$^{-1}$)")
+
+ax_I.set_xlim((TAU_MIN,star.taums))
+ax_dI.set_xlim((TAU_MIN,star.taums))
 
 ax_I.grid()
 ax_dI.grid()
@@ -476,6 +574,11 @@ from BHM.BHMstars import *
 fig=plt.figure(figsize=(8,8))
 ax=fig.add_axes([0.0,0.0,1.0,1.0])
 
+star=\
+loadConf("%s"+"star.conf")+\
+loadConf("%s"+"star.data")
+
+StarID='%s'
 M=%.3f
 Z=%.4f
 tau=%.3f
@@ -484,23 +587,29 @@ T=%.1f
 
 color=cm.RdYlBu((T-2000)/7000)
 
-star=patches.Circle((0.0,0.0),R,fc=color,ec='none')
+starc=patches.Circle((0.0,0.0),R,fc=color,ec='none')
 sun=patches.Circle((0.0,0.0),1.0,
                    linestyle='dashed',fc='none',zorder=10)
-ax.add_patch(star)
+ax.add_patch(starc)
 ax.add_patch(sun)
-ax.text(0.0,1.0,'Sun',fontsize=20,transform=offSet(0,5),horizontalalignment='center')
+ax.text(0.0,1.0,'Sun',fontsize=20,transform=offSet(0,5),horizontalalignment='center',color=cm.gray(0.5))
+
+if star.R>0:
+   starobs=patches.Circle((0.0,0.0),star.R,
+                          linestyle='solid',fc='none',zorder=10,color='b')
+   ax.add_patch(starobs)
 
 ax.set_xticks([])
 ax.set_yticks([])
 
-ax.set_title(r"$M = %%.3f\,M_{\odot}$, $Z=$%%.4f, $\\tau=%%.3f$ Gyr, $R = %%.3f\,R_{\odot}$, $T_{\\rm eff} = %%.1f$ K"%%(M,Z,tau,R,T),
-position=(0.5,0.05),fontsize=16)
+ax.set_title(r"%%s: $M = %%.3f\,M_{\odot}$, $Z=$%%.4f, $\\tau=%%.3f$ Gyr, $R = %%.3f\,R_{\odot}$, $T_{\\rm eff} = %%.1f$ K"%%(StarID,M,Z,tau,R,T),
+position=(0.5,0.05),fontsize=14)
 
 rang=max(1.5*R,1.5)
 ax.set_xlim((-rang,+rang))
 ax.set_ylim((-rang,+rang))
-"""%(star.M,star.Z,star.tau,R,Teff),watermarkpos="inner")
+"""%(star_dir,star_dir,
+     star.str_StarID,star.M,star.Z,star.tau,R,Teff),watermarkpos="inner")
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 #STELLAR ROTATION
@@ -525,13 +634,24 @@ ax.plot([],[],'r--',label='Saturation')
 ax.set_xscale("log")
 ax.set_yscale("log")
 
-ax.set_title(star.title,position=(0.5,1.02))
+ax.set_title(star.title,position=(0.5,1.02),fontsize=12)
 
 bbox=dict(fc='w',ec='none')
-ax.text(0.5,0.08,r"$\\tau_{\\rm disk}$=%%.3f Gyr, $\Omega_{\\rm sat}$ = %%.2f $\Omega_\odot$, $K_{\\rm W}$ = %%.2e"%%(star.taudisk,star.wsat,star.Kw),
+ax.text(0.5,0.08,r"$\\tau_{\\rm disk}$=%%.3f Gyr, $\Omega_{\\rm sat}$ = %%.2f $\Omega_\odot$, $K_{\\rm W}$ = %%.2e"%%(star.taudisk,star.wsat_scaled,star.Kw),
 transform=ax.transAxes,horizontalalignment='center',bbox=bbox)
 
 ax.set_xlim((TAU_MIN,star.taums))
+ax.set_xlim((TAU_MIN,12.0))
+
+ax.text(1.07,0.5,r"$P$ (days)",rotation=90,verticalalignment='center',horizontalalignment='center',transform=ax.transAxes)
+ax.axhline(star.wsat_scaled,linestyle='--',linewidth=2,color='r')
+
+for star_name in ROTAGE_STARS.keys():
+    staro=ROTAGE_STARS[star_name]
+    tau=staro["tau"]
+    Prot=staro["Prot"]
+    ax.plot([tau],[2*PI/(Prot*DAY)/OMEGASUN],'o',markersize=10,markeredgecolor='none',color=cm.gray(0.5),zorder=-10)
+    ax.text(tau,2*PI/(Prot*DAY)/OMEGASUN,star_name,fontsize=14,transform=offSet(-10,staro["up"]),horizontalalignment="right",color=cm.gray(0.5),zorder=-10)
 
 #PERIODS
 tmin,tmax=ax.get_xlim()
@@ -540,20 +660,127 @@ Pmin=2*PI/(wmax*OMEGASUN)/DAY
 Pmax=2*PI/(wmin*OMEGASUN)/DAY
 
 for P in np.logspace(np.log10(Pmin),np.log10(Pmax),10):
-    P=np.ceil(P)
+    #P=np.ceil(P)
     if P>Pmax:break
     w=2*PI/(P*DAY)/OMEGASUN
     ax.axhline(w,xmin=0.98,xmax=1.00,color='k')
-    ax.text(tmax,w,"%%d"%%P,transform=offSet(5,0),verticalalignment='center',horizontalalignment='left',fontsize=10)
+    ax.text(tmax,w,"%%.1f"%%P,transform=offSet(5,0),verticalalignment='center',horizontalalignment='left',fontsize=10)
 
-ax.text(1.07,0.5,r"$P$ (days)",rotation=90,verticalalignment='center',horizontalalignment='center',transform=ax.transAxes)
-ax.axhline(star.wsat,linestyle='--',linewidth=2,color='r')
-
-ax.text(4.56,1.0,r"$\odot$",horizontalalignment='center',verticalalignment='center',fontsize=20)
 ax.set_ylabel("$\Omega/\Omega_\odot$")
 ax.set_xlabel(r"$\\tau$ (Gyr)")
 ax.grid(which='both')
 ax.legend(loc='best')
+
+"""%(star_dir,star_dir))
+
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+#MASS-LOSS
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+plotFigure(star_dir,"stellar-massloss",\
+"""
+from BHM.BHMstars import *
+star=\
+loadConf("%s"+"star.conf")+\
+loadConf("%s"+"star.data")
+
+fig=plt.figure(figsize=(8,6))
+ax=fig.add_axes([0.15,0.1,0.8,0.8])
+
+ts=star.activity[:,0]
+Ml=star.activity[:,7]
+
+ax.plot(ts,Ml)
+
+ax.set_xscale("log")
+ax.set_yscale("log")
+
+ax.set_title(star.title,position=(0.5,1.02),fontsize=12)
+ax.set_xlim((TAU_MIN,star.taums))
+
+ax.set_ylabel(r"$\dot M$ ($M_\odot$/yr)")
+ax.set_xlabel(r"$\\tau$ (Gyr)")
+
+ax.grid(which='both')
+"""%(star_dir,star_dir))
+
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+#XUV LUMINOSITY
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+plotFigure(star_dir,"stellar-LXUV",\
+"""
+from BHM.BHMstars import *
+star=\
+loadConf("%s"+"star.conf")+\
+loadConf("%s"+"star.data")
+
+fig=plt.figure(figsize=(8,6))
+ax=fig.add_axes([0.15,0.1,0.8,0.8])
+
+ts=star.activity[:,0]
+LXUV=star.activity[:,13]
+
+ax.plot(ts,LXUV/(LXSUN/1E7))
+
+ax.set_xscale("log")
+ax.set_yscale("log")
+
+ax.set_title(star.title,position=(0.5,1.02),fontsize=12)
+ax.set_xlim((TAU_MIN,star.taums))
+
+ax.set_ylabel(r"$L_{\\rm XUV}$ (j/s)")
+ax.set_xlabel(r"$\\tau$ (Gyr)")
+
+ax.grid(which='both')
+"""%(star_dir,star_dir))
+
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+#ACTIVITY 
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+plotFigure(star_dir,"stellar-activity",\
+"""
+from BHM.BHMstars import *
+star=\
+loadConf("%s"+"star.conf")+\
+loadConf("%s"+"star.data")
+
+Ni=3
+fig=plt.figure(figsize=(8,6*(Ni-1)))
+l=0.1;b=0.05;dh=0.02;h=(1.0-2*b-(Ni-1)*dh)/Ni;w=1.0-1.5*l
+
+ax_R=fig.add_axes([l,b,w,h])
+b+=h+dh
+ax_f=fig.add_axes([l,b,w,h])
+b+=h+dh
+ax_B=fig.add_axes([l,b,w,h])
+
+ts=star.activity[:,0]
+f=star.activity[:,2]
+B=star.activity[:,4]
+R=star.activity[:,6]
+axs=[ax_R,ax_f,ax_B]
+
+args=dict(color='k')
+ax_R.plot(ts,R,**args)
+ax_R.set_ylabel("Rossby Number")
+ax_R.axhline(0.13,linestyle='--',linewidth=2,label='Saturation Level')
+
+ax_f.plot(ts,f,**args)
+ax_f.set_ylabel("Filling factor, $f_\star$")
+ax_B.plot(ts,B,**args)
+ax_B.set_ylabel("Photospheric field, $B_\star$")
+
+for ax in axs:
+    ax.set_xscale("log")
+    ax.set_yscale("log")
+    ax.set_xlim((TAU_MIN,star.taums))
+    ax.grid(which='both')
+    ax.legend(loc='best',prop=dict(size=12))
+
+axs[-1].set_title(star.title,position=(0.5,1.02),fontsize=12)
+axs[0].set_xlabel(r"$\\tau$ (Gyr)")
+
+for ax in axs[1:]:
+    ax.set_xticklabels([])
 
 """%(star_dir,star_dir))
 
@@ -632,14 +859,25 @@ fh.write("""\
 	<img width=100%% src="%s/evol-radius.png">
       </a>
       <br/>
-      <i>Radius Track</i>
+      <i>Radius Evolution</i>
 	(
 	<a href="%s/evol-radius.png.txt" target="_blank">data</a>|
 	<a href="%s/BHMreplot.php?dir=%s&plot=evol-radius.py" target="_blank">replot</a>
 	)
   </td></tr>
+  <tr><td>
+      <a href="%s/evol-logg.png" target="_blank">
+	<img width=100%% src="%s/evol-logg.png">
+      </a>
+      <br/>
+      <i>Surface Gravity Evolution</i>
+	(
+	<a href="%s/evol-logg.png.txt" target="_blank">data</a>|
+	<a href="%s/BHMreplot.php?dir=%s&plot=evol-logg.py" target="_blank">replot</a>
+	)
+  </td></tr>
 </table>
-<h3>Evolution of Rotational Properties:</h3>
+<h3>Evolution of stellar rotation and magnetic activity:</h3>
 <table>
   <tr><td>
       <a href="%s/evol-RMoI.png" target="_blank">
@@ -663,12 +901,49 @@ fh.write("""\
 	<a href="%s/BHMreplot.php?dir=%s&plot=stellar-rotation.py" target="_blank">replot</a>
 	)
   </td></tr>
+  <tr><td>
+      <a href="%s/stellar-massloss.png" target="_blank">
+	<img width=100%% src="%s/stellar-massloss.png">
+      </a>
+      <br/>
+      <i>Stellar Mass-Loss</i>
+	(
+	<a href="%s/stellar-massloss.png.txt" target="_blank">data</a>|
+	<a href="%s/BHMreplot.php?dir=%s&plot=stellar-massloss.py" target="_blank">replot</a>
+	)
+  </td></tr>
+  <tr><td>
+      <a href="%s/stellar-LXUV.png" target="_blank">
+	<img width=100%% src="%s/stellar-LXUV.png">
+      </a>
+      <br/>
+      <i>XUV Luminosity</i>
+	(
+	<a href="%s/stellar-LXUV.png.txt" target="_blank">data</a>|
+	<a href="%s/BHMreplot.php?dir=%s&plot=stellar-LXUV.py" target="_blank">replot</a>
+	)
+  </td></tr>
+  <tr><td>
+      <a href="%s/stellar-activity.png" target="_blank">
+	<img width=100%% src="%s/stellar-activity.png">
+      </a>
+      <br/>
+      <i>Dynamo and magnetic field properties</i>
+	(
+	<a href="%s/stellar-activity.png.txt" target="_blank">data</a>|
+	<a href="%s/BHMreplot.php?dir=%s&plot=stellar-activity.py" target="_blank">replot</a>
+	)
+  </td></tr>
 </table>
 """%(WEB_DIR,star_webdir,star_webdir,star_webdir,WEB_DIR,star_webdir,
 star.M,star.Z,star.FeH,star.tau,tau_max,tau_ms,star_hash,
 g,Teff,R,L,star.MoI,tdiss,
 lins[0],lins[1],lins[2],
 louts[0],louts[1],
+star_webdir,star_webdir,star_webdir,WEB_DIR,star_webdir,
+star_webdir,star_webdir,star_webdir,WEB_DIR,star_webdir,
+star_webdir,star_webdir,star_webdir,WEB_DIR,star_webdir,
+star_webdir,star_webdir,star_webdir,WEB_DIR,star_webdir,
 star_webdir,star_webdir,star_webdir,WEB_DIR,star_webdir,
 star_webdir,star_webdir,star_webdir,WEB_DIR,star_webdir,
 star_webdir,star_webdir,star_webdir,WEB_DIR,star_webdir,

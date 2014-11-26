@@ -64,7 +64,7 @@ binary+=loadConf(binary_dir+"binary.data")
 #==================================================
 
 #ROTATION
-PRINTOUT("Rotation interaction between M1 = %.2f and M2 = %.2f at a = %.2f"%(star1.M,star2.M,binary.abin))
+PRINTOUT("Rotation interaction between M1 = %.2f and M2 = %.2f at a = %.2f, e = %.2f"%(star1.M,star2.M,binary.abin,binary.ebin))
 
 #CHECK IF TWINS
 qtwins=False
@@ -88,123 +88,52 @@ stars=star1,star2
 i=0
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-#INITIAL CONDITIONS
+#INTEGRATION
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-PRINTOUT("Stellar initial conditions...")
-h=1E100
+PRINTOUT("Integrating rotation...")
+i=0
 for star in stars:
     #INITIALIZE INTERPOLATION FUNCTIONS
     evoInterpFunctions(star)
 
-    #INITIAL CONDITIONS
-    star.R=star.Rfunc(TAU_MIN)
+    #==============================
+    #ROTATIONAL EVOLUTION
+    #==============================
+    rotpars=dict(\
+        star=star,
+        starf=stars[NEXT(i,2)],
+        binary=binary,
+        taudisk=star.taudisk,
+        Kw=star.Kw,
+        wsat=star.wsat_scaled
+        )
 
-    #MAXIMUM ATTAINABLE ROTATION
-    star.Pmax=maxPeriod(star.M,star.R)
+    tsmoi=star.RMoI[:,0]
+    wini=2*PI/(star.Pini*DAY)
+    star.binrotevol=odeint(rotationalAcceleration,wini,tsmoi*GYR,args=(rotpars,))
+    star.binrotevol=toStack(tsmoi)|toStack(star.binrotevol)
 
-    #EXTRAPOLATE ROTATION
-    star.Pini=theoProt(TAU_MIN,star.protfit)
+    #==============================
+    #COMBINED MASS-LOSS
+    #==============================
+    tsmoi=star.rotevol[:,0]
+    Nfine=len(tsmoi)
+    star.binMloss=stack(1)
+    for i in range(0,Nfine):
+        t=tsmoi[i]
+        M=star.M
+        R=star.Rfunc(t)
+        L=star.Lfunc(t)
+        Prot=2*PI/star.binrotevol[i,1]/DAY
+        boreas=pyBoreas(M,R,L,Prot,star.FeH)
+        star.binMloss+=[boreas[2]]
+    star.binMloss=toStack(tsmoi)|star.binMloss
 
-    #IF EXTRAPOLATED IS LARGER THAN MAXIMUM START CLOSE TO MAX.
-    if star.Pini<star.Pmax:star.Pini=2*star.Pmax
-
-    #INITIAL CONDITIONS (SI)
-    star.P=star.Pini*DAY
-    star.W=2*PI/star.P
-
-    #ACCELERATION TIME-SCALE
-    acc,acc_tid,acc_ML=totalAcceleration(TAU_MIN,star,
-                                         stars[NEXT(i,2)],binary,
-                                         verbose=False,qreturn=True)
-    star.tsync=(star.W/abs(acc))/GYR
-    h=min(h,star.tsync/50)
+    #==============================
+    #XUV LUMINOSITIES
+    #==============================
     
-    #IF TWINS AVOID REPEAT
-    if qtwins:break
 
-h=min(1E-3,h)
-
-#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-#TIDAL INTEGRATION
-#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-verbose=False
-
-#MAXIMUM INTEGRATION TIME
-tau_max=min(star1.taums,star2.taums)
-
-ts=star.evotrack[:,0]
-cond=ts<tau_max
-ts=np.append(ts[cond],[tau_max])
-#ts=np.logspace(np.log10(TAU_MIN),np.log10(tau_max),50)
-
-dt=ts[1::]-ts[:-1:]
-i=0
-for star in stars:
-    PRINTOUT("Integrating star rotation between %.3f-%.3f Gyr..."%(ts[0],ts[-1]))
-    j=0
-    star.binrotevol=stack(2)
-    star.binrotevol+=[TAU_MIN,star.P/DAY]
-    for t in ts[:-1]:
-        if verbose and i==1:
-            print "*"*40
-            print "t = %.17e"%t
-            print "\tW = %.17e"%star.W
-            print "\tP = %.5e"%(star.P/DAY)
-
-        ti=t
-        tn=t+dt[j]
-        while ti<tn:
-
-            if verbose and i==1:
-                print star.protfit
-                print "W = ",star.W
-                print "P = ",star.P/DAY
-
-            W=star.W
-            
-            #RUNGE-KUTTA4
-            star.W=W
-            star.P=2*PI/star.W
-            acc=totalAcceleration(t,star,stars[NEXT(i,2)],binary,
-                                  verbose=False)
-            k1=acc*(h*GYR)
-
-            dW=k1
-
-            #RUNGE-KUTTA 4 INTEGRATION
-            star.W=W+0.5*k1
-            star.P=2*PI/star.W
-            acc=totalAcceleration(t+0.5*h,star,stars[NEXT(i,2)],binary,
-                                  verbose=False)
-            k2=acc*(h*GYR)
-
-            star.W=W+0.5*k2
-            star.P=2*PI/star.W
-            acc=totalAcceleration(t+0.5*h,star,stars[NEXT(i,2)],binary,
-                                  verbose=False)
-            k3=acc*(h*GYR)
-
-            star.W=W+k3
-            star.P=2*PI/star.W
-            acc=totalAcceleration(t+h,star,stars[NEXT(i,2)],binary,
-                                  verbose=False)
-            k4=acc*(h*GYR)
-
-            dW=1./6*(k1+2*k2+2*k3+k4)
-
-            if verbose and i==1:
-                print "k1 = ",k1
-                raw_input()
-
-            star.W=W+dW
-            star.P=2*PI/star.W
-            ti+=h
-
-        tau_rot=tfromProt(star.P/DAY,star.protfit)
-        star.binrotevol+=[tau_rot,star.P/DAY]
-        j+=1
-    PRINTOUT("Storing rotational evolution...")
-    star.binrotevol=toStack(ts)|star.binrotevol
     if qtwins:break
     i+=1
 
@@ -213,7 +142,7 @@ for star in stars:
 ###################################################
 rot.title=r"$M_1/M_{\\rm Sun}=$%.3f, $M_2/M_{\\rm Sun}$=%.3f, $a_{\\rm bin}$=%.3f AU, $e_{\\rm bin}$=%.2f, $P_{\\rm bin}$=%.3f d"%(star1.M,star2.M,binary.abin,binary.ebin,binary.Pbin)
 
-PRINTERR("Storing rotational evolution data...")
+PRINTERR("Storing rotational and activity evolution data...")
 f=open(rot_dir+"rotation.data","w")
 
 f.write("""\
@@ -221,25 +150,19 @@ from numpy import array
 #TITLE
 title="%s"
 
-#INTEGRATION TIME-SPAN
-taums=%.17e #Gyr
-
-#INITIAL ROTATION RATES
-star1_Pini=%.17e #days
-star2_Pini=%.17e #days
-
-#INITIAL ACCELERATION TIME SCALE
-star1_tsync=%.17e #Gyr
-star2_tsync=%.17e #Gyr
-
-#EVOLUTIONARY TRACK
+#ROTATIONAL EVOLUTION IN BINARY
 star1_binrotevol=%s
 star2_binrotevol=%s
-"""%(rot.title,tau_max,
-     star1.Pini,star2.Pini,
-     star1.tsync,star2.tsync,
+
+#MASS-LOSS IN BINARY
+star1_binMloss=%s
+star2_binMloss=%s
+"""%(rot.title,
      array2str(star1.binrotevol),
-     array2str(star2.binrotevol)))
+     array2str(star2.binrotevol),
+     array2str(star1.binMloss),
+     array2str(star2.binMloss)
+     ))
 f.close()
 
 ###################################################
@@ -269,57 +192,115 @@ loadConf("%s"+"star.data")
 revol1=rot.star1_binrotevol
 revol2=rot.star2_binrotevol
 
-fig=plt.figure(figsize=(8,8))
+fig=plt.figure(figsize=(8,6))
+ax=fig.add_axes([0.1,0.1,0.8,0.8])
 
-l=0.1;b=0.08;w=0.84;h=0.2;i=0.12
-ax=fig.add_axes([l,b,w,h])
+sts1=star1.rotevol[:,0]
+sw1=star1.rotevol[:,1]
+ts1=revol1[:,0]
+w1=revol1[:,1]
 
-ax.plot(revol1[:,0],revol1[:,1],'b-',linewidth=2)
-ax.plot(revol2[:,0],revol2[:,1],'r-',linewidth=2)
-ax.fill_between(revol2[:,0],revol2[:,0],0*revol2[:,0],color='r',alpha=0.1)
-ax.fill_between(revol2[:,0],revol2[:,0]+rot.taums,revol2[:,0],color='g',alpha=0.1)
+sts2=star2.rotevol[:,0]
+sw2=star2.rotevol[:,1]
+ts2=revol2[:,0]
+w2=revol2[:,1]
 
-ax.set_xlim((0,rot.taums))
-ax.set_ylim((0,max(revol2[:,1])))
+ax.plot(sts1,sw1/OMEGASUN,'b--',label='Star 1 (Free)')
+ax.plot(ts1,w1/OMEGASUN,'b-',label='Star 1 (Tidal)')
 
-ax.grid()
+ax.plot(sts2,sw2/OMEGASUN,'r--',label='Star 2 (Free)')
+ax.plot(ts2,w2/OMEGASUN,'r-',label='Star 2 (Tidal)')
+
+ax.axhline(PSUN/DAY/binary.Psync,color='k',label=r"$P_{\\rm sync}=P_{\\rm bin}/%%.2f$"%%binary.nsync)
+ax.axhline(PSUN/DAY/binary.Pbin,color='k',linestyle='--',label=r"$P_{\\rm bin}$")
+
+ax.set_xscale("log")
+ax.set_yscale("log")
+
+ax.set_title(binary.title,position=(0.5,1.02),fontsize=12)
+
+ax.text(1.07,0.5,r"$P$ (days)",rotation=90,verticalalignment='center',horizontalalignment='center',transform=ax.transAxes)
+
+#PERIODS
+wmin=min(min(w1),min(sw1),min(w2),min(sw2))/OMEGASUN
+wmax=max(max(w1),max(sw1),max(w2),max(sw2))/OMEGASUN
+
+ax.set_xlim((TAU_MIN,12.0))
+ax.set_ylim((wmin,wmax))
+
+tmin,tmax=ax.get_xlim()
+wmin,wmax=ax.get_ylim()
+Pmin=2*PI/(wmax*OMEGASUN)/DAY
+Pmax=2*PI/(wmin*OMEGASUN)/DAY
+
+for P in np.logspace(np.log10(Pmin),np.log10(Pmax),10):
+    #P=np.ceil(P)
+    if P>Pmax:break
+    w=2*PI/(P*DAY)/OMEGASUN
+    ax.axhline(w,xmin=0.98,xmax=1.00,color='k')
+    ax.text(tmax,w,"%%.1f"%%P,transform=offSet(5,0),verticalalignment='center',horizontalalignment='left',fontsize=10)
+
+ax.set_ylabel("$\Omega/\Omega_\odot$")
 ax.set_xlabel(r"$\\tau$ (Gyr)")
-ax.set_ylabel(r"$\\tau_{\\rm rot}$ (Gyr)")
-ax.set_title("Rotational Ages",position=(0.5,1.01),fontsize=12)
-
-b=h+i;h=0.6
-ax=fig.add_axes([l,b,w,h])
-
-ax.plot(revol1[:,0],revol1[:,2],'b-',label="Star 1",
-linewidth=2)
-ax.plot(revol2[:,0],revol2[:,2],'r-',label="Star 2",
-linewidth=2)
-
-ax.plot(star1.protevol[:,0],star1.protevol[:,1],'b--',label="Star 1 (No tidal)",
-linewidth=1)
-ax.plot(star2.protevol[:,0],star2.protevol[:,1],'r--',label="Star 2 (No tidal)",
-linewidth=1)
-
-ax.axhline(binary.Pbin,label=r"$P_{\\rm bin}$",
-linewidth=2,linestyle='-',color='k')
-ax.axhline(binary.Psync,label=r"$P_{\\rm sync}$=$P_{\\rm bin}$/%%.2f"%%binary.nsync,
-linewidth=2,linestyle='--',color='k')
-
-ax.set_xticklabels([])
-
-ax.set_ylabel(r"$P_{\\rm rot}$ (days)")
-
-ax.set_xlim((0,rot.taums))
-ax.set_ylim((0,2*binary.Pbin))
-ax.set_title(rot.title,position=(0.5,1.02),fontsize=12)
-ax.grid()
-ax.legend(loc='lower right',prop=dict(size=12))
-
+ax.grid(which='both')
+ax.legend(loc='lower left',prop=dict(size=12))
 """%(rot_dir,rot_dir,
      binary_dir,binary_dir,
      star1_dir,star1_dir,
      star2_dir,star2_dir
      ))
+
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+#MASS-LOSS
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+plotFigure(rot_dir,"binary-massloss",\
+"""
+from BHM.BHMstars import *
+rot=\
+loadConf("%s"+"rotation.conf")+\
+loadConf("%s"+"rotation.data")
+binary=\
+loadConf("%s"+"binary.conf")+\
+loadConf("%s"+"binary.data")
+star1=\
+loadConf("%s"+"star.conf")+\
+loadConf("%s"+"star.data")
+star2=\
+loadConf("%s"+"star.conf")+\
+loadConf("%s"+"star.data")
+
+fig=plt.figure(figsize=(8,6))
+ax=fig.add_axes([0.15,0.1,0.8,0.8])
+
+
+ts1=rot.star1_binMloss[:,0]
+Ml1=rot.star1_binMloss[:,1]
+sMl1=star1.Mloss[:,1]
+
+ts2=rot.star2_binMloss[:,0]
+Ml2=rot.star2_binMloss[:,1]
+sMl2=star2.Mloss[:,1]
+
+ax.plot(ts1,Ml1,'b-',label='Star 1 (Tidal)')
+ax.plot(ts1,sMl1,'b--',label='Star 1 (Free)')
+ax.plot(ts2,Ml2,'r-',label='Star 2 (Tidal)')
+ax.plot(ts2,sMl2,'r--',label='Star 2 (Free)')
+
+ax.set_xscale("log")
+ax.set_yscale("log")
+
+ax.set_title(binary.title,position=(0.5,1.02),fontsize=12)
+ax.set_xlim((TAU_MIN,12.0))
+
+ax.set_ylabel(r"$\dot M$ ($M_\odot$/yr)")
+ax.set_xlabel(r"$\\tau$ (Gyr)")
+
+ax.grid(which='both')
+ax.legend(loc='lower left',prop=dict(size=10))
+"""%(rot_dir,rot_dir,
+     binary_dir,binary_dir,
+     star1_dir,star1_dir,
+     star2_dir,star2_dir))
 
 ###################################################
 #GENERATE FULL REPORT
@@ -345,17 +326,35 @@ fh.write("""\
 <table>
   <tr><td>k:</td><td>%.3f</td></tr>
 </table>
-<h3>Initial Conditions</h3>
+<h3>Rotation Evolution</h3>
 <table>
-  <tr><td>P<sub>rot,1,ini</sub> (days):</td><td>%.3f</td></tr>
-  <tr><td>t<sub>sync,1,ini</sub> (Gyr):</td><td>%.3f</td></tr>
-  <tr><td>P<sub>rot,1,ini</sub> (days):</td><td>%.3f</td></tr>
-  <tr><td>t<sub>sync,2,ini</sub> (Gyr):</td><td>%.3f</td></tr>
+  <tr><td colspan=2>
+  <a target="_blank" href="%s/rot-evolution.png">
+    <img width=100%% src="%s/rot-evolution.png">
+  </a>
+  <br/>
+  <i>Rotational Evolution</i>
+  (
+  <a target="_blank" href="%s/rot-evolution.png.txt">data</a>|
+  <a target="_blank" href="%s/BHMreplot.php?dir=%s&plot=rot-evolution.py">replot</a>
+  )
+  </td></tr>
+  <tr><td colspan=2>
+  <a target="_blank" href="%s/binary-massloss.png">
+    <img width=100%% src="%s/binary-massloss.png">
+  </a>
+  <br/>
+  <i>Rotational Evolution</i>
+  (
+  <a target="_blank" href="%s/binary-massloss.png.txt">data</a>|
+  <a target="_blank" href="%s/BHMreplot.php?dir=%s&plot=binary-massloss.py">replot</a>
+  )
+  </td></tr>
 </table>
 """%(WEB_DIR,rot_webdir,rot_webdir,rot_webdir,WEB_DIR,rot_webdir,
      rot.k,
-     star1.Pini,star1.tsync,
-     star2.Pini,star2.tsync
+     rot_webdir,rot_webdir,rot_webdir,WEB_DIR,rot_webdir,
+     rot_webdir,rot_webdir,rot_webdir,WEB_DIR,rot_webdir
      ))
 fh.close()
        
