@@ -24,7 +24,7 @@ import scipy.constants as const
 from time import sleep
 from copy import copy
 from os import system,path
-from sys import exit,stderr,stdout,argv
+from sys import exit,stderr,stdout,argv,path as python
 
 ###################################################
 #MACROS
@@ -482,6 +482,12 @@ def exp2pow(value):
     mantissa=value/10**exponent
     string="%.2f$\times$10$^$%d"%(sgn*mantissa,exponent)
     return string
+
+def listDirectory(tdir,search):
+    lista=System("ls -md %s/%s"%(tdir,search),out=True)
+    rlist=[element.strip() for element in lista.split(",")]
+    return rlist
+    
 
 #GET WORKING DIRECTORY
 PWD=System("pwd",out=True)

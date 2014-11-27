@@ -57,6 +57,24 @@ else:
 ###################################################
 #LOAD ISOCHRONES
 ###################################################
+#FIND STELLAR EVOLUTION TRACK
+model=star.str_model.replace("'","")
+pfind,startrack=findTrack(model,star.Z,star.M,verbose=True)
+trackfunc=trackFunctions(startrack)
+modelwat="%s:Z=%.4f,M=%.2f"%(model,pfind[0],pfind[2])
+
+def StellarGTRL(Z,M,t):
+     try:
+          g=trackfunc.g(t*GIGA)
+          T=trackfunc.T(t*GIGA)
+          R=trackfunc.R(t*GIGA)
+          L=trackfunc.L(t*GIGA)
+     except:
+          g=T=R=L=-1
+     return g,T,R,L
+
+#g,T,R,L=StellarGTRL(star.Z,star.M,14.0);print L;exit(0)
+"""
 try:
      zsvec=chooseZsvecSingle(star.Z)
      PRINTOUT("Loading isochrones: %s"%str(zsvec))
@@ -64,6 +82,7 @@ try:
 except:
      PRINTERR("Error loading isochrones.")
      errorCode("FILE_ERROR")
+"""
 
 ###################################################
 #CALCULATE EVOLUTIONARY TRACK
@@ -119,8 +138,9 @@ tsmoi=np.logspace(np.log10(TAU_MIN),np.log10(tau_ms),Nfine)
 PRINTOUT("Calculating radius evolution...")
 star.RMoI=stack(1)
 for t in tsmoi:
-     logg=StellarProperty('logGravitation',star.Z,star.M,t)
-     g=10**logg/100
+     #logg=StellarProperty('logGravitation',star.Z,star.M,t)
+     #g=10**logg/100
+     g=trackfunc.g(t*GIGA)/100
      R=StellarRadius(star.M,g)
      star.RMoI+=[R]
 star.RMoI=toStack(tsmoi)|star.RMoI
@@ -317,7 +337,7 @@ ts=evodata[:,0]
 ts=ts[ts<star.taums]
 logrho_func,Teff_func,logR_func,logL_func=evoFunctions(evodata)
 
-ax.plot(ts,10**logrho_func(np.log10(ts))/GRAVSUN,label=r"$g_{\\rm surf}$")
+ax.plot(ts,10**logrho_func(np.log10(ts))/GRAVSUN/1E2,label=r"$g_{\\rm surf}$")
 ax.plot(ts,Teff_func(np.log10(ts))/TSUN,label=r"$T_{\\rm eff}$")
 ax.plot(ts,10**logR_func(np.log10(ts)),label=r"$R$")
 ax.plot(ts,10**logL_func(np.log10(ts)),label=r"$L$")
@@ -337,8 +357,11 @@ ax.set_xlim((0,star.taumax))
 ax.set_ylim((0.1,10.0))
 ax.set_ylim((ymin,ymax))
 
+#MODEL WATERMARK
+ax.text(0.5,0.95,"%s",horizontalalignment="center",fontsize="10",color="k",alpha=0.3,transform=ax.transAxes)
+
 ax.legend(loc='best',prop=dict(size=12))
-"""%(star_dir,star_dir,evodata_str))
+"""%(star_dir,star_dir,evodata_str,modelwat))
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 #EVOLUTIONARY TRACK
@@ -395,9 +418,12 @@ Tmin,Tmax=ax.get_xlim()
 xmin,xmax=ax.get_xlim()
 ax.set_xlim((xmax,xmin))
 
+#MODEL WATERMARK
+ax.text(0.5,0.95,"%s",horizontalalignment="center",fontsize="10",color="k",alpha=0.3,transform=ax.transAxes)
+
 ax.legend(loc='lower right')
 """%(star_dir,star_dir,
-     evodata_str,tau_max,tau_max,tau_max))
+     evodata_str,tau_max,tau_max,tau_max,modelwat))
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 #RADIUS EVOLUTION
@@ -450,9 +476,12 @@ ax.set_ylabel(r"$R/R_{\\rm Sun}$")
 Tmin,Tmax=ax.get_xlim()
 ax.set_xlim((Tmax,Tmin))
 
+#MODEL WATERMARK
+ax.text(0.5,0.95,"%s",horizontalalignment="center",fontsize="10",color="k",alpha=0.3,transform=ax.transAxes)
+
 ax.legend(loc='lower right')
 """%(star_dir,star_dir,
-     evodata_str,tau_max,tau_max,tau_max))
+     evodata_str,tau_max,tau_max,tau_max,modelwat))
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 #RADIUS EVOLUTION
@@ -474,7 +503,7 @@ bbox=dict(fc='w',ec='none')
 
 #LINES
 Teffs=star.Tfunc(ts)
-loggs=np.log10(star.gfunc(ts)*100)
+loggs=np.log10(star.gfunc(ts))
 ax.plot(Teffs,loggs,"k-")
 ax.plot(Teffs[0:1],loggs[0:1],"ko",markersize=5)
 ax.text(Teffs[0],loggs[0],r"$t_{\\rm ini}$=10 Myr",transform=offSet(5,5),bbox=bbox)
@@ -485,7 +514,7 @@ ax.text(Teffs[-1],loggs[-1],r"$t_{\\rm end}=$%.1f Gyr",horizontalalignment='righ
 dt=round(%.17e/20,1)
 ts=np.arange(TAU_MIN,%.17e,dt)
 Teffs=star.Tfunc(ts)
-loggs=np.log10(star.gfunc(ts)*100)
+loggs=np.log10(star.gfunc(ts))
 ax.plot(Teffs,loggs,"ko",label='Steps of %%.1f Gyr'%%dt,markersize=3)
 ax.text(1.0,1.0,r"$\odot$",fontsize=14)
 
@@ -504,8 +533,11 @@ ax.set_xlim((Tmax,Tmin))
 ymin,ymax=ax.get_ylim()
 ax.set_ylim((ymax,ymin))
 
+#MODEL WATERMARK
+ax.text(0.5,0.95,"%s",horizontalalignment="center",fontsize="10",color="k",alpha=0.3,transform=ax.transAxes)
+
 ax.legend(loc='lower right')
-"""%(star_dir,star_dir,tau_max,tau_max,tau_max))
+"""%(star_dir,star_dir,tau_max,tau_max,tau_max,modelwat))
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 #MOMENT OF INERTIA EVOLUTION
@@ -563,7 +595,10 @@ ax_dI.set_xlim((TAU_MIN,star.taums))
 ax_I.grid()
 ax_dI.grid()
 
-"""%(star_dir,star_dir))
+#MODEL WATERMARK
+ax_I.text(0.5,0.95,"%s",horizontalalignment="center",fontsize="10",color="k",alpha=0.3,transform=ax_I.transAxes)
+
+"""%(star_dir,star_dir,modelwat))
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 #RADIUS SCHEMATIC
@@ -608,8 +643,12 @@ position=(0.5,0.05),fontsize=14)
 rang=max(1.5*R,1.5)
 ax.set_xlim((-rang,+rang))
 ax.set_ylim((-rang,+rang))
+
+#MODEL WATERMARK
+ax.text(0.5,0.95,"%s",horizontalalignment="center",fontsize="10",color="k",alpha=0.3,transform=ax.transAxes)
+
 """%(star_dir,star_dir,
-     star.str_StarID,star.M,star.Z,star.tau,R,Teff),watermarkpos="inner")
+     star.str_StarID,star.M,star.Z,star.tau,R,Teff,modelwat),watermarkpos="inner")
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 #STELLAR ROTATION
@@ -630,6 +669,12 @@ w=star.rotevol[:,1]
 ax.plot(ts,w/OMEGASUN)
 ax.plot(ts,(ts/TAGE)**(-0.5),label='Skumanich Relationship')
 ax.plot([],[],'r--',label='Saturation')
+
+if star.Prot>0:
+     Prot=star.Prot;
+     Proterr=max(star.Proterr,0.0);
+     wmax=PSUN/DAY/(Prot-Proterr);wmin=PSUN/DAY/(Prot+Proterr);
+     ax.axhspan(wmin,wmax,color='b',alpha=0.3)
 
 ax.set_xscale("log")
 ax.set_yscale("log")
@@ -727,7 +772,7 @@ ax.set_yscale("log")
 ax.set_title(star.title,position=(0.5,1.02),fontsize=12)
 ax.set_xlim((TAU_MIN,star.taums))
 
-ax.set_ylabel(r"$L_{\\rm XUV}$ (j/s)")
+ax.set_ylabel(r"$L_{\\rm XUV}/L_{\\rm XUV,\odot,present}$")
 ax.set_xlabel(r"$\\tau$ (Gyr)")
 
 ax.grid(which='both')

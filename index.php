@@ -289,6 +289,18 @@ $star_form1=<<<F
 		  the tool calculate it by itself.
 		</td>
 	      </tr>
+	      <!-- ---------------------------------------- -->
+	      <tr>
+		<td class="name">Stellar Model:</td>
+		<td class="field">
+		  <input class="sensistive" type="text" id="test" name="star1_str_model" value="$star1_str_model" onchange="idSystem();">
+		</td>
+	      </tr>
+	      <tr>
+		<td class="help" colspan=2>
+		  Stellar evolution model.  Available: BCA98, PARSEC, YZVAR, BASTI.
+		</td>
+	      </tr>
 
 	      <!-- ====================== ROTATIONAL EVOLUTION =========================== -->
 	      <tr><td colspan=2 class="section">Rotational Evolution</td></tr>
@@ -461,6 +473,18 @@ $star_form2=<<<F
 		<td class="help" colspan=2>
 		  Main sequence time.  Leave zero if you expect that
 		  the tool calculate it by itself.
+		</td>
+	      </tr>
+	      <!-- ---------------------------------------- -->
+	      <tr>
+		<td class="name">Stellar Model:</td>
+		<td class="field">
+		  <input class="sensistive" type="text" id="test" name="star2_str_model" value="$star2_str_model" onchange="idSystem();">
+		</td>
+	      </tr>
+	      <tr>
+		<td class="help" colspan=2>
+		  Stellar evolution model.  Available: BCA98, PARSEC, YZVAR, BASTI.
 		</td>
 	      </tr>
 
@@ -735,8 +759,16 @@ $binary_form=<<<F
 	    <input type="hidden" name="module" value="binary">
 	    <input type="hidden" name="object" value="binary">
 	    <table border=0px>
+	      <!-- ---------------------------------------- -->
 	      <tr>
-		<!-- ---------------------------------------- -->
+		<td class="name">System ID:</td>
+		<td class="field">
+		  <input type="text" name="binary_str_SysID" value="$binary_str_SysID" >
+		</td>
+	      </tr>
+	      <tr><td class="help" colspan=2></td></tr>
+	      <!-- ---------------------------------------- -->
+	      <tr>
 		<td class="name">Binary period:</td>
 		<td class="field">
 		  <input class="sensitive" type="text" name="binary_Pbin" value="$binary_Pbin" onchange="idSystem();">

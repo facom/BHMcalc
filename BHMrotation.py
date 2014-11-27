@@ -118,21 +118,28 @@ for star in stars:
     #==============================
     tsmoi=star.rotevol[:,0]
     Nfine=len(tsmoi)
-    star.binMloss=stack(1)
+    star.binactivity=stack(13)
     for i in range(0,Nfine):
         t=tsmoi[i]
         M=star.M
         R=star.Rfunc(t)
         L=star.Lfunc(t)
         Prot=2*PI/star.binrotevol[i,1]/DAY
-        boreas=pyBoreas(M,R,L,Prot,star.FeH)
-        star.binMloss+=[boreas[2]]
-    star.binMloss=toStack(tsmoi)|star.binMloss
+             
+        #SURFICIAL MAGNETIC CONDITIONS
+        tauc,fstar,Bequi,Bphoto,BTR,Rossby,Mdot,Mdot_hot,Mdot_cold,MATR=\
+            pyBoreas(M,R,L,Prot,star.FeH)
+        
+        #X-RAY EMMISION
+        RX=starRX(Rossby)
+        LX=L*RX*LSUN
+        LXUV=starLXEUV(LX)
+        
+        star.binactivity+=[tauc,fstar,Bequi,Bphoto,BTR,Rossby,
+                        Mdot,Mdot_hot,Mdot_cold,MATR,
+                        RX,LX,LXUV]
 
-    #==============================
-    #XUV LUMINOSITIES
-    #==============================
-    
+    star.binactivity=toStack(tsmoi)|star.binactivity
 
     if qtwins:break
     i+=1
@@ -155,13 +162,13 @@ star1_binrotevol=%s
 star2_binrotevol=%s
 
 #MASS-LOSS IN BINARY
-star1_binMloss=%s
-star2_binMloss=%s
+star1_binactivity=%s
+star2_binactivity=%s
 """%(rot.title,
      array2str(star1.binrotevol),
      array2str(star2.binrotevol),
-     array2str(star1.binMloss),
-     array2str(star2.binMloss)
+     array2str(star1.binactivity),
+     array2str(star2.binactivity)
      ))
 f.close()
 
@@ -213,6 +220,30 @@ ax.plot(ts2,w2/OMEGASUN,'r-',label='Star 2 (Tidal)')
 
 ax.axhline(PSUN/DAY/binary.Psync,color='k',label=r"$P_{\\rm sync}=P_{\\rm bin}/%%.2f$"%%binary.nsync)
 ax.axhline(PSUN/DAY/binary.Pbin,color='k',linestyle='--',label=r"$P_{\\rm bin}$")
+
+if binary.taumin>0:
+     taumean=(binary.taumin+binary.taumax)/2
+     tauerr=(binary.taumax-binary.taumin)/2
+
+if star1.Prot>0:
+     Prot=star1.Prot;
+     Proterr=max(star1.Proterr,0.0);
+     wmax1=PSUN/DAY/(Prot-Proterr);wmin1=PSUN/DAY/(Prot+Proterr);
+     wmean1=(wmin1+wmax1)/2;werr1=(wmax1-wmin1)/2
+     if binary.taumin>0:
+         ax.errorbar(taumean,wmean1,xerr=tauerr,yerr=werr1,linewidth=2,color='b')
+     else:
+         ax.axhspan(wmin1,wmax1,color='b',alpha=0.3)
+
+if star2.Prot>0:
+     Prot=star2.Prot;
+     Proterr=max(star2.Proterr,0.0);
+     wmax2=PSUN/DAY/(Prot-Proterr);wmin2=PSUN/DAY/(Prot+Proterr);
+     wmean2=(wmin2+wmax2)/2;werr2=(wmax2-wmin2)/2
+     if binary.taumin>0:
+         ax.errorbar(taumean,wmean2,xerr=tauerr,yerr=werr2,linewidth=2,color='b')
+     else:
+         ax.axhspan(wmin2,wmax2,color='b',alpha=0.3)
 
 ax.set_xscale("log")
 ax.set_yscale("log")
@@ -272,19 +303,25 @@ loadConf("%s"+"star.data")
 fig=plt.figure(figsize=(8,6))
 ax=fig.add_axes([0.15,0.1,0.8,0.8])
 
+ts1=rot.star1_binactivity[:,0]
+Ml1=rot.star1_binactivity[:,7]
+Ml1_func=interp1d(ts1,Ml1,kind='slinear')
+sMl1=star1.activity[:,7]
 
-ts1=rot.star1_binMloss[:,0]
-Ml1=rot.star1_binMloss[:,1]
-sMl1=star1.Mloss[:,1]
+ts2=rot.star2_binactivity[:,0]
+Ml2=rot.star2_binactivity[:,7]
+Ml2_func=interp1d(ts2,Ml2,kind='slinear')
+sMl2=star2.activity[:,7]
 
-ts2=rot.star2_binMloss[:,0]
-Ml2=rot.star2_binMloss[:,1]
-sMl2=star2.Mloss[:,1]
+tmin=max(min(ts1),min(ts2))
+tmax=min(max(ts1),max(ts2))
+ts=np.logspace(np.log10(tmin),np.log10(tmax),100)
 
 ax.plot(ts1,Ml1,'b-',label='Star 1 (Tidal)')
 ax.plot(ts1,sMl1,'b--',label='Star 1 (Free)')
 ax.plot(ts2,Ml2,'r-',label='Star 2 (Tidal)')
 ax.plot(ts2,sMl2,'r--',label='Star 2 (Free)')
+ax.plot(ts,Ml1_func(ts)+Ml2_func(ts),'k-',linewidth=2,label='Total (Tidal)')
 
 ax.set_xscale("log")
 ax.set_yscale("log")
@@ -293,6 +330,65 @@ ax.set_title(binary.title,position=(0.5,1.02),fontsize=12)
 ax.set_xlim((TAU_MIN,12.0))
 
 ax.set_ylabel(r"$\dot M$ ($M_\odot$/yr)")
+ax.set_xlabel(r"$\\tau$ (Gyr)")
+
+ax.grid(which='both')
+ax.legend(loc='lower left',prop=dict(size=10))
+"""%(rot_dir,rot_dir,
+     binary_dir,binary_dir,
+     star1_dir,star1_dir,
+     star2_dir,star2_dir))
+
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+#MASS-LOSS
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+plotFigure(rot_dir,"binary-XUV",\
+"""
+from BHM.BHMstars import *
+rot=\
+loadConf("%s"+"rotation.conf")+\
+loadConf("%s"+"rotation.data")
+binary=\
+loadConf("%s"+"binary.conf")+\
+loadConf("%s"+"binary.data")
+star1=\
+loadConf("%s"+"star.conf")+\
+loadConf("%s"+"star.data")
+star2=\
+loadConf("%s"+"star.conf")+\
+loadConf("%s"+"star.data")
+
+fig=plt.figure(figsize=(8,6))
+ax=fig.add_axes([0.15,0.1,0.8,0.8])
+
+ts1=rot.star1_binactivity[:,0]
+LXUV1=rot.star1_binactivity[:,13]
+LXUV1_func=interp1d(ts1,LXUV1,kind='slinear')
+sLXUV1=star1.activity[:,13]
+
+ts2=rot.star2_binactivity[:,0]
+LXUV2=rot.star2_binactivity[:,13]
+LXUV2_func=interp1d(ts2,LXUV2,kind='slinear')
+sLXUV2=star2.activity[:,13]
+
+tmin=max(min(ts1),min(ts2))
+tmax=min(max(ts1),max(ts2))
+ts=np.logspace(np.log10(tmin),np.log10(tmax),100)
+
+LSUN=LXSUN/1E7
+ax.plot(ts1,LXUV1/LSUN,'b-',label='Star 1 (Tidal)')
+ax.plot(ts1,sLXUV1/LSUN,'b--',label='Star 1 (Free)')
+ax.plot(ts2,LXUV2/LSUN,'r-',label='Star 2 (Tidal)')
+ax.plot(ts2,sLXUV2/LSUN,'r--',label='Star 2 (Free)')
+ax.plot(ts,(LXUV1_func(ts)+LXUV2_func(ts))/LSUN,'k-',linewidth=2,label='Total (Tidal)')
+
+ax.set_xscale("log")
+ax.set_yscale("log")
+
+ax.set_title(binary.title,position=(0.5,1.02),fontsize=12)
+ax.set_xlim((TAU_MIN,12.0))
+
+ax.set_ylabel(r"$L_{\\rm XUV}/L_{\\rm XUV,\odot,present}$")
 ax.set_xlabel(r"$\\tau$ (Gyr)")
 
 ax.grid(which='both')
@@ -333,7 +429,7 @@ fh.write("""\
     <img width=100%% src="%s/rot-evolution.png">
   </a>
   <br/>
-  <i>Rotational Evolution</i>
+  <i>Rotational Evolution in binary</i>
   (
   <a target="_blank" href="%s/rot-evolution.png.txt">data</a>|
   <a target="_blank" href="%s/BHMreplot.php?dir=%s&plot=rot-evolution.py">replot</a>
@@ -344,15 +440,27 @@ fh.write("""\
     <img width=100%% src="%s/binary-massloss.png">
   </a>
   <br/>
-  <i>Rotational Evolution</i>
+  <i>Mass-loss in binary</i>
   (
   <a target="_blank" href="%s/binary-massloss.png.txt">data</a>|
   <a target="_blank" href="%s/BHMreplot.php?dir=%s&plot=binary-massloss.py">replot</a>
   )
   </td></tr>
+  <tr><td colspan=2>
+  <a target="_blank" href="%s/binary-XUV.png">
+    <img width=100%% src="%s/binary-XUV.png">
+  </a>
+  <br/>
+  <i>Binary XUV Luminosity</i>
+  (
+  <a target="_blank" href="%s/binary-XUV.png.txt">data</a>|
+  <a target="_blank" href="%s/BHMreplot.php?dir=%s&plot=binary-XUV.py">replot</a>
+  )
+  </td></tr>
 </table>
 """%(WEB_DIR,rot_webdir,rot_webdir,rot_webdir,WEB_DIR,rot_webdir,
      rot.k,
+     rot_webdir,rot_webdir,rot_webdir,WEB_DIR,rot_webdir,
      rot_webdir,rot_webdir,rot_webdir,WEB_DIR,rot_webdir,
      rot_webdir,rot_webdir,rot_webdir,WEB_DIR,rot_webdir
      ))

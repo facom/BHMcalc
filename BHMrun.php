@@ -20,7 +20,7 @@ if(preg_match("/template/",$SESSDIR)){
   $wSESSDIR=$wSYSDIR."$SESSID/";
   $SESSDIR=$ROOTDIR.$wSESSDIR;
   shell_exec("mkdir -p $SESSDIR");
-  shell_exec("cp -rf $SYSDIR/template/*.conf $SESSDIR/");
+  shell_exec("cp -rf $SYSDIR/template/* $SESSDIR/");
 }
 ?>
 

@@ -181,7 +181,7 @@ def loadIsochroneSet(Zs=ZSVEC_full,
     for Z in Zs:
         if verbose:print "\tLoading Isochrone for Z = %f..."%Z
         SMiso=dict2obj(dict())
-        Stars='BHM/data/Stars/Padova-Z%.4f.dat'%Z
+        Stars='BHM/data/Stars/Isochrones/Padova-Z%.4f.dat'%Z
         Mmin=0.1
         Mmax=2.0
         try:
@@ -1046,6 +1046,73 @@ def starLXEUV(LX):
     """
     LXEUV=LX
     return LXEUV
+
+def findTrack(model,Z,M,verbose=False):
+    modeldir=DATA_DIR+"Stars/EvoTracks/%s"%model
+
+    if verbose:
+        PRINTOUT("Looking for closest track to Z = %.5f and M = %.2f in model '%s'..."%\
+                     (Z,M,model))
+    if not DIREXISTS(modeldir):
+        PRINTERR("Model '%s' not found."%modeldir)
+        exit(0)
+
+    #FIND THE CLOSEST Z
+    Zdirs=listDirectory(modeldir,"Z*")
+    Zvals=np.array([])
+    for Zdir in Zdirs:
+        matches=re.search("/Z(.+)",Zdir)
+        Zval=float(matches.group(1))
+        Zvals=np.append([Zval],Zvals)
+
+    dlogZ=np.abs(np.log10(Z)-np.log10(Zvals))
+    iZ=dlogZ.argmin()
+    Zfind=Zvals[iZ]
+    dZfind=dlogZ[iZ]/abs(np.log10(Z))
+    Zdir=modeldir+"/Z%.2e"%Zfind
+    if verbose:
+        PRINTOUT("Closest metallicity in model: Z = %.5f (closeness %.1e)."%(Zfind,dZfind))
+        
+    #FIND THE CLOSEST M
+    Mdirs=listDirectory(Zdir,"M_*")
+    Mvals=np.array([])
+    for Mdir in Mdirs:
+        matches=re.search("/M_(.+)\.dat",Mdir)
+        Mval=float(matches.group(1))
+        Mvals=np.append([Mval],Mvals)
+
+    dM=np.abs(M-Mvals)
+    iM=dM.argmin()
+    Mfind=Mvals[iM]
+    dMfind=dM[iM]/M
+    if verbose:
+        PRINTOUT("Closest mass in model: M = %.2f (closeness %.1e)."%(Mfind,dMfind))
+
+    #TRACK LOADING ROUTINE
+    track=loadConf(modeldir+"/track.py")
+    
+    #READ EVOLUTIONARY TRACK
+    try:
+        tfile=Zdir+"/M_%.2f.dat"%Mfind
+        datatrack=track.getTrack(Zfind,Mfind,tfile)
+    except:
+        tfile=Zdir+"/M_%.3f.dat"%Mfind
+        datatrack=track.getTrack(Zfind,Mfind,tfile)
+
+    return [Zfind,dZfind,Mfind,dMfind],datatrack
+
+def trackFunctions(track):
+    trackfunc=dict()
+    ts=track["qt_fun"](track["qt"])
+    g=track["qg_fun"](track["qg"])
+    T=track["qT_fun"](track["qT"])
+    R=track["qR_fun"](track["qR"])
+    L=track["qL_fun"](track["qL"])
+    trackfunc["g"]=interp1d(ts,g,kind='slinear')
+    trackfunc["T"]=interp1d(ts,T,kind='slinear')
+    trackfunc["R"]=interp1d(ts,R,kind='slinear')
+    trackfunc["L"]=interp1d(ts,L,kind='slinear')
+    return dict2obj(trackfunc)
         
 if __name__=="__main__":
     from matplotlib import pyplot as plt
@@ -1066,5 +1133,3 @@ if __name__=="__main__":
     plt.xscale("log")
     plt.yscale("log")
     plt.savefig("tests/RosRX.png")
-
-    

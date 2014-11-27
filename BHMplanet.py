@@ -174,15 +174,20 @@ elif planet.Mg>=0.05:
     #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     PRINTOUT("Planet is an Ice-Gas Giant, Mg = %.3f"%planet.Mg)
     loadIceGasGiantsGrid(DATA_DIR+"IceGasGiants/",
-                         verbose=VERBOSE)
+                         verbose=True)
     planet.type="Ice-Gas Giant"
 
     #----------------------------------------
     #BULK (INSTANTANEOUS) PROPERTIES
     #----------------------------------------
+    if planet.tau>=10:planet.tau=9.0
     planet.Rg,planet.T,planet.Q=PlanetIceGasProperties(planet.Mg,
                                                        planet.tau,
-                                                       planet.fHHe)
+                                                       planet.fHHe,
+                                                       verbose=VERBOSE)
+    if planet.Rg<0:
+        PRINTERR("No planetary model for giants with this mass and composition.")
+        errorCode("RANGE_ERROR");
     planet.Qconv=planet.Q
     planet.R=planet.Rg*RJUP/REARTH
     

@@ -84,7 +84,7 @@ ihz.tau=star1.tau
 
 str_incrit_wd=ihz.str_incrit_wd.replace("'","")
 str_outcrit_wd=ihz.str_outcrit_wd.replace("'","")
-linwd,loutwd=HZbin(star2.M/star1.M,star1.L,star2.L,star1.T,
+linwd,loutwd=HZbin(star2.M/star1.M,star1.Lins,star2.Lins,star1.Tins,
                    binary.abin,
                    crits=[str_incrit_wd,str_outcrit_wd])
 
@@ -93,7 +93,7 @@ Poutwd=PKepler(loutwd,star1.M,star2.M);noutwd=2*np.pi/Poutwd
 
 str_incrit_nr=ihz.str_incrit_nr.replace("'","")
 str_outcrit_nr=ihz.str_outcrit_nr.replace("'","")
-linnr,loutnr,leeq=HZbin(star2.M/star1.M,star1.L,star2.L,star1.T,
+linnr,loutnr,leeq=HZbin(star2.M/star1.M,star1.Lins,star2.Lins,star1.Tins,
                         binary.abin,
                         crits=[str_incrit_nr,str_outcrit_nr],eeq=True)
 Pinnr=PKepler(linnr,star1.M,star2.M);ninnr=2*np.pi/Pinnr
@@ -105,10 +105,10 @@ ihz.leeq=leeq
 #CALCULATE INSOLATION AND PHOTON FLUXES
 ###################################################
 #EMISSION
-power1=planckPower(LAMB0,LAMBINF,star1.T)
-photons1=planckPhotons(LAMB1,LAMB2,star1.T)
-power2=planckPower(LAMB0,LAMBINF,star2.T)
-photons2=planckPhotons(LAMB1,LAMB2,star2.T)
+power1=planckPower(LAMB0,LAMBINF,star1.Tins)
+photons1=planckPhotons(LAMB1,LAMB2,star1.Tins)
+power2=planckPower(LAMB0,LAMBINF,star2.Tins)
+photons2=planckPhotons(LAMB1,LAMB2,star2.Tins)
 
 #EPHEMERIS
 binephem=binary.ephemeris
@@ -154,8 +154,8 @@ for t in ts:
         d2=norm(R2)
         
         #DISSOLVE RATIO
-        dis1=(star1.R*RSUN/(d1*AU))**2
-        dis2=(star2.R*RSUN/(d2*AU))**2
+        dis1=(star1.Rins*RSUN/(d1*AU))**2
+        dis2=(star2.Rins*RSUN/(d2*AU))**2
 
         #FLUX
         flux1=power1*dis1
