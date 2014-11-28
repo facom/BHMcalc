@@ -1279,7 +1279,7 @@ def StandoffDistance(M,Pdyn,Rp,
     Rs: Standoff distance (m)
     """
     Mrel=(M/MDIPSAT)
-    Pswrel=((MP*Pdyn)/PDYNSAT)
+    Pswrel=((Pdyn)/PDYNSAT)
     Rs=RSSAT*Mrel**(1.0/nM)*Pswrel**(-1.0/nP)
     Rs=Rs/Rp
     if Rs<1:Rs=1
@@ -1314,7 +1314,7 @@ def StandoffDistance(M,Pdyn,Rp,
         Rsref=9.75*REARTH
 
     Mrel=(M/Mref)
-    Pswrel=((MP*Pdyn)/Pref)
+    Pswrel=((Pdyn)/Pref)
     Rs=Rsref*Mrel**(1.0/nM)*Pswrel**(-1.0/nP)
     Rs=Rs/Rp
     if Rs<1:Rs=1

@@ -1117,32 +1117,39 @@ def trackFunctions(track):
     trackfunc["L"]=interp1d(ts,L,kind='slinear')
     return dict2obj(trackfunc)
 
-def stellarWind(M,R,Mdot,r,type="Terminal"):
+def stellarWind(M,R,Mdot,r,vtype="Terminal"):
     """
     Mdot in solar masses per year
     """
     
     #MDOT AND r IN SI
-    Mdot*=MSUN/YEAR
-    r*=AU
+    MdotSI=Mdot*MSUN/YEAR
+    rSI=r*AU
 
     #ESCAPE VELOCITY
     vesc=np.sqrt(2*GCONST*M*MSUN/(2*R*RSUN))
 
-    if type=="Terminal":
+    if vtype=="Terminal":
         """
         Assuming constant velocity
         """
         v=vesc
-        n=(Mdot/v)/(4*PI*r**2)/MP
+        n=(MdotSI/v)/(4*PI*rSI**2)/MP
         pass
-    elif type=="Isothermal":
+    elif vtype=="Isothermal":
         """
         Assuming isothermal wind (Parker's Model)
         """
         pass
     
     return v,n
+
+def binaryWind(M1,R1,M1dot,M2,R2,M2dot,r,vtype='Terminal'):
+    v1,n1=stellarWind(M1,R1,M1dot,r,vtype=vtype)
+    v2,n2=stellarWind(M2,R2,M2dot,r,vtype=vtype)
+    Psw=0.6*MP*(n1*v1**2+n2*v2**2)
+    Fsw=n1*v1+n2*v2
+    return Psw,Fsw
         
 if __name__=="__main__":
     from matplotlib import pyplot as plt

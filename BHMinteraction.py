@@ -90,6 +90,9 @@ planet,planet_dir,planet_str,planet_hash,planet_liv,planet_stg=\
 planet+=loadConf(planet_dir+"planet.data")
 tp,thermevol=interpMatrix(planet.thermevol)
 
+#print tp,planet.thermevol[0,9],thermevol[9](0.005)
+#exit(0)
+
 ###################################################
 #LOAD ENV OBJECT
 ###################################################
@@ -142,11 +145,21 @@ ts,star2.binactivity_funcs=interpMatrix(rot.star2_binactivity)
 
 env.lumflux=stack(37)
 for t in ts:
-
-    t=1.00
+    
+    #t=4.56
     #CUMULATOR
     lumflux=[]
 
+    #STELLAR PROPERTIES AT t
+    R1=star1.Rfunc(t)
+    R2=star2.Rfunc(t)
+
+    Mdot1=star1.binactivity_funcs[7](t)
+    Mdot2=star2.binactivity_funcs[7](t)
+
+    sMdot1=star1.activity_funcs[7](t)
+    sMdot2=star2.activity_funcs[7](t)
+    
     #//////////////////////////////
     #LUMINOSITIES
     #//////////////////////////////
@@ -221,79 +234,80 @@ for t in ts:
     #%%%%%%%%%%%%%%%%%%%%
     #INNER
     r=ihz.linwd
-    PSWin,FSWin=binaryWind(r,
-                           tau_rot1,star1.M,star1.Rfunc(t),
-                           tau_rot2,star2.M,star2.Rfunc(t),
-                           early=env.str_earlywind)
+    PSWin,FSWin=binaryWind(star1.M,R1,Mdot1,
+                           star2.M,R2,Mdot2,
+                           r,
+                           vtype='Terminal')
     #OUTER
     r=ihz.loutwd
-    PSWout,FSWout=binaryWind(r,
-                             tau_rot1,star1.M,star1.Rfunc(t),
-                             tau_rot2,star2.M,star2.Rfunc(t),
-                             early=env.str_earlywind)
-    
+    PSWout,FSWout=binaryWind(star1.M,R1,Mdot1,
+                             star2.M,R2,Mdot2,
+                             r,
+                             vtype='Terminal')
     #PLANET
     r=planet.aorb
-    PSWp,FSWp=binaryWind(r,
-                         tau_rot1,star1.M,star1.Rfunc(t),
-                         tau_rot2,star2.M,star2.Rfunc(t),
-                         early=env.str_earlywind)
+    PSWp,FSWp=binaryWind(star1.M,R1,Mdot1,
+                         star2.M,R2,Mdot2,
+                         r,
+                         vtype='Terminal')
+
     lumflux+=[PSWin,FSWin/SWPEL,PSWout,FSWout/SWPEL,PSWp,FSWp/SWPEL]
 
     #%%%%%%%%%%%%%%%%%%%%
     #NO TIDAL
     #%%%%%%%%%%%%%%%%%%%%
-    tau=t
-
     #INNER
     r=ihz.linwd
-    ntPSWin,ntFSWin=binaryWind(r,
-                               tau,star1.M,star1.Rfunc(t),
-                               tau,star2.M,star2.Rfunc(t),
-                               early=env.str_earlywind)
+    ntPSWin,ntFSWin=binaryWind(star1.M,R1,sMdot1,
+                               star2.M,R2,sMdot2,
+                               r,
+                               vtype='Terminal')
+
     #OUTER
     r=ihz.loutwd
-    ntPSWout,ntFSWout=binaryWind(r,
-                                 tau,star1.M,star1.Rfunc(t),
-                                 tau,star2.M,star2.Rfunc(t),
-                                 early=env.str_earlywind)
+    ntPSWout,ntFSWout=binaryWind(star1.M,R1,sMdot1,
+                                 star2.M,R2,sMdot2,
+                                 r,
+                                 vtype='Terminal')
     
     #PLANET
     r=planet.aorb
-    ntPSWp,ntFSWp=binaryWind(r,
-                             tau,star1.M,star1.Rfunc(t),
-                             tau,star2.M,star2.Rfunc(t),
-                             early=env.str_earlywind)
-    lumflux+=[ntPSWin,ntFSWin/SWPEL,ntPSWout,ntFSWout/SWPEL,ntPSWp,ntFSWp/SWPEL]
+    ntPSWp,ntFSWp=binaryWind(star1.M,R1,sMdot1,
+                             star2.M,R2,sMdot2,
+                             r,
+                             vtype='Terminal')
 
+    lumflux+=[ntPSWin,ntFSWin/SWPEL,ntPSWout,ntFSWout/SWPEL,ntPSWp,ntFSWp/SWPEL]
+    
     #%%%%%%%%%%%%%%%%%%%%
     #SINGLE STAR
     #%%%%%%%%%%%%%%%%%%%%
-    tau=t
-
     #INNER
     r=star1.lins[0]
-    v,n=vnGreissmeier(r,tau,star1.M,star1.Rfunc(t),early=env.str_earlywind)
-    PSWins,FSWins=n*v**2,n*v
-
+    v,n=stellarWind(star1.M,R1,sMdot1,r,vtype='Terminal')
+    PSWins,FSWins=0.6*MP*n*v**2,n*v
+    
     #OUTER
     r=star1.louts[-1]
-    v,n=vnGreissmeier(r,tau,star1.M,star1.Rfunc(t),early=env.str_earlywind)
-    PSWouts,FSWouts=n*v**2,n*v
+    v,n=stellarWind(star1.M,R1,sMdot1,r,vtype='Terminal')
+    PSWouts,FSWouts=0.6*MP*n*v**2,n*v
     
     #LSUN
     r=star1.lsun
-    v,n=vnGreissmeier(r,tau,star1.M,star1.Rfunc(t),early=env.str_earlywind)
+    v,n=stellarWind(star1.M,R1,sMdot1,r,vtype='Terminal')
     PSWeeqs,FSWeeqs=n*v**2,n*v
-    
+
     lumflux+=[PSWins,FSWins/SWPEL,PSWouts,FSWouts/SWPEL,PSWeeqs,FSWeeqs/SWPEL]
 
     #//////////////////////////////
     #STANDOFF DISTANCE
     #//////////////////////////////
-    Mdip=thermevol[9](t)
+    try:Mdip=thermevol[9](t)
+    except:Mdip=thermevol[9](TAU_MIN)
+
     Rs=StandoffDistance(Mdip*MDIPE,PSWp,planet.R*REARTH,
                         objref=env.str_refobj,nM=env.nM,nP=env.nP)
+    
     ntRs=StandoffDistance(Mdip*MDIPE,ntPSWp,planet.R*REARTH,
                           objref=env.str_refobj,nM=env.nM,nP=env.nP)
     lumflux+=[Rs,ntRs]
@@ -467,8 +481,9 @@ ax.plot(ts,env.lumflux[:,11],'k-',label=r'Planet $a_{\\rm p}$=%%.2f AU'%%planet.
 ax.plot(ts,env.lumflux[:,14],'k--',label='Planet (no tidal)')
 ax.plot(ts,env.lumflux[:,17],'k:',label='Earth-analogue single primary')
 
+ax.set_xscale("log")
 ax.set_yscale("log")
-ax.set_xlim((env.tauini,rot.taums))
+ax.set_xlim((env.tauini,rot.taumaxrot))
 
 ax.set_title(env.title,position=(0.5,1.02),fontsize=12)
 ax.legend(loc='upper right',prop=dict(size=10))
@@ -514,8 +529,9 @@ ax.plot(ts,env.lumflux[:,23],'k-',label=r'Planet $a_{\\rm p}$=%%.2f AU'%%planet.
 ax.plot(ts,env.lumflux[:,29],'k--',label='Planet (no tidal)')
 ax.plot(ts,env.lumflux[:,35],'k:',label='Earth-analogue single primary')
 
+ax.set_xscale("log")
 ax.set_yscale("log")
-ax.set_xlim((env.tauini,rot.taums))
+ax.set_xlim((env.tauini,rot.taumaxrot))
 
 ax.set_title(env.title,position=(0.5,1.02),fontsize=12)
 ax.legend(loc='upper right',prop=dict(size=10))
@@ -570,7 +586,9 @@ ymin,ymean,ymax=minmeanmaxArrays(arrs)
 expscl=int(np.log10(ymax))
 scl=10**expscl
 
+ax.set_xscale("log")
 ax.set_yscale("log")
+
 ax.set_title(env.title,position=(0.5,1.02),fontsize=12)
 ax.legend(loc='lower right',prop=dict(size=10))
 ax.set_xlabel(r"$\\tau$ (Gyr)")
@@ -585,7 +603,7 @@ ax.set_ylabel(r"$\int_{%%.2f\,{\\rm Gyr}}^{\\tau} F_{\\rm XUV}(t)\,dt$ (${\\rm j
 # ax.set_yticklabels(yl)
 
 ax.set_ylim((max(ymin,ymean/10),ymax))
-ax.set_xlim((env.tauini,rot.taums))
+ax.set_xlim((env.tauini,rot.taumaxrot))
 """%(env_dir,env_dir,
      planet_dir,planet_dir,
      rot_dir,rot_dir
@@ -635,7 +653,9 @@ ymin,ymean,ymax=minmeanmaxArrays(arrs)
 expscl=int(np.log10(ymax))
 scl=10**expscl
 
+ax.set_xscale("log")
 ax.set_yscale("log")
+
 ax.set_title(env.title,position=(0.5,1.02),fontsize=12)
 ax.legend(loc='lower right',prop=dict(size=10))
 ax.set_xlabel(r"$\\tau$ (Gyr)")
@@ -650,7 +670,7 @@ ax.set_ylabel(r"$\int_{%%.2f\,{\\rm Gyr}}^{\\tau} F_{\\rm SW}(t)\,dt$ (${\\rm io
 # ax.set_yticklabels(yl)
 
 ax.set_ylim((max(ymin,ymean/10),ymax))
-ax.set_xlim((env.tauini,rot.taums))
+ax.set_xlim((env.tauini,rot.taumaxrot))
 """%(env_dir,env_dir,
      planet_dir,planet_dir,
      rot_dir,rot_dir
