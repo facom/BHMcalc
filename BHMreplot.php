@@ -15,6 +15,11 @@
 ###################################################
 */
 include_once("web/BHM.php");
+if(!file_exists("web/BHMprotect.php")){
+  echo "This feature is not available.";
+  return;
+}
+include_once("web/BHMprotect.php");
 ?>
 <?PHP
 ////////////////////////////////////////////////////
