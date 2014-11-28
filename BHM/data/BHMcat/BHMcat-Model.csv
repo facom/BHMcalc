@@ -1,0 +1,55 @@
+BHMCatS,SysID,star1_tau,star1_taums,star1_Z,star1_FeH,star2_tau,star2_taums,star2_Z,star2_FeH,planet_fHHe,planet_CMF,planet_tau,planet_Prot,hz_str_incrit_wd,hz_str_outcrit_wd,hz_str_incrit_nr,hz_str_outcrit_nr,rotation_k,interaction_tauini,interaction_tauref,interaction_str_earlywind,interaction_nM,interaction_nP,interaction_str_refobj,interaction_Mmin,interaction_Mmax,interaction_alpha,interaction_muatm
+str,str,float,float,float,float,float,float,float,float,float,float,float,float,str,str,str,str,float,float,float,str,float,float,str,float,float,float,float
+Cat.Id.,System Id.,Star1 Age,Star1 Main Seq.,Z_1,[Fe/H]_1,Star2 Age,Star2 Main Seq.,Z_2,[Fe/H]_2,"f_H,He",CMF,\tau,P_rot,Wide HZ In.Edge,Wide HZ Out.Edge,Narrow HZ In.Edge,Narrow HZ Out.Edge,k_rot,\tau_ini,\tau_ref,Early Wind,n_M,n_P,Ref. Obj.,M_min,M_max,\alpha,\mu_atm
+1,1,1,1,0,0,1,1,0,0,"0,8","0,3",1,1,'recent venus','early mars','runaway greenhouse','maximum greenhouse',1,"0,1",2,'trend',3,6,'Earth',"0,01",10,"0,3",44
+BHMCatS0001D,Kepler-16 ,3,1,0,"-0,3",3,1,0,"-0,3","0,8","0,3",3,1,'recent venus','early mars','runaway greenhouse','maximum greenhouse',1,"0,1",2,'trend',3,6,'Earth',"0,01",10,"0,3",44
+BHMCatS0002D,Kepler-34,"2,45",1,0,"-0,263","2,45",1,0,"-0,263","0,8","0,3","2,45",1,'recent venus','early mars','runaway greenhouse','maximum greenhouse',1,"0,1",2,'trend',3,6,'Earth',"0,01",10,"0,3",44
+BHMCatS0003D,Kepler-35,10,1,0,"-0,603",10,1,0,"-0,603","0,8","0,3",10,1,'recent venus','early mars','runaway greenhouse','maximum greenhouse',1,"0,1",2,'trend',3,6,'Earth',"0,01",10,"0,3",44
+BHMCatS0004D,Kepler-38,10,1,0,"-0,11",10,1,0,"-0,11","0,8","0,3",10,1,'recent venus','early mars','runaway greenhouse','maximum greenhouse',1,"0,1",2,'trend',3,6,'Earth',"0,01",10,"0,3",44
+BHMCatS0005D,Kepler-47,1,1,0,"-0,25",1,1,0,"-0,25","0,8","0,3",1,1,'recent venus','early mars','runaway greenhouse','maximum greenhouse',1,"0,1",2,'trend',3,6,'Earth',"0,01",10,"0,3",44
+BHMCatS0006D,Kepler-64,"1,5",1,0,"-0,15","1,5",1,0,"-0,15","0,8","0,3","1,5",1,'recent venus','early mars','runaway greenhouse','maximum greenhouse',1,"0,1",2,'trend',3,6,'Earth',"0,01",10,"0,3",44
+BHMCatS0007D,Kepler-413,1,1,0,"-0,2",1,1,0,"-0,2","0,8","0,3",1,1,'recent venus','early mars','runaway greenhouse','maximum greenhouse',1,"0,1",2,'trend',3,6,'Earth',"0,01",10,"0,3",44
+BHMCatS0008D,KIC-9632895,"1,75",1,0,"-0,34","1,75",1,0,"-0,34","0,8","0,3","1,75",1,'recent venus','early mars','runaway greenhouse','maximum greenhouse',1,"0,1",2,'trend',3,6,'Earth',"0,01",10,"0,3",44
+BHMCatS0009V,NICHE-001,1,1,0,0,1,1,0,0,"0,8","0,3",1,1,'recent venus','early mars','runaway greenhouse','maximum greenhouse',1,"0,1",2,'trend',3,6,'Earth',"0,01",10,"0,3",44
+BHMCatS0010V,NICHE-002,1,1,0,0,1,1,0,0,"0,8","0,3",1,1,'recent venus','early mars','runaway greenhouse','maximum greenhouse',1,"0,1",2,'trend',3,6,'Earth',"0,01",10,"0,3",44
+BHMCatS0011V,NICHE-003,1,1,0,0,1,1,0,0,"0,8","0,3",1,1,'recent venus','early mars','runaway greenhouse','maximum greenhouse',1,"0,1",2,'trend',3,6,'Earth',"0,01",10,"0,3",44
+BHMCatS0012V,NICHE-004,1,1,0,0,1,1,0,0,"0,8","0,3",1,1,'recent venus','early mars','runaway greenhouse','maximum greenhouse',1,"0,1",2,'trend',3,6,'Earth',"0,01",10,"0,3",44
+BHMCatS0013V,NICHE-005,1,1,0,0,1,1,0,0,"0,8","0,3",1,1,'recent venus','early mars','runaway greenhouse','maximum greenhouse',1,"0,1",2,'trend',3,6,'Earth',"0,01",10,"0,3",44
+BHMCatS0014V,NICHE-006,1,1,0,0,1,1,0,0,"0,8","0,3",1,1,'recent venus','early mars','runaway greenhouse','maximum greenhouse',1,"0,1",2,'trend',3,6,'Earth',"0,01",10,"0,3",44
+BHMCatS0015V,NICHE-007,1,1,0,0,1,1,0,0,"0,8","0,3",1,1,'recent venus','early mars','runaway greenhouse','maximum greenhouse',1,"0,1",2,'trend',3,6,'Earth',"0,01",10,"0,3",44
+BHMCatS0016V,NICHE-008,1,1,0,0,1,1,0,0,"0,8","0,3",1,1,'recent venus','early mars','runaway greenhouse','maximum greenhouse',1,"0,1",2,'trend',3,6,'Earth',"0,01",10,"0,3",44
+BHMCatS0017V,NICHE-009,1,1,0,0,1,1,0,0,"0,8","0,3",1,1,'recent venus','early mars','runaway greenhouse','maximum greenhouse',1,"0,1",2,'trend',3,6,'Earth',"0,01",10,"0,3",44
+BHMCatS0018V,NICHE-010,1,1,0,0,1,1,0,0,"0,8","0,3",1,1,'recent venus','early mars','runaway greenhouse','maximum greenhouse',1,"0,1",2,'trend',3,6,'Earth',"0,01",10,"0,3",44
+BHMCatS0019V,NICHE-011,1,1,0,0,1,1,0,0,"0,8","0,3",1,1,'recent venus','early mars','runaway greenhouse','maximum greenhouse',1,"0,1",2,'trend',3,6,'Earth',"0,01",10,"0,3",44
+BHMCatS0020V,NICHE-012,1,1,0,0,1,1,0,0,"0,8","0,3",1,1,'recent venus','early mars','runaway greenhouse','maximum greenhouse',1,"0,1",2,'trend',3,6,'Earth',"0,01",10,"0,3",44
+BHMCatS0021P,KX Cnc,1,1,0,0,1,1,0,0,"0,8","0,3",1,1,'recent venus','early mars','runaway greenhouse','maximum greenhouse',1,"0,1",2,'trend',3,6,'Earth',"0,01",10,"0,3",44
+BHMCatS0022P,V54 M55,1,1,0,0,1,1,0,0,"0,8","0,3",1,1,'recent venus','early mars','runaway greenhouse','maximum greenhouse',1,"0,1",2,'trend',3,6,'Earth',"0,01",10,"0,3",44
+BHMCatS0023P,V66 M4,1,1,0,0,1,1,0,0,"0,8","0,3",1,1,'recent venus','early mars','runaway greenhouse','maximum greenhouse',1,"0,1",2,'trend',3,6,'Earth',"0,01",10,"0,3",44
+BHMCatS0024P,EW Ori,1,1,0,0,1,1,0,0,"0,8","0,3",1,1,'recent venus','early mars','runaway greenhouse','maximum greenhouse',1,"0,1",2,'trend',3,6,'Earth',"0,01",10,"0,3",44
+BHMCatS0025P,V785 Cep,1,1,0,0,1,1,0,0,"0,8","0,3",1,1,'recent venus','early mars','runaway greenhouse','maximum greenhouse',1,"0,1",2,'trend',3,6,'Earth',"0,01",10,"0,3",44
+BHMCatS0026P,M4-V69,"10,9",1,0,0,"10,9",1,0,0,"0,8","0,3","10,9",1,'recent venus','early mars','runaway greenhouse','maximum greenhouse',1,"0,1",2,'trend',3,6,'Earth',"0,01",10,"0,3",44
+BHMCatS0027P,LSPM J1112+7626,1,1,0,0,1,1,0,0,"0,8","0,3",1,1,'recent venus','early mars','runaway greenhouse','maximum greenhouse',1,"0,1",2,'trend',3,6,'Earth',"0,01",10,"0,3",44
+BHMCatS0028P,V69-47 Tuc ,1,1,0,0,1,1,0,0,"0,8","0,3",1,1,'recent venus','early mars','runaway greenhouse','maximum greenhouse',1,"0,1",2,'trend',3,6,'Earth',"0,01",10,"0,3",44
+BHMCatS0029P,AI Phe,1,1,0,0,1,1,0,0,"0,8","0,3",1,1,'recent venus','early mars','runaway greenhouse','maximum greenhouse',1,"0,1",2,'trend',3,6,'Earth',"0,01",10,"0,3",44
+BHMCatS0030P,LL Aqr,1,1,0,0,1,1,0,0,"0,8","0,3",1,1,'recent venus','early mars','runaway greenhouse','maximum greenhouse',1,"0,1",2,'trend',3,6,'Earth',"0,01",10,"0,3",44
+BHMCatS0031P,V565 Lyr,1,1,0,0,1,1,0,0,"0,8","0,3",1,1,'recent venus','early mars','runaway greenhouse','maximum greenhouse',1,"0,1",2,'trend',3,6,'Earth',"0,01",10,"0,3",44
+BHMCatS0032P,LV Her,1,1,0,0,1,1,0,0,"0,8","0,3",1,1,'recent venus','early mars','runaway greenhouse','maximum greenhouse',1,"0,1",2,'trend',3,6,'Earth',"0,01",10,"0,3",44
+BHMCatS0033P,KIC 6131659,1,1,0,0,1,1,0,0,"0,8","0,3",1,1,'recent venus','early mars','runaway greenhouse','maximum greenhouse',1,"0,1",2,'trend',3,6,'Earth',"0,01",10,"0,3",44
+BHMCatS0034P,V568 Lyr ,1,1,0,0,1,1,0,0,"0,8","0,3",1,1,'recent venus','early mars','runaway greenhouse','maximum greenhouse',1,"0,1",2,'trend',3,6,'Earth',"0,01",10,"0,3",44
+BHMCatS0035P,TYC 176-2950-1,1,1,0,0,1,1,0,0,"0,8","0,3",1,1,'recent venus','early mars','runaway greenhouse','maximum greenhouse',1,"0,1",2,'trend',3,6,'Earth',"0,01",10,"0,3",44
+BHMCatS0036P,BF Dra,1,1,0,0,1,1,0,0,"0,8","0,3",1,1,'recent venus','early mars','runaway greenhouse','maximum greenhouse',1,"0,1",2,'trend',3,6,'Earth',"0,01",10,"0,3",44
+BHMCatS0037P,HP Dra,1,1,0,0,1,1,0,0,"0,8","0,3",1,1,'recent venus','early mars','runaway greenhouse','maximum greenhouse',1,"0,1",2,'trend',3,6,'Earth',"0,01",10,"0,3",44
+BHMCatS0038P,RW Lac,1,1,0,0,1,1,0,0,"0,8","0,3",1,1,'recent venus','early mars','runaway greenhouse','maximum greenhouse',1,"0,1",2,'trend',3,6,'Earth',"0,01",10,"0,3",44
+BHMCatS0039P,HS Aur,1,1,0,0,1,1,0,0,"0,8","0,3",1,1,'recent venus','early mars','runaway greenhouse','maximum greenhouse',1,"0,1",2,'trend',3,6,'Earth',"0,01",10,"0,3",44
+BHMCatS0040P,TV Cet,1,1,0,0,1,1,0,0,"0,8","0,3",1,1,'recent venus','early mars','runaway greenhouse','maximum greenhouse',1,"0,1",2,'trend',3,6,'Earth',"0,01",10,"0,3",44
+BHMCatS0041P,ASAS J162637-5042.8 ,1,1,0,0,1,1,0,0,"0,8","0,3",1,1,'recent venus','early mars','runaway greenhouse','maximum greenhouse',1,"0,1",2,'trend',3,6,'Earth',"0,01",10,"0,3",44
+BHMCatS0042P,2MASS J19071662+4639532 ,1,1,0,0,1,1,0,0,"0,8","0,3",1,1,'recent venus','early mars','runaway greenhouse','maximum greenhouse',1,"0,1",2,'trend',3,6,'Earth',"0,01",10,"0,3",44
+BHMCatS0043P,M4-V66,1,1,0,0,1,1,0,0,"0,8","0,3",1,1,'recent venus','early mars','runaway greenhouse','maximum greenhouse',1,"0,1",2,'trend',3,6,'Earth',"0,01",10,"0,3",44
+BHMCatS0044P,CD-80 28,1,1,0,0,1,1,0,0,"0,8","0,3",1,1,'recent venus','early mars','runaway greenhouse','maximum greenhouse',1,"0,1",2,'trend',3,6,'Earth',"0,01",10,"0,3",44
+BHMCatS0045P,V1143 Cyg,1,1,0,0,1,1,0,0,"0,8","0,3",1,1,'recent venus','early mars','runaway greenhouse','maximum greenhouse',1,"0,1",2,'trend',3,6,'Earth',"0,01",10,"0,3",44
+BHMCatS0046P,ASAS J085524-4411.3 ,1,1,0,0,1,1,0,0,"0,8","0,3",1,1,'recent venus','early mars','runaway greenhouse','maximum greenhouse',1,"0,1",2,'trend',3,6,'Earth',"0,01",10,"0,3",44
+BHMCatS0047P,EW Ori,1,1,0,0,1,1,0,0,"0,8","0,3",1,1,'recent venus','early mars','runaway greenhouse','maximum greenhouse',1,"0,1",2,'trend',3,6,'Earth',"0,01",10,"0,3",44
+BHMCatS0048P,FM Leo,1,1,0,0,1,1,0,0,"0,8","0,3",1,1,'recent venus','early mars','runaway greenhouse','maximum greenhouse',1,"0,1",2,'trend',3,6,'Earth',"0,01",10,"0,3",44
+BHMCatS0049P,BW Aqr,1,1,0,0,1,1,0,0,"0,8","0,3",1,1,'recent venus','early mars','runaway greenhouse','maximum greenhouse',1,"0,1",2,'trend',3,6,'Earth',"0,01",10,"0,3",44
+BHMCatS0050P,NGC188 KR V12,1,1,0,0,1,1,0,0,"0,8","0,3",1,1,'recent venus','early mars','runaway greenhouse','maximum greenhouse',1,"0,1",2,'trend',3,6,'Earth',"0,01",10,"0,3",44
+BHMCatS0051P,BD-02 873,1,1,0,0,1,1,0,0,"0,8","0,3",1,1,'recent venus','early mars','runaway greenhouse','maximum greenhouse',1,"0,1",2,'trend',3,6,'Earth',"0,01",10,"0,3",44
