@@ -849,7 +849,7 @@ def totalAcceleration(t,star,starf,binary,verbose=False,qreturn=False):
     else:
         return acc
 
-def rotationalAcceleration(Omega,t,params):
+def rotationalAcceleration(Omega,t,params,full=False):
     star=params['star']
     starf=params['starf']
     binary=params['binary']
@@ -909,7 +909,10 @@ def rotationalAcceleration(Omega,t,params):
 
     #print "t,w = ",t,Omega
     #print "dOdt = ",dOdt
-    return dOdt
+    if full:
+        return dOdt_tide,dOdt_cont,dOdt_wind,dOdt
+    else:
+        return dOdt
 
 def starLXUV(Ls,t):
     """
@@ -1113,6 +1116,33 @@ def trackFunctions(track):
     trackfunc["R"]=interp1d(ts,R,kind='slinear')
     trackfunc["L"]=interp1d(ts,L,kind='slinear')
     return dict2obj(trackfunc)
+
+def stellarWind(M,R,Mdot,r,type="Terminal"):
+    """
+    Mdot in solar masses per year
+    """
+    
+    #MDOT AND r IN SI
+    Mdot*=MSUN/YEAR
+    r*=AU
+
+    #ESCAPE VELOCITY
+    vesc=np.sqrt(2*GCONST*M*MSUN/(2*R*RSUN))
+
+    if type=="Terminal":
+        """
+        Assuming constant velocity
+        """
+        v=vesc
+        n=(Mdot/v)/(4*PI*r**2)/MP
+        pass
+    elif type=="Isothermal":
+        """
+        Assuming isothermal wind (Parker's Model)
+        """
+        pass
+    
+    return v,n
         
 if __name__=="__main__":
     from matplotlib import pyplot as plt

@@ -200,6 +200,9 @@ C;
 //STARS
 //&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
 $system=preg_replace("/'/","",$binary_str_SysID);
+
+$star1_str_model_sel=selectFunction("star1_str_model",$MODELS,$star1_str_model,
+				    $options="class='sensitive' onchange='idSystem();'");
 $star_form1=<<<F
   <!-- //////////////////////////////////////////////////////////// -->
   <!-- STAR 1 -->
@@ -293,7 +296,8 @@ $star_form1=<<<F
 	      <tr>
 		<td class="name">Stellar Model:</td>
 		<td class="field">
-		  <input class="sensistive" type="text" id="test" name="star1_str_model" value="$star1_str_model" onchange="idSystem();">
+		  $star1_str_model_sel
+		  <!--<input class="sensistive" type="text" id="test" name="star1_str_model" value="$star1_str_model" onchange="idSystem();">-->
 		</td>
 	      </tr>
 	      <tr>
@@ -386,6 +390,8 @@ $star_form1=<<<F
   </div>
 F;
 
+$star2_str_model_sel=selectFunction("star2_str_model",$MODELS,$star2_str_model,
+				    $options="class='sensitive' onchange='idSystem();'");
 $star_form2=<<<F
   <!-- //////////////////////////////////////////////////////////// -->
   <!-- STAR 1 -->
@@ -479,7 +485,8 @@ $star_form2=<<<F
 	      <tr>
 		<td class="name">Stellar Model:</td>
 		<td class="field">
-		  <input class="sensistive" type="text" id="test" name="star2_str_model" value="$star2_str_model" onchange="idSystem();">
+		  $star2_str_model_sel
+		  <!--<input class="sensistive" type="text" id="test" name="star2_str_model" value="$star2_str_model" onchange="idSystem();">-->
 		</td>
 	      </tr>
 	      <tr>
@@ -891,6 +898,14 @@ F;
 //&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
 //HABITABLE ZONE
 //&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+$hz_str_incrit_wd_sel=selectFunction("hz_str_incrit_wd",$HZINMODELS,$hz_str_incrit_wd,
+				     $options="");
+$hz_str_incrit_nr_sel=selectFunction("hz_str_incrit_nr",$HZINMODELS,$hz_str_incrit_nr,
+				     $options="");
+$hz_str_outcrit_wd_sel=selectFunction("hz_str_outcrit_wd",$HZOUTMODELS,$hz_str_outcrit_wd,
+				     $options="");
+$hz_str_outcrit_nr_sel=selectFunction("hz_str_outcrit_nr",$HZOUTMODELS,$hz_str_outcrit_nr,
+				     $options="");
 $hz_form=<<<F
   <div class="tabbertab" id="hz" title="Habitable Zone">
   <form id="hz_form" action="BHMrun.php">
@@ -905,8 +920,8 @@ $hz_form=<<<F
 		<!-- ---------------------------------------- -->
 		<td class="name">Inner edge (wider HZ):</td>
 		<td class="field">
-		  <input type="text" name="hz_str_incrit_wd" value="$hz_str_incrit_wd">
-		  days
+		  $hz_str_incrit_wd_sel
+		  <!--<input type="text" name="hz_str_incrit_wd" value="$hz_str_incrit_wd">-->
 		</td>
 	      </tr>
 	      <tr>
@@ -918,7 +933,8 @@ $hz_form=<<<F
 	      <!-- ---------------------------------------- -->
 		<td class="name">Outer edge (wider HZ):</td>
 		<td class="field">
-		  <input type="text" name="hz_str_outcrit_wd" value="$hz_str_outcrit_wd">
+		  $hz_str_outcrit_wd_sel
+		  <!--<input type="text" name="hz_str_outcrit_wd" value="$hz_str_outcrit_wd">-->
 		</td>
 	      </tr>
 	      <tr>
@@ -930,8 +946,8 @@ $hz_form=<<<F
 		<!-- ---------------------------------------- -->
 		<td class="name">Inner edge (conservative HZ):</td>
 		<td class="field">
-		  <input type="text" name="hz_str_incrit_nr" value="$hz_str_incrit_nr">
-		  days
+		  $hz_str_incrit_nr_sel
+		  <!--<input type="text" name="hz_str_incrit_nr" value="$hz_str_incrit_nr">-->
 		</td>
 	      </tr>
 	      <tr>
@@ -943,7 +959,8 @@ $hz_form=<<<F
 	      <!-- ---------------------------------------- -->
 		<td class="name">Outer edge (conservative HZ):</td>
 		<td class="field">
-		  <input type="text" name="hz_str_outcrit_nr" value="$hz_str_outcrit_nr">
+		  $hz_str_outcrit_nr_sel
+		  <!--<input type="text" name="hz_str_outcrit_nr" value="$hz_str_outcrit_nr">-->
 		</td>
 	      </tr>
 	      <tr>
@@ -1037,6 +1054,9 @@ F;
 //&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
 //INTERACTION
 //&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+$interaction_str_refobj_sel=selectFunction("interaction_str_refobj",$REFOBJS,
+					   $interaction_str_refobj,
+					   $options="");
 $int_form=<<<F
   <div class="tabbertab" id="summary" title="Binary-Planet Interaction">
   <form id="interaction_form" action="BHMrun.php">
@@ -1070,26 +1090,15 @@ $int_form=<<<F
 	      </tr>
 	      <tr>
 		<td class="help" colspan=2>
-		  Reference time.
-		</td>
-	      </tr>
-	      <!-- ---------------------------------------- -->
-	      <tr>
-		<td class="name">Early-wind assumption:</td>
-		<td class="field">
-		  <input type="text" name="interaction_str_earlywind" value="$interaction_str_earlywind">
-		</td>
-	      </tr>
-	      <tr>
-		<td class="help" colspan=2>
-		  Available: 'trend', 'constant'
+		  Reference time for mass-loss calculations.
 		</td>
 	      </tr>
 	      <!-- ---------------------------------------- -->
 	      <tr>
 		<td class="name">Magnetosphere Reference Object:</td>
 		<td class="field">
-		  <input type="text" name="interaction_str_refobj" value="$interaction_str_refobj">
+		  $interaction_str_refobj_sel		  
+		  <!--<input type="text" name="interaction_str_refobj" value="$interaction_str_refobj">-->
 		</td>
 	      </tr>
 	      <tr>

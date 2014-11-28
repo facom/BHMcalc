@@ -97,14 +97,10 @@ env,env_str,env_hash,env_dir=\
     makeObject("interaction",sys_dir+"/"+env_conf,qover=qover)
 env_webdir=WEB_DIR+env_dir
 PRINTOUT("Object hash:%s"%env_hash)
-
-env.str_earlywind=env.str_earlywind.replace("'","")
 env.str_refobj=env.str_refobj.replace("'","")
 ###################################################
 #CALCULATE ENVIRONMENTAL CONDITIONS
 ###################################################
-
-#### START COMMENT ####
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 #FLUXES
@@ -135,36 +131,35 @@ Intflux Data:
 22:PSWins, 23:FSWins, 24:PSWouts, 25:FSWouts, 26:PSWeeqs, 27:FSWeeqs
 """
 
-ts=chopArray(star1.evotrack[:,0],env.tauini,rot.taums)
+ts=chopArray(rot.star1_binactivity[:,0],env.tauini,rot.taumaxrot)
 PRINTOUT("Calculating radiation and plasma fluxes between %.3f - %.3f Gyr"%(ts[0],ts[-1]))
+
+#INTERPOLATION
+ts,star1.activity_funcs=interpMatrix(star1.activity)
+ts,star2.activity_funcs=interpMatrix(star2.activity)
+ts,star1.binactivity_funcs=interpMatrix(rot.star1_binactivity)
+ts,star2.binactivity_funcs=interpMatrix(rot.star2_binactivity)
 
 env.lumflux=stack(37)
 for t in ts:
 
-    #ROTATIONAL AGES
-    tau_rot1=bin_rot1[1](t)
-    tau_rot2=bin_rot2[1](t)
-
+    t=1.00
     #CUMULATOR
     lumflux=[]
 
     #//////////////////////////////
     #LUMINOSITIES
     #//////////////////////////////
-    #INSTANTANEOUS LUMINOSITIES
-    L1=star1.Lfunc(t)
-    L2=star2.Lfunc(t)
-
     #XUV LUMINOSITIES (TIDAL)
-    LXUV1=starLXUV(L1,tau_rot1)
-    LXUVs=starLXUV(L1,t)
-    LXUV2=starLXUV(L2,tau_rot2)
+    LXUV1=star1.binactivity_funcs[13](t)
+    LXUVs=star1.activity_funcs[13](t)
+    LXUV2=star2.binactivity_funcs[13](t)
     LXUV=LXUV1+LXUV2
     lumflux+=[LXUV1,LXUV2,LXUV]
 
     #XUV LUMINOSITIES (NO TIDAL)
-    ntLXUV1=starLXUV(L1,t)
-    ntLXUV2=starLXUV(L2,t)
+    ntLXUV1=star1.activity_funcs[13](t)
+    ntLXUV2=star2.activity_funcs[13](t)
     ntLXUV=ntLXUV1+ntLXUV2
     lumflux+=[ntLXUV1,ntLXUV2,ntLXUV]
     
@@ -176,7 +171,7 @@ for t in ts:
     #//////////////////////////////
     #XUV FLUXES
     #//////////////////////////////
-    pfluxbin=LXUV/(4*np.pi*(AU*1E2)**2)/PEL
+    pfluxbin=(LXUV*1E7)/(4*np.pi*(AU*1E2)**2)/PEL
 
     #%%%%%%%%%%%%%%%%%%%%
     #BINARY

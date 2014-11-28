@@ -1,14 +1,14 @@
-BHMCatP,PlanetID,planet_fHHe,planet_CMF,planet_tau,planet_Prot,planet_R,planet_M,interaction_tauini,interaction_tauref,interaction_str_earlywind,interaction_nM,interaction_nP,interaction_str_refobj,interaction_Mmin,interaction_Mmax,interaction_alpha,interaction_muatm
-str,str,float,float,float,float,float,float,float,float,str,float,float,str,float,float,float,float
-Cat.Id.,System Id.,"f_H,He",CMF,\tau,P_rot,R_p,M_p,\tau_ini,\tau_ref,Early Wind,n_M,n_P,Ref. Obj.,M_min,M_max,\alpha,\mu_atm
-1,1,"0,8","0,3",1,1,0,0,"0,1",2,'trend',3,6,'Earth',"0,01",10,"0,3",44
-BHMCatP0000,Earth-like,"0,8","0,3",1,1,"1,000001","1,000001","0,1",2,'trend',3,6,'Earth',"0,01",10,"0,3",44
-BHMCatP0001,Kepler-16b,"0,8","0,3",3,1,"8,45874581698321","105,885100967818","0,1",2,'trend',3,6,'Earth',"0,01",10,"0,3",44
-BHMCatP0002,Kepler-34b,"0,8","0,3","2,45",1,"8,5732048344059","69,9541207595191","0,1",2,'trend',3,6,'Earth',"0,01",10,"0,3",44
-BHMCatP0003,Kepler-35b,"0,8","0,3",10,1,"8,16923183173756","40,3826060748133","0,1",2,'trend',3,6,'Earth',"0,01",10,"0,3",44
-BHMCatP0004,Kepler-38b,"0,8","0,3",10,1,"4,37637419557369","120,82984494826","0,1",2,'trend',3,6,'Earth',"0,01",10,"0,3",44
-BHMCatP0005,Kepler-47b,"0,8","0,3",1,1,"3,02979752001256","7,63135862831118","0,1",2,'trend',3,6,'Earth',"0,01",10,"0,3",44
-BHMCatP0006,Kepler-47c,"0,8","0,3",1,1,"4,60080364150055","28,6175948561669","0,1",2,'trend',3,6,'Earth',"0,01",10,"0,3",44
-BHMCatP0007,Kepler-64b,"0,8","0,3","1,5",1,"6,20547417987757","168,525836375205","0,1",2,'trend',3,6,'Earth',"0,01",10,"0,3",44
-BHMCatP0008,Kepler-413b,"0,8","0,3",1,1,"4,35168695652174","67,0287666186665","0,1",2,'trend',3,6,'Earth',"0,01",10,"0,3",44
-BHMCatP0009,KIC-9632895b,"0,8","0,3","1,75",1,"6,165",0,"0,1",2,'trend',3,6,'Earth',"0,01",10,"0,3",44
+BHMCatP,PlanetID,planet_fHHe,planet_CMF,planet_tau,planet_Prot,planet_R,planet_M,interaction_tauini,interaction_tauref,interaction_nM,interaction_nP,interaction_str_refobj,interaction_Mmin,interaction_Mmax,interaction_alpha,interaction_muatm
+str,str,float,float,float,float,float,float,float,float,float,float,str,float,float,float,float
+Cat.Id.,System Id.,"f_H,He",CMF,\tau,P_rot,R_p,M_p,\tau_ini,\tau_ref,n_M,n_P,Ref. Obj.,M_min,M_max,\alpha,\mu_atm
+1,1,"0,8","0,3",1,1,0,0,"0,1",2,3,6,'Earth',"0,01",10,"0,3",44
+BHMCatP0000,Earth-like,"0,8","0,3",1,1,"1,000001","1,000001","0,1",2,3,6,'Earth',"0,01",10,"0,3",44
+BHMCatP0001,Kepler-16b,"0,8","0,3",3,1,"8,45874581698321","105,885100967818","0,1",2,3,6,'Earth',"0,01",10,"0,3",44
+BHMCatP0002,Kepler-34b,"0,8","0,3","2,45",1,"8,5732048344059","69,9541207595191","0,1",2,3,6,'Earth',"0,01",10,"0,3",44
+BHMCatP0003,Kepler-35b,"0,8","0,3",10,1,"8,16923183173756","40,3826060748133","0,1",2,3,6,'Earth',"0,01",10,"0,3",44
+BHMCatP0004,Kepler-38b,"0,8","0,3",10,1,"4,37637419557369","120,82984494826","0,1",2,3,6,'Earth',"0,01",10,"0,3",44
+BHMCatP0005,Kepler-47b,"0,8","0,3",1,1,"3,02979752001256","7,63135862831118","0,1",2,3,6,'Earth',"0,01",10,"0,3",44
+BHMCatP0006,Kepler-47c,"0,8","0,3",1,1,"4,60080364150055","28,6175948561669","0,1",2,3,6,'Earth',"0,01",10,"0,3",44
+BHMCatP0007,Kepler-64b,"0,8","0,3","1,5",1,"6,20547417987757","168,525836375205","0,1",2,3,6,'Earth',"0,01",10,"0,3",44
+BHMCatP0008,Kepler-413b,"0,8","0,3",1,1,"4,35168695652174","67,0287666186665","0,1",2,3,6,'Earth',"0,01",10,"0,3",44
+BHMCatP0009,KIC-9632895b,"0,8","0,3","1,75",1,"6,165",0,"0,1",2,3,6,'Earth',"0,01",10,"0,3",44

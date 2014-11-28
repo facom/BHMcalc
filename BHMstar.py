@@ -55,7 +55,7 @@ else:
      PRINTOUT("Calculated metallicity:[Fe/H]=%.4f"%(star.FeH))
 
 ###################################################
-#LOAD ISOCHRONES
+#LOAD MODEL TRACK
 ###################################################
 #FIND STELLAR EVOLUTION TRACK
 model=star.str_model.replace("'","")
@@ -389,7 +389,7 @@ Teffs=Teff_func(logts)
 Leffs=10**logL_func(logts)
 ax.plot(Teffs,Leffs,"k-")
 ax.plot(Teffs[0:1],Leffs[0:1],"ko",markersize=5)
-ax.text(Teffs[0],Leffs[0],r"$t_{\\rm ini}$=10 Myr",transform=offSet(5,5),bbox=bbox)
+ax.text(Teffs[0],Leffs[0],r"$t_{\\rm ini}=$%.1f Myr",transform=offSet(5,5),bbox=bbox)
 ax.plot([Teffs[-1]],[Leffs[-1]],"ko",markersize=5)
 ax.text(Teffs[-1],Leffs[-1],r"$t_{\\rm end}=$%.1f Gyr",horizontalalignment='right',transform=offSet(-5,5),bbox=bbox)
 
@@ -423,7 +423,7 @@ ax.text(0.5,0.95,"%s",horizontalalignment="center",fontsize="10",color="k",alpha
 
 ax.legend(loc='lower right')
 """%(star_dir,star_dir,
-     evodata_str,tau_max,tau_max,tau_max,modelwat))
+     evodata_str,TAU_MIN*1000,tau_max,tau_max,tau_max,modelwat))
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 #RADIUS EVOLUTION
@@ -451,7 +451,7 @@ Teffs=Teff_func(logts)
 Rs=10**logR_func(logts)
 ax.plot(Teffs,Rs,"k-")
 ax.plot(Teffs[0:1],Rs[0:1],"ko",markersize=5)
-ax.text(Teffs[0],Rs[0],r"$t_{\\rm ini}$=10 Myr",transform=offSet(5,5),bbox=bbox)
+ax.text(Teffs[0],Rs[0],r"$t_{\\rm ini}=$%.1f Myr",transform=offSet(5,5),bbox=bbox)
 ax.plot([Teffs[-1]],[Rs[-1]],"ko",markersize=5)
 ax.text(Teffs[-1],Rs[-1],r"$t_{\\rm end}=$%.1f Gyr",horizontalalignment='right',transform=offSet(-5,5),bbox=bbox)
 
@@ -481,7 +481,7 @@ ax.text(0.5,0.95,"%s",horizontalalignment="center",fontsize="10",color="k",alpha
 
 ax.legend(loc='lower right')
 """%(star_dir,star_dir,
-     evodata_str,tau_max,tau_max,tau_max,modelwat))
+     evodata_str,TAU_MIN*1000,tau_max,tau_max,tau_max,modelwat))
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 #RADIUS EVOLUTION
@@ -506,7 +506,7 @@ Teffs=star.Tfunc(ts)
 loggs=np.log10(star.gfunc(ts))
 ax.plot(Teffs,loggs,"k-")
 ax.plot(Teffs[0:1],loggs[0:1],"ko",markersize=5)
-ax.text(Teffs[0],loggs[0],r"$t_{\\rm ini}$=10 Myr",transform=offSet(5,5),bbox=bbox)
+ax.text(Teffs[0],loggs[0],r"$t_{\\rm ini}=$%.1f Myr",transform=offSet(5,5),bbox=bbox)
 ax.plot([Teffs[-1]],[loggs[-1]],"ko",markersize=5)
 ax.text(Teffs[-1],loggs[-1],r"$t_{\\rm end}=$%.1f Gyr",horizontalalignment='right',transform=offSet(-5,5),bbox=bbox)
 
@@ -537,7 +537,7 @@ ax.set_ylim((ymax,ymin))
 ax.text(0.5,0.95,"%s",horizontalalignment="center",fontsize="10",color="k",alpha=0.3,transform=ax.transAxes)
 
 ax.legend(loc='lower right')
-"""%(star_dir,star_dir,tau_max,tau_max,tau_max,modelwat))
+"""%(star_dir,star_dir,TAU_MIN*1000,tau_max,tau_max,tau_max,modelwat))
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 #MOMENT OF INERTIA EVOLUTION

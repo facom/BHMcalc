@@ -119,13 +119,39 @@ for star in stars:
     tsmoi=star.rotevol[:,0]
     Nfine=len(tsmoi)
     star.binactivity=stack(13)
+    star.acceleration=stack(4)
+    """
+    Activity Data:
+      1:tauc
+      2:fstar
+      3:Bequi
+      4:Bphoto
+      5:BTR
+      6:Rossby
+      7:Mdot
+      8:Mdot_hot
+      9:Mdot_cold
+      10:MATR
+      11:RX
+      12:LX
+      13:LXUV
+    Acceleration Data:
+      1:Tidal torque
+      2:Contraction torque
+      3:Magnetized wind torque
+      4:Total torque
+    """
     for i in range(0,Nfine):
         t=tsmoi[i]
         M=star.M
         R=star.Rfunc(t)
         L=star.Lfunc(t)
-        Prot=2*PI/star.binrotevol[i,1]/DAY
+        w=star.binrotevol[i,1]
+        Prot=2*PI/w/DAY
              
+        #ROTATIONAL ACCELERATION
+        star.acceleration+=[rotationalAcceleration(w,t*GYR,rotpars,full=True)]
+
         #SURFICIAL MAGNETIC CONDITIONS
         tauc,fstar,Bequi,Bphoto,BTR,Rossby,Mdot,Mdot_hot,Mdot_cold,MATR=\
             pyBoreas(M,R,L,Prot,star.FeH)
@@ -136,13 +162,16 @@ for star in stars:
         LXUV=starLXEUV(LX)
         
         star.binactivity+=[tauc,fstar,Bequi,Bphoto,BTR,Rossby,
-                        Mdot,Mdot_hot,Mdot_cold,MATR,
-                        RX,LX,LXUV]
-
+                           Mdot,Mdot_hot,Mdot_cold,MATR,
+                           RX,LX,LXUV]
+        
     star.binactivity=toStack(tsmoi)|star.binactivity
-
+    star.acceleration=toStack(tsmoi)|star.acceleration
+    
     if qtwins:break
     i+=1
+
+rot.taumaxrot=min(star1.binactivity[-1,0],star2.binactivity[-1,0])
 
 ###################################################
 #STORE ROTATIONAL EVOLUTION INFORMATION
@@ -157,16 +186,24 @@ from numpy import array
 #TITLE
 title="%s"
 
+#MAXIMUM ROTATION TIME
+taumaxrot=%.17e
+
 #ROTATIONAL EVOLUTION IN BINARY
 star1_binrotevol=%s
 star2_binrotevol=%s
+star1_acceleration=%s
+star2_acceleration=%s
 
 #MASS-LOSS IN BINARY
 star1_binactivity=%s
 star2_binactivity=%s
 """%(rot.title,
+     rot.taumaxrot,
      array2str(star1.binrotevol),
      array2str(star2.binrotevol),
+     array2str(star1.acceleration),
+     array2str(star2.acceleration),
      array2str(star1.binactivity),
      array2str(star2.binactivity)
      ))
@@ -275,6 +312,63 @@ ax.set_ylabel("$\Omega/\Omega_\odot$")
 ax.set_xlabel(r"$\\tau$ (Gyr)")
 ax.grid(which='both')
 ax.legend(loc='lower left',prop=dict(size=12))
+"""%(rot_dir,rot_dir,
+     binary_dir,binary_dir,
+     star1_dir,star1_dir,
+     star2_dir,star2_dir
+     ))
+
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+#ROTATIONAL ACCELERATION
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+plotFigure(rot_dir,"rot-acceleration",\
+"""
+from BHM.BHMstars import *
+rot=\
+loadConf("%s"+"rotation.conf")+\
+loadConf("%s"+"rotation.data")
+binary=\
+loadConf("%s"+"binary.conf")+\
+loadConf("%s"+"binary.data")
+star1=\
+loadConf("%s"+"star.conf")+\
+loadConf("%s"+"star.data")
+star2=\
+loadConf("%s"+"star.conf")+\
+loadConf("%s"+"star.data")
+
+raccel1=rot.star1_acceleration
+raccel2=rot.star2_acceleration
+
+fig=plt.figure(figsize=(8,12))
+l=0.1;w=0.8;b=0.05;dh=0.02;h=(1.0-2*b-dh)/2;
+ax1=fig.add_axes([l,b,w,h])
+b+=h+dh
+ax2=fig.add_axes([l,b,w,h])
+
+scale=1E-21
+ax1.plot(raccel1[:,0],raccel1[:,1]/scale,color='b',linestyle='--',label='Star 1 - Tidal')
+ax1.plot(raccel1[:,0],raccel1[:,2]/scale,color='b',linestyle='-.',label='Star 1 - Contraction')
+ax1.plot(raccel1[:,0],raccel1[:,3]/scale,color='b',linestyle=':',label='Star 1 - Magnetized Wind')
+ax1.plot(raccel1[:,0],raccel1[:,4]/scale,color='b',linestyle='-',linewidth=5,zorder=10,alpha=0.2,label='Star 1 - Total')
+
+ax2.plot(raccel2[:,0],raccel2[:,1]/scale,color='r',linestyle='--',label='Star 2 - Tidal')
+ax2.plot(raccel2[:,0],raccel2[:,2]/scale,color='r',linestyle='-.',label='Star 2 - Contraction')
+ax2.plot(raccel2[:,0],raccel2[:,3]/scale,color='r',linestyle=':',label='Star 2 - Magnetized Wind')
+ax2.plot(raccel2[:,0],raccel2[:,4]/scale,color='r',linestyle='-',linewidth=5,zorder=10,alpha=0.2,label='Star 2 - Total')
+
+tmax=min(star1.taums,star2.taums)
+for ax in ax1,ax2:
+    ax.set_xscale("log")
+    #ax.set_yscale("log")
+    ax.set_xlim((TAU_MIN,tmax))
+    ax.set_ylabel("$\dot\Omega$ ($\times\,10^{-21}$)")
+    ax.legend(loc='best',prop=dict(size=12))
+    #ax.grid(which='both')
+
+ax2.set_xticklabels([])
+ax2.set_title(binary.title,position=(0.5,1.02),fontsize=12)
+ax1.set_xlabel(r"$\\tau$ (Gyr)")
 """%(rot_dir,rot_dir,
      binary_dir,binary_dir,
      star1_dir,star1_dir,
@@ -435,6 +529,19 @@ fh.write("""\
   <a target="_blank" href="%s/BHMreplot.php?dir=%s&plot=rot-evolution.py">replot</a>
   )
   </td></tr>
+
+  <tr><td colspan=2>
+  <a target="_blank" href="%s/rot-acceleration.png">
+    <img width=100%% src="%s/rot-acceleration.png">
+  </a>
+  <br/>
+  <i>Rotational Acceleration in binary</i>
+  (
+  <a target="_blank" href="%s/rot-acceleration.png.txt">data</a>|
+  <a target="_blank" href="%s/BHMreplot.php?dir=%s&plot=rot-acceleration.py">replot</a>
+  )
+  </td></tr>
+
   <tr><td colspan=2>
   <a target="_blank" href="%s/binary-massloss.png">
     <img width=100%% src="%s/binary-massloss.png">
@@ -460,6 +567,7 @@ fh.write("""\
 </table>
 """%(WEB_DIR,rot_webdir,rot_webdir,rot_webdir,WEB_DIR,rot_webdir,
      rot.k,
+     rot_webdir,rot_webdir,rot_webdir,WEB_DIR,rot_webdir,
      rot_webdir,rot_webdir,rot_webdir,WEB_DIR,rot_webdir,
      rot_webdir,rot_webdir,rot_webdir,WEB_DIR,rot_webdir,
      rot_webdir,rot_webdir,rot_webdir,WEB_DIR,rot_webdir

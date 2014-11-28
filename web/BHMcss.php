@@ -298,8 +298,11 @@ a.activelink{
 div.target{
  padding:10px;
  width:90%;
+ //height:3ex;
  overflow:auto;
- background:lightgray;
+ white-space:nowrap;
+ //background:lightgray;
+ background:lightyellow;
 }
 
 td.field_cat{

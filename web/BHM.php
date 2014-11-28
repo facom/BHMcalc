@@ -115,6 +115,21 @@ $DATA_STRUCTURE=array(
 	       );
 $MODULES=array_keys($DATA_STRUCTURE);
 
+$MODELS=array("'BCA98'"=>"BCA98",
+	      "'PARSEC'"=>"PARSEC",
+	      "'BASTI'"=>"BASTI",
+	      "'YZVAR'"=>"YZVAR");
+
+$HZINMODELS=array("'recent venus'"=>"Recent Venus",
+		  "'runaway greenhouse'"=>"Runaway Greenhouse",
+		  "'moist greenhouse'"=>"Moist Greenhouse");
+
+$HZOUTMODELS=array("'early mars'"=>"Early Mars",
+		   "'maximum greenhouse'"=>"Maximum Greenhouse");
+
+$REFOBJS=array("'Earth'"=>"Earth",
+	       "'Saturn'"=>"Saturn");
+
 //////////////////////////////////////////////////////////////
 //CSS
 //////////////////////////////////////////////////////////////
@@ -163,15 +178,15 @@ HEADER;
  return $HEADER;
 }
 
-function selectFunction($name,$selection,$defvalue){
+function selectFunction($name,$selection,$defvalue,$options=""){
 $sel=<<<SELECT
-  <select name="$name">
+  <select name="$name" $options>
 SELECT;
  foreach(array_keys($selection) as $value){
    $option=$selection[$value];
    $selected="";
    if($value=="$defvalue"){$selected="selected";}
-   $sel.="<option value='$value' $selected>$option\n";
+   $sel.="<option value=\"$value\" $selected>$option\n";
  }
  $sel.="</select>";
  return $sel;
@@ -444,4 +459,8 @@ function loadSystems()
   return $systems;
 }
 
+function isBlank($string){
+  if(!preg_match("/[\w\d]+/",$string)){return 1;}
+  else{return 0;}
+}
 ?>
