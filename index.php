@@ -771,7 +771,7 @@ $binary_form=<<<F
 	      <tr>
 		<td class="name">Binary period:</td>
 		<td class="field">
-		  <input class="sensitive" type="text" name="binary_Pbin" value="$binary_Pbin" onchange="idSystem();alert($('.sys_input').attr('value'));">
+		  <input class="sensitive" type="text" name="binary_Pbin" value="$binary_Pbin" onchange="idSystem();">
 		  days
 		</td>
 	      </tr>
