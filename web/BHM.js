@@ -123,21 +123,21 @@ function refreshiFrames(){
 }
 
 function idSystem(){
-  //IT SHOULD BE THE WHOLE FORM
-  var forms=["star1_form","star2_form","planet_form"];
-  var sysid="";
-  for(i=0;i<3;i++){
-    elements=document.forms[forms[i]].elements;
-    for(j=0;j<elements.length;j++){
-      clase=elements[j].getAttribute("class")+"";
-      if(clase.search("sensitive")>=0){
-	val=elements[j].value;
-	sysid=sysid+val;
-      }
+    //IT SHOULD BE THE WHOLE FORM
+    var forms=["star1_form","star2_form","planet_form","binary_form"];
+    var sysid="";
+    for(i=0;i<3;i++){
+	elements=document.forms[forms[i]].elements;
+	for(j=0;j<elements.length;j++){
+	    clase=elements[j].getAttribute("class")+"";
+	    if(clase.search("sensitive")>=0){
+		val=elements[j].value;
+		sysid=sysid+val;
+	    }
+	}
     }
-  }
-  var sys=calcMD5(sysid);
-  $('.sys_input').attr("value","\"\'"+sys+"\'\"");
-  alert($('.sys_input').attr("value"));
+    var sys=calcMD5(sysid);
+    $('.sys_input').attr("value","\"\'"+sys+"\'\"");
+    //alert($('.sys_input').attr("value"));
 }
 
