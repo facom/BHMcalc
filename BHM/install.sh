@@ -75,7 +75,7 @@ define('TIMEOUT_CHECK_ACTIVITY', true);
 
 // show usage example
 if(isset(\$_GET['help'])) {
-  die('Include following code into every page you would like to protect, at the very beginning (first line):<br>&lt;?php include(\"' . str_replace('\\','\\\\',__FILE__) . '\"); ?&gt;');
+  die('Include following code into every page you would like to protect, at the very beginning (first line):<br>&lt;?php include(\"' . str_replace('\\\\','\\\\\\\\',__FILE__) . '\"); ?&gt;');
 }
 
 // timeout in seconds
