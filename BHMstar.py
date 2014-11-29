@@ -996,7 +996,7 @@ fh.write("""\
 </table>
 """%(WEB_DIR,star_webdir,star_webdir,star_webdir,WEB_DIR,star_webdir,
 star.M,star.Z,star.FeH,star.tau,tau_max,tau_ms,star_hash,
-star.Pini,star.wsat,star.taudisk,star.Kw,star.a,star.n,tauconv,TAUCSUN/tauconv,
+star.Pini,star.wsat,star.taudisk,star.Kw,star.a,star.n,tauconv,WSATSUN*TAUCSUN/tauconv,
 g,Teff,R,L,star.MoI,tdiss,
 lins[0],lins[1],lins[2],
 louts[0],louts[1],

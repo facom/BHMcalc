@@ -251,6 +251,11 @@ button.update{
  top:40px;
  right:30px;
 }
+button.mode{
+ font-size:24px;
+ padding:12px;
+ width:150px;
+}
 a.force{
  position:absolute;
  top:65px;
@@ -325,6 +330,15 @@ div.help{
  font-size:12px;
  background:lightyellow;
  padding:10px;
+}
+div.footer{
+ font-size:10px;
+ font-style:italic;
+ text-align:center;
+}
+p.title{
+  font-size:16px;
+  font-weight:bold;
 }
 </style>
 CSS;

@@ -97,7 +97,9 @@ if(!isset($_SESSION)){session_start();}
 $SESSID=session_id();
 $wSESSDIR=$wSYSDIR."$SESSID/";
 $SESSDIR=$ROOTDIR.$wSESSDIR;
+$SESSIONDIR=$SESSDIR;
 if(!is_dir($SESSDIR)){
+  $SESSIONDIR=$SESSDIR;
   $wSESSDIR=$wSYSDIR."template/";
   $SESSDIR=$ROOTDIR.$wSESSDIR;
 }

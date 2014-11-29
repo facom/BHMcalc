@@ -18,10 +18,10 @@ include_once("web/BHM.php");
 ?>
 
 <?PHP
-shell_exec("echo 'Parameters: $qover $sortfield $sortorder $catfilter' > /tmp/c");
+shell_exec("echo 'Parameters: $qover $sortfield $sortorder $catfilter $catid' > /tmp/c");
 $stdout="BHMcat-stdout-$SESSID";
 $stderr="BHMcat-stderr-$SESSID";
-$cmd="$PYTHONCMD BHMcat.py $SESSDIR $qover $sortfield $sortorder $displaylevel \"$catfilter\"";
+$cmd="$PYTHONCMD BHMcat.py $SESSDIR $qover $sortfield $sortorder $displaylevel \"$catfilter\" $catid";
 $out=shell_exec($cmd." 2> $TMPDIR/$stderr |tee $TMPDIR/$stdout");
-echo "$wSESSDIR/BHMcat.html";
+echo "$wSESSDIR/BHMcat$catid.html";
 ?>

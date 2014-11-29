@@ -23,7 +23,8 @@ from BHM.BHMnum import *
 Usage=\
 """
 Usage:
-   python %s <cat_dir> [<recalculate>] [<sort_field>] [<sort_order>] [<display_level>] [<filter>]
+   python %s <cat_dir> [<recalculate>] [<sort_field>] [<sort_order>] 
+                       [<display_level>] [<filter>] [<catalogue_id>]
 
    <cat_dir>: location of the catalogue
 
@@ -37,12 +38,14 @@ Usage:
 
    <filter>: Filter.  Ex. binary_Pbin > 0.  Python syntax.
 
+   <catalogue_id>: Unique ID.
+
 """%argv[0]
 
-catdir,recalculate,sortfield,sortorder,displaylevel,catfilter=\
+catdir,recalculate,sortfield,sortorder,displaylevel,catfilter,catid=\
     readArgs(argv,
-             ["str","int","str","int","int","str"],
-             [".","1","BHMCatS","0","1","binary_Pbin>0"],
+             ["str","int","str","int","int","str","str"],
+             [".","1","BHMCatS","0","1","binary_Pbin>0",""],
              Usage=Usage)
 
 ###################################################
@@ -322,7 +325,8 @@ fk.close()
 table+="</table>"
 table+="<p>Number of objects: <b>%d</b></p>"%i
 table+="</body></html>"
-ft=open("%s/BHMcat.html"%catdir,"w")
+ft=open("%s/BHMcat%s.html"%(catdir,catid),"w")
 ft.write(table)
 ft.close()
+print "Catalogue written into: %s/BHMcat%s.html"%(catdir,catid)
 print "Number of objects after filter: ",i
