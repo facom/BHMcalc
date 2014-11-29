@@ -16,18 +16,19 @@ $main=<<<C
       <button class="mode" name="Modes" value="Catalogue">
 	Catalogue
       </button>
-      <button class="mode" name="Modes" value="Star">
+      <button class="mode" name="Modes" value="Star1">
 	Star
       </button>
       <button class="mode" name="Modes" value="Planet">
 	Planet
       </button>
-      <button class="mode" name="Modes" value="Star:Binary">
+      <button class="mode" name="Modes" value="Binary">
 	Binary
       </button>
-      <button class="mode" name="Modes" value="Star:Planet:Binary:Habitability">
-	Habitability</button>
-      <button class="mode" name="Modes" value="Star:Planet:Binary:Habitability:Interactions">
+      <button class="mode" name="Modes" value="Habitability">
+	Habitability
+      </button>
+      <button class="mode" name="Modes" value="Interactions">
 	Interactions
       </button>
     </form>

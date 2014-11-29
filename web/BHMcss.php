@@ -311,7 +311,7 @@ div.target{
 }
 
 td.field_cat{
-  font-size:14px;
+  font-size:11px;
 }
 tr.header{
  background:gray;

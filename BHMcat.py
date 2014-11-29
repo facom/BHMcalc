@@ -312,10 +312,35 @@ for system in sortCatalogue(systems,sortfield,reverse=sortorder):
         valueADS=adjustValue("ADS",valueADS,"str")
         row+="<td class='field_cat' style='width:1px;white-space:nowrap'>%s</td>"%(valueADS)
         row+="</tr>\n"
-        exec("row=row.replace(\"%s\",\"<a href=\\\"%s?%s\\\" target=_parent>%s</a>\")"%(system["BHMCatS"],
-                                                                                        WEB_DIR,
-                                                                                        qstring,
-                                                                                        system["BHMCatS"]))
+
+        maxchar=14
+        sysid=system["binary_str_SysID"][:maxchar]
+        star1id=system["star1_str_StarID"][:maxchar]
+        star2id=system["star2_str_StarID"][:maxchar]
+        plid=planet["PlanetID"][:maxchar]
+
+        #ADD LINKS
+        exec("row=row.replace(\">%s<\",\"><a href=\\\"%s?Modes=Interaction&%s\\\" target=_parent>%s</a><\")"%(system["BHMCatS"],
+                                                                                                         WEB_DIR,
+                                                                                                         qstring,
+                                                                                                         system["BHMCatS"]))
+        exec("row=row.replace(\">%s<\",\"><a href=\\\"%s?Modes=Binary&%s\\\" target=_parent>%s</a><\")"%(system["binary_str_SysID"],
+                                                                                                        WEB_DIR,
+                                                                                                        qstring,
+                                                                                                        sysid))
+        exec("row=row.replace(\">%s<\",\"><a href=\\\"%s?Modes=Star1&%s\\\" target=_parent>%s</a><\")"%(system["star1_str_StarID"],
+                                                                                                        WEB_DIR,
+                                                                                                        qstring,
+                                                                                                        star1id))
+        exec("row=row.replace(\">%s<\",\"><a href=\\\"%s?Modes=Star2&%s\\\" target=_parent>%s</a><\")"%(system["star2_str_StarID"],
+                                                                                                        WEB_DIR,
+                                                                                                        qstring,
+                                                                                                        star2id))
+        exec("row=row.replace(\">%s<\",\"><a href=\\\"%s?Modes=Planet&%s\\\" target=_parent>%s</a><\")"%(planet["PlanetID"],
+                                                                                                        WEB_DIR,
+                                                                                                        qstring,
+                                                                                                        plid))
+
         exec("cond=%s"%catfilter)
         if cond:
             table+=row

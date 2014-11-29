@@ -24,7 +24,10 @@ $TABID=0;
 $QCALCMODE=0;
 $tabs="";
 if(!isset($Modes)){$Modes="Basic";}
-echo "Mode: $Modes<br/>";
+//echo "Mode: $Modes<br/>";
+if($Modes=="Binary"){$Modes="Star1:Star2:Planet:$Modes";}
+if($Modes=="Habitability"){$Modes="Star1:Star2:Planet:Binary:$Modes";}
+if($Modes=="Interactions"){$Modes="Star1:Star2:Planet:Binary:Habitability:$Modes";}
 
 if(!is_dir($SESSIONDIR)){
   $source_dir=$SYSDIR."template/";
@@ -221,7 +224,7 @@ C;
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 //STAR MODE
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-if(preg_match("/Star/",$Modes)){
+if(preg_match("/Star1/",$Modes)){
   $TABID=1;
 
   $star1_str_model_sel=selectFunction("star1_str_model",$MODELS,$star1_str_model,
@@ -230,6 +233,7 @@ $tabs.=<<<F
   <!-- //////////////////////////////////////////////////////////// -->
   <!-- STAR 1 -->
   <!-- //////////////////////////////////////////////////////////// -->
+  $document_load
   <div class="tabbertab" id="star1" title="Star 1">
     <form id="star1_form" action="BHMrun.php">
     <div class="tabcontent">
@@ -417,7 +421,7 @@ F;
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 //BINARY MODE
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-if(preg_match("/Binary/",$Modes)){
+if(preg_match("/Star2/",$Modes)){
   $TABID=3;
   $QCALCMODE=1;
 
@@ -793,6 +797,7 @@ F;
 //BINARY
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 if(preg_match("/Binary/",$Modes)){
+  $TABID=4;
   $QCALCMODE=1;
 
 $tabs.=<<<F
