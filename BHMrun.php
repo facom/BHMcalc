@@ -66,7 +66,7 @@ if(file_exists($DIR.$src_file)){
   echo $src_file;
 }else{
   //GENERATE REPORT
-  $err_file=$wSESSDIR."error-report.hml";
+  $err_file=$wSESSDIR."error-report.html";
   $fe=fopen($ROOTDIR.$err_file,"w");
 $error=<<<ERROR
   <html>
