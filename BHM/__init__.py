@@ -492,4 +492,5 @@ def listDirectory(tdir,search):
 #GET WORKING DIRECTORY
 PWD=System("pwd",out=True)
 WEB_DIR=PWD.replace(WEB_COMMON,"")+"/"
-
+SUBWEB_DIR=PWD.replace(WEB_COMMON,"")+"/web/"
+print SUBWEB_DIR

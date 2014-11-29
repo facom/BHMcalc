@@ -24,11 +24,17 @@ $CONTENT="";
 //PYTHON COMMAND
 $PYTHONCMD="PYTHONPATH=. MPLCONFIGDIR=/tmp python";
 
-//LOCATION
+//==============================
+//GETTING LOCATION
+//==============================
 if(!isset($RELATIVE)){$RELATIVE=".";}
-$ROOTDIR=preg_replace("/BHMcalc/","",rtrim(shell_exec("cd $RELATIVE;pwd")));
-$wDIR="/BHMcalc/";
+$dir=rtrim(shell_exec("cd $RELATIVE;pwd"));
+$parts=preg_split("/\//","$dir");
+$BHMDIR=$parts[count($parts)-1];
+$ROOTDIR=preg_replace("/$BHMDIR/","",rtrim(shell_exec("cd $RELATIVE;pwd")));
+$wDIR="/$BHMDIR/";
 $DIR=$ROOTDIR.$wDIR;
+echo "$ROOTDIR,$DIR,$wDIR<br/>";
 
 //OTHER DIRECTORIES
 $wSYSDIR=$wDIR."sys/";

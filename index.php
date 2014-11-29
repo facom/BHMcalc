@@ -129,10 +129,10 @@ F;
 //CHANGE OTHER THINGS IN DOCUMENT WHEN LOAD
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 $changeFeH=<<<C
-  changeAjax('/BHMcalc/BHMutil.php?ACTION=Metals&ZtoFeH','.star_Z','.star_FeH');
+  changeAjax('$wDIR/BHMutil.php?ACTION=Metals&ZtoFeH','.star_Z','.star_FeH');
 C;
 $changeZ=<<<C
-  changeAjax('/BHMcalc/BHMutil.php?ACTION=Metals&FeHtoZ','.star_FeH','.star_Z');
+  changeAjax('$wDIR/BHMutil.php?ACTION=Metals&FeHtoZ','.star_FeH','.star_Z');
 C;
 $CONTENT.=<<<C
 <script>

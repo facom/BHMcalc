@@ -7,8 +7,11 @@ SourceID
 binary_str_SysID
 star1_str_StarID
 star2_str_StarID
-RA
-DEC
+star1_M
+star1_Merr
+star2_M
+star2_Merr
+binary_q
 binary_Pbin
 binary_abin
 binary_ebin
@@ -38,11 +41,6 @@ binary_BV
 binary_d
 binary_derr
 binary_dmod
-star1_M
-star1_Merr
-star2_M
-star2_Merr
-binary_q
 star1_R
 star1_Rerr
 star2_R
@@ -56,6 +54,8 @@ star1_loggerr
 star2_logg
 star2_loggerr
 binary_Lx
+RA
+DEC
 star1_str_Stype
 star2_str_Stype
 PlanetID
