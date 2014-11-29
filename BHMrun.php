@@ -69,15 +69,19 @@ if(file_exists($DIR.$src_file)){
   $err_file=$wSESSDIR."error-report.hml";
   $fe=fopen($ROOTDIR.$err_file,"w");
 $error=<<<ERROR
+  <html>
   <head>
   <link rel="stylesheet" type="text/css" href="web/BHM.css">
   </head>
+  <body>
   <i>An error has been raised when executing the calculator scripts.
   Check the standard and error outputs of the scripts:</i>
   <p>
   <a href="$wDIR/$wTMPDIR/$stdout">Standard output</a><br/>
   <a href="$wDIR/$wTMPDIR/$stderr">Error output</a><br/>
   </p>
+  </body>
+  </html>
 ERROR;
   fwrite($fe,$error);
   fclose($fe);
