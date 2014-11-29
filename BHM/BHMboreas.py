@@ -49,6 +49,9 @@ C1fit = interp1d(linspace(2500.0,7000.0,NTEFFS),
 
 def rhoPhoto(Teff,logg):
     global C0fit,C1fit
+    if Teff>7000:
+        print "Temperature Teff = %.0f above conservative limits in boreas.  Forcing the highest Teff=7000..."%Teff
+        Teff=7000
     C0now = C0fit(Teff)
     C1now = C1fit(Teff)
     rhophoto = 10.**(C0now + C1now*logg)
@@ -134,10 +137,7 @@ def pyBoreas(Mstar,Rstar,Lstar,Protday,FeH):
     #################################################################################
     #COMPUTE PHOTOSPHERIC MASS DENSITY
     #################################################################################
-    #print Teff,logg
-    C0now = C0fit(Teff)
-    C1now = C1fit(Teff)
-    rhophoto = 10.**(C0now + C1now*logg)
+    rhophoto = rhoPhoto(Teff,logg)
 
     #################################################################################
     #PHOTOSPHERIC EQUATION OF STATE (FIT TO OPAL MODELS)
@@ -295,8 +295,8 @@ def pyBoreas(Mstar,Rstar,Lstar,Protday,FeH):
     return tauc,fstar,Bequi,Bphoto,BTR,Rossby,Mdot,Mdot_hot,Mdot_cold,MATR
 
 if __name__=="__main__":
-    Rossby,fstar,Mdot,Mdot_hot,Mdot_cold,MATR=pyBoreas(1.0,1.0,1.0,25.4,0.0)
-    print Rossby,fstar,Mdot,Mdot_hot,Mdot_cold,MATR
+    output=pyBoreas(1.0,1.0,1.0,25.4,0.0)
+    print output
     
     Teffs=linspace(2500,6000,60)
     Teffs2=linspace(6000,7000,10)
