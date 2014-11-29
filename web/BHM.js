@@ -138,6 +138,6 @@ function idSystem(){
     }
     var sys=calcMD5(sysid);
     $('.sys_input').attr("value","\"\'"+sys+"\'\"");
-    alert($('.sys_input').attr("value"));
+    //alert($('.sys_input').attr("value"));
 }
 
