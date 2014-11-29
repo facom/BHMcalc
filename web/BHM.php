@@ -34,7 +34,7 @@ $BHMDIR=$parts[count($parts)-1];
 $ROOTDIR=preg_replace("/$BHMDIR/","",rtrim(shell_exec("cd $RELATIVE;pwd")));
 $wDIR="/$BHMDIR/";
 $DIR=$ROOTDIR.$wDIR;
-echo "$ROOTDIR,$DIR,$wDIR<br/>";
+//echo "$ROOTDIR,$DIR,$wDIR<br/>";
 
 //OTHER DIRECTORIES
 $wSYSDIR=$wDIR."sys/";
@@ -64,62 +64,6 @@ $QUERY_STRING=$_SERVER["QUERY_STRING"];
 
 //QUERYSTRING FOR CONFIGURATION
 $PARSE_STRING="";
-
-$DATA_STRUCTURE=array(
-	       "binary"=>array(
-			       "Pbin"=>array("Pbin",0.0),
-			       "abin"=>array("abin",0.125),
-			       "ebin"=>array("ebin",0.0),
-			       ),
-	       "hz"=>array(
-			   "str_incrit_wd"=>array("","'recent venus'"),
-			   "str_outcrit_wd"=>array("","'early mars'"),
-			   "str_incrit_nr"=>array("","'runaway greenhouse'"),
-			   "str_outcrit_nr"=>array("","'maximum greenhouse'"),
-			   ),
-	       "interaction"=>array(
-				    "tauini"=>array("",0.1),
-				    "tauref"=>array("taumax",2.5),
-				    "str_earlywind"=>array("","'trend'"),
-				    "str_refobj"=>array("","'Earth'"),
-				    "nM"=>array("",3.0),
-				    "nP"=>array("",6.0),
-				    "alpha"=>array("",0.3),
-				    "muatm"=>array("",44.0),
-				    "Mmin"=>array("",0.01),
-				    "Mmax"=>array("",10.0),
-				    ),
-	       "planet"=>array(
-			       "M"=>array("Mp",1.0),
-			       "fHHe"=>array("",1.0),
-			       "CMF"=>array("",0.34),
-			       "tau"=>array("",1.0),
-			       "Morb"=>array("",2.0),
-			       "aorb"=>array("aorb",1.47),
-			       "Porb"=>array("Porb",0.0),
-			       "eorb"=>array("eorb",0.0167),
-			       "worb"=>array("worb",0.0),
-			       "Prot"=>array("",1.0),
-			       ),
-	       "rotation"=>array(
-				 "k"=>array("",1),
-				 ),
-	       "star1"=>array(
-			      "M"=>array("M1",1.0),
-			      "Z"=>array("Z",0.0154),
-			      "FeH"=>array("FeH",0.0),
-			      "tau"=>array("taumin",1.0),
-			      "taums"=>array("",0.0)
-			      ),
-	       "star2"=>array(
-			      "M"=>array("M2",1.0),
-			      "Z"=>array("Z",0.0154),
-			      "FeH"=>array("FeH",0.0),
-			      "tau"=>array("taumin",1.0),
-			      "taums"=>array("",0.0),
-			      ),
-	       );
-$MODULES=array_keys($DATA_STRUCTURE);
 
 $MODELS=array("'BCA98'"=>"BCA98",
 	      "'PARSEC'"=>"PARSEC",
