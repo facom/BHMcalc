@@ -175,7 +175,8 @@ evoInterpFunctions(star)
 tauconv=convectiveTurnoverTime(star.Tfunc(0.2))
 
 wini=2*PI/(star.Pini*DAY)
-wsat_scaled=WSATSUN*TAUCSUN/tauconv
+#wsat_scaled=WSATSUN*TAUCSUN/tauconv
+wsat_scaled=star.wsat
 
 rotpars=dict(\
      star=star,
@@ -835,7 +836,7 @@ for ax in axs[1:]:
 fh=open(star_dir+"star.html","w")
 fh.write("""\
 <head>
-  <link rel="stylesheet" type="text/css" href="%s/BHM.css">
+  <link rel="stylesheet" type="text/css" href="%s/web/BHM.css">
 </head>
 <h2>Stellar Properties</h2>
 <center>
@@ -860,6 +861,19 @@ fh.write("""\
   <tr><td>&tau;<sub>MS</sub> (Gyr):</td><td>%.2f</td></tr>
   <tr><td>Hash:</td><td>%s</td></tr>
 </table>
+
+<h3>Rotational Evolution Properties</h3>
+<table>
+  <tr><td>P<sub>PMS</sub> (days):</td><td>%.3f</td></tr>
+  <tr><td>&omega;<sub>sat</sub> (&omega;<sub>Sun</sub>):</td><td>%.3f</td></tr>
+  <tr><td>&tau;<sub>disk</sub> (Gyr):</td><td>%.3f</td></tr>
+  <tr><td>Wind torque constant, K<sub>W</sub>:</td><td>%.3e</td></tr>
+  <tr><td>Dynamo exponent, a:</td><td>%.1f</td></tr>
+  <tr><td>Field geometry exponent, n:</td><td>%.1f</td></tr>
+  <tr><td>&tau;<sub>conv</sub> (days):</td><td>%.3f</td></tr>
+  <tr><td>Scaled &omega;<sub>sat</sub> (&omega;<sub>Sun</sub>):</td><td>%.3f</td></tr>
+</table>
+
 <h3>Instantaneous theoretical properties:</h3>
 <table>
   <tr><td>g (m/s<sup>2</sup>):</td><td>%.2f</td></tr>
@@ -982,6 +996,7 @@ fh.write("""\
 </table>
 """%(WEB_DIR,star_webdir,star_webdir,star_webdir,WEB_DIR,star_webdir,
 star.M,star.Z,star.FeH,star.tau,tau_max,tau_ms,star_hash,
+star.Pini,star.wsat,star.taudisk,star.Kw,star.a,star.n,tauconv,TAUCSUN/tauconv,
 g,Teff,R,L,star.MoI,tdiss,
 lins[0],lins[1],lins[2],
 louts[0],louts[1],
