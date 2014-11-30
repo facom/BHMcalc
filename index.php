@@ -1535,13 +1535,6 @@ if(isset($HELP)){$TABID=1;}
 $TABID++;
 $CONTENT.=<<<C
 <div class="tabber maintabber" name="tabber" id="$TABID">
-  <div class="tabbertab" id="star1" title=" ">
-    <center>
-    <div class="decoration">
-      <img src="$wDIR/web/sunset.jpg" width="100%"/>
-    </div>
-    </center>
-  </div>
   $updateall
   $main
   $tabs

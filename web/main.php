@@ -87,6 +87,14 @@ $main=<<<C
 	</li>
       </ul>	  
     </p>
+
+    <p>
+    <center>
+    <div class="decoration">
+      <img src="$wDIR/web/sunset.jpg" width="100%"/>
+    </div>
+    </center>
+    </p>
   </div>
 </div>
 C;
