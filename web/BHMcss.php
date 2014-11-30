@@ -383,6 +383,7 @@ div.figure{
 div.caption{
   font-style:italic;
   font-size:12px;
+  text-align:center;
 }
 
 li.summaryitem{
@@ -390,8 +391,9 @@ li.summaryitem{
 }
 
 div.decoration{
- width:60%;
+ width:40%;
 }
+
 </style>
 CSS;
 ?>

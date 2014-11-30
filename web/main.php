@@ -88,12 +88,17 @@ $main=<<<C
       </ul>	  
     </p>
 
+    <p class="title">Gallery</p>
     <p>
-    <center>
     <div class="decoration">
-      <img src="$wDIR/web/sunset.jpg" width="100%"/>
+      <a href="$wDIR/web/sunset.jpg">
+	<img src="$wDIR/web/sunset.jpg" width="100%"/>
+      </a>
+      <br/>
+      <div class="caption">
+	Sunset. Credit: Paramount Pictures/CBS Studios. <a href="http://en.memory-alpha.org/wiki/File:Risan_sunset.jpg">Source</a>
+      </div>
     </div>
-    </center>
     </p>
   </div>
 </div>
