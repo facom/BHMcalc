@@ -18,8 +18,9 @@ include_once("web/BHM.php");
 ?>
 
 <?PHP
+shell_exec("echo $Modes > /tmp/m");
 if(!is_dir($SESSDIR)){$source_dir=$SYSDIR."template/";}
- else{$source_dir=$SYSDIR."$SESSID/";}
+else{$source_dir=$SYSDIR."$SESSID/";}
 if(false){}
 ////////////////////////////////////////////////////
 //GENERATE MASTER LINK
@@ -42,7 +43,7 @@ else if($ACTION=="MasterLink"){
   loadConfiguration("$source_dir/rotation.conf","rotation");
   loadConfiguration("$source_dir/planet.conf","planet");
   loadConfiguration("$source_dir/interaction.conf","interaction");
-  $masterlink="?LOADCONFIG&$PARSE_STRING";
+  $masterlink="?LOADCONFIG&Modes=$Modes&$PARSE_STRING";
   echo<<<LINK
 <a href="$masterlink" target="_blank">Copy this link</a>
 LINK;
@@ -59,7 +60,7 @@ else if($ACTION=="CommandLine"){
   loadConfiguration("$source_dir/planet.conf","planet");
   loadConfiguration("$source_dir/interaction.conf","interaction");
   $id=md5($PARSE_STRING);
-  $cmd="$PYTHONCMD BHMrun.py BHMinteraction.py $SESSDIR/sys_$id \"LOADCONFIG&$PARSE_STRING\"";
+  $cmd="$PYTHONCMD BHMrun.py BHMinteraction.py $SESSDIR/sys_$id \"LOADCONFIG&Modes=$Modes&$PARSE_STRING\"";
   echo $cmd;
 }
 ////////////////////////////////////////////////////

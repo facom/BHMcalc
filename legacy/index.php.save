@@ -17,74 +17,54 @@
 include_once("web/BHM.php");
 ?>
 <?PHP
-//////////////////////////////////////////////////////////////////////////////////
-//LOAD A CONFIGURATION
-//////////////////////////////////////////////////////////////////////////////////
+//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+//ACTION PREVIOUS TO LOAD INDEX
+//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 if(isset($LOADCONFIG)){
+  //========================================
+  //LOAD CONFIGURATION FROM QUERY STRING
+  //========================================
   $stdout="BHMrun-load-$SESSID";
   $stderr="BHMrun-load-$SESSID";
   $cmd="$PYTHONCMD BHMrun.py - $SESSDIR \"$QUERY_STRING\"";
   $out=shell_exec($cmd." 2> $TMPDIR/$stderr |tee $TMPDIR/$stdout");
-  $header=mainHeader("1","?Modes=$Modes");
-  echo "$header<body>Loading $Modes configuration...</body>";
+  $header=mainHeader("1","?LOAD");
+  //echo "$cmd<br/>";
+  echo "$header<body>Loading configuration...</body>";
   return;
 }
 
-//////////////////////////////////////////////////////////////////////////////////
-//INTERFACE SELECTION
-//////////////////////////////////////////////////////////////////////////////////
-$TABID=0;
-$QCALCMODE=0;
-$updateall="";
-$tabs="";
-if(!isset($Modes)){$Modes="Basic";}
-$oModes=$Modes;
-//echo "Mode: $Modes<br/>";
-if($Modes=="Binary"){$Modes="Star1:Star2:Planet:$Modes";}
-if($Modes=="Habitability"){$Modes="Star1:Star2:Planet:Binary:$Modes";}
-if($Modes=="Interactions"){$Modes="Star1:Star2:Planet:Binary:Habitability:$Modes";}
-
-//////////////////////////////////////////////////////////////////////////////////
-//SESSION DIRECTORY
-//////////////////////////////////////////////////////////////////////////////////
-if(!is_dir($SESSIONDIR)){
-  $source_dir=$SYSDIR."template/";
-  echoVerbose("No session directory.");
-  $qdir="No session directory.";
-  if(!isset($TABID)){$TABID=0;}
-}else{
-  $source_dir=$SESSIONDIR;
-  echoVerbose("Session directory already exist.");
-  $qdir="Existing session directory.";
-  if(!isset($TABID)){$TABID=2;}
+//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+//CATALOGUE KEYS
+//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+$keys=file($SESSDIR."BHMcat.keys");
+$catfields="";
+foreach($keys as $key){
+   $key=rtrim($key);
+   $catfields.="<option value='$key'>$key</option>";
 }
 
-//////////////////////////////////////////////////////////////////////////////////
-//ACTIVE CODE
-//////////////////////////////////////////////////////////////////////////////////
-
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-//READING CONFIGURATION FILES
+//HEADER
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-loadConfiguration("$source_dir/star1.conf","star1");
-loadConfiguration("$source_dir/star2.conf","star2");
-loadConfiguration("$source_dir/binary.conf","binary");
-loadConfiguration("$source_dir/hz.conf","hz");
-loadConfiguration("$source_dir/rotation.conf","rotation");
-loadConfiguration("$source_dir/planet.conf","planet");
-loadConfiguration("$source_dir/interaction.conf","interaction");
-
-//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-//ADJUST VALUES
-//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-$planet_Morb=$star1_M+$star2_M;
+$header=mainHeader();
+$CONTENT.="<html>$header<body>";
+if($VERBOSE){
 $CONTENT.=<<<C
-<script>
-function changePlanetMorb(){
-  Morb=parseFloat($("input[name=star1_M]").val())+parseFloat($("input[name=star2_M]").val());
-  $("input[name=planet_Morb]").attr("value",Morb);
+Sessid:$SESSID<br/>
+ROOTDIR: $ROOTDIR
+GET: $GETSTR<br/>
+POST: $POSTSTR<br/>
+C;
 }
-</script>
+
+//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+//HEADER AND FRONTMATTER
+//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+$CONTENT.=<<<C
+<h1>
+<a style='font-size:32' href="?TABID=0">Binary Habitability Calculator</a><sup> <b style='color:red'>2.0</b></sup>
+</h1>
 C;
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -126,6 +106,8 @@ $ajaxform_interaction_Update=ajaxFromCode($code,"'#interaction_Update'","click")
 $code=ajaxMultipleForm(array("summary"),"summary_form");
 $ajaxform_summary_Update=ajaxFromCode($code,"'#summary_Update'","click");
 
+//echo "<pre>$ajaxform_summary_Update</pre>";
+
 //UPDATE ALL
 if(isset($LOAD)){$slope=1.0;}
 else{$slope=1.0;}
@@ -143,17 +125,16 @@ $force_update=<<<F
   <a href="JavaScript:void(0)" class="force" onclick="forceUpdate('.force','.qover')">Smart</a> 
 F;
 
+//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+//CHANGE OTHER THINGS IN DOCUMENT WHEN LOAD
+//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 $changeFeH=<<<C
   changeAjax('$wDIR/BHMutil.php?ACTION=Metals&ZtoFeH','.star_Z','.star_FeH');
 C;
 $changeZ=<<<C
   changeAjax('$wDIR/BHMutil.php?ACTION=Metals&FeHtoZ','.star_FeH','.star_Z');
 C;
-
-//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-//CODE TO EXECUTE WHEN DOCUMENT IS READY
-//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-$document_load=<<<C
+$CONTENT.=<<<C
 <script>
   $(document).ready(function(){
       $changeZ
@@ -163,92 +144,66 @@ $document_load=<<<C
 </script>
 C;
 
-//////////////////////////////////////////////////////////////////////////////////
-//MODES
-//////////////////////////////////////////////////////////////////////////////////
-
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-//CATALOGUE MODE
+//LOAD DATA
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-if(preg_match("/Catalogue/",$Modes)){
-
-  $TABID=1;
-
-  //$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-  //CATALOGUE KEYS
-  //$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-  $keys=file($SESSDIR."BHMcat.keys");
-  $catfields="";
-  foreach($keys as $key){
-    $key=rtrim($key);
-    $catfields.="<option value='$key'>$key</option>";
-  }
-
-$tabs.=<<<C
-  $ajax_cat_Load
-  <!-- //////////////////////////////////////////////////////////// -->
-  <!-- CATALOGUE -->
-  <!-- //////////////////////////////////////////////////////////// -->
-  <div class="tabbertab" id="Introduction" title="BHM Catalogue">
-    <p><b>Binary Habitability Catalogue</b></p>
-    <form id="cat_form" action="BHMcat.php">
-      <input type="hidden" name="catid" value="$SESSID">
-      Sort field:
-      <select name="sortfield">
-	$catfields
-      </select>
-      Sort order:
-      <select name="sortorder">
-	<option value="0">Ascending</option>
-	<option value="1">Descending</option>
-      </select>
-      Detail level:
-      <select name="displaylevel">
-	<option value="1">Basic Properties</option>
-	<option value="2">Detailed</option>
-	<option value="3">All properties</option>
-	<option value="4">All properties and errors</option>
-      </select>
-      Filter : <input type="text" name="catfilter" value="binary_Pbin>0">
-      <a href=JavaScript:$('.help').toggle('fast',null) style="font-size:10px">Show/Hide Help</a>
-      <div class="help" style="display:none">
-	<b>Filter examples</b>:<br/>
-	Periods in a given range: binary_Pbin>10 and binary_Pbin<40<br/>
-	Primary stars with measured rotational velocity: star1_Protv>0<br/>
-	Both stars with measured rotational velocity: star1_Protv>0 and star2_Protv<br/>
-	Kepler planets: 'Kepler' in PlanetID<br/>
-	Systems in DEBCat: 'DEB' in SourceCat<br/>
-	Systems in Ekar catalogue with measured distance: 'Ek' in SourceCat and binary_d>0<br/>
-      </div>
-      <p></p>
-      <button class="update" id="cat_Update">Update</button> 
-      $ajaxform_cat_Update
-      $force_update
-      <div id="cat_results_panel" class="catalogue">
-	<div class="download" id="cat_download"></div>
-	<div id="cat_results_status_loader" style="background-color:white;">
-	  <div id="cat_results_status" style="background-color:white;">
-	    <iframe class="iframe" id="cat_results_frame" src="web/blank.html" 
-		    scrolling="yes" onload="adjustiFrame(this);">
-	    </iframe>
-	  </div>
-	</div>
-      </div>
-    </form>
-  </div>
-C;
+if(!is_dir($SESSDIR)){
+  $source_dir=$SYSDIR."template/";
+  echoVerbose("No session directory.");
+  $qdir="No session directory";
+  if(!isset($TABID)){$TABID=0;}
+}else{
+  $source_dir=$SESSDIR;
+  echoVerbose("Session directory already exist.");
+  $qdir="Existing session directory.";
+  if(!isset($TABID)){$TABID=2;}
 }
 
-//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-//STAR MODE
-//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-if(preg_match("/Star1/",$Modes)){
-  $TABID=1;
-  $QCALCMODE=1;
+//========================================
+//LOADING RESULTS
+//========================================
+if(isset($LOAD) and False){
+  $CONTENT.="$ajax_all_Load";
+}else{
+  $CONTENT.="$ajax_cat_Load";
+}
+echoVerbose("<br/>");
+echoVerbose("Source dir: $source_dir<br/>");
 
-  $star1_str_model_sel=selectFunction("star1_str_model",$MODELS,$star1_str_model,
-				      $options="class='sensitive' onchange='idSystem();'");
-$tabs.=<<<F
+//========================================
+//READING CONFIGURATION FILES
+//========================================
+loadConfiguration("$source_dir/star1.conf","star1");
+loadConfiguration("$source_dir/star2.conf","star2");
+loadConfiguration("$source_dir/binary.conf","binary");
+loadConfiguration("$source_dir/hz.conf","hz");
+loadConfiguration("$source_dir/rotation.conf","rotation");
+loadConfiguration("$source_dir/planet.conf","planet");
+loadConfiguration("$source_dir/interaction.conf","interaction");
+
+//ADJUST VALUES
+$planet_Morb=$star1_M+$star2_M;
+$CONTENT.=<<<C
+<script>
+function changePlanetMorb(){
+  Morb=parseFloat($("input[name=star1_M]").val())+parseFloat($("input[name=star2_M]").val());
+  $("input[name=planet_Morb]").attr("value",Morb);
+}
+</script>
+C;
+
+//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+//FORMS
+//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+//&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+//STARS
+//&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+$system=preg_replace("/'/","",$binary_str_SysID);
+
+$star1_str_model_sel=selectFunction("star1_str_model",$MODELS,$star1_str_model,
+				    $options="class='sensitive' onchange='idSystem();'");
+$star_form1=<<<F
   <!-- //////////////////////////////////////////////////////////// -->
   <!-- STAR 1 -->
   <!-- //////////////////////////////////////////////////////////// -->
@@ -420,16 +375,6 @@ $tabs.=<<<F
 	</div>
 	<div id="star1_results_panel" class="results">
 	  <div><center class="title">Results</center><hr width="90%"/></div>
-
-	  <div class="stdout" id="star1_stdout">
-	    <a href="tmp/BHMrun-stdout-$SESSID-star" target="_blank">
-	      stdout
-	    </a> | 
-	    <a href="tmp/BHMrun-stderr-$SESSID-star" target="_blank">
-	      stderr
-	    </a>
-	  </div>
-
 	  <div class="download" id="star1_download"></div>
 	  <div id="star1_results_status_loader" style="background-color:white;">
 	    <div id="star1_results_status" style="background-color:white;">
@@ -444,18 +389,10 @@ $tabs.=<<<F
    </form>
   </div>
 F;
-}
 
-//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-//BINARY MODE
-//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-if(preg_match("/Star2/",$Modes)){
-  $TABID=3;
-  $QCALCMODE=1;
-
-  $star2_str_model_sel=selectFunction("star2_str_model",$MODELS,$star2_str_model,
-				      $options="class='sensitive' onchange='idSystem();'");
-$tabs.=<<<F
+$star2_str_model_sel=selectFunction("star2_str_model",$MODELS,$star2_str_model,
+				    $options="class='sensitive' onchange='idSystem();'");
+$star_form2=<<<F
   <!-- //////////////////////////////////////////////////////////// -->
   <!-- STAR 1 -->
   <!-- //////////////////////////////////////////////////////////// -->
@@ -628,16 +565,6 @@ $tabs.=<<<F
 	<div id="star2_results_panel" class="results">
 	  <div><center class="title">Results</center><hr width="90%"/></div>
 	  <div class="download" id="star2_download"></div>
-
-	  <div class="stdout" id="star2_stdout">
-	    <a href="tmp/BHMrun-stdout-$SESSID-star" target="_blank">
-	      stdout
-	    </a> | 
-	    <a href="tmp/BHMrun-stderr-$SESSID-star" target="_blank">
-	      stderr
-	    </a>
-	  </div>
-
 	  <div id="star2_results_status_loader" style="background-color:white;">
 	    <div id="star2_results_status" style="background-color:white;">
 	      <iframe class="iframe" id="star2_results_frame" src="web/blank.html" 
@@ -651,16 +578,11 @@ $tabs.=<<<F
    </form>
   </div>
 F;
-}
 
-//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-//PLANET MODE
-//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-if(preg_match("/Planet/",$Modes)){
-  $TABID=1;
-  $QCALCMODE=1;
-
-$tabs.=<<<F
+//&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+//PLANET
+//&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+$planet_form=<<<F
   <div class="tabbertab" id="planet" title="Planet">
   <form id="planet_form" action="BHMrun.php">
     <div class="tabcontent">
@@ -816,18 +738,7 @@ $tabs.=<<<F
 	</div>
 	<div id="planet_results_panel" class="results">
 	  <div><center class="title">Results</center><hr width="90%"/></div>
-
 	  <div class="download" id="planet_download"></div>
-
-	  <div class="stdout" id="planet_stdout">
-	    <a href="tmp/BHMrun-stdout-$SESSID-planet" target="_blank">
-	      stdout
-	    </a> | 
-	    <a href="tmp/BHMrun-stderr-$SESSID-planet" target="_blank">
-	      stderr
-	    </a>
-	  </div>
-
 	  <div id="planet_results_status_loader" style="background-color:white;">
 	    <div id="planet_results_status" style="background-color:white;">
 	      <iframe class="iframe" id="planet_results_frame" src="web/blank.html" 
@@ -841,16 +752,11 @@ $tabs.=<<<F
    </form>
   </div>
 F;
-}
 
-//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+//&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
 //BINARY
-//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-if(preg_match("/Binary/",$Modes)){
-  $TABID=4;
-  $QCALCMODE=1;
-
-$tabs.=<<<F
+//&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+$binary_form=<<<F
   <div class="tabbertab" id="binary" title="Binary">
   <form id="binary_form" action="BHMrun.php">
     <div class="tabcontent">
@@ -973,18 +879,7 @@ $tabs.=<<<F
 	</div>
 	<div id="binary_results_panel" class="results">
 	  <div><center class="title">Results</center><hr width="90%"/></div>
-
 	  <div class="download" id="binary_download"></div>
-
-	  <div class="stdout" id="binary_stdout">
-	    <a href="tmp/BHMrun-stdout-$SESSID-binary" target="_blank">
-	      stdout
-	    </a> | 
-	    <a href="tmp/BHMrun-stderr-$SESSID-binary" target="_blank">
-	      stderr
-	    </a>
-	  </div>
-
 	  <div id="binary_results_status_loader" style="background-color:white;">
 	    <div id="binary_results_status" style="background-color:white;">
 	      <iframe class="iframe" id="binary_results_frame" src="web/blank.html" 
@@ -999,24 +894,19 @@ $tabs.=<<<F
    </form>
   </div>
 F;
-}
 
-//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-//HABITABILITY
-//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-if(preg_match("/Habitability/",$Modes)){
-  $TABID=5;
-  $QCALCMODE=1;
-
-  $hz_str_incrit_wd_sel=selectFunction("hz_str_incrit_wd",$HZINMODELS,$hz_str_incrit_wd,
-				       $options="");
-  $hz_str_incrit_nr_sel=selectFunction("hz_str_incrit_nr",$HZINMODELS,$hz_str_incrit_nr,
-				       $options="");
-  $hz_str_outcrit_wd_sel=selectFunction("hz_str_outcrit_wd",$HZOUTMODELS,$hz_str_outcrit_wd,
-					$options="");
-  $hz_str_outcrit_nr_sel=selectFunction("hz_str_outcrit_nr",$HZOUTMODELS,$hz_str_outcrit_nr,
-					$options="");
-$tabs.=<<<F
+//&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+//HABITABLE ZONE
+//&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+$hz_str_incrit_wd_sel=selectFunction("hz_str_incrit_wd",$HZINMODELS,$hz_str_incrit_wd,
+				     $options="");
+$hz_str_incrit_nr_sel=selectFunction("hz_str_incrit_nr",$HZINMODELS,$hz_str_incrit_nr,
+				     $options="");
+$hz_str_outcrit_wd_sel=selectFunction("hz_str_outcrit_wd",$HZOUTMODELS,$hz_str_outcrit_wd,
+				     $options="");
+$hz_str_outcrit_nr_sel=selectFunction("hz_str_outcrit_nr",$HZOUTMODELS,$hz_str_outcrit_nr,
+				     $options="");
+$hz_form=<<<F
   <div class="tabbertab" id="hz" title="Habitable Zone">
   <form id="hz_form" action="BHMrun.php">
     <div class="tabcontent">
@@ -1091,18 +981,7 @@ $tabs.=<<<F
 	</div>
 	<div id="hz_results_panel" class="results">
 	  <div><center class="title">Results</center><hr width="90%"/></div>
-
 	  <div class="download" id="hz_download"></div>
-
-	  <div class="stdout" id="hz_stdout">
-	    <a href="tmp/BHMrun-stdout-$SESSID-hz" target="_blank">
-	      stdout
-	    </a> | 
-	    <a href="tmp/BHMrun-stderr-$SESSID-hz" target="_blank">
-	      stderr
-	    </a>
-	  </div>
-
 	  <div id="hz_results_status_loader" style="background-color:white;">
 	    <div id="hz_results_status" style="background-color:white;">
 	      <iframe class="iframe" id="hz_results_frame" src="web/blank.html" 
@@ -1117,27 +996,11 @@ $tabs.=<<<F
    </form>
   </div>
 F;
-}
 
-//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-//HABITABILITY
-//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-if(preg_match("/Interactions/",$Modes)){
-  $TABID=7;
-  $QCALCMODE=1;
-
-$updateall=<<<F
-$ajax_all_Update
-<div style="position:fixed;top:10px;right:10px">
-<form id="allforms" action="JavaScript:void(0)">
-  <button id="all_Update">Update All</button>
-  $ajax_all_Update
-</form>
-</div>
-F;
-
-$tabs.=<<<F
-  $ajax_all_Update	    
+//&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+//ROTATION
+//&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+$rot_form=<<<F
   <div class="tabbertab" id="rotation" title="Rotation and Activity">
   <form id="rotation_form" action="BHMrun.php">
     <div class="tabcontent">
@@ -1172,18 +1035,7 @@ $tabs.=<<<F
 	</div>
 	<div id="rotation_results_panel" class="results">
 	  <div><center class="title">Results</center><hr width="90%"/></div>
-
 	  <div class="download" id="rotation_download"></div>
-
-	  <div class="stdout" id="rotation_stdout">
-	    <a href="tmp/BHMrun-stdout-$SESSID-rotation" target="_blank">
-	      stdout
-	    </a> | 
-	    <a href="tmp/BHMrun-stderr-$SESSID-rotation" target="_blank">
-	      stderr
-	    </a>
-	  </div>
-
 	  <div id="rotation_results_status_loader" style="background-color:white;">
 	    <div id="rotation_results_status" style="background-color:white;">
 	      <iframe class="iframe" id="rotation_results_frame" src="web/blank.html" 
@@ -1199,10 +1051,13 @@ $tabs.=<<<F
   </div>
 F;
 
+//&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+//INTERACTION
+//&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
 $interaction_str_refobj_sel=selectFunction("interaction_str_refobj",$REFOBJS,
 					   $interaction_str_refobj,
 					   $options="");
-$tabs.=<<<F
+$int_form=<<<F
   <div class="tabbertab" id="summary" title="Binary-Planet Interaction">
   <form id="interaction_form" action="BHMrun.php">
     <div class="tabcontent">
@@ -1341,17 +1196,7 @@ $tabs.=<<<F
 	</div>
 	<div id="interaction_results_panel" class="results">
 	  <div><center class="title">Results</center><hr width="90%"/></div>
-
 	  <div class="download" id="interaction_download"></div>
-	  <div class="stdout" id="interaction_stdout">
-	    <a href="tmp/BHMrun-stdout-$SESSID-interaction" target="_blank">
-	      stdout
-	    </a> | 
-	    <a href="tmp/BHMrun-stderr-$SESSID-interaction" target="_blank">
-	      stderr
-	    </a>
-	  </div>
-
 	  <div id="interaction_results_status_loader" style="background-color:white;">
 	    <div id="interaction_results_status" style="background-color:white;">
 	      <iframe class="iframe" id="interaction_results_frame" src="web/blank.html" 
@@ -1367,10 +1212,115 @@ $tabs.=<<<F
    <input class="sys_input" type="hidden" name="interaction_str_sys" value="$interaction_str_sys">
   </div>
 F;
-}
 
-if($QCALCMODE){
-$tabs.=<<<F
+//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+//TABBED FORM
+//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+$CONTENT.=<<<C
+<div style="position:fixed;top:10px;right:10px">
+<form id="allforms" action="JavaScript:void(0)">
+  <button id="all_Update">Update All</button>
+  $ajax_all_Update
+</form>
+</div>
+<div class="tabber maintabber" id="$TABID">
+
+  <!-- //////////////////////////////////////////////////////////// -->
+  <!-- INTRODUCTION -->
+  <!-- //////////////////////////////////////////////////////////// -->
+  <div class="tabbertab" id="Introduction" title="Introduction">
+    <div class="tabcontent">
+    </div>
+  </div>
+
+  <!-- //////////////////////////////////////////////////////////// -->
+  <!-- CATALOGUE -->
+  <!-- //////////////////////////////////////////////////////////// -->
+  <div class="tabbertab" id="Introduction" title="BHM Catalogue">
+    <p><b>Binary Habitability Catalogue</b></p>
+    <form id="cat_form" action="BHMcat.php">
+      Sort field:
+      <select name="sortfield">
+	$catfields
+      </select>
+      Sort order:
+      <select name="sortorder">
+	<option value="0">Ascending</option>
+	<option value="1">Descending</option>
+      </select>
+      Detail level:
+      <select name="displaylevel">
+	<option value="1">Basic Properties</option>
+	<option value="2">Detailed</option>
+	<option value="3">All properties</option>
+	<option value="4">All properties and errors</option>
+      </select>
+      Filter : <input type="text" name="catfilter" value="binary_Pbin>0">
+      <a href=JavaScript:$('.help').toggle('fast',null) style="font-size:10px">Show/Hide Help</a>
+      <div class="help" style="display:none">
+	<b>Filter examples</b>:<br/>
+	Periods in a given range: binary_Pbin>10 and binary_Pbin<40<br/>
+	Primary stars with measured rotational velocity: star1_Protv>0<br/>
+	Both stars with measured rotational velocity: star1_Protv>0 and star2_Protv<br/>
+	Kepler planets: 'Kepler' in PlanetID<br/>
+	Systems in DEBCat: 'DEB' in SourceCat<br/>
+	Systems in Ekar catalogue with measured distance: 'Ek' in SourceCat and binary_d>0<br/>
+      </div>
+      <p></p>
+      <button class="update" id="cat_Update">Update</button> 
+      $ajaxform_cat_Update
+      $force_update
+      <div id="cat_results_panel" class="catalogue">
+	<div class="download" id="cat_download"></div>
+	<div id="cat_results_status_loader" style="background-color:white;">
+	  <div id="cat_results_status" style="background-color:white;">
+	    <iframe class="iframe" id="cat_results_frame" src="web/blank.html" 
+		    scrolling="yes" onload="adjustiFrame(this);">
+	    </iframe>
+	  </div>
+	</div>
+      </div>
+    </form>
+  </div>
+
+  <!-- //////////////////////////////////////////////////////////// -->
+  <!-- STAR 1 -->
+  <!-- //////////////////////////////////////////////////////////// -->
+  $star_form1
+
+  <!-- //////////////////////////////////////////////////////////// -->
+  <!-- STAR 2
+  <!-- //////////////////////////////////////////////////////////// -->
+  $star_form2
+  
+  <!-- //////////////////////////////////////////////////////////// -->
+  <!-- PLANET -->
+  <!-- //////////////////////////////////////////////////////////// -->
+  $planet_form
+
+  <!-- //////////////////////////////////////////////////////////// -->
+  <!-- BINARY -->
+  <!-- //////////////////////////////////////////////////////////// -->
+  $binary_form
+
+  <!-- //////////////////////////////////////////////////////////// -->
+  <!-- HABITABLE ZONE -->
+  <!-- //////////////////////////////////////////////////////////// -->
+  $hz_form
+
+  <!-- //////////////////////////////////////////////////////////// -->
+  <!-- EVOLUTION OF ROTATION -->
+  <!-- //////////////////////////////////////////////////////////// -->
+  $rot_form
+
+  <!-- //////////////////////////////////////////////////////////// -->
+  <!-- BINARY-PLANET INTERACTION -->
+  <!-- //////////////////////////////////////////////////////////// -->
+  $int_form
+
+  <!-- //////////////////////////////////////////////////////////// -->
+  <!-- SUMMARY -->
+  <!-- //////////////////////////////////////////////////////////// -->
   <div class="tabbertab" id="summary" title="Summary">
     <form id="summary_form" action="BHMsummary.php">
     <div class="tabcontent">
@@ -1382,21 +1332,21 @@ $tabs.=<<<F
 	  <ul>
 	    <li>
 	      <a class="activelink" 
-		 href="JavaScript:loadAjax('BHMutil.php?ACTION=DownloadConfig&Modes=$oModes','#download_config');">
+		 href="JavaScript:loadAjax('BHMutil.php?ACTION=DownloadConfig','#download_config');">
 		Download configuration files.
 	      </a>
 	      <div class="target" id="download_config"></div>
 	    </li>
 	    <li>
 	      <a class="activelink" 
-		 href="JavaScript:loadAjax('BHMutil.php?ACTION=DownloadAll&Modes=$oModes','#download_allfiles');">
+		 href="JavaScript:loadAjax('BHMutil.php?ACTION=DownloadAll','#download_allfiles');">
 		Download all files.
 	      </a>
 	      <div class="target" id="download_allfiles"></div>
 	    </li>
 	    <li>
 	      <a class="activelink" 
-		 href="JavaScript:loadAjax('BHMutil.php?ACTION=MasterLink&Modes=$oModes','#systemlink');">
+		 href="JavaScript:loadAjax('BHMutil.php?ACTION=MasterLink','#systemlink');">
 		Generate system link.</a>
 	      <!--<a class="activelink" 
 		 href="JavaScript:alert('hola');">
@@ -1405,7 +1355,7 @@ $tabs.=<<<F
 	    </li>
 	    <li>
 	      <a class="activelink" 
-		 href="JavaScript:loadAjax('BHMutil.php?ACTION=CommandLine&Modes=$oModes','#commandline');">
+		 href="JavaScript:loadAjax('BHMutil.php?ACTION=CommandLine','#commandline');">
 		Generate command line.</a>
 	      <div class="target" id="commandline"></div>
 	    </li>
@@ -1426,103 +1376,19 @@ $tabs.=<<<F
     </div>
     </form>
   </div>
-F;
-}
 
-
-//////////////////////////////////////////////////////////////////////////////////
-//BASIC CONTENT
-//////////////////////////////////////////////////////////////////////////////////
-
-//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-//HEADER
-//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-$header=mainHeader();
-$CONTENT.="<html>$header<body>";
-if($VERBOSE){
-$CONTENT.=<<<C
-Sessid:$SESSID<br/>
-ROOTDIR: $ROOTDIR
-GET: $GETSTR<br/>
-POST: $POSTSTR<br/>
-C;
-}
-
-//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-//FRONTMATTER
-//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-$CONTENT.=<<<C
-<h1>
-<a style='font-size:32' href="$wDIR">
-  Binary Habitability Calculator
-</a><sup> <b style='color:red'>2.0</b></sup>
-</h1>
-C;
-
-//////////////////////////////////////////////////////////////////////////////////
-//CHOOSE CONTENT
-//////////////////////////////////////////////////////////////////////////////////
-
-//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-//COMMON CONTENT
-//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-$BHMcalc="<b style='font-family:Courier;color:red'>BHMcalc</b>";
-
-//##############################
-//INTRODUCTION
-//##############################
-include_once("web/main.php");
-
-//##############################
-//HELP
-//##############################
-include_once("web/help.php");
-
-//##############################
-//FOOTER
-//##############################
-$footer=<<<C
+</div>
 <p></p>
-<div class="footer">
-  Developed by <a href="mailto:jorge.zuluaga@udea.edu.co">Jorge I. Zuluaga</a>
-  <img src="web/copyleft.jpg" width=10px> 2014,
-  Viva la BHM!, 
-  Session ID: $SESSID. $qdir.
-</div>
-C;
+<center>
+  <i style="font-size:10px">Session ID: $SESSID. $qdir |  
+  <a href=tmp/BHMrun-stdout-$SESSID target=_blank>stdout</a> | <a href=tmp/BHMrun-stderr-$SESSID target=_blank>stderr</a>
+  </i>
 
-//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-//UPDATE ALL
-//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-$udateall=<<<C
-<div style="position:fixed;top:10px;right:10px">
-<form id="allforms" action="JavaScript:void(0)">
-  <button id="all_Update">Update All</button>
-  $ajax_all_Update
-</form>
-</div>
+</center>
 C;
 
 //////////////////////////////////////////////////////////////////////////////////
-//HELP
-//////////////////////////////////////////////////////////////////////////////////
-if(isset($HELP)){$TABID=1;}
-
-//////////////////////////////////////////////////////////////////////////////////
-//CREATE CONTENT
-//////////////////////////////////////////////////////////////////////////////////
-$CONTENT.=<<<C
-<div class="tabber maintabber" name="tabber" id="$TABID">
-  $updateall
-  $main
-  $tabs
-  $help
-</div>
-$footer
-C;
-
-//////////////////////////////////////////////////////////////////////////////////
-//CLOSING MATTER
+//CONTENT DISPLAY
 //////////////////////////////////////////////////////////////////////////////////
 $CONTENT.="</body></html>";
 echo $CONTENT;
