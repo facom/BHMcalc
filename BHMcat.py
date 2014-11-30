@@ -317,7 +317,7 @@ for system in sortCatalogue(systems,sortfield,reverse=sortorder):
         sysid=system["binary_str_SysID"][:maxchar]
         star1id=system["star1_str_StarID"][:maxchar]
         star2id=system["star2_str_StarID"][:maxchar]
-        plid=planet["PlanetID"][:maxchar]
+        plid=planet["planet_str_PlanetID"][:maxchar]
 
         #ADD LINKS
         exec("row=row.replace(\">%s<\",\"><a href=\\\"%s?Modes=Interactions&%s\\\" target=_parent>%s</a><\")"%(system["BHMCatS"],
@@ -336,7 +336,7 @@ for system in sortCatalogue(systems,sortfield,reverse=sortorder):
                                                                                                         WEB_DIR,
                                                                                                         qstring,
                                                                                                         star2id))
-        exec("row=row.replace(\">%s<\",\"><a href=\\\"%s?Modes=Planet&%s\\\" target=_parent>%s</a><\")"%(planet["PlanetID"],
+        exec("row=row.replace(\">%s<\",\"><a href=\\\"%s?Modes=Planet&%s\\\" target=_parent>%s</a><\")"%(planet["planet_str_PlanetID"],
                                                                                                         WEB_DIR,
                                                                                                         qstring,
                                                                                                         plid))

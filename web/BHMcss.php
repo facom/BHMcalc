@@ -319,8 +319,20 @@ div.target{
  //height:3ex;
  overflow:auto;
  white-space:nowrap;
- //background:lightgray;
- background:lightyellow;
+ background:lightgray;
+ //background:lightyellow;
+ display:none;
+}
+
+div.listconfig{
+ padding:10px;
+ width:90%;
+ //height:3ex;
+ overflow:auto;
+ white-space:nowrap;
+ background:lightgray;
+ //background:lightyellow;
+ display:block;
 }
 
 td.field_cat{
@@ -371,6 +383,10 @@ div.figure{
 div.caption{
   font-style:italic;
   font-size:12px;
+}
+
+li.summaryitem{
+ padding:5px;
 }
 
 </style>

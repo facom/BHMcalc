@@ -672,8 +672,16 @@ $tabs.=<<<F
 	    <table border=0px>
 	      <!-- ====================== OBSERVED =========================== -->
 	      <tr><td colspan=2 class="section">Basic Properties</td></tr>
+	      <!-- ---------------------------------------- -->
 	      <tr>
-		<!-- ---------------------------------------- -->
+		<td class="name">Planet ID:</td>
+		<td class="field">
+		  <input type="text" name="planet_str_PlanetID" value="$planet_str_PlanetID" >
+		</td>
+	      </tr>
+	      <tr><td class="help" colspan=2></td></tr>
+	      <!-- ---------------------------------------- -->
+	      <tr>
 		<td class="name">Mass:</td>
 		<td class="field">
 		  <input type="text" class="sensitive" name="planet_M" value="$planet_M" onchange="idSystem();">
@@ -1370,6 +1378,15 @@ F;
 }
 
 if($QCALCMODE){
+$cfile="$SESSDIR/configurations.html";
+if(is_file($cfile)){
+  $configurations=shell_exec("cat $cfile");
+  $downlink=<<<D
+<a href="$wSESSDIR/configurations.html" target="_blank" style="font-size:10px">
+  Download Configuration
+</a>
+D;
+}else{$configurations="";$downlink="";}
 $tabs.=<<<F
   <div class="tabbertab" id="summary" title="Summary">
     <form id="summary_form" action="BHMsummary.php">
@@ -1380,34 +1397,38 @@ $tabs.=<<<F
 	  <button class="update" id="summary_Update">Update</button> 
 	  $ajaxform_summary_Update
 	  <ul>
-	    <li>
+	    <li class="summaryitem">
 	      <a class="activelink" 
 		 href="JavaScript:loadAjax('BHMutil.php?ACTION=DownloadConfig&Modes=$oModes','#download_config');">
 		Download configuration files.
 	      </a>
 	      <div class="target" id="download_config"></div>
 	    </li>
-	    <li>
+	    <li class="summaryitem">
 	      <a class="activelink" 
 		 href="JavaScript:loadAjax('BHMutil.php?ACTION=DownloadAll&Modes=$oModes','#download_allfiles');">
 		Download all files.
 	      </a>
 	      <div class="target" id="download_allfiles"></div>
 	    </li>
-	    <li>
+	    <li class="summaryitem">
 	      <a class="activelink" 
 		 href="JavaScript:loadAjax('BHMutil.php?ACTION=MasterLink&Modes=$oModes','#systemlink');">
 		Generate system link.</a>
-	      <!--<a class="activelink" 
-		 href="JavaScript:alert('hola');">
-		Generate system link.</a>-->
 	      <div class="target" id="systemlink"></div>
 	    </li>
-	    <li>
+	    <li class="summaryitem">
 	      <a class="activelink" 
 		 href="JavaScript:loadAjax('BHMutil.php?ACTION=CommandLine&Modes=$oModes','#commandline');">
 		Generate command line.</a>
 	      <div class="target" id="commandline"></div>
+	    </li>
+	    <li class="summaryitem">
+	      <a class="activelink" 
+		 href="JavaScript:loadAjax('BHMutil.php?ACTION=SaveConfiguration&Modes=$oModes','#saveconfiguration');">
+		Save Configuration.</a>
+	      <div class="listconfig" id="saveconfiguration"><ul>$configurations</ul></div>
+	      $downlink
 	    </li>
 	  </ul>
 	</div>

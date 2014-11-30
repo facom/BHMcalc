@@ -68,7 +68,7 @@ if 'LOADCONFIG' in module_conf:
     PRINTOUT("Loading variables into dictionary...")
     for field in fields:
         if '_' not in field:continue
-        print field
+        #print field
         parts=field.split("_")
         module=parts[0]
         if module not in data.keys():data[module]=dict()
@@ -84,7 +84,7 @@ if 'LOADCONFIG' in module_conf:
     if not DIREXISTS(sys_dir):System("mkdir -p %s"%sys_dir)
     PRINTOUT("Saving parameters into configuration file...")
     for module in data.keys():
-        print "Module:",module
+        #print "Module:",module
         fm=open("%s/%s.conf"%(sys_dir,module),"w")
         for key in data[module].keys():
             value=data[module][key]
@@ -95,7 +95,7 @@ if 'LOADCONFIG' in module_conf:
                     entry="%s=\"%s\"\n"%(key,value)
             else:
                 entry="%s=%s\n"%(key,value)
-            print "Entry: ",entry
+            #print "Entry: ",entry
             fm.write(entry)
         fm.write("str_sys=\"'%s'\"\n"%sys_str)
         fm.close()

@@ -58,7 +58,7 @@ binary_dmod
 binary_Lx
 RA
 DEC
-PlanetID
+planet_str_PlanetID
 planet_M
 planet_Merr
 planet_R

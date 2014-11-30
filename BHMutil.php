@@ -18,9 +18,19 @@ include_once("web/BHM.php");
 ?>
 
 <?PHP
-shell_exec("echo $Modes > /tmp/m");
+if(preg_match("/template/",$SESSDIR)){
+  $SESSID=session_id();
+  $wSESSDIR=$wSYSDIR."$SESSID/";
+  $SESSDIR=$ROOTDIR.$wSESSDIR;
+  shell_exec("mkdir -p $SESSDIR");
+  shell_exec("cp -rf $SYSDIR/template/* $SESSDIR/");
+}
+$source_dir=$SESSDIR;
+/*
 if(!is_dir($SESSDIR)){$source_dir=$SYSDIR."template/";}
 else{$source_dir=$SYSDIR."$SESSID/";}
+shell_exec("echo '$SESSDIR $source_dir' > /tmp/m");
+*/
 if(false){}
 ////////////////////////////////////////////////////
 //GENERATE MASTER LINK
@@ -62,6 +72,51 @@ else if($ACTION=="CommandLine"){
   $id=md5($PARSE_STRING);
   $cmd="$PYTHONCMD BHMrun.py BHMinteraction.py $SESSDIR/sys_$id \"LOADCONFIG&Modes=$Modes&$PARSE_STRING\"";
   echo $cmd;
+}
+////////////////////////////////////////////////////
+//GENERATE MASTER LINK
+////////////////////////////////////////////////////
+else if($ACTION=="SaveConfiguration"){
+  loadConfiguration("$source_dir/star1.conf","star1");
+  loadConfiguration("$source_dir/star2.conf","star2");
+  loadConfiguration("$source_dir/binary.conf","binary");
+  loadConfiguration("$source_dir/hz.conf","hz");
+  loadConfiguration("$source_dir/rotation.conf","rotation");
+  loadConfiguration("$source_dir/planet.conf","planet");
+  loadConfiguration("$source_dir/interaction.conf","interaction");
+  $id=md5($PARSE_STRING);
+  $masterlink="?LOADCONFIG&Modes=$Modes&$PARSE_STRING";
+  if(false){
+  }
+  else if(preg_match("/Star1/",$Modes)){
+      $id=$star1_str_StarID;
+  }
+  else if(preg_match("/Star2/",$Modes)){
+    $id=$star2_str_StarID;
+  }
+  else if(preg_match("/Planet/",$Modes)){
+    $id=$planet_str_PlanetID;
+  }
+  else{
+    $id=$binary_str_SysID;
+  }
+  $id=preg_replace("/'/","",$id);
+
+  $masterlink=<<<LINK
+
+    <li>$Modes: <a href="$masterlink" target="_blank">$id</a></li>
+
+LINK;
+  
+  $cfile="$SESSDIR/configurations.html";
+  if(!is_file($cfile)){$out=shell_exec("echo > $cfile");}
+
+  $fl=fopen($cfile,"a");
+  fwrite($fl,$masterlink);
+  fclose($fl);
+
+  $content=shell_exec("cat $cfile");
+  echo "<ul>$content</ul>";
 }
 ////////////////////////////////////////////////////
 //DOWNLOAD CONFIGURATION

@@ -79,6 +79,7 @@ function loadAjax(script,target)
 		},
 		function(element,rtext){
 		    //element.css('background','lightgreen');
+		    element.css("display","block");
 		    element.html("Loading...");
 		},
 		function(element,rtext){

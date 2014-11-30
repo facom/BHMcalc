@@ -1,4 +1,4 @@
-Nop,Nopstr,Type,BHMCatP,BHMCatS,SysID,PlanetID,planet_M,planet_Merr,planet_R,planet_Rerr,planet_Morb,planet_aorb,planet_aorberr,planet_Porb,planet_Porberr,planet_eorb,planet_eorberr,planet_worb,planet_worberr,planet_ADS
+Nop,Nopstr,Type,BHMCatP,BHMCatS,SysID,planet_str_PlanetID,planet_M,planet_Merr,planet_R,planet_Rerr,planet_Morb,planet_aorb,planet_aorberr,planet_Porb,planet_Porberr,planet_eorb,planet_eorberr,planet_worb,planet_worberr,planet_ADS
 str,str,str,str,str,str,str,float,float,float,float,float,float,float,float,float,float,float,float,float,str
 No.,No.,Type,Plan.Cat.Id.,Sys.Cat.Id.,System Id.,Planet Id.,M_p,"M_p,err",R_p,"R_p,err",M_orb,a_orb,"a_orb,err",P_orb,"P_orb,err",e_orb,"e_orb,err",\omega_orb,"\omega_orb,err",ADS Link
 100,1,100,1,1,2,1,1,4,1,4,100,1,4,1,4,1,4,2,4,1
