@@ -21,9 +21,6 @@
 //////////////////////////////////////////////////////////////
 $CONTENT="";
 
-//PYTHON COMMAND
-$PYTHONCMD="PYTHONPATH=. MPLCONFIGDIR=/tmp python";
-
 //==============================
 //GETTING LOCATION
 //==============================
@@ -42,6 +39,9 @@ $SYSDIR=$ROOTDIR.$wSYSDIR;
 
 $wTMPDIR="tmp/";
 $TMPDIR=$ROOTDIR.$wDIR.$wTMPDIR;
+
+//PYTHON COMMAND
+$PYTHONCMD="PYTHONPATH=. MPLCONFIGDIR=$TMPDIR python";
 
 //GET VARIABLES
 foreach(array_keys($_GET) as $field){
