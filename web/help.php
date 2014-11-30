@@ -230,7 +230,7 @@ $help=<<<C
     <p>
       <center>
 	<img src="web/maw.png" width=100px/><br/>
-	This site is being developed.
+	This site is under construction.
       </center>
     </p>
   </div>
