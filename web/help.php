@@ -20,7 +20,7 @@ $help=<<<C
     </p>
     <center>
       <div class="figure">
-	<img src="doc/figures/modes.png" width="100%"/>
+	<img src="$wDIR/doc/figures/modes.png" width="100%"/>
 	<div class="caption">The Calculator Modes</div>
       </div>
     </center>
@@ -56,7 +56,7 @@ $help=<<<C
 
     <center>
       <div class="figure" style="width:80%">
-	<img src="doc/figures/catalogue.png" width="100%"/>
+	<img src="$wDIR/doc/figures/catalogue.png" width="100%"/>
 	<p></p>
 	<div class="caption">The BHM Catalogue dynamic table</div>
       </div>
@@ -104,7 +104,7 @@ $help=<<<C
 
     <center>
       <div class="figure" style="width:80%">
-	<img src="doc/figures/tab.png" width="100%"/>
+	<img src="$wDIR/doc/figures/tab.png" width="100%"/>
 	<p></p>
 	<div class="caption">The common structure of a calculation tab.</div>
       </div>
