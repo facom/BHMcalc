@@ -18,6 +18,19 @@ include_once("web/BHM.php");
 ?>
 <?PHP
 //////////////////////////////////////////////////////////////////////////////////
+//LOAD A CONFIGURATION
+//////////////////////////////////////////////////////////////////////////////////
+if(isset($LOADCONFIG)){
+  $stdout="BHMrun-load-$SESSID";
+  $stderr="BHMrun-load-$SESSID";
+  $cmd="$PYTHONCMD BHMrun.py - $SESSDIR \"$QUERY_STRING\"";
+  $out=shell_exec($cmd." 2> $TMPDIR/$stderr |tee $TMPDIR/$stdout");
+  $header=mainHeader("1","?Modes=$Modes");
+  echo "$header<body>Loading configuration...</body>";
+  return;
+}
+
+//////////////////////////////////////////////////////////////////////////////////
 //INTERFACE SELECTION
 //////////////////////////////////////////////////////////////////////////////////
 $TABID=0;
@@ -226,6 +239,7 @@ C;
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 if(preg_match("/Star1/",$Modes)){
   $TABID=1;
+  $QCALCMODE=1;
 
   $star1_str_model_sel=selectFunction("star1_str_model",$MODELS,$star1_str_model,
 				      $options="class='sensitive' onchange='idSystem();'");
@@ -620,6 +634,7 @@ F;
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 if(preg_match("/Planet/",$Modes)){
   $TABID=1;
+  $QCALCMODE=1;
 
 $tabs.=<<<F
   <div class="tabbertab" id="planet" title="Planet">
@@ -1051,7 +1066,7 @@ F;
 //HABITABILITY
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 if(preg_match("/Interactions/",$Modes)){
-  $TABID=6;
+  $TABID=7;
   $QCALCMODE=1;
 
 $tabs.=<<<F
@@ -1400,10 +1415,15 @@ $udateall=<<<C
 C;
 
 //////////////////////////////////////////////////////////////////////////////////
+//HELP
+//////////////////////////////////////////////////////////////////////////////////
+if(isset($HELP)){$TABID=1;}
+
+//////////////////////////////////////////////////////////////////////////////////
 //CREATE CONTENT
 //////////////////////////////////////////////////////////////////////////////////
 $CONTENT.=<<<C
-<div class="tabber maintabber" id="$TABID">
+<div class="tabber maintabber" name="tabber" id="$TABID">
   $main
   $tabs
   $help

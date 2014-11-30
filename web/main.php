@@ -8,7 +8,8 @@ $main=<<<C
     </p>
 
     <p>
-      To start, please select which <a href="?HELP#Mode">$BHMcalc Mode</a> do you want to use to start with:
+      Please select which <a href="?HELP#Modes">$BHMcalc Mode</a> you
+      want to use:
     </p>
 
     <div style="text-align:center">
@@ -21,7 +22,7 @@ $main=<<<C
       </button>
       <button class="mode" name="Modes" value="Planet">
 	Planet
-      </button>
+      </button><br/>
       <button class="mode" name="Modes" value="Binary">
 	Binary
       </button>
@@ -37,18 +38,18 @@ $main=<<<C
     <p>
       The $BHMcalc is a web application intended to explore the vast
       configuration space of <b><i>Circumbinary Planetary System</i>
-      </b> (aka. <i>Tatooines</i>), their physical
-      properties, evolution and the details of the complex interaction
-      between stars in pairs and their planets.
+      </b> (aka. <i>Tatooines</i>), their physical properties,
+      evolution and the details of the complex interaction between a
+      pair of close stars and the planets around.
     </p>
 
     <p>
-      This tool is intended to <b>gain insight</b> about the complex
+      This tool is intended to <b>gain insights</b> about the complex
       landscape of circumbinary planets and their potentially
       habitable environments.  <b>$BHMcalc is not aimed to provide
-      detailed predictions</b> about actual circumbinary systems,
-      although if used properly, their results could provide useful
-      constraints for already existing planetary systems.
+      detailed predictions</b> about actual circumbinary systems.
+      However, if it is used properly their results could provide
+      useful constraints for already existing planetary systems.
     </p>
 
     <p>
@@ -60,6 +61,7 @@ $main=<<<C
       I. Zuluaga</b>.
     </p>
 
+    <a name="References"></a>
     <p>
       If you are using the $BHMcalc for <b>research purposes</b> do
       not forget to <b style='color:red'>cite properly the scientific

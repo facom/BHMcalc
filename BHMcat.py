@@ -320,7 +320,7 @@ for system in sortCatalogue(systems,sortfield,reverse=sortorder):
         plid=planet["PlanetID"][:maxchar]
 
         #ADD LINKS
-        exec("row=row.replace(\">%s<\",\"><a href=\\\"%s?Modes=Interaction&%s\\\" target=_parent>%s</a><\")"%(system["BHMCatS"],
+        exec("row=row.replace(\">%s<\",\"><a href=\\\"%s?Modes=Interactions&%s\\\" target=_parent>%s</a><\")"%(system["BHMCatS"],
                                                                                                          WEB_DIR,
                                                                                                          qstring,
                                                                                                          system["BHMCatS"]))

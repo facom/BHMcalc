@@ -97,7 +97,7 @@ ul.tabbernav
 }
 ul.tabbernav li
 {
- font-size:14px;
+ font-size:16px;
  list-style: none;
  margin: 0;
  display: inline;
@@ -252,9 +252,10 @@ button.update{
  right:30px;
 }
 button.mode{
- font-size:24px;
- padding:12px;
- width:150px;
+ font-size:20px;
+ padding:20px;
+ width:200px;
+ margin:5px;
 }
 a.force{
  position:absolute;
@@ -336,10 +337,30 @@ div.footer{
  font-style:italic;
  text-align:center;
 }
+
 p.title{
   font-size:16px;
   font-weight:bold;
 }
+
+p.subtitle{
+  font-size:14px;
+  font-weight:bold;
+  text-decoration:underline;
+}
+
+div.figure{
+ border:solid lightgray 1px;
+ text-align:center;
+ width:40%;
+ padding:10px;
+}
+
+div.caption{
+  font-style:italic;
+  font-size:12px;
+}
+
 </style>
 CSS;
 ?>
