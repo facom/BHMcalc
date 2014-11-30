@@ -210,14 +210,29 @@ $help=<<<C
 	<br/>
 
 	<li>
-	  <b>Wind torque scaling</b>: The constant of proportionality.
+	  <b>Wind torque scaling</b>: The constant of proportionality
+	  in the magnetic torque law.  It is determined by fitting the
+	  rotational evolution of the sun to its present value..
 	</li>
 	<br/>
-	
+
+	<li>
+	  <b>Disk age</b>: Age of the circumstellar disk.  It is
+	  assumed that the disk provide a way to lock the angular
+	  momentum evolution of the star during the pre main sequence
+	  phase.
+	</li>
+	<br/>
 	
       </ul>
     </p>
 
+    <p>
+      <center>
+	<img src="web/maw.png" width=100px/>
+	Men at Work!
+      </center>
+    </p>
   </div>
 </div>
 C;

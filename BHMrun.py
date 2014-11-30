@@ -180,14 +180,16 @@ for depmod in OBJECT_PIPE[module_name]:
         if qover:PRINTOUT("Forcing %s"%depmod_type);
         else:PRINTOUT("Running %s (%s)"%(depmod_type,depmod_hash));
         System("python BHMrun.py BHM%s.py %s %s %d"%(depmod_type,sys_dir,depmod_conf,1),out=False)
-    else:PRINTOUT("%s ready."%depmod_type);
+    else:PRINTOUT("%s %s ready."%(depmod_type,depmod_hash));
     
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 #EXECUTING MODULE
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 PRINTOUT("V"*60)
 if module_stg<10 or qover>=1:
-    stage=System("cat %s/.stage"%module_dir,out=True)
+    stagefile="%s/.stage"%module_dir
+    if FILEEXISTS(stagefile):stage=System("cat "+stagefile,out=True)
+    else:stage=0
     if qover:PRINTOUT("Forcing %s"%module_type);
     else:PRINTOUT("Executing module %s for %s in stage %s"%(module_type,module_hash,stage));
     System("touch %s/.block"%module_dir)

@@ -405,6 +405,20 @@ for Mp in Mps:
 
 massloss=toStack(Mps)|massloss
 
+#//////////////////////////////
+#MASS-LOSS EVOLUTION GIANTS
+#//////////////////////////////
+loadIceGasGiantsGrid(DATA_DIR+"IceGasGiants/",verbose=True)
+radiusFunction=lambda M,t:Giants['0'].Radius(M,t)
+
+Mgs=np.logspace(np.log10(0.05),np.log10(1.0),10)
+Mgs=[1.0]
+for Mg in Mgs:
+    M=Mg
+    for t in 
+    print radiusFunction(Mg,0.1)
+exit(0)
+
 ###################################################
 #STORE ENVIRONMENT EVOLUTION
 ###################################################
@@ -736,8 +750,9 @@ ax.plot([0],[0],color='r',alpha=0.3,linewidth=10,label='No Tidal')
 ax.plot([0],[0],color='k',alpha=0.3,linewidth=10,label='Single Primary')
 
 #PLANET
-ax.plot([planet.M],[env.Plp],'o',color='b',markeredgecolor='none',label=r"Planet, $a_{\\rm orb}$=%%.2f"%%(planet.aorb))
-ax.plot([planet.M],[env.ntPlp],'s',color='r',markeredgecolor='none',label="Planet (No tidal)")
+if planet.M<env.Mmax:
+   ax.plot([planet.M],[env.Plp],'o',color='b',markeredgecolor='none',label=r"Planet, $a_{\\rm orb}$=%%.2f"%%(planet.aorb))
+   ax.plot([planet.M],[env.ntPlp],'s',color='r',markeredgecolor='none',label="Planet (No tidal)")
 
 ax.set_title(env.title,position=(0.5,1.02),fontsize=12)
 
@@ -790,8 +805,9 @@ ax.plot([0],[0],color='r',alpha=0.3,linewidth=10,label='No Tidal')
 ax.plot([0],[0],color='k',alpha=0.3,linewidth=10,label='Single Primary')
 
 #PLANET
-ax.plot([planet.M],[env.Mlp/MEARTH/planet.M],'o',color='b',markeredgecolor='none',label=r"Planet, $a_{\\rm orb}$=%%.2f"%%(planet.aorb))
-ax.plot([planet.M],[env.ntMlp/MEARTH/planet.M],'s',color='r',markeredgecolor='none',label="Planet (No tidal)")
+if planet.M<env.Mmax:
+   ax.plot([planet.M],[env.Mlp/MEARTH/planet.M],'o',color='b',markeredgecolor='none',label=r"Planet, $a_{\\rm orb}$=%%.2f"%%(planet.aorb))
+   ax.plot([planet.M],[env.ntMlp/MEARTH/planet.M],'s',color='r',markeredgecolor='none',label="Planet (No tidal)")
 
 ax.set_title(env.title,position=(0.5,1.02),fontsize=12)
 
@@ -812,6 +828,60 @@ for Mp,name in zip(pmass,pnames):
              transform=plt.gca().transAxes)
 
 ax.legend(loc='upper right',prop=dict(size=10))
+ax.set_xscale("log")
+ax.set_yscale("log")
+"""%(env_dir,env_dir,
+     planet_dir,planet_dir),
+           watermarkpos='outer')
+
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+#MASS-LOSS (EVOLUTION)
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+plotFigure(env_dir,"mass-loss-evolution",\
+"""
+from BHM.BHMstars import *
+env=\
+loadConf("%s"+"interaction.conf")+\
+loadConf("%s"+"interaction.data")
+planet=\
+loadConf("%s"+"planet.conf")+\
+loadConf("%s"+"planet.data")
+
+fig=plt.figure(figsize=(8,6))
+ax=fig.add_axes([0.1,0.1,0.8,0.8])
+
+Mps=env.massloss[:,0]
+ax.fill_between(Mps,env.massloss[:,2],env.massloss[:,4],color='g',alpha=0.3)
+ax.fill_between(Mps,env.massloss[:,6],env.massloss[:,8],color='r',alpha=0.3)
+ax.fill_between(Mps,env.massloss[:,10],env.massloss[:,12],color='k',alpha=0.3)
+ax.plot(Mps,env.massloss[:,14],'k:',label="Earth-analogue single primary")
+ax.plot([0],[0],color='g',alpha=0.3,linewidth=10,label='Tidal')
+ax.plot([0],[0],color='r',alpha=0.3,linewidth=10,label='No Tidal')
+ax.plot([0],[0],color='k',alpha=0.3,linewidth=10,label='Single Primary')
+
+#PLANET
+ax.plot([planet.M],[env.Plp],'o',color='b',markeredgecolor='none',label=r"Planet, $a_{\\rm orb}$=%%.2f"%%(planet.aorb))
+ax.plot([planet.M],[env.ntPlp],'s',color='r',markeredgecolor='none',label="Planet (No tidal)")
+
+ax.set_title(env.title,position=(0.5,1.02),fontsize=12)
+
+ax.set_xlabel(r"$M_{\\rm p}/M_{\\rm Earth}$")
+ax.set_ylabel(r"$P_{\\rm loss}$ (bars)")
+
+pmass=[MGANYMEDE,MMERCURY,MMARS,MVENUS]
+pnames=["Ganymede","Mercury","Mars","Venus"]
+for Mp,name in zip(pmass,pnames):
+    fp=Mp/MEARTH
+    fpt=(np.log10(fp)+2)/3.0-0.01
+    plt.axvline(fp,color='b')
+    plt.text(fpt,0.02,name,
+             rotation=90,
+             horizontalalignment='right',
+             verticalalignment='bottom',
+             #bbox=dict(fc='w',ec='none'),
+             transform=plt.gca().transAxes)
+
+ax.legend(loc='lower right',prop=dict(size=10))
 ax.set_xscale("log")
 ax.set_yscale("log")
 """%(env_dir,env_dir,
@@ -904,13 +974,13 @@ fh.write("""\
 	)
   </td></tr>
 </table>
-<h3>Mass-loss</h3>
+<h3>Mass-loss (solid objects)</h3>
 <table>
-  <tr><td>M<sub>loss,planet</sub> (Tidal, kg):</td><td>%.3f</td></tr>
+  <tr><td>M<sub>loss,planet</sub> (Tidal, kg):</td><td>%.3e</td></tr>
   <tr><td>P<sub>loss,planet</sub> (Tidal, bars):</td><td>%.3f</td></tr>
-  <tr><td>M<sub>loss,planet</sub> (No tidal, kg):</td><td>%.3f</td></tr>
+  <tr><td>M<sub>loss,planet</sub> (No tidal, kg):</td><td>%.3e</td></tr>
   <tr><td>P<sub>loss,planet</sub> (No tidal, bars):</td><td>%.3f</td></tr>
-  <tr><td>
+  <tr><td colspan=2>
       <a href="%s/mass-loss-absolute.png" target="_blank">
 	<img width=100%% src="%s/mass-loss-absolute.png">
       </a>
@@ -921,7 +991,7 @@ fh.write("""\
 	<a href="%s/BHMreplot.php?dir=%s&plot=mass-loss-absolute.py" target="_blank">replot</a>
 	)
   </td></tr>
-  <tr><td>
+  <tr><td colspan=2>
       <a href="%s/mass-loss-relative.png" target="_blank">
 	<img width=100%% src="%s/mass-loss-relative.png">
       </a>

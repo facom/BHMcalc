@@ -297,6 +297,18 @@ div.download{
  font-size:12px
 }
 
+div.stdout{
+ position:absolute;
+ background:white;
+ padding:2px;
+ border:solid black 1px;
+ z-index=100;
+ top:40px;
+ left:45%;
+ display:none;
+ font-size:12px
+}
+
 a.activelink{
   text-weight:bold;
 }

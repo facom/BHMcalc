@@ -26,7 +26,7 @@ if(isset($LOADCONFIG)){
   $cmd="$PYTHONCMD BHMrun.py - $SESSDIR \"$QUERY_STRING\"";
   $out=shell_exec($cmd." 2> $TMPDIR/$stderr |tee $TMPDIR/$stdout");
   $header=mainHeader("1","?Modes=$Modes");
-  echo "$header<body>Loading configuration...</body>";
+  echo "$header<body>Loading $Modes configuration...</body>";
   return;
 }
 
@@ -42,6 +42,9 @@ if($Modes=="Binary"){$Modes="Star1:Star2:Planet:$Modes";}
 if($Modes=="Habitability"){$Modes="Star1:Star2:Planet:Binary:$Modes";}
 if($Modes=="Interactions"){$Modes="Star1:Star2:Planet:Binary:Habitability:$Modes";}
 
+//////////////////////////////////////////////////////////////////////////////////
+//SESSION DIRECTORY
+//////////////////////////////////////////////////////////////////////////////////
 if(!is_dir($SESSIONDIR)){
   $source_dir=$SYSDIR."template/";
   echoVerbose("No session directory.");
@@ -416,6 +419,16 @@ $tabs.=<<<F
 	</div>
 	<div id="star1_results_panel" class="results">
 	  <div><center class="title">Results</center><hr width="90%"/></div>
+
+	  <div class="stdout" id="star1_stdout">
+	    <a href="tmp/BHMrun-stdout-$SESSID-star" target="_blank">
+	      stdout
+	    </a> | 
+	    <a href="tmp/BHMrun-stderr-$SESSID-star" target="_blank">
+	      stderr
+	    </a>
+	  </div>
+
 	  <div class="download" id="star1_download"></div>
 	  <div id="star1_results_status_loader" style="background-color:white;">
 	    <div id="star1_results_status" style="background-color:white;">
@@ -614,6 +627,16 @@ $tabs.=<<<F
 	<div id="star2_results_panel" class="results">
 	  <div><center class="title">Results</center><hr width="90%"/></div>
 	  <div class="download" id="star2_download"></div>
+
+	  <div class="stdout" id="star2_stdout">
+	    <a href="tmp/BHMrun-stdout-$SESSID-star" target="_blank">
+	      stdout
+	    </a> | 
+	    <a href="tmp/BHMrun-stderr-$SESSID-star" target="_blank">
+	      stderr
+	    </a>
+	  </div>
+
 	  <div id="star2_results_status_loader" style="background-color:white;">
 	    <div id="star2_results_status" style="background-color:white;">
 	      <iframe class="iframe" id="star2_results_frame" src="web/blank.html" 
@@ -792,7 +815,18 @@ $tabs.=<<<F
 	</div>
 	<div id="planet_results_panel" class="results">
 	  <div><center class="title">Results</center><hr width="90%"/></div>
+
 	  <div class="download" id="planet_download"></div>
+
+	  <div class="stdout" id="planet_stdout">
+	    <a href="tmp/BHMrun-stdout-$SESSID-planet" target="_blank">
+	      stdout
+	    </a> | 
+	    <a href="tmp/BHMrun-stderr-$SESSID-planet" target="_blank">
+	      stderr
+	    </a>
+	  </div>
+
 	  <div id="planet_results_status_loader" style="background-color:white;">
 	    <div id="planet_results_status" style="background-color:white;">
 	      <iframe class="iframe" id="planet_results_frame" src="web/blank.html" 
@@ -938,7 +972,18 @@ $tabs.=<<<F
 	</div>
 	<div id="binary_results_panel" class="results">
 	  <div><center class="title">Results</center><hr width="90%"/></div>
+
 	  <div class="download" id="binary_download"></div>
+
+	  <div class="stdout" id="binary_stdout">
+	    <a href="tmp/BHMrun-stdout-$SESSID-binary" target="_blank">
+	      stdout
+	    </a> | 
+	    <a href="tmp/BHMrun-stderr-$SESSID-binary" target="_blank">
+	      stderr
+	    </a>
+	  </div>
+
 	  <div id="binary_results_status_loader" style="background-color:white;">
 	    <div id="binary_results_status" style="background-color:white;">
 	      <iframe class="iframe" id="binary_results_frame" src="web/blank.html" 
@@ -1045,7 +1090,18 @@ $tabs.=<<<F
 	</div>
 	<div id="hz_results_panel" class="results">
 	  <div><center class="title">Results</center><hr width="90%"/></div>
+
 	  <div class="download" id="hz_download"></div>
+
+	  <div class="stdout" id="hz_stdout">
+	    <a href="tmp/BHMrun-stdout-$SESSID-hz" target="_blank">
+	      stdout
+	    </a> | 
+	    <a href="tmp/BHMrun-stderr-$SESSID-hz" target="_blank">
+	      stderr
+	    </a>
+	  </div>
+
 	  <div id="hz_results_status_loader" style="background-color:white;">
 	    <div id="hz_results_status" style="background-color:white;">
 	      <iframe class="iframe" id="hz_results_frame" src="web/blank.html" 
@@ -1104,7 +1160,18 @@ $tabs.=<<<F
 	</div>
 	<div id="rotation_results_panel" class="results">
 	  <div><center class="title">Results</center><hr width="90%"/></div>
+
 	  <div class="download" id="rotation_download"></div>
+
+	  <div class="stdout" id="rotation_stdout">
+	    <a href="tmp/BHMrun-stdout-$SESSID-rotation" target="_blank">
+	      stdout
+	    </a> | 
+	    <a href="tmp/BHMrun-stderr-$SESSID-rotation" target="_blank">
+	      stderr
+	    </a>
+	  </div>
+
 	  <div id="rotation_results_status_loader" style="background-color:white;">
 	    <div id="rotation_results_status" style="background-color:white;">
 	      <iframe class="iframe" id="rotation_results_frame" src="web/blank.html" 
@@ -1262,7 +1329,17 @@ $tabs.=<<<F
 	</div>
 	<div id="interaction_results_panel" class="results">
 	  <div><center class="title">Results</center><hr width="90%"/></div>
+
 	  <div class="download" id="interaction_download"></div>
+	  <div class="stdout" id="interaction_stdout">
+	    <a href="tmp/BHMrun-stdout-$SESSID-interaction" target="_blank">
+	      stdout
+	    </a> | 
+	    <a href="tmp/BHMrun-stderr-$SESSID-interaction" target="_blank">
+	      stderr
+	    </a>
+	  </div>
+
 	  <div id="interaction_results_status_loader" style="background-color:white;">
 	    <div id="interaction_results_status" style="background-color:white;">
 	      <iframe class="iframe" id="interaction_results_frame" src="web/blank.html" 
