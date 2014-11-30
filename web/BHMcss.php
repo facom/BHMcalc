@@ -389,6 +389,9 @@ li.summaryitem{
  padding:5px;
 }
 
+div.decoration{
+ width:60%;
+}
 </style>
 CSS;
 ?>
