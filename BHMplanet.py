@@ -294,6 +294,7 @@ title="%s"
 orbit="%s"
 
 #BULK PROPERTIES
+type = "%s"
 Mg = %.17e #Mjup
 R=%.17e #Rearth
 Rg=%.17e #Rjup
@@ -332,6 +333,7 @@ thermevol=%s
 ephemeris=%s
 """%(planet.title,
      planet.orbit,
+     planet.type,
      planet.Mg,planet.R,planet.Rg,
      planet.A,planet.g,planet.rho,
      planet.Rc,planet.Ric,planet.rhoc,

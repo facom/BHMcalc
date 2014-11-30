@@ -134,14 +134,14 @@ Intflux Data:
 22:PSWins, 23:FSWins, 24:PSWouts, 25:FSWouts, 26:PSWeeqs, 27:FSWeeqs
 """
 
-ts=chopArray(rot.star1_binactivity[:,0],env.tauini,rot.taumaxrot)
-PRINTOUT("Calculating radiation and plasma fluxes between %.3f - %.3f Gyr"%(ts[0],ts[-1]))
-
 #INTERPOLATION
 ts,star1.activity_funcs=interpMatrix(star1.activity)
 ts,star2.activity_funcs=interpMatrix(star2.activity)
 ts,star1.binactivity_funcs=interpMatrix(rot.star1_binactivity)
 ts,star2.binactivity_funcs=interpMatrix(rot.star2_binactivity)
+
+ts=chopArray(rot.star1_binactivity[:,0],env.tauini,rot.taumaxrot)
+PRINTOUT("Calculating radiation and plasma fluxes between %.3f - %.3f Gyr"%(ts[0],ts[-1]))
 
 env.lumflux=stack(37)
 for t in ts:
@@ -334,6 +334,7 @@ intflux=toStack(ts)|toStack(np.transpose(intflux))
 #MASS-LOSS
 #//////////////////////////////
 facabs=GYR*SWPEL
+
 PRINTOUT("Calculating Mass-Loss...")
 #MASS-LOSS IN THE PLANET
 influx=np.interp(env.tauref,ts,intflux[:,15])
@@ -408,16 +409,60 @@ massloss=toStack(Mps)|massloss
 #//////////////////////////////
 #MASS-LOSS EVOLUTION GIANTS
 #//////////////////////////////
-loadIceGasGiantsGrid(DATA_DIR+"IceGasGiants/",verbose=True)
-radiusFunction=lambda M,t:Giants['0'].Radius(M,t)
+loadIceGasGiantsGrid(DATA_DIR+"IceGasGiants/",verbose=False)
+ts,lumflux_func=interpMatrix(env.lumflux)
+ts,intflux_func=interpMatrix(intflux)
 
-Mgs=np.logspace(np.log10(0.05),np.log10(1.0),10)
-Mgs=[1.0]
-for Mg in Mgs:
-    M=Mg
-    for t in 
-    print radiusFunction(Mg,0.1)
-exit(0)
+Mc=0.0;
+Mcs='%d'%Mc
+Mcg=Mc*MEARTH/MJUP
+Mgmin=Giants[Mcs].time[0].Mjmin
+Mgmax=Giants[Mcs].time[0].Mjmax
+
+#GIANT MASSES
+Mgs=np.logspace(np.log10(Mgmin),np.log10(Mgmax),5)
+#Mgs=[1.0]
+Rgs=Giants[Mcs].Radius(Mgs,env.tauini)
+rhogs=Mgs/(Rgs**3)*(MJUP/(4.0*PI/3*RJUP**3))
+Ngs=len(Mgs)
+
+#print Ngs;print Mgs;print Rgs;print rhogs;exit(0)
+if 'Gas' in planet.type:
+    massloss_gas=stack(Ngs+1)
+else:
+    massloss_gas=stack(Ngs)
+
+for t in ts:
+    i=0
+    #t=1.0
+
+    mloss=[]
+
+    #INTEGRATED XUV FLUX
+    FXUV=lumflux_func[11](t)*PEL
+    intXUVflux=intflux_func[3](t)*GYR*PELSI
+    
+    #TOTAL MASS LOST
+    Mlgs=massLossGiant(rhogs,intXUVflux)
+
+    #REMAINING MASS
+    Mrgs=Mgs*MJUP-Mlgs
+
+    #IF REMAINING MASS IS BELOW MINIMUM FIX AT MINIMUM
+    cond=Mrgs<Mc*MEARTH
+    Mrgs[cond]=Mc*MEARTH*np.ones_like(cond)
+
+    mloss+=list(Mlgs/MEARTH)
+
+    if 'Gas' in planet.type:
+        Mlp=massLossGiant(planet.rho,intXUVflux)
+        Mrp=planet.Mg*MJUP-Mlp
+        if Mrp<Mc*MEARTH:Mrp=Mc*MEARTH
+        mloss+=[Mlp/MEARTH]
+
+    massloss_gas+=mloss
+
+massloss_gas=toStack(ts)|massloss_gas
 
 ###################################################
 #STORE ENVIRONMENT EVOLUTION
@@ -444,23 +489,87 @@ lumflux=%s
 #INTEGRATED FLUXES
 intflux=%s
 
-#MASS LOSS
+#MASS LOSS SOLID BODIES
 massloss=%s
+
+#MASS LOSS GAS
+Mc=%.17e
+Mgs=%s
+Rgs=%s
+rhogs=%s
+massloss_gas=%s
 
 """%(env.title,
      Mlp,Plp,ntMlp,ntPlp,
      array2str(env.lumflux),
      array2str(intflux),
-     array2str(massloss)
+     array2str(massloss),
+     Mcg,
+     array2str(Mgs),
+     array2str(Rgs),
+     array2str(rhogs),
+     array2str(massloss_gas)
      ))
 f.close()
-
 #### END COMMENT ####
 
 ###################################################
 #GENERATE PLOTS
 ###################################################
 PRINTERR("Creating plots...")
+
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+#MASS-LOSS GAS
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+plotFigure(env_dir,"mass-loss-gas",\
+"""
+from BHM.BHMstars import *
+env=\
+loadConf("%s"+"interaction.conf")+\
+loadConf("%s"+"interaction.data")
+planet=\
+loadConf("%s"+"planet.conf")+\
+loadConf("%s"+"planet.data")
+rot=\
+loadConf("%s"+"rotation.conf")+\
+loadConf("%s"+"rotation.data")
+
+fig=plt.figure(figsize=(8,6))
+ax=fig.add_axes([0.1,0.1,0.8,0.8])
+
+ts=env.massloss_gas[:,0]
+
+colors=['b','r']
+for i in xrange(len(env.Mgs)):
+    icol=i+1
+    ax.plot(ts,env.massloss_gas[:,icol],linewidth=2*icol/3.0,color=colors[i%%2])
+
+Mgstr=""
+for Mg in env.Mgs:
+    Mgstr+="%%.1f, "%%(Mg*(MJUP/MEARTH))
+
+Mgstr=Mgstr.strip()
+Mgstr=Mgstr.strip(",")
+Mgstr=Mgstr.replace("\\t","\\\\\\\\t")
+ax.text(0.95,0.05,r"$M_{\\rm p}$ = %%s $M_{\\rm Earth}$"%%Mgstr,horizontalalignment='right',fontsize=12,transform=ax.transAxes)
+
+if 'Gas' in planet.type:
+    ax.plot(ts,env.massloss_gas[:,-1],linewidth=2,color='k',label=r'Planet, $M_{\\rm p}$ = %%.2f $M_{\\rm Earth}$'%%planet.M)
+
+ax.set_xscale("log")
+ax.set_yscale("log")
+ax.set_xlim((env.tauini,rot.taumaxrot))
+#ax.set_ylim((env.Mc,env.Mgs[-1]))
+
+ax.set_title(env.title,position=(0.5,1.02),fontsize=12)
+ax.legend(loc='upper right',prop=dict(size=10))
+
+ax.set_xlabel(r"$\\tau$ (Gyr)")
+ax.set_ylabel(r"$M_{\\rm loss,H/He}$ ($M_{\\rm Earth}$)")
+"""%(env_dir,env_dir,
+     planet_dir,planet_dir,
+     rot_dir,rot_dir
+     ),watermarkpos='outer')
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 #XUV FLUX ABSOLUTE
@@ -834,60 +943,6 @@ ax.set_yscale("log")
      planet_dir,planet_dir),
            watermarkpos='outer')
 
-#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-#MASS-LOSS (EVOLUTION)
-#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-plotFigure(env_dir,"mass-loss-evolution",\
-"""
-from BHM.BHMstars import *
-env=\
-loadConf("%s"+"interaction.conf")+\
-loadConf("%s"+"interaction.data")
-planet=\
-loadConf("%s"+"planet.conf")+\
-loadConf("%s"+"planet.data")
-
-fig=plt.figure(figsize=(8,6))
-ax=fig.add_axes([0.1,0.1,0.8,0.8])
-
-Mps=env.massloss[:,0]
-ax.fill_between(Mps,env.massloss[:,2],env.massloss[:,4],color='g',alpha=0.3)
-ax.fill_between(Mps,env.massloss[:,6],env.massloss[:,8],color='r',alpha=0.3)
-ax.fill_between(Mps,env.massloss[:,10],env.massloss[:,12],color='k',alpha=0.3)
-ax.plot(Mps,env.massloss[:,14],'k:',label="Earth-analogue single primary")
-ax.plot([0],[0],color='g',alpha=0.3,linewidth=10,label='Tidal')
-ax.plot([0],[0],color='r',alpha=0.3,linewidth=10,label='No Tidal')
-ax.plot([0],[0],color='k',alpha=0.3,linewidth=10,label='Single Primary')
-
-#PLANET
-ax.plot([planet.M],[env.Plp],'o',color='b',markeredgecolor='none',label=r"Planet, $a_{\\rm orb}$=%%.2f"%%(planet.aorb))
-ax.plot([planet.M],[env.ntPlp],'s',color='r',markeredgecolor='none',label="Planet (No tidal)")
-
-ax.set_title(env.title,position=(0.5,1.02),fontsize=12)
-
-ax.set_xlabel(r"$M_{\\rm p}/M_{\\rm Earth}$")
-ax.set_ylabel(r"$P_{\\rm loss}$ (bars)")
-
-pmass=[MGANYMEDE,MMERCURY,MMARS,MVENUS]
-pnames=["Ganymede","Mercury","Mars","Venus"]
-for Mp,name in zip(pmass,pnames):
-    fp=Mp/MEARTH
-    fpt=(np.log10(fp)+2)/3.0-0.01
-    plt.axvline(fp,color='b')
-    plt.text(fpt,0.02,name,
-             rotation=90,
-             horizontalalignment='right',
-             verticalalignment='bottom',
-             #bbox=dict(fc='w',ec='none'),
-             transform=plt.gca().transAxes)
-
-ax.legend(loc='lower right',prop=dict(size=10))
-ax.set_xscale("log")
-ax.set_yscale("log")
-"""%(env_dir,env_dir,
-     planet_dir,planet_dir),
-           watermarkpos='outer')
-
 ###################################################
 #GENERATE FULL REPORT
 ###################################################
@@ -1003,6 +1058,20 @@ fh.write("""\
 	)
   </td></tr>
 </table>
+<h3>Mass-loss (ice/gas planets)</h3>
+<table>
+  <tr><td colspan=2>
+      <a href="%s/mass-loss-gas.png" target="_blank">
+	<img width=100%% src="%s/mass-loss-gas.png">
+      </a>
+      <br/>
+      <i>Mass-loss for giant planets</i>
+	(
+	<a href="%s/mass-loss-gas.png.txt" target="_blank">data</a>|
+	<a href="%s/BHMreplot.php?dir=%s&plot=mass-loss-gas.py" target="_blank">replot</a>
+	)
+  </td></tr>
+</table>
 """%(WEB_DIR,env_webdir,env_webdir,env_webdir,WEB_DIR,env_webdir,#FLUX XUV ABSOLUTE (INTRO)
      env_webdir,env_webdir,env_webdir,WEB_DIR,env_webdir,#FLUX XUV ABSOLUTE
      env_webdir,env_webdir,env_webdir,WEB_DIR,env_webdir,#INT XUV ABSOLUTE
@@ -1011,7 +1080,8 @@ fh.write("""\
      env_webdir,env_webdir,env_webdir,WEB_DIR,env_webdir,#STANDOFF DISTANCE
      Mlp,Plp,ntMlp,ntPlp,
      env_webdir,env_webdir,env_webdir,WEB_DIR,env_webdir,#MASS-LOSS ABSOLUTE
-     env_webdir,env_webdir,env_webdir,WEB_DIR,env_webdir#MASS-LOSS RELATIVE
+     env_webdir,env_webdir,env_webdir,WEB_DIR,env_webdir,#MASS-LOSS RELATIVE
+     env_webdir,env_webdir,env_webdir,WEB_DIR,env_webdir,#MASS-LOSS GAS
      ))
 fh.close()
 

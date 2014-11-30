@@ -1345,6 +1345,14 @@ def massLoss(A,intflux,mu=44.0,alpha=0.3):
     ML=alpha*intflux*Ap*mu*MP    
     return ML
 
+def massLossGiant(rho,intXUVflux):
+    """
+    rho: kg/m^3
+    intXUVflux: j/m^2
+    """
+    ML=3*intXUVflux/(4*GCONST*rho)
+    return ML
+
 def surfacePressure(Matm,M,R):
     """
     Surface Pressure (in Bars) Given an Atmospheric Mass over a planet

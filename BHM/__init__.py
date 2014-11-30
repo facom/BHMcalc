@@ -480,7 +480,7 @@ def exp2pow(value):
     value=np.abs(value)
     exponent=np.floor(np.log10(value))
     mantissa=value/10**exponent
-    string="%.2f$\times$10$^$%d"%(sgn*mantissa,exponent)
+    string=r"%.2f$\times$10$^{%d}$"%(sgn*mantissa,exponent)
     return string
 
 def listDirectory(tdir,search):

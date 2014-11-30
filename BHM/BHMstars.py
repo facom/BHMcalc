@@ -943,7 +943,7 @@ def starLXUV(Ls,t):
 #XUV Present Earth Level in erg cm^-2 s^-1
 PEL=starLXUV(1.0,TAGE)/(4*PI*(1*AU*1E2)**2)
 #XUV IN SI
-PELSI=PEL*(1E-7/(1E-2))
+PELSI=PEL*(1E-7/(1E-2)**2)
 
 def binaryWind(a,tau1,M1,R1,tau2,M2,R2,early='constant'):
     v1,n1=vnGreissmeier(a,tau1,M1,R1,early=early)

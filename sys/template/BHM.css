@@ -160,19 +160,19 @@ height:100%;
 }
 .results{
 float:left;
-width:55%;
+width:50%;
 height:100%;
 //background:lightyellow;
 }
 .formarea{
 float:left;
-width:45%;
+width:50%;
 height:100%;
 //background:lightgreen;
 }
 .status{
 float:right;
-width:45%;
+width:50%;
 height:20%;
 //background:lightblue;
 }
@@ -192,15 +192,8 @@ td.name{
  font-size:12px;
  padding:10px;
 }
-td.section{
- background:lightgray;
- text-align:center;
- font-weight:bold;
- font-size:12px;
-}
 td.field{
  padding:10px;
- font-size:10px;
 }
 td.help{
  font-style:italic;
@@ -223,20 +216,11 @@ button.update{
  top:40px;
  right:30px;
 }
-button.mode{
- font-size:24px;
- padding:12px;
- width:150px;
-}
 a.force{
  position:absolute;
  top:65px;
  right:30px;
  font-size:10px;
-}
-
-input.cat{
- background:white;
 }
 
 input{
@@ -275,15 +259,12 @@ a.activelink{
 div.target{
  padding:10px;
  width:90%;
- //height:3ex;
  overflow:auto;
- white-space:nowrap;
- //background:lightgray;
- background:lightyellow;
+ background:lightgray;
 }
 
 td.field_cat{
-  font-size:11px;
+  font-size:14px;
 }
 tr.header{
  background:gray;
@@ -296,20 +277,5 @@ tr.row_light{
 tr.row_dark{
  background:lightgray;
 }
-div.help{
- font-style:italic;
- display:block;
- font-size:12px;
- background:lightyellow;
- padding:10px;
-}
-div.footer{
- font-size:10px;
- font-style:italic;
- text-align:center;
-}
-p.title{
-  font-size:16px;
-  font-weight:bold;
-}
+
 </style>
