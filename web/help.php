@@ -229,8 +229,8 @@ $help=<<<C
 
     <p>
       <center>
-	<img src="web/maw.png" width=100px/>
-	Men at Work!
+	<img src="web/maw.png" width=100px/><br/>
+	This site is under development.
       </center>
     </p>
   </div>
