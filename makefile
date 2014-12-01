@@ -30,8 +30,6 @@ cleanall:
 	@touch sys/seed
 	@rm -r sys/*
 	@cp -r web/template sys/
-	@touch objs/seed
-	@rm -r objs/*
 	@make permissions
 	@touch tmp/seed
 	@rm -r tmp/*
@@ -39,13 +37,11 @@ cleanall:
 deepclean:clean
 	@echo "Cleaning temporary directories..."
 	@rm -rf tmp/*
-	@rm -rf repo/admin/*
-	@rm -rf repo/users/*
-	echo > access.log
+	@touch objs/seed
+	@rm -r objs/*
 
 reset:
 	@echo "Resetting access.log..."
-	@echo > access.log
 
 permissions:
 	@echo "Setting web permissions..."
@@ -65,3 +61,11 @@ pull:
 seedtemplate:
 	python BHMrun.py BHMinteraction.py sys/template interaction.conf 
 	@make permissions
+
+decrypt:
+	@echo "Decrypting Developer Guide..."
+	@openssl enc -d -aes-256-cbc -in doc/DEVELOPER.enc -out doc/DEVELOPER.txt
+
+encrypt:
+	@echo "Encrypting Developer Guide..."
+	@openssl enc -aes-256-cbc -in doc/DEVELOPER.txt -out doc/DEVELOPER.enc
