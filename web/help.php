@@ -302,7 +302,8 @@ $help=<<<C
       </a>
       <br/>
       <div class="caption">
-	Is there life around single stars?. Credit: Alejandro Rua, Medellin, Colombia.
+	"<i>Is there any life around single stars?</i>". Credit:
+	Alejandro Rua, Medellin, Colombia.
       </div>
     </div>
 
