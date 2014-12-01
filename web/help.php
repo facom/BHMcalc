@@ -283,8 +283,7 @@ $help=<<<C
       </center>
     </p>
 
-    <hr/>
-    <p class="title"><a name="Gallery">Gallery</a></p>
+    <p class="title"><a name="Gallery">Snapshots and Gallery</a></p>
     <p>
 
     <div class="decoration">
