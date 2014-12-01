@@ -330,7 +330,7 @@ div.listconfig{
  //height:3ex;
  overflow:auto;
  white-space:nowrap;
- background:lightgray;
+  //background:lightgray;
  //background:lightyellow;
  display:block;
 }
