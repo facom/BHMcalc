@@ -19,16 +19,18 @@ from BHM import *
 Usage=\
 """
 Usage:
-   python %s <script>.py <sysdir>
+   python %s <script>.py <sysdir> <mode>
 
    <sysdir>: Directory where the system configuration files lie
 
+   <mode>: Mode
+
 """%argv[0]
 
-sys_dir,=\
+sys_dir,mode=\
     readArgs(argv,
-             ["str"],
-             ["sys/template"],
+             ["str","str"],
+             ["sys/template","Star1"],
              Usage=Usage)
 
 ###################################################
@@ -43,6 +45,10 @@ PRINTERR("Error Output:")
 #LOADING ALREADY CALCULATED MODULES
 ###################################################
 for depmod in OBJECTS_ALL:
+    if "Planet" in mode and (not "planet" in depmod):continue
+    if "Star" in mode and (not "star1" in depmod):continue
+    if "Binary" in mode and ("interaction" in depmod or "rotation" in depmod) and (not "binary" in depmod):continue
+
     #========================================
     #HASHING OBJECTS
     #========================================

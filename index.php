@@ -1390,6 +1390,7 @@ D;
 $tabs.=<<<F
   <div class="tabbertab" id="summary" title="Summary">
     <form id="summary_form" action="BHMsummary.php">
+    <input type="hidden" name="Mode" value="$oModes">
     <div class="tabcontent">
       <div class="wrapper">
 	<div id="summary_form" class="formarea">

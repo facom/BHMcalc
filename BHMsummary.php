@@ -22,7 +22,7 @@ include_once("web/BHM.php");
 //READ ALL RESULTS
 //////////////////////////////////////////////////////////////
 //COMMAND
-$cmd="$PYTHONCMD BHMsummary.py $SESSDIR";
+$cmd="$PYTHONCMD BHMsummary.py $SESSDIR $Mode";
 
 //OUTPUT
 $stdout="BHMsummary-output-$SESSID";

@@ -102,8 +102,8 @@ $main=<<<C
     </div>
 
     <div class="decoration">
-      <a href="$wDIR/web/gallery/wondering.jpg">
-	<img src="$wDIR/web/gallery/wondering.jpg" width="100%"/>
+      <a href="$wDIR/web/gallery/wondering.png">
+	<img src="$wDIR/web/gallery/wondering.png" width="100%"/>
       </a>
       <br/>
       <div class="caption">

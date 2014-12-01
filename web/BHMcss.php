@@ -391,7 +391,9 @@ li.summaryitem{
 }
 
 div.decoration{
+ float:left;
  width:40%;
+ padding:10px;
 }
 
 </style>
