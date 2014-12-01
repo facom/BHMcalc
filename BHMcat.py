@@ -309,7 +309,9 @@ for system in sortCatalogue(systems,sortfield,reverse=sortorder):
             qstring+="%s=%s&"%(key,value)
 
         valueADS=system["binary_ADS"]+";"+planet["planet_ADS"] 
+        #print valueADS
         valueADS=adjustValue("ADS",valueADS,"str")
+        #exit(0)
         row+="<td class='field_cat' style='width:1px;white-space:nowrap'>%s</td>"%(valueADS)
         row+="</tr>\n"
 

@@ -157,7 +157,9 @@ def adjustValue(key,value,tipo):
             value=""
             j=1
             for ref in refs[:-1]:
-                if '-' in ref:continue
+                ref=ref.strip()
+                if '-' in ref or ref=='':continue
+                #print "Ref j:",ref
                 value+="<a href="+linkADS(ref)+" target=_blank>Ref %d</a>,"%j
                 j+=1
             value=value.strip(",")
