@@ -365,6 +365,8 @@ div.footer{
 p.title{
   font-size:16px;
   font-weight:bold;
+ background:lightgray;
+ padding:5px;
 }
 
 p.subtitle{
@@ -392,7 +394,7 @@ li.summaryitem{
 
 div.decoration{
  float:left;
- width:40%;
+ width:30%;
  padding:10px;
 }
 

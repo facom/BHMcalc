@@ -69,7 +69,7 @@ ul.tabbernav
 }
 ul.tabbernav li
 {
- font-size:14px;
+ font-size:16px;
  list-style: none;
  margin: 0;
  display: inline;
@@ -160,19 +160,19 @@ height:100%;
 }
 .results{
 float:left;
-width:50%;
+width:55%;
 height:100%;
 //background:lightyellow;
 }
 .formarea{
 float:left;
-width:50%;
+width:45%;
 height:100%;
 //background:lightgreen;
 }
 .status{
 float:right;
-width:50%;
+width:45%;
 height:20%;
 //background:lightblue;
 }
@@ -192,8 +192,15 @@ td.name{
  font-size:12px;
  padding:10px;
 }
+td.section{
+ background:lightgray;
+ text-align:center;
+ font-weight:bold;
+ font-size:12px;
+}
 td.field{
  padding:10px;
+ font-size:10px;
 }
 td.help{
  font-style:italic;
@@ -216,11 +223,21 @@ button.update{
  top:40px;
  right:30px;
 }
+button.mode{
+ font-size:20px;
+ padding:20px;
+ width:200px;
+ margin:5px;
+}
 a.force{
  position:absolute;
  top:65px;
  right:30px;
  font-size:10px;
+}
+
+input.cat{
+ background:white;
 }
 
 input{
@@ -252,6 +269,18 @@ div.download{
  font-size:12px
 }
 
+div.stdout{
+ position:absolute;
+ background:white;
+ padding:2px;
+ border:solid black 1px;
+ z-index=100;
+ top:40px;
+ left:45%;
+ display:none;
+ font-size:12px
+}
+
 a.activelink{
   text-weight:bold;
 }
@@ -259,12 +288,27 @@ a.activelink{
 div.target{
  padding:10px;
  width:90%;
+ //height:3ex;
  overflow:auto;
+ white-space:nowrap;
  background:lightgray;
+ //background:lightyellow;
+ display:none;
+}
+
+div.listconfig{
+ padding:10px;
+ width:90%;
+ //height:3ex;
+ overflow:auto;
+ white-space:nowrap;
+  //background:lightgray;
+ //background:lightyellow;
+ display:block;
 }
 
 td.field_cat{
-  font-size:14px;
+  font-size:11px;
 }
 tr.header{
  background:gray;
@@ -276,6 +320,52 @@ tr.row_light{
 }
 tr.row_dark{
  background:lightgray;
+}
+div.help{
+ font-style:italic;
+ display:block;
+ font-size:12px;
+ background:lightyellow;
+ padding:10px;
+}
+div.footer{
+ font-size:10px;
+ font-style:italic;
+ text-align:center;
+}
+
+p.title{
+  font-size:16px;
+  font-weight:bold;
+}
+
+p.subtitle{
+  font-size:14px;
+  font-weight:bold;
+  text-decoration:underline;
+}
+
+div.figure{
+ border:solid lightgray 1px;
+ text-align:center;
+ width:40%;
+ padding:10px;
+}
+
+div.caption{
+  font-style:italic;
+  font-size:12px;
+  text-align:center;
+}
+
+li.summaryitem{
+ padding:5px;
+}
+
+div.decoration{
+ float:left;
+ width:30%;
+ padding:10px;
 }
 
 </style>
