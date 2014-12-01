@@ -11,7 +11,8 @@ $help=<<<C
       the <a href="http://urania.udea.edu.co/facom">Computational
       Physics and Astrophysics Group</a> of the University of
       Antioquia (Medell&iacute;n, Colombia), lead by <b>Prof. Jorge
-      I. Zuluaga</b>.
+      I. Zuluaga</b>, Fulbright Visitor Scholar at the
+      Harvard-Smithsonian Center for Astrophysics.
     </p>
   
     <p>
