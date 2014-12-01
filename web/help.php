@@ -4,23 +4,23 @@ $help=<<<C
   <div class="tabcontent">
   
     <p class="title">About</p>
-  
-    <p>
-      This tool is intended to <b>gain insights</b> about the complex
-      landscape of circumbinary planets and their potentially
-      habitable environments.  <b>$BHMcalc is not aimed to provide
-      detailed predictions</b> about actual circumbinary systems.
-      However, if it is used properly their results could provide
-      useful constraints for already existing planetary systems.
-    </p>
 
     <p>
       $BHMcalc is the result of the collaboration between the group of
       <b>Prof. Paul Mason</b> in the New Mexico State University and
       the <a href="http://urania.udea.edu.co/facom">Computational
       Physics and Astrophysics Group</a> of the University of
-      Antioquia (Medell&iacute;n, Colombia) lead by <b>Prof. Jorge
+      Antioquia (Medell&iacute;n, Colombia), lead by <b>Prof. Jorge
       I. Zuluaga</b>.
+    </p>
+  
+    <p>
+      This tool is intended to <b>gain insights</b> about the complex
+      landscape of circumbinary planets and their potentially
+      habitable environments.  <b>$BHMcalc is not aimed to provide
+      detailed predictions</b> about actual circumbinary systems.
+      However, if used properly their results could provide useful
+      constraints for already existing planetary systems.
     </p>
 
     <a name="References"></a>
@@ -283,7 +283,7 @@ $help=<<<C
     </p>
 
     <hr/>
-    <p class="title">Gallery</p>
+    <p class="title"><a name="Gallery">Gallery</a></p>
     <p>
 
     <div class="decoration">

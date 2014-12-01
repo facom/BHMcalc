@@ -10,13 +10,16 @@ $main=<<<C
     <p>
       $BHMcalc is a web application intended to explore the vast
       configuration space of <b><i>Circumbinary Planetary System</i>
-      </b> (aka. <i>Tatooines</i>).  You can use it to calculate the
-      evolution of stars in binaries, the changing properties of
-      planets thriving around them and their interactions.
+      </b> (aka. <a href="?HELP#Gallery"><i>Tatooines</i></a>).  You
+      can use $BHMcalc to calculate the evolution of stars in
+      binaries, the changing properties of planets thriving around
+      them and their complex interactions, ultimate leading to (or
+      limiting) habitable environments.
     </p>
 
     <p>
-      Please select the <a href="?HELP#Modes">$BHMcalc Mode</a>:
+      To start with, please select the <a href="?HELP#Modes">$BHMcalc
+      Mode</a>:
     </p>
 
     <div style="text-align:center">
