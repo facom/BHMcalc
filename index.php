@@ -122,9 +122,10 @@ $ajaxform_rotation_Update=ajaxFromCode($code,"'#rotation_Update'","click");
 $code=ajaxMultipleForm(array("interaction"),"interaction_form");
 $ajaxform_interaction_Update=ajaxFromCode($code,"'#interaction_Update'","click");
 
-//INTERACTION
+//SUMMARY
 $code=ajaxMultipleForm(array("summary"),"summary_form");
 $ajaxform_summary_Update=ajaxFromCode($code,"'#summary_Update'","click");
+$ajax_summary_Load=ajaxFromCode($code,"document","ready");
 
 //UPDATE ALL
 if(isset($LOAD)){$slope=1.0;}
@@ -1387,7 +1388,8 @@ if(is_file($cfile)){
 </a>
 D;
 }else{$configurations="";$downlink="";}
-$tabs.=<<<F
+$summary=<<<F
+  $ajax_summary_Load
   <div class="tabbertab" id="summary" title="Summary">
     <form id="summary_form" action="BHMsummary.php">
     <input type="hidden" name="Mode" value="$oModes">
@@ -1449,6 +1451,7 @@ $tabs.=<<<F
     </form>
   </div>
 F;
+$TABID=1;
 }
 
 
@@ -1537,6 +1540,7 @@ $CONTENT.=<<<C
 <div class="tabber maintabber" name="tabber" id="$TABID">
   $updateall
   $main
+  $summary
   $tabs
   $help
 </div>
