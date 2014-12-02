@@ -6,13 +6,18 @@ $help=<<<C
     <p class="title">About</p>
 
     <p>
+
       $BHMcalc is the result of the collaboration between the group of
-      <b>Prof. Paul Mason</b> in the New Mexico State University and
-      the <a href="http://urania.udea.edu.co/facom">Computational
-      Physics and Astrophysics Group</a> of the University of
-      Antioquia (Medell&iacute;n, Colombia), lead by <b>Prof. Jorge
-      I. Zuluaga</b>, Fulbright Visitor Scholar at the
-      Harvard-Smithsonian Center for Astrophysics.
+      <b>Prof. Paul Mason</b> in the <a
+      href="http://academics.utep.edu/Default.aspx?tabid=18742">University
+      of Texas, El Paso</a> and the <a
+      href="http://urania.udea.edu.co/facom">Computational Physics and
+      Astrophysics Group</a> of the University of Antioquia
+      (Medell&iacute;n, Colombia), lead by <b>Prof. Jorge
+      I. Zuluaga</b>, Fulbright Visitor Scholar at the <a
+      href="http://www.cfa.harvard.edu/">Harvard-Smithsonian Center
+      for Astrophysics</a>.
+
     </p>
   
     <p>
