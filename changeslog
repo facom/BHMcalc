@@ -19,8 +19,9 @@ Changes Log
 - Summary tab has been put as the first tab when a system of star is
   load and its result panel is loaded when the page is load.
 
-- I have included 
-
+- Modified configurations can be now saved for a given section.  They
+  could also completely removed in case that something wrong happens
+  or when the list of configuration is too large.
 
 Notes:
 =====

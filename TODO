@@ -14,6 +14,17 @@
 To Do
 =====
 
+- Upload all the objects in the calculator tabs if they have been
+  already calculated.
+
+- Reduce the size of the URL for uploading a given configuration.
+
+- Include a download images and html only link in the Summary tab.
+
+- Include a complete list of other references in the About tab.
+
+- Make a list of references for each physical model used in the
+  calculator.
 
 Done
 ====
