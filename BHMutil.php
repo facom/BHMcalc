@@ -74,7 +74,7 @@ else if($ACTION=="CommandLine"){
   echo $cmd;
 }
 ////////////////////////////////////////////////////
-//GENERATE MASTER LINK
+//SAVE CONFIGURATION
 ////////////////////////////////////////////////////
 else if($ACTION=="SaveConfiguration"){
   loadConfiguration("$source_dir/star1.conf","star1");
@@ -115,6 +115,15 @@ LINK;
   fwrite($fl,$masterlink);
   fclose($fl);
 
+  $content=shell_exec("cat $cfile");
+  echo "<ul>$content</ul>";
+}
+////////////////////////////////////////////////////
+//CLEAN CONFIGURATION
+////////////////////////////////////////////////////
+else if($ACTION=="CleanConfiguration"){
+  $cfile="$SESSDIR/configurations.html";
+  shell_exec("echo '<i>Configuration is empty.</i>' > $cfile");
   $content=shell_exec("cat $cfile");
   echo "<ul>$content</ul>";
 }
