@@ -69,3 +69,6 @@ decrypt:
 encrypt:
 	@echo "Encrypting Developer Guide..."
 	@openssl enc -aes-256-cbc -in doc/DEVELOPER.txt -out doc/DEVELOPER.enc
+
+edit:
+	@emacs -nw *.py web/*.php BHM/*.py *.php makefile doc/*.txt README.md
