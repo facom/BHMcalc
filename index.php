@@ -1432,7 +1432,7 @@ $summary=<<<F
 		Save Configuration</a> |
 	      <a class="activelink" 
 		 href="JavaScript:loadAjax('BHMutil.php?ACTION=CleanConfiguration&Modes=$oModes','#saveconfiguration');">
-		Clean Configuration</a> 
+		Clear Configuration</a> 
 	      <div class="listconfig" id="saveconfiguration"><ul>$configurations</ul></div>
 	      $downlink
 	    </li>

@@ -86,6 +86,9 @@ else if($ACTION=="SaveConfiguration"){
   loadConfiguration("$source_dir/interaction.conf","interaction");
   $id=md5($PARSE_STRING);
   $masterlink="?LOADCONFIG&Modes=$Modes&$PARSE_STRING";
+  $cfile="$SESSDIR/configurations.html";
+  if(!is_file($cfile)){$out=shell_exec("echo > $cfile");}
+
   if(false){
   }
   else if(preg_match("/Star1/",$Modes)){
@@ -101,21 +104,22 @@ else if($ACTION=="SaveConfiguration"){
     $id=$binary_str_SysID;
   }
   $id=preg_replace("/'/","",$id);
-
+  $out=shell_exec("grep '>$id<' $cfile");
+  if(!isBlank($out)){
+$content=<<<C
+<i>We have detected a configuration with the same name already. Try to change the ID of the system/planet/star and try again.</i>
+C;
+  }else{
   $masterlink=<<<LINK
 
     <li>$Modes: <a href="$masterlink" target="_blank">$id</a></li>
 
 LINK;
-  
-  $cfile="$SESSDIR/configurations.html";
-  if(!is_file($cfile)){$out=shell_exec("echo > $cfile");}
-
   $fl=fopen($cfile,"a");
   fwrite($fl,$masterlink);
   fclose($fl);
-
   $content=shell_exec("cat $cfile");
+  }
   echo "<ul>$content</ul>";
 }
 ////////////////////////////////////////////////////

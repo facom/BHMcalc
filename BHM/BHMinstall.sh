@@ -11,7 +11,7 @@
 ###################################################
 # DATA INSTALL
 ###################################################
-TMPDIR="/tmp"
+TMPDIR="tmp"
 if [ ! -d BHM/data/Stars ]
 then
     echo "Reconstructing data tarball..."
