@@ -43,7 +43,10 @@ foreach($objects as $object){
   
   //READ OUTPUT CONTENT
   $src_content=shell_exec("cat $src_file");
-  
+
+  if(isBlank($src_content)){
+    $src_content="<i>No result calculated so far.</i>";
+  }
   //WRITE OUTPUT
 $tgt_content.=<<<C
 $src_content
