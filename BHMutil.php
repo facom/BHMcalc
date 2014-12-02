@@ -123,7 +123,7 @@ LINK;
 ////////////////////////////////////////////////////
 else if($ACTION=="CleanConfiguration"){
   $cfile="$SESSDIR/configurations.html";
-  shell_exec("echo '<i>Configuration is empty.</i>' > $cfile");
+  shell_exec("echo > $cfile");
   $content=shell_exec("cat $cfile");
   echo "<ul>$content</ul>";
 }
