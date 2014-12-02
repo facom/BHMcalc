@@ -385,14 +385,15 @@ logrho_func,Teff_func,logR_func,logL_func=evoFunctions(evodata)
 bbox=dict(fc='w',ec='none')
 
 #LINE
+ts=ts[ts>0.1]
 logts=np.log10(ts)
 Teffs=Teff_func(logts)
 Leffs=10**logL_func(logts)
 ax.plot(Teffs,Leffs,"k-")
 ax.plot(Teffs[0:1],Leffs[0:1],"ko",markersize=5)
-ax.text(Teffs[0],Leffs[0],r"$t_{\\rm ini}=$%.1f Myr",transform=offSet(5,5),bbox=bbox)
-ax.plot([Teffs[-1]],[Leffs[-1]],"ko",markersize=5)
-ax.text(Teffs[-1],Leffs[-1],r"$t_{\\rm end}=$%.1f Gyr",horizontalalignment='right',transform=offSet(-5,5),bbox=bbox)
+ax.plot([Teffs[0]],[Leffs[0]],"go",markersize=10,markeredgecolor='none',label=r"$t_{\\rm ini}=$0.1 Gyr")
+ax.plot([Teffs[-1]],[Leffs[-1]],"ro",markersize=10,markeredgecolor='none',label=r"$t_{\\rm end}=$%%.1f Gyr"%%star.taums)
+ax.plot([star.Tins],[star.Lins],"bo",markersize=10,markeredgecolor='none',label=r"$t=$%%.1f Gyr"%%star.tau)
 
 if star.R>0 and star.T>0:
    star.Terr=max(star.Terr,0.0)
@@ -403,8 +404,8 @@ if star.R>0 and star.T>0:
    ax.plot([star.T],[L],'o',markersize=5,markeredgecolor='none',color='b')
 
 #MARKS
-dt=round(%.17e/20,1)
-logts=np.log10(np.arange(TAU_MIN,%.17e,dt))
+dt=round(star.taumax/20,1)
+logts=np.log10(np.arange(0.1,star.taumax,dt))
 Teffs=Teff_func(logts)
 Leffs=10**logL_func(logts)
 ax.plot(Teffs,Leffs,"ko",label='Steps of %%.1f Gyr'%%dt,markersize=3)
@@ -424,7 +425,7 @@ ax.text(0.5,0.95,"%s",horizontalalignment="center",fontsize="10",color="k",alpha
 
 ax.legend(loc='lower right')
 """%(star_dir,star_dir,
-     evodata_str,TAU_MIN*1000,tau_max,tau_max,tau_max,modelwat))
+     evodata_str,modelwat))
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 #RADIUS EVOLUTION
@@ -447,18 +448,19 @@ logrho_func,Teff_func,logR_func,logL_func=evoFunctions(evodata)
 bbox=dict(fc='w',ec='none')
 
 #LINES
+ts=ts[ts>0.1]
 logts=np.log10(ts)
 Teffs=Teff_func(logts)
 Rs=10**logR_func(logts)
 ax.plot(Teffs,Rs,"k-")
 ax.plot(Teffs[0:1],Rs[0:1],"ko",markersize=5)
-ax.text(Teffs[0],Rs[0],r"$t_{\\rm ini}=$%.1f Myr",transform=offSet(5,5),bbox=bbox)
-ax.plot([Teffs[-1]],[Rs[-1]],"ko",markersize=5)
-ax.text(Teffs[-1],Rs[-1],r"$t_{\\rm end}=$%.1f Gyr",horizontalalignment='right',transform=offSet(-5,5),bbox=bbox)
+ax.plot([Teffs[0]],[Rs[0]],"go",markersize=10,markeredgecolor='none',label=r"$t_{\\rm ini}=$0.1 Gyr")
+ax.plot([Teffs[-1]],[Rs[-1]],"ro",markersize=10,markeredgecolor='none',label=r"$t_{\\rm end}=$%%.1f Gyr"%%star.taums)
+ax.plot([star.Tins],[star.Rins],"bo",markersize=10,markeredgecolor='none',label=r"$t=$%%.1f Gyr"%%star.tau)
 
 #EVOLUTIONARY TRACK
-dt=round(%.17e/20,1)
-logts=np.log10(np.arange(TAU_MIN,%.17e,dt))
+dt=round(star.taumax/20,1)
+logts=np.log10(np.arange(0.1,star.taumax,dt))
 Teffs=Teff_func(logts)
 Rs=10**logR_func(logts)
 ax.plot(Teffs,Rs,"ko",label='Steps of %%.1f Gyr'%%dt,markersize=3)
@@ -480,9 +482,9 @@ ax.set_xlim((Tmax,Tmin))
 #MODEL WATERMARK
 ax.text(0.5,0.95,"%s",horizontalalignment="center",fontsize="10",color="k",alpha=0.3,transform=ax.transAxes)
 
-ax.legend(loc='lower right')
+ax.legend(loc='best',prop=dict(size=10))
 """%(star_dir,star_dir,
-     evodata_str,TAU_MIN*1000,tau_max,tau_max,tau_max,modelwat))
+     evodata_str,modelwat))
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 #RADIUS EVOLUTION
@@ -503,17 +505,18 @@ ts=star.evotrack[:,0]
 bbox=dict(fc='w',ec='none')
 
 #LINES
+ts=ts[ts>0.1]
 Teffs=star.Tfunc(ts)
 loggs=np.log10(star.gfunc(ts))
 ax.plot(Teffs,loggs,"k-")
 ax.plot(Teffs[0:1],loggs[0:1],"ko",markersize=5)
-ax.text(Teffs[0],loggs[0],r"$t_{\\rm ini}=$%.1f Myr",transform=offSet(5,5),bbox=bbox)
-ax.plot([Teffs[-1]],[loggs[-1]],"ko",markersize=5)
-ax.text(Teffs[-1],loggs[-1],r"$t_{\\rm end}=$%.1f Gyr",horizontalalignment='right',transform=offSet(-5,5),bbox=bbox)
+ax.plot([Teffs[0]],[loggs[0]],"go",markersize=10,markeredgecolor='none',label=r"$t_{\\rm ini}=$0.1 Gyr")
+ax.plot([Teffs[-1]],[loggs[-1]],"ro",markersize=10,markeredgecolor='none',label=r"$t_{\\rm end}=$%%.1f Gyr"%%star.taums)
+ax.plot([star.Tins],[np.log10(star.gins)],"bo",markersize=10,markeredgecolor='none',label=r"$t=$%%.1f Gyr"%%star.tau)
 
 #EVOLUTIONARY TRACK
-dt=round(%.17e/20,1)
-ts=np.arange(TAU_MIN,%.17e,dt)
+dt=round(star.taumax/20,1)
+ts=np.arange(0.1,star.taumax,dt)
 Teffs=star.Tfunc(ts)
 loggs=np.log10(star.gfunc(ts))
 ax.plot(Teffs,loggs,"ko",label='Steps of %%.1f Gyr'%%dt,markersize=3)
@@ -537,8 +540,8 @@ ax.set_ylim((ymax,ymin))
 #MODEL WATERMARK
 ax.text(0.5,0.95,"%s",horizontalalignment="center",fontsize="10",color="k",alpha=0.3,transform=ax.transAxes)
 
-ax.legend(loc='lower right')
-"""%(star_dir,star_dir,TAU_MIN*1000,tau_max,tau_max,tau_max,modelwat))
+ax.legend(loc='best',prop=dict(size=10))
+"""%(star_dir,star_dir,modelwat))
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 #MOMENT OF INERTIA EVOLUTION
