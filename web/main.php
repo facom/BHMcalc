@@ -4,7 +4,7 @@ $main=<<<C
   <div class="tabcontent">
     
     <p style="font-size:20px">
-      Welcome to the <b>Binary Habitability Calculator</b>, $BHMcalc!
+      Welcome to the <b>Binary Habitability (and More) Calculator</b>, $BHMcalc!
     </p>
 
     <p>
