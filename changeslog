@@ -23,6 +23,10 @@ Changes Log
   could also completely removed in case that something wrong happens
   or when the list of configuration is too large.
 
+- We have changed the official name of the tool (but not the acronym)
+  from "Binary Habitability Calculator" (which seems to restrictive)
+  to "BHM Calculator, Binary Habitability and More".
+
 Notes:
 =====
 
