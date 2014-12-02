@@ -29,7 +29,6 @@ $dir=rtrim(shell_exec("cd $RELATIVE;pwd"));
 $parts=preg_split("/\//","$dir");
 $BHMDIR=$parts[count($parts)-1];
 $ROOTDIR=preg_replace("/$BHMDIR/","",rtrim(shell_exec("cd $RELATIVE;pwd")));
-echo $ROOTDIR;
 $wDIR="/$BHMDIR/";
 $DIR=$ROOTDIR.$wDIR;
 //echo "$ROOTDIR,$DIR,$wDIR<br/>";
