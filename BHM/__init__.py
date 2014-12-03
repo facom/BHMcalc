@@ -487,7 +487,14 @@ def listDirectory(tdir,search):
     lista=System("ls -md %s/%s"%(tdir,search),out=True)
     rlist=[element.strip() for element in lista.split(",")]
     return rlist
-    
+
+def minmaxArrays(arrays):
+    amin=1E100
+    amax=-1E100
+    for a in arrays:
+        amin=min(min(a),amin)
+        amax=max(max(a),amax)
+    return amin,amax
 
 #GET WORKING DIRECTORY
 PWD=System("pwd",out=True)

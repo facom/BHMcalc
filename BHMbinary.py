@@ -94,7 +94,10 @@ binary.acrit=aCritical(binary.mu,binary.abin,binary.ebin)
 binary.nsync=nSync(binary.ebin)
 binary.Psync=binary.Pbin/binary.nsync
 binary.Wsync=binary.nbin*binary.nsync
-binary.title=r"$M_1/M_{\rm Sun}=$%.3f, $M_2/M_{\rm Sun}=$%.3f, $a_{\rm bin}=$%.3f AU, $e_{\rm bin}=$%.2f, $P_{\rm bin}=$%.3f d"%(star1.M,star2.M,binary.abin,binary.ebin,binary.Pbin)
+
+if len(binary.str_SysID)>0:bintitle="%s: "%binary.str_SysID.replace("'","")
+else:bintitle=""
+binary.title=r"%s$M_1/M_{\rm Sun}=$%.3f, $M_2/M_{\rm Sun}=$%.3f, $a_{\rm bin}=$%.3f AU, $e_{\rm bin}=$%.2f, $P_{\rm bin}=$%.3f d"%(bintitle,star1.M,star2.M,binary.abin,binary.ebin,binary.Pbin)
 
 ###################################################
 #EPHEMERIS OF BINARY ORBIT
@@ -188,7 +191,7 @@ ax.text(dy+dx/(4*rang),dx/3/(2*rang)+0.01,
 "%%.2f AU"%%dx,horizontalalignment='center',
 transform=ax.transAxes)
 
-ax.set_title(binary.title,position=(0.5,0.95),fontsize=14)
+ax.set_title(binary.title,position=(0.5,0.95),fontsize=11)
 
 ax.set_xticklabels([])
 ax.set_yticklabels([])

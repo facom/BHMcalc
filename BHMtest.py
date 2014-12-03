@@ -15,6 +15,7 @@ from BHM import *
 from BHM.BHMplot import *
 from BHM.BHMstars import *
 from BHM.BHMplanets import *
+from BHM.BHMdata import *
 
 ###################################################
 #CONSTANTS
@@ -710,11 +711,127 @@ def testStellarWind():
     ax.set_xlim((rs[0],rs[-1]))
     ax.legend(loc='best')
     fig.savefig("tests/wind-P.png")
+
+def evolutionaryTracksKCBHZP():
+
+    #LOAD CATALOGUE
+    fpickle="BHM/data/BHMcat/BHMcat.pickle"
+    fl=open(fpickle,'r')
+    systems=pickle.load(fl)
+    fl.close()
+
+    #TEST MODEL
+    model="PARSEC"
+    #model="BCA98"
+    #model="BASTI"
+    #model="YZVAR"
+    print "Model: %s"%model
+
+    ###############################
+    #SYSTEM: 
+    ###############################
+    #STAR
+    star=2
+
+    #kEPLER 16
+    #systemid="BHMCatS0001D"
+    #KEPLER 47
+    #systemid="BHMCatS0005D"
+    #KIC 9632895
+    systemid="BHMCatS0008D"
+
+    system=systems[systemid]
+    
+    starid=system["star%d_str_StarID"%star]
+    Mobs=system["star%d_M"%star]
+    FeH=system["binary_FeHobs"]
+    Zobs=scaledZ(FeH)
+    Tobs=system["star%d_T"%star];Terr=system["star%d_Terr"%star];
+    Robs=system["star%d_R"%star];Rerr=system["star%d_Rerr"%star];
+    Lobs=Robs**2*(Tobs/TSUN)**4
+    Lerr=Lobs*(2*Rerr/Robs+4*Terr/Tobs)
+
+    print "Input system properties:"
+    print "Star : %s"%starid
+    print "\tM = %.2f, [Fe/H] = %.2f"%(Mobs,FeH)
+    print "\tZ (scaled) = %.5f"%(Zobs)
+    print "\tT = %.2f +/- %.2f"%(Tobs,Terr)
+    print "\tR = %.2f +/- %.4f"%(Robs,Rerr)
+    print "\tL = %.2f +/- %.4f"%(Lobs,Lerr)
+    
+    ###############################
+    #FIND CLOSEST TRACKS
+    ###############################
+    track_finds,track_data=findTracks(model,Zobs,Mobs,verbose=False)
+
+    #############################################################
+    #HR TRACK
+    #############################################################
+    fig=plt.figure()
+    ax=fig.add_axes([0.1,0.1,0.8,0.8])
+
+    Tarr=[]
+    Rarr=[]
+    if Tobs>0:
+        ax.axvline(Tobs,color='g',linewidth=2)
+        ax.axvspan(Tobs-Terr,Tobs+Terr,color='g',alpha=0.2)
+        Tarr=[[Tobs]]
+    if Robs>0:
+        ax.axhline(Robs,color='g',linewidth=2)
+        ax.axhspan(Robs-Rerr,Robs+Rerr,color='g',alpha=0.2)
+        Rarr=[[Robs]]
+
+    colors=['r','k','b']
+    styles=['--','-',':']
+    for i in xrange(len(track_finds)):
+        j=i%3
+        k=int(i/3)
+
+        Z,M=track_finds[i]
+        track=trackArrays(track_data[i])
+        print "Plotting track for Z = %.4f, M = %.2f..."%(Z,M)
+
+        ts=track.ts/1E9
+        tmin=ts[0]
+        tmax=ts[-1]
+
+        Ts=track.T
+        Rs=track.R
+        
+        Tarr+=[Ts]
+        Rarr+=[Rs]
+
+        style=dict(color=colors[k],markersize=10)
+        ax.plot(Ts,Rs,'-',color=colors[k],linestyle=styles[j],label='Z=%.4f,M=%.2f'%(Z,M))
+        ax.plot([Ts[0]],[Rs[0]],'v',**style)
+        ax.plot([Ts[-1]],[Rs[-1]],'^',**style)
+    
+    Tmin,Tmax=minmaxArrays(Tarr)
+    Rmin,Rmax=minmaxArrays(Rarr)
+
+    fac=1.1
+    ax.set_xlim((fac*Tmax,1/fac*Tmin))
+    ax.set_ylim((1/fac*Rmin,fac*Rmax))
+
+    #ax.set_xscale("log")
+    ax.set_yscale("log")
+
+    ax.set_xlabel(r"$T_{\rm eff}$ (K)")
+    ax.set_ylabel("$R/R_\odot$")
+    
+    ax.set_title("Star %s, M = %.2f, Z = %.4f, Model %s"%(starid,Mobs,Zobs,model),
+                 position=(0.5,1.02),fontsize=11)
+
+    ax.grid(which='both')
+    ax.legend(loc='best',prop=dict(size=10))
+
+    fmodel="tests/%s-model_%s.png"%(starid.replace(" ","_"),model)
+    print "Saving file %s..."%fmodel
+    fig.savefig(fmodel)
     
 #TestTorque()
 #MomentOfInertia()
 #evolutionaryTrack()
 #loadModel()
-testStellarWind()
-
-
+#testStellarWind()
+evolutionaryTracksKCBHZP()

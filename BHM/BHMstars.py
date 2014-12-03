@@ -385,6 +385,17 @@ def FeHfromZ(Z):
     FeH=newton(func,0)
     return FeH
 
+def scaledFeH(Z,A=0.95):
+    Y=0.2485+1.78*Z
+    X=1-Y-Z
+    FeH=np.log10((Z/ZSUN)/(X/XSUN))/A
+    return FeH
+
+def scaledZ(FeH,A=1.0):
+    func=lambda Z:scaledFeH(Z)-FeH
+    Z=newton(func,0.01)
+    return Z
+
 def evoFunctions(evodata):
     ts=evodata[:,0]
     logrho_func=interp1d(np.log10(ts),
@@ -1103,6 +1114,112 @@ def findTrack(model,Z,M,verbose=False):
         datatrack=track.getTrack(Zfind,Mfind,tfile)
 
     return [Zfind,dZfind,Mfind,dMfind],datatrack
+
+def findTracks(model,Z,M,verbose=False):
+    modeldir=DATA_DIR+"Stars/EvoTracks/%s"%model
+    track=loadConf(modeldir+"/track.py")
+
+    if verbose:
+        PRINTOUT("Looking for closest track to Z = %.5f and M = %.2f in model '%s'..."%\
+                     (Z,M,model))
+    if not DIREXISTS(modeldir):
+        PRINTERR("Model '%s' not found."%modeldir)
+        exit(0)
+
+    #FIND THE CLOSEST Z
+    Zdirs=listDirectory(modeldir,"Z*")
+    Zvals=np.array([])
+    for Zdir in Zdirs:
+        matches=re.search("/Z(.+)",Zdir)
+        Zval=float(matches.group(1))
+        Zvals=np.append([Zval],Zvals)
+
+    Zvals.sort()
+    
+    if Z<Zvals[0]:
+        pass
+    elif Z>Zvals[-1]:
+        pass
+    elif len(Zvals)<3:
+        dlogZ=np.log10(Z)-np.log10(Zvals)
+        iZ=np.abs(dlogZ).argsort()
+        Zlw=Zvals[iZ[0]]
+        Zcl=Zvals[iZ[0]]
+        Zup=Zvals[iZ[1]]
+    else:
+        dlogZ=np.log10(Z)-np.log10(Zvals)
+        iZ=np.abs(dlogZ).argsort()
+        Zcl=Zvals[iZ[0]]
+        Zlw=min(Zvals[iZ[1]],Zvals[iZ[2]])
+        Zup=max(Zvals[iZ[1]],Zvals[iZ[2]])
+        
+    if verbose:
+        print "Zs: ",Zlw,Zcl,Zup
+        
+    track_finds=[]
+    track_data=[]
+    for Z in Zlw,Zcl,Zup:
+        if verbose:print "Z = ",Z
+        Zdir=modeldir+"/Z%.2e"%Z
+        
+        Mdirs=listDirectory(Zdir,"M_*")
+        Mvals=np.array([])
+        for Mdir in Mdirs:
+            matches=re.search("/M_(.+)\.dat",Mdir)
+            Mval=float(matches.group(1))
+            Mvals=np.append([Mval],Mvals)
+        Mvals.sort()
+        if verbose:print "\tLooking into Ms: ",Mvals
+
+        if M<Mvals[0]:
+            pass
+        elif M>Mvals[-1]:
+            pass
+        elif len(Mvals)<3:
+            pass
+        else:
+            dM=(M-Mvals)
+            if verbose:print "\tdM = ",dM
+            iM=np.abs(dM).argsort()
+            if verbose:print "\tM[iM] = ",Mvals[iM]
+            Mcl=Mvals[iM[0]]
+            M1=Mvals[iM[1]]
+            s1=dM[iM[1]]
+            for i in xrange(2,len(Mvals)):
+                if dM[iM[i]]*s1<0:
+                    M2=Mvals[iM[i]]
+                    break
+            Mlw=min(M1,M2)
+            Mup=max(M1,M2)
+            if verbose:print "\t\tMlw,Mup = ",Mlw,Mup
+
+        for Mt in Mlw,Mcl,Mup:
+            track_finds+=[(Z,Mt)]
+
+            try:
+                tfile=Zdir+"/M_%.2f.dat"%Mt
+                datatrack=track.getTrack(Z,Mt,tfile)
+            except:
+                tfile=Zdir+"/M_%.3f.dat"%Mt
+                datatrack=track.getTrack(Z,Mt,tfile)
+
+            track_data+=[datatrack]
+
+    return track_finds,track_data
+
+def trackArrays(track):
+    tracka=dict()
+    ts=track["qt_fun"](track["qt"])
+    g=track["qg_fun"](track["qg"])
+    T=track["qT_fun"](track["qT"])
+    R=track["qR_fun"](track["qR"])
+    L=track["qL_fun"](track["qL"])
+    tracka["ts"]=ts
+    tracka["g"]=g
+    tracka["T"]=T
+    tracka["R"]=R
+    tracka["L"]=L
+    return dict2obj(tracka)
 
 def trackFunctions(track):
     trackfunc=dict()

@@ -219,7 +219,9 @@ except:loutmax=max(ihz.hz[:,3])
 ###################################################
 #STORE iHZ DATA
 ###################################################
-ihz.title=r"$M_p=%.3f\,M_{\\rm Jup}$, $f_{\\rm H/He}=%.3f$, $\\tau=%.2f$ Gyr, $R_p=%.3f\,R_{\\rm Jup}$"%(planet.Mg,planet.fHHe,planet.tau,planet.Rg)
+if len(binary.str_SysID)>0:bintitle="%s: "%binary.str_SysID.replace("'","")
+else:bintitle=""
+ihz.title=r"%s$M_p=%.3f\,M_{\\rm Jup}$, $f_{\\rm H/He}=%.3f$, $\\tau=%.2f$ Gyr, $R_p=%.3f\,R_{\\rm Jup}$"%(bintitle,planet.Mg,planet.fHHe,planet.tau,planet.Rg)
 
 #INITIALS
 ini_inwd=initialsString(ihz.str_incrit_wd)
@@ -296,6 +298,8 @@ PRINTOUT("Creating plots...")
 plotFigure(ihz_dir,"iHZ",\
 """
 from BHM.BHMstars import *
+from BHM.BHMastro import *
+
 binary=\
 loadConf("%s"+"binary.conf")+\
 loadConf("%s"+"binary.data")
@@ -310,6 +314,8 @@ fig=plt.figure(figsize=(8,8))
 ax=fig.add_axes([0.01,0.01,0.98,0.98])
 ax.set_xticklabels([])
 ax.set_yticklabels([])
+
+bbox=dict(fc='w',ec='none')
 
 #WIDE HZ
 outwd=patches.Circle((0,0),ihz.loutwd,facecolor='g',
@@ -369,19 +375,27 @@ aCR=patches.Circle((0,0),binary.acrit,facecolor='none',edgecolor='k',
                    linewidth=2,linestyle='dashed',zorder=20)
 ax.add_patch(aCR)
 
-
 #TITLE
-ax.set_title(binary.title,position=(0.5,0.95),fontsize=14)
-ax.text(0.5,0.92,planet.orbit,fontsize=12,
+ax.set_title(binary.title,position=(0.5,0.95),fontsize=11)
+ax.text(0.5,0.92,planet.orbit,fontsize=11,
 transform=ax.transAxes,horizontalalignment='center')
 
 #LIMITS
-ax.text(0.5,0.08,r"$a_{\\rm crit}=%%.2f$ AU, $l_{\\rm E,eq}$=%%.2f AU, $l_{\\rm in,%%s}$=%%.2f AU, $l_{\\rm in,%%s}$=%%.2f AU, $l_{\\rm out,%%s}$=%%.2f AU, $l_{\\rm out,%%s}$=%%.2f AU"%%(binary.acrit,ihz.leeq,ihz.ini_inwd,ihz.linwd,ihz.ini_innr,ihz.linnr,ihz.ini_outwd,ihz.loutwd,ihz.ini_outnr,ihz.loutnr),transform=ax.transAxes,horizontalalignment='center',fontsize=12)
+ax.text(0.5,0.08,r"$\\tau$ =%%.2f Gyr, $l_{\\rm in,%%s}$=%%.2f AU, $l_{\\rm in,%%s}$=%%.2f AU, $l_{\\rm E,eq}$=%%.2f AU, $l_{\\rm out,%%s}$=%%.2f AU, $l_{\\rm out,%%s}$=%%.2f AU"%%(planet.tau,ihz.ini_inwd,ihz.linwd,ihz.ini_innr,ihz.linnr,ihz.leeq,ihz.ini_outnr,ihz.loutnr,ihz.ini_outwd,ihz.loutwd),transform=ax.transAxes,horizontalalignment='center',fontsize=11)
+ax.text(0.5,0.04,r"$a_{\\rm crit}=%%.2f$ AU, $l_{\\rm in,cont}=%%.2f$ AU, $l_{\\rm out,cont}$=%%.2f AU"%%(binary.acrit,ihz.clin,ihz.clout),transform=ax.transAxes,horizontalalignment='center',fontsize=11)
 
 #RANGE
 rang=1.5*max(ihz.loutwd,max(abs(xs)),max(abs(ys)))
 ax.set_xlim((-rang,+rang))
 ax.set_ylim((-rang,+rang))
+
+#RESONANCES
+imax=int(np.ceil(PKepler(np.sqrt(2)*rang,planet.Morb,0.0)/binary.Pbin))
+for ires in xrange(2,imax):
+    ares=aKepler(ires*binary.Pbin,planet.Morb,0.0)
+    res=patches.Circle((0,0),ares,facecolor='none',edgecolor='k',linestyle='solid',
+                       alpha=0.1,linewidth=1,zorder=-10)
+    ax.add_patch(res)
 
 #MEASURE MARK
 xt=ax.get_xticks()
@@ -448,7 +462,7 @@ insolation[:,6]/PPFD_EARTH,
 insolation[:,8]/PPFD_EARTH,
 color='g',linestyle='-',linewidth=1,alpha=0.3)
 
-ax.set_title(binary.title,position=(0.5,1.02),fontsize=12)
+ax.set_title(binary.title,position=(0.5,1.02),fontsize=11)
 ax.legend(loc='best',prop=dict(size=10))
 ax.grid()
 
@@ -463,7 +477,6 @@ ax.set_ylabel('Insolation, PPFD (PEL)',fontsize=12)
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 #EVOLUTION AND CONTINUOUS HABITABLE ZONE
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-PRINTOUT("Creating plots...");
 plotFigure(ihz_dir,"hz-evolution",\
 """
 from BHM.BHMstars import *
@@ -505,7 +518,7 @@ ax.set_ylim((min(ihz.shz[:,1]),ihz.loutmax))
 
 ax.set_xlabel(r"$\\tau$ (Gyr)",fontsize=12)
 ax.set_ylabel(r"$r$ (AU)",fontsize=12)
-ax.set_title(binary.title,position=(0.5,1.02),fontsize=12)
+ax.set_title(binary.title,position=(0.5,1.02),fontsize=11)
 
 #CHZ
 ymin,ymax=ax.get_ylim()

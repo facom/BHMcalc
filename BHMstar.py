@@ -61,6 +61,7 @@ else:
 model=star.str_model.replace("'","")
 pfind,startrack=findTrack(model,star.Z,star.M,verbose=True)
 trackfunc=trackFunctions(startrack)
+trackarr=trackArrays(startrack)
 modelwat="%s:Z=%.4f,M=%.2f"%(model,pfind[0],pfind[2])
 
 def StellarGTRL(Z,M,t):
@@ -73,29 +74,11 @@ def StellarGTRL(Z,M,t):
           g=T=R=L=-1
      return g,T,R,L
 
-#g,T,R,L=StellarGTRL(star.Z,star.M,14.0);print L;exit(0)
-"""
-try:
-     zsvec=chooseZsvecSingle(star.Z)
-     PRINTOUT("Loading isochrones: %s"%str(zsvec))
-     num=loadIsochroneSet(Zs=zsvec,verbose=False)
-except:
-     PRINTERR("Error loading isochrones.")
-     errorCode("FILE_ERROR")
-"""
-
 ###################################################
 #CALCULATE EVOLUTIONARY TRACK
 ###################################################
-#DETERMINING APPROXIMATELY THE MAXIMUM AGE
-PRINTOUT("Estimating maximum age...")
-tau_max=TAU_MAX
-ts=np.linspace(TAU_MIN,TAU_MAX,NTIMES)
-for t in ts:
-    data=StellarGTRL(star.Z,star.M,t)
-    if data[1]<0:
-        tau_max=t
-        break
+ts=trackarr.ts/1E9
+tau_max=ts[-1]
 
 #SAMPLING TIMES
 exp_ts1=np.linspace(np.log10(TAU_MIN),np.log10(tau_max/2),NTIMES/2)
@@ -261,7 +244,7 @@ tdiss=dissipationTime(star.M,R,L)
 PRINTOUT("Star ID: %s"%star.str_StarID)
 star.str_StarID=star.str_StarID.replace("'","")
 PRINTOUT("Star ID: %s"%star.str_StarID)
-title=r"%s:$M_{\\rm star}/M_{\odot}$=%.2f, $Z$=%.4f, $[Fe/H]$=%.2f, $\\tau$=%.2f Gyr"%(star.str_StarID,star.M,star.Z,star.FeH,star.tau)
+title=r"%s: $M_{\\rm star}/M_{\odot}$=%.2f, $Z$=%.4f, $[Fe/H]$=%.2f, $\\tau$=%.2f Gyr"%(star.str_StarID,star.M,star.Z,star.FeH,star.tau)
 
 ###################################################
 #STORE STELLAR DATA
@@ -612,6 +595,7 @@ plotFigure(star_dir,"radius-schematic",\
 from BHM.BHMstars import *
 fig=plt.figure(figsize=(8,8))
 ax=fig.add_axes([0.0,0.0,1.0,1.0])
+bbox=dict(fc='w',ec='none')
 
 star=\
 loadConf("%s"+"star.conf")+\
@@ -631,7 +615,8 @@ sun=patches.Circle((0.0,0.0),1.0,
                    linestyle='dashed',fc='none',zorder=10)
 ax.add_patch(starc)
 ax.add_patch(sun)
-ax.text(0.0,1.0,'Sun',fontsize=20,transform=offSet(0,5),horizontalalignment='center',color=cm.gray(0.5))
+ax.text(0.0,1.0,'Sun',fontsize=12,transform=offSet(0,5),horizontalalignment='center',verticalalignment='bottom',color=cm.gray(0.5),bbox=bbox,zorder=10)
+ax.text(0.0,-R,star.str_StarID.replace("'",""),fontsize=12,transform=offSet(0,-5),horizontalalignment='center',verticalalignment='top',color=cm.gray(0.5),bbox=bbox,zorder=10)
 
 if star.R>0:
    starobs=patches.Circle((0.0,0.0),star.R,
@@ -641,7 +626,9 @@ if star.R>0:
 ax.set_xticks([])
 ax.set_yticks([])
 
-ax.set_title(r"%%s: $M = %%.3f\,M_{\odot}$, $Z=$%%.4f, $\\tau=%%.3f$ Gyr, $R = %%.3f\,R_{\odot}$, $T_{\\rm eff} = %%.1f$ K"%%(StarID,M,Z,tau,R,T),
+if len(star.str_StarID)>0:startitle="%%s: "%%star.str_StarID
+else:startitle=""
+ax.set_title(r"%%s$M = %%.3f\,M_{\odot}$, $Z=$%%.4f, $\\tau=%%.3f$ Gyr, $R = %%.3f\,R_{\odot}$, $T_{\\rm eff} = %%.1f$ K"%%(startitle,M,Z,tau,R,T),
 position=(0.5,0.05),fontsize=14)
 
 rang=max(1.5*R,1.5)

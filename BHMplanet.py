@@ -246,6 +246,7 @@ else:
         errorCode("RANGE_ERROR")
     planet.type="Sub-Earth"
 
+if planet.worb<0:planet.worb=0
 if planet.Mg<0.05:
     planet.title=r"$M_p=%.3f\,M_{\\rm Earth}$, CMF=%.2f, $\\tau=%.2f$ Gyr, $R_p=%.3f\,R_{\\rm Earth}$"%(planet.M,planet.CMF,planet.tau,planet.R)
 else:
