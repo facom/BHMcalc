@@ -78,12 +78,15 @@ def StellarGTRL(Z,M,t):
 #CALCULATE EVOLUTIONARY TRACK
 ###################################################
 ts=trackarr.ts/1E9
-tau_max=ts[-1]
+tau_ini=ts[0]
+tau_end=min(ts[-1],TAU_MAX)
 
 #SAMPLING TIMES
-exp_ts1=np.linspace(np.log10(TAU_MIN),np.log10(tau_max/2),NTIMES/2)
-exp_ts2=-np.linspace(-np.log10(min(TAU_MAX,1.5*tau_max)),-np.log10(tau_max/2),NTIMES/2)
+#"""
+exp_ts1=np.linspace(np.log10(max(TAU_MIN,tau_ini)),np.log10(tau_end/2),NTIMES/2)
+exp_ts2=-np.linspace(-np.log10(min(TAU_MAX,tau_end)),-np.log10(tau_end/2),NTIMES/2)
 ts=np.unique(np.concatenate((10**exp_ts1,(10**exp_ts2)[::-1])))
+#"""
 
 #EVOLUTIONARY MATRIX
 PRINTOUT("Calculating Evolutionary Matrix...")
@@ -94,26 +97,29 @@ evodata_str=array2str(evodata)
 star.evotrack=evodata
 
 #MAXIMUM ALLOWABLE TIME
-tau_max=evodata[-1,0]
-PRINTOUT("Maximum age = %.3f"%tau_max)
+star.tau_min=evodata[0,0]
+star.tau_max=evodata[-1,0]
+PRINTOUT("Minimum age in model = %.3f"%star.tau_min)
+PRINTOUT("Maximum age in model = %.3f"%star.tau_max)
 
 #DETECTING THE END OF HYDROGEN BURNING
 ts=evodata[:,0]
 Rs=evodata[:,3]
 if star.taums==0:
     tau_ms=disconSignal(ts,Rs,
-                        tausys=tau_max/2,
+                        tausys=star.tau_max/2,
                         iper=3,dimax=10)
 else:tau_ms=star.taums
-star.taums=tau_ms
+star.tau_ms=min(tau_ms,star.tau_max)
+PRINTOUT("End of Hydrogen Burning Phase = %.3f"%star.tau_ms)
 
 ###################################################
 #RADIUS AND MOMENT OF INERTIA EVOLUTION
 ###################################################
-#GIRATION RADIUS
+#GYRATION RADIUS
 Nfine=500
 star.MoI=np.sqrt(stellarMoI(star.M))
-tsmoi=np.logspace(np.log10(TAU_MIN),np.log10(tau_ms),Nfine)
+tsmoi=np.logspace(np.log10(TAU_MIN),np.log10(star.tau_ms),Nfine)
 
 #========================================
 #RADIUS EVOLUTION
@@ -121,14 +127,12 @@ tsmoi=np.logspace(np.log10(TAU_MIN),np.log10(tau_ms),Nfine)
 PRINTOUT("Calculating radius evolution...")
 star.RMoI=stack(1)
 for t in tsmoi:
-     #logg=StellarProperty('logGravitation',star.Z,star.M,t)
-     #g=10**logg/100
-     g=trackfunc.g(t*GIGA)/100
-     R=StellarRadius(star.M,g)
+     R=trackfunc.R(t*GIGA)
      star.RMoI+=[R]
 star.RMoI=toStack(tsmoi)|star.RMoI
 Rfunc=interp1d(star.RMoI[:,0],star.RMoI[:,1],kind='slinear')
 
+PRINTOUT("Calculating derivative of radius...")
 dRdt=[0]
 for i in range(1,Nfine-1):
      dt=(tsmoi[i+1]-tsmoi[i-1])/4
@@ -138,7 +142,7 @@ dRdt+=[dRdt[-1]]
 star.RMoI=toStack(star.RMoI)|toStack(dRdt)
 
 #========================================
-#MOMENT OF INERTIA EVOLUTION
+#EVOLUTION OF MOMENT OF INERTIA
 #========================================
 Ievo=stack(2)
 for i in range(Nfine):
@@ -155,12 +159,20 @@ star.RMoI=toStack(star.RMoI)|Ievo
 ###################################################
 PRINTOUT("Calculating rotation evolution...")
 evoInterpFunctions(star)
+
+#CONVECTIVE TURNOVER AT 200 Myr
 tauconv=convectiveTurnoverTime(star.Tfunc(0.2))
 
+#INITIAL ROTATIONAL RATE
 wini=2*PI/(star.Pini*DAY)
-#wsat_scaled=WSATSUN*TAUCSUN/tauconv
-wsat_scaled=star.wsat
 
+#SATURATION
+if star.wsat==0:
+     wsat_scaled=WSATSUN*TAUCSUN/tauconv
+else:
+     wsat_scaled=star.wsat
+
+#INTEGRATION
 rotpars=dict(\
      star=star,
      starf=None,binary=None,
@@ -201,7 +213,6 @@ for i in range(0,Nfine):
      R=star.Rfunc(t)
      L=star.Lfunc(t)
      Prot=2*PI/star.rotevol[i,1]/DAY
-     #print M,R,L,Prot
 
      #SURFICIAL MAGNETIC CONDITIONS
      tauc,fstar,Bequi,Bphoto,BTR,Rossby,Mdot,Mdot_hot,Mdot_cold,MATR=\
@@ -211,13 +222,10 @@ for i in range(0,Nfine):
      RX=starRX(Rossby)
      LX=L*RX*LSUN
      LXUV=starLXEUV(LX)
-     #print LX,LXUV
 
      star.activity+=[tauc,fstar,Bequi,Bphoto,BTR,Rossby,
                      Mdot,Mdot_hot,Mdot_cold,MATR,
                      RX,LX,LXUV]
-     #print star.activity.array[i]
-     #exit(0)
      
 star.activity=toStack(tsmoi)|star.activity
 
@@ -254,6 +262,7 @@ f=open(star_dir+"star.data","w")
 f.write("""\
 from numpy import array
 #MAXIMUM AGE
+taumin=%.17e #Gyr
 taumax=%.17e #Gyr
 taums=%.17e #Gyr
 
@@ -288,7 +297,7 @@ rotevol=%s
 
 #MASS-LOSS EVOLUTION
 activity=%s
-"""%(tau_max,tau_ms,title,
+"""%(star.tau_min,star.tau_max,star.tau_ms,title,
      g,Teff,R,L,star.MoI,tauconv,tdiss,
      wsat_scaled,
      array2str(lins),lsun,array2str(louts),
@@ -367,8 +376,11 @@ logrho_func,Teff_func,logR_func,logL_func=evoFunctions(evodata)
 
 bbox=dict(fc='w',ec='none')
 
+#TIMES
+ts=ts[ts>=0.1]
+ts=ts[ts<=star.taums]
+
 #LINE
-ts=ts[ts>0.1]
 logts=np.log10(ts)
 Teffs=Teff_func(logts)
 Leffs=10**logL_func(logts)
@@ -388,7 +400,7 @@ if star.R>0 and star.T>0:
 
 #MARKS
 dt=round(star.taumax/20,1)
-logts=np.log10(np.arange(0.1,star.taumax,dt))
+logts=np.log10(np.arange(0.1,star.taums,dt))
 Teffs=Teff_func(logts)
 Leffs=10**logL_func(logts)
 ax.plot(Teffs,Leffs,"ko",label='Steps of %%.1f Gyr'%%dt,markersize=3)
@@ -431,7 +443,9 @@ logrho_func,Teff_func,logR_func,logL_func=evoFunctions(evodata)
 bbox=dict(fc='w',ec='none')
 
 #LINES
-ts=ts[ts>0.1]
+ts=ts[ts>=0.1]
+ts=ts[ts<=star.taums]
+
 logts=np.log10(ts)
 Teffs=Teff_func(logts)
 Rs=10**logR_func(logts)
@@ -443,7 +457,7 @@ ax.plot([star.Tins],[star.Rins],"bo",markersize=10,markeredgecolor='none',label=
 
 #EVOLUTIONARY TRACK
 dt=round(star.taumax/20,1)
-logts=np.log10(np.arange(0.1,star.taumax,dt))
+logts=np.log10(np.arange(0.1,star.taums,dt))
 Teffs=Teff_func(logts)
 Rs=10**logR_func(logts)
 ax.plot(Teffs,Rs,"ko",label='Steps of %%.1f Gyr'%%dt,markersize=3)
@@ -488,7 +502,9 @@ ts=star.evotrack[:,0]
 bbox=dict(fc='w',ec='none')
 
 #LINES
-ts=ts[ts>0.1]
+ts=ts[ts>=0.1]
+ts=ts[ts<=star.taums]
+
 Teffs=star.Tfunc(ts)
 loggs=np.log10(star.gfunc(ts))
 ax.plot(Teffs,loggs,"k-")
@@ -499,7 +515,7 @@ ax.plot([star.Tins],[np.log10(star.gins)],"bo",markersize=10,markeredgecolor='no
 
 #EVOLUTIONARY TRACK
 dt=round(star.taumax/20,1)
-ts=np.arange(0.1,star.taumax,dt)
+ts=np.arange(0.1,star.taums,dt)
 Teffs=star.Tfunc(ts)
 loggs=np.log10(star.gfunc(ts))
 ax.plot(Teffs,loggs,"ko",label='Steps of %%.1f Gyr'%%dt,markersize=3)
@@ -985,7 +1001,7 @@ fh.write("""\
   </td></tr>
 </table>
 """%(WEB_DIR,star_webdir,star_webdir,star_webdir,WEB_DIR,star_webdir,
-star.M,star.Z,star.FeH,star.tau,tau_max,tau_ms,star_hash,
+star.M,star.Z,star.FeH,star.tau,star.tau_max,star.tau_ms,star_hash,
 star.Pini,star.wsat,star.taudisk,star.Kw,star.a,star.n,tauconv,WSATSUN*TAUCSUN/tauconv,
 g,Teff,R,L,star.MoI,tdiss,
 lins[0],lins[1],lins[2],

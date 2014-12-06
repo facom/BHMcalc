@@ -199,7 +199,8 @@ shz=toStack(ts)|shz
 
 #CONTINUOUS HABITABLE ZONE
 tms=star1.taums
-clout=min(hz[10:,3])
+cond=ts>=0.1
+clout=min(hz[cond,3])
 clin=np.interp(tms,ts,hz[:,1])
 if clin<binary.acrit:
     clin=binary.acrit
@@ -346,7 +347,7 @@ ax.add_patch(cout)
 
 #WHITE INNER AREA
 inwd=patches.Circle((0,0),ihz.linwd,facecolor='w',edgecolor='g',
-                    linewidth=2,zorder=0)
+                    linewidth=2,zorder=-4)
 ax.add_patch(inwd)
 
 #EARTH EQUIVALENT DISTANCE
@@ -394,7 +395,7 @@ imax=int(np.ceil(PKepler(np.sqrt(2)*rang,planet.Morb,0.0)/binary.Pbin))
 for ires in xrange(2,imax):
     ares=aKepler(ires*binary.Pbin,planet.Morb,0.0)
     res=patches.Circle((0,0),ares,facecolor='none',edgecolor='k',linestyle='solid',
-                       alpha=0.1,linewidth=1,zorder=-10)
+                       alpha=0.1,linewidth=1,zorder=-3)
     ax.add_patch(res)
 
 #MEASURE MARK
@@ -490,7 +491,7 @@ ihz=\
 loadConf("%s"+"hz.conf")+\
 loadConf("%s"+"hz.data")
 
-fig=plt.figure(figsize=(8,6))
+fig=plt.figure(figsize=(8,8))
 ax=fig.add_axes([0.1,0.1,0.8,0.8])
 
 ts=ihz.hz[:,0]

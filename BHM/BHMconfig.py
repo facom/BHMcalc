@@ -33,7 +33,7 @@ exec("VERBOSE=0");
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 exec("IN_CRITS=('recent venus','runaway greenhouse','moist greenhouse')");
 exec("OUT_CRITS=('maximum greenhouse','early mars')");
-exec("TAU_MIN=0.005");
+exec("TAU_MIN=0.001");
 exec("TAU_MAX=12.5");
 exec("NTIMES=100");
 

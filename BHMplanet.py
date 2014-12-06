@@ -252,7 +252,10 @@ if planet.Mg<0.05:
 else:
     planet.title=r"$M_p=%.3f\,M_{\\rm Jup}$, $f_{\\rm H/He}=%.3f$, $\\tau=%.2f$ Gyr, $R_p=%.3f\,R_{\\rm Jup}$"%(planet.Mg,planet.fHHe,planet.tau,planet.Rg)
 
-planet.orbit=r"$a_{\\rm orb}$=%.2f AU, $e_{\\rm orb}$=%.2f, $P_{\\rm orb}$=%.2f days, $\omega_{\\rm orb}=%.1f^{\\rm o}$"%(planet.aorb,planet.eorb,planet.Porb,planet.worb)
+if len(planet.str_PlanetID)>0:pltitle="%s: "%planet.str_PlanetID.replace("'","")
+else:pltitle=""
+
+planet.orbit=r"%s$a_{\\rm orb}$=%.2f AU, $e_{\\rm orb}$=%.2f, $P_{\\rm orb}$=%.2f days, $\omega_{\\rm orb}=%.1f^{\\rm o}$"%(pltitle,planet.aorb,planet.eorb,planet.Porb,planet.worb)
 
 ###################################################
 #PLANETARY ORBIT
@@ -383,8 +386,9 @@ ax.add_patch(icore)
 ax.add_patch(earth)
 ax.add_patch(jupiter)
 
-ax.text(0.0,1.0,'Earth',fontsize=20,transform=offSet(0,5),horizontalalignment='center')
-ax.text(0.0,RJ,'Jupiter',fontsize=20,transform=offSet(0,5),horizontalalignment='center')
+ax.text(0.0,1.0,'Earth',fontsize=12,transform=offSet(0,5),horizontalalignment='center')
+ax.text(0.0,RJ,'Jupiter',fontsize=12,transform=offSet(0,5),horizontalalignment='center')
+ax.text(0.0,-planet.R,'%%s'%%planet.str_PlanetID.replace("'",""),fontsize=14,transform=offSet(0,-10),horizontalalignment='center',verticalalignment='top')
 
 ax.set_xticks([])
 ax.set_yticks([])

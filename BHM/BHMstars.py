@@ -14,6 +14,7 @@
 from BHM import *
 from BHM.BHMnum import *
 from BHM.BHMboreas import pyBoreas
+from BHM.BHMastro import *
 
 ###################################################
 #PACKAGES
@@ -36,6 +37,8 @@ LUM_COL=4
 ###################################################
 #GLOBALS
 ###################################################
+RT=2.0 #RSUN, DISTANCE AT WHICH SOLAR WIND GETS ITS TERMINAL VELOCITY
+
 SMset=[]
 Zset=[]
 SMglob=dict2obj(dict())
@@ -860,7 +863,7 @@ def totalAcceleration(t,star,starf,binary,verbose=False,qreturn=False):
     else:
         return acc
 
-def rotationalAcceleration(Omega,t,params,full=False):
+def rotationalAcceleration2(Omega,t,params,full=False):
     star=params['star']
     starf=params['starf']
     binary=params['binary']
@@ -869,7 +872,8 @@ def rotationalAcceleration(Omega,t,params,full=False):
     wsat=params['wsat']
 
     t=t/GYR
-    if t>star.taums:t=star.taums
+    if t>star.tau_ms:t=star.tau_ms
+
     M=star.M
     R=star.Rfunc(t)
 
@@ -896,6 +900,165 @@ def rotationalAcceleration(Omega,t,params,full=False):
             dJdtw=-Kw*Omega*(wsat*OMEGASUN)**2*facw
 
         dOdt_wind=dJdtw/(I*MSUN*RSUN**2)
+
+    #========================================
+    #TIDAL ACCELERATION
+    #========================================
+    if starf is None:
+        dOdt_tide=0.0
+    else:
+        dOdt_tide=tidalAcceleration(M,R,
+                                    star.Lfunc(t),star.MoI,
+                                    starf.M,
+                                    binary.abin,binary.ebin,
+                                    binary.nbin/DAY,Omega,
+                                    verbose=False)
+        #print t,M,R,star.MoI,binary.abin,binary.ebin
+        #print dOdt_cont,dOdt_wind,dOdt_tide
+        #raw_input()
+
+    #========================================
+    #TOTAL ACCELERATION
+    #========================================
+    dOdt=dOdt_tide+dOdt_cont+dOdt_wind
+
+    #print "t,w = ",t,Omega
+    #print "dOdt = ",dOdt
+    #exit(0)
+    
+    if full:
+        return dOdt_tide,dOdt_cont,dOdt_wind,dOdt
+    else:
+        return dOdt
+
+def windAccelerationKawaler(Omega,t,params,full=False):
+    """
+    Omega in s^-1
+    t in Gyr
+    """
+    star=params['star']
+    taudisk=params['taudisk']
+    Kw=params['Kw']
+    wsat=params['wsat']
+    M=star.M
+    R=star.Rfunc(t)
+    I=star.Ifunc(t)
+
+    #========================================
+    #CONTRACTION ACCELERATION
+    #========================================
+    if t>12:dOdt_cont=0.0
+    else:
+        dOdt_cont=-Omega*star.dIdtfunc(t)/I/GYR
+
+    #========================================
+    #WIND BREAKING
+    #========================================
+    facw=R**0.5/M**0.5
+    if Omega<=(wsat*OMEGASUN):
+        dJdtw=-Kw*Omega**3*facw
+    else:
+        dJdtw=-Kw*Omega*(wsat*OMEGASUN)**2*facw
+
+    dOdt_wind=dJdtw/(I*MSUN*RSUN**2)
+    return dOdt_cont,dOdt_wind
+
+def windAccelerationMatt(Omega,t,params,full=False):
+    """
+    Omega in s^-1
+    t in Gyr
+    """
+    #TEST VALUES
+    t=4.56
+    Omega=OMEGASUN
+
+    star=params['star']
+    taudisk=params['taudisk']
+    Kw=params['Kw']
+    wsat=params['wsat']
+    M=star.M
+    R=star.Rfunc(t)
+    L=star.Lfunc(t)
+    I=star.Ifunc(t)
+    P=2*PI/Omega/DAY
+
+    #========================================
+    #CONTRACTION ACCELERATION
+    #========================================
+    if t>12:dOdt_cont=0.0
+    else:
+        dOdt_cont=-Omega*star.dIdtfunc(t)/I/GYR
+
+    #========================================
+    #PARAMETERS
+    #========================================
+    n=1.5
+    K2=0.0506
+    m=0.2177
+    K1=1.3*1
+
+    #========================================
+    #MASS-LOSS
+    #========================================
+    mloss=pyBoreas(M,R,L,P,star.FeH)
+    Mdot=mloss[6]
+    fstar=mloss[1]
+    Bphoto=mloss[3]
+    Bstar=np.sqrt(2.0)*fstar*Bphoto
+    vesc=np.sqrt(2*GCONST*M*MSUN/(RT*R*RSUN))
+    Omegamax=(GCONST*M*MSUN/(R*RSUN)**3)**0.5
+    b=Omega/Omegamax
+
+    #========================================
+    #WIND BREAKING
+    #========================================
+    """
+    Bouvier (2013)
+    1 Gauss = cm^-1/2 g^1/2 s^-1
+    """
+    Gamma=(Bstar)**2*(R*RSUN*1E2)**2/(Mdot*MSUN/YEAR*1E3*vesc*1E2)
+    Den=(K2**2+0.5*b**2)**0.5
+    rA=K1*(Gamma/Den)**m
+    #print M,R,L,Bstar,Mdot,Omega
+    #print rA,b,Gamma
+    dJdtw=-2./3*(Mdot*MSUN/YEAR)*Omega*(R*RSUN)**2*rA**n
+    #print dJdtw*1E3/(1E-2)**2
+    #exit(0)
+        
+    dOdt_wind=dJdtw/(I*MSUN*RSUN**2)
+    return dOdt_cont,dOdt_wind
+
+def rotationalAcceleration(Omega,t,params,full=False,verbose=False):
+    star=params['star']
+    starf=params['starf']
+    binary=params['binary']
+    taudisk=params['taudisk']
+    Kw=params['Kw']
+    wsat=params['wsat']
+
+    t=t/GYR
+    if t>star.tau_ms:t=star.tau_ms
+    M=star.M
+    R=star.Rfunc(t)
+
+    #========================================
+    #CONTRACTION AND WIND ACCELERATION
+    #========================================
+    if t<taudisk:
+        #========================================
+        #NO TORQUE IF DISK IS PRESENT
+        #========================================
+        dOdt_cont=0.0
+        dOdt_wind=0.0
+    else:
+        #dOdt_cont,dOdt_wind=windAccelerationKawaler(Omega,t,params,full=full)
+        dOdt_cont,dOdt_wind=windAccelerationMatt(Omega,t,params,full=full)
+        if verbose:
+            print "t = %g, Omega = %g, dOdt_cont = %e, dOdt_wind = %e"%(t,
+                                                                        Omega,
+                                                                        dOdt_cont,
+                                                                        dOdt_wind)
+            raw_input()
 
     #========================================
     #TIDAL ACCELERATION
@@ -1244,7 +1407,7 @@ def stellarWind(M,R,Mdot,r,vtype="Terminal"):
     rSI=r*AU
 
     #ESCAPE VELOCITY
-    vesc=np.sqrt(2*GCONST*M*MSUN/(2*R*RSUN))
+    vesc=np.sqrt(2*GCONST*M*MSUN/(RT*R*RSUN))
 
     if vtype=="Terminal":
         """
@@ -1264,7 +1427,8 @@ def stellarWind(M,R,Mdot,r,vtype="Terminal"):
 def binaryWind(M1,R1,M1dot,M2,R2,M2dot,r,vtype='Terminal'):
     v1,n1=stellarWind(M1,R1,M1dot,r,vtype=vtype)
     v2,n2=stellarWind(M2,R2,M2dot,r,vtype=vtype)
-    Psw=0.6*MP*(n1*v1**2+n2*v2**2)
+    vorb=2*PI*(r*AU)/(PKepler(r,M1,M2)*DAY)
+    Psw=0.6*MP*(n1*(v1**2+vorb**2)+n2*(v2**2+vorb**2))
     Fsw=n1*v1+n2*v2
     return Psw,Fsw
         
