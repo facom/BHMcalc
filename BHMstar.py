@@ -118,7 +118,7 @@ PRINTOUT("End of Hydrogen Burning Phase = %.3f"%star.tau_ms)
 ###################################################
 #GYRATION RADIUS
 Nfine=500
-star.MoI=np.sqrt(stellarMoI(star.M))
+star.MoI=stellarMoI(star.M)
 tsmoi=np.logspace(np.log10(TAU_MIN),np.log10(star.tau_ms),Nfine)
 
 #========================================
@@ -177,10 +177,15 @@ rotpars=dict(\
      star=star,
      starf=None,binary=None,
      taudisk=star.taudisk,
+     model='Chaboyer',
      Kw=star.Kw,
-     wsat=wsat_scaled
+     wsat=star.wsat,
+     tauc=50.0,
+     qdifr=False,
+     qcont=False
      )
-star.rotevol=odeint(rotationalAcceleration,wini,tsmoi*GYR,args=(rotpars,))
+Omega_ini=np.array([wini,wini])
+star.rotevol=odeint(rotationalAccelerationFull,Omega_ini,tsmoi*GYR,args=(rotpars,))
 star.rotevol=toStack(tsmoi)|toStack(star.rotevol)
 
 ###################################################
@@ -264,7 +269,7 @@ from numpy import array
 #MAXIMUM AGE
 taumin=%.17e #Gyr
 taumax=%.17e #Gyr
-taums=%.17e #Gyr
+tau_ms=%.17e #Gyr
 
 #INSTANTANEOUS PROPERTIES
 title="%s"
@@ -327,14 +332,14 @@ fig=plt.figure(figsize=(8,6))
 ax=fig.add_axes([0.1,0.1,0.8,0.8])
 evodata=%s
 ts=evodata[:,0]
-ts=ts[ts<star.taums]
+ts=ts[ts<star.tau_ms]
 logrho_func,Teff_func,logR_func,logL_func=evoFunctions(evodata)
 
 ax.plot(ts,10**logrho_func(np.log10(ts))/GRAVSUN/1E2,label=r"$g_{\\rm surf}$")
 ax.plot(ts,Teff_func(np.log10(ts))/TSUN,label=r"$T_{\\rm eff}$")
 ax.plot(ts,10**logR_func(np.log10(ts)),label=r"$R$")
 ax.plot(ts,10**logL_func(np.log10(ts)),label=r"$L$")
-ax.axvline(star.taums,color='k',linestyle='--',label='Turn Over')
+ax.axvline(star.tau_ms,color='k',linestyle='--',label='Turn Over')
 ax.axvline(star.tau,color='k',linestyle='-',label='Stellar Age')
 
 ax.set_xscale('log')
@@ -378,7 +383,7 @@ bbox=dict(fc='w',ec='none')
 
 #TIMES
 ts=ts[ts>=0.1]
-ts=ts[ts<=star.taums]
+ts=ts[ts<=star.tau_ms]
 
 #LINE
 logts=np.log10(ts)
@@ -387,7 +392,7 @@ Leffs=10**logL_func(logts)
 ax.plot(Teffs,Leffs,"k-")
 ax.plot(Teffs[0:1],Leffs[0:1],"ko",markersize=5)
 ax.plot([Teffs[0]],[Leffs[0]],"go",markersize=10,markeredgecolor='none',label=r"$t_{\\rm ini}=$0.1 Gyr")
-ax.plot([Teffs[-1]],[Leffs[-1]],"ro",markersize=10,markeredgecolor='none',label=r"$t_{\\rm end}=$%%.1f Gyr"%%star.taums)
+ax.plot([Teffs[-1]],[Leffs[-1]],"ro",markersize=10,markeredgecolor='none',label=r"$t_{\\rm end}=$%%.1f Gyr"%%star.tau_ms)
 ax.plot([star.Tins],[star.Lins],"bo",markersize=10,markeredgecolor='none',label=r"$t=$%%.1f Gyr"%%star.tau)
 
 if star.R>0 and star.T>0:
@@ -400,7 +405,7 @@ if star.R>0 and star.T>0:
 
 #MARKS
 dt=round(star.taumax/20,1)
-logts=np.log10(np.arange(0.1,star.taums,dt))
+logts=np.log10(np.arange(0.1,star.tau_ms,dt))
 Teffs=Teff_func(logts)
 Leffs=10**logL_func(logts)
 ax.plot(Teffs,Leffs,"ko",label='Steps of %%.1f Gyr'%%dt,markersize=3)
@@ -444,7 +449,7 @@ bbox=dict(fc='w',ec='none')
 
 #LINES
 ts=ts[ts>=0.1]
-ts=ts[ts<=star.taums]
+ts=ts[ts<=star.tau_ms]
 
 logts=np.log10(ts)
 Teffs=Teff_func(logts)
@@ -452,12 +457,12 @@ Rs=10**logR_func(logts)
 ax.plot(Teffs,Rs,"k-")
 ax.plot(Teffs[0:1],Rs[0:1],"ko",markersize=5)
 ax.plot([Teffs[0]],[Rs[0]],"go",markersize=10,markeredgecolor='none',label=r"$t_{\\rm ini}=$0.1 Gyr")
-ax.plot([Teffs[-1]],[Rs[-1]],"ro",markersize=10,markeredgecolor='none',label=r"$t_{\\rm end}=$%%.1f Gyr"%%star.taums)
+ax.plot([Teffs[-1]],[Rs[-1]],"ro",markersize=10,markeredgecolor='none',label=r"$t_{\\rm end}=$%%.1f Gyr"%%star.tau_ms)
 ax.plot([star.Tins],[star.Rins],"bo",markersize=10,markeredgecolor='none',label=r"$t=$%%.1f Gyr"%%star.tau)
 
 #EVOLUTIONARY TRACK
 dt=round(star.taumax/20,1)
-logts=np.log10(np.arange(0.1,star.taums,dt))
+logts=np.log10(np.arange(0.1,star.tau_ms,dt))
 Teffs=Teff_func(logts)
 Rs=10**logR_func(logts)
 ax.plot(Teffs,Rs,"ko",label='Steps of %%.1f Gyr'%%dt,markersize=3)
@@ -503,19 +508,19 @@ bbox=dict(fc='w',ec='none')
 
 #LINES
 ts=ts[ts>=0.1]
-ts=ts[ts<=star.taums]
+ts=ts[ts<=star.tau_ms]
 
 Teffs=star.Tfunc(ts)
 loggs=np.log10(star.gfunc(ts))
 ax.plot(Teffs,loggs,"k-")
 ax.plot(Teffs[0:1],loggs[0:1],"ko",markersize=5)
 ax.plot([Teffs[0]],[loggs[0]],"go",markersize=10,markeredgecolor='none',label=r"$t_{\\rm ini}=$0.1 Gyr")
-ax.plot([Teffs[-1]],[loggs[-1]],"ro",markersize=10,markeredgecolor='none',label=r"$t_{\\rm end}=$%%.1f Gyr"%%star.taums)
+ax.plot([Teffs[-1]],[loggs[-1]],"ro",markersize=10,markeredgecolor='none',label=r"$t_{\\rm end}=$%%.1f Gyr"%%star.tau_ms)
 ax.plot([star.Tins],[np.log10(star.gins)],"bo",markersize=10,markeredgecolor='none',label=r"$t=$%%.1f Gyr"%%star.tau)
 
 #EVOLUTIONARY TRACK
 dt=round(star.taumax/20,1)
-ts=np.arange(0.1,star.taums,dt)
+ts=np.arange(0.1,star.tau_ms,dt)
 Teffs=star.Tfunc(ts)
 loggs=np.log10(star.gfunc(ts))
 ax.plot(Teffs,loggs,"ko",label='Steps of %%.1f Gyr'%%dt,markersize=3)
@@ -592,11 +597,9 @@ ax_dI.set_xlabel(r"$\\tau$ (Gyr)")
 ax_I.set_ylabel(r"$\log\,I$ (kg m$^2$)")
 ax_dI.set_ylabel(r"$-|dI/dt|/I$ (s$^{-1}$)")
 
-ax_I.set_xlim((TAU_MIN,star.taums))
-ax_dI.set_xlim((TAU_MIN,star.taums))
-
-ax_I.grid()
-ax_dI.grid()
+for ax in ax_I,ax_dI:
+    ax.set_xlim((TAU_ZAMS,star.tau_ms))
+    ax.grid()
 
 #MODEL WATERMARK
 ax_I.text(0.5,0.95,"%s",horizontalalignment="center",fontsize="10",color="k",alpha=0.3,transform=ax_I.transAxes)
@@ -692,8 +695,7 @@ bbox=dict(fc='w',ec='none')
 ax.text(0.5,0.08,r"$\\tau_{\\rm disk}$=%%.3f Gyr, $\Omega_{\\rm sat}$ = %%.2f $\Omega_\odot$, $K_{\\rm W}$ = %%.2e"%%(star.taudisk,star.wsat_scaled,star.Kw),
 transform=ax.transAxes,horizontalalignment='center',bbox=bbox)
 
-ax.set_xlim((TAU_MIN,star.taums))
-ax.set_xlim((TAU_MIN,12.0))
+ax.set_xlim((TAU_ZAMS,12.0))
 
 ax.text(1.07,0.5,r"$P$ (days)",rotation=90,verticalalignment='center',horizontalalignment='center',transform=ax.transAxes)
 ax.axhline(star.wsat_scaled,linestyle='--',linewidth=2,color='r')
@@ -747,7 +749,7 @@ ax.set_xscale("log")
 ax.set_yscale("log")
 
 ax.set_title(star.title,position=(0.5,1.02),fontsize=12)
-ax.set_xlim((TAU_MIN,star.taums))
+ax.set_xlim((TAU_ZAMS,star.tau_ms))
 
 ax.set_ylabel(r"$\dot M$ ($M_\odot$/yr)")
 ax.set_xlabel(r"$\\tau$ (Gyr)")
@@ -777,7 +779,7 @@ ax.set_xscale("log")
 ax.set_yscale("log")
 
 ax.set_title(star.title,position=(0.5,1.02),fontsize=12)
-ax.set_xlim((TAU_MIN,star.taums))
+ax.set_xlim((TAU_ZAMS,star.tau_ms))
 
 ax.set_ylabel(r"$L_{\\rm XUV}/L_{\\rm XUV,\odot,present}$")
 ax.set_xlabel(r"$\\tau$ (Gyr)")
@@ -824,7 +826,7 @@ ax_B.set_ylabel("Photospheric field, $B_\star$")
 for ax in axs:
     ax.set_xscale("log")
     ax.set_yscale("log")
-    ax.set_xlim((TAU_MIN,star.taums))
+    ax.set_xlim((TAU_ZAMS,star.tau_ms))
     ax.grid(which='both')
     ax.legend(loc='best',prop=dict(size=12))
 

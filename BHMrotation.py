@@ -99,18 +99,22 @@ for star in stars:
     #==============================
     #ROTATIONAL EVOLUTION
     #==============================
+    tsmoi=star.RMoI[:,0]
     rotpars=dict(\
         star=star,
         starf=stars[NEXT(i,2)],
         binary=binary,
         taudisk=star.taudisk,
+        model='Chaboyer',
         Kw=star.Kw,
-        wsat=star.wsat_scaled
+        wsat=star.wsat,
+        tauc=50.0,
+        qdifr=False,
+        qcont=False
         )
-
-    tsmoi=star.RMoI[:,0]
     wini=2*PI/(star.Pini*DAY)
-    star.binrotevol=odeint(rotationalAcceleration,wini,tsmoi*GYR,args=(rotpars,))
+    Omega_ini=np.array([wini,wini])
+    star.binrotevol=odeint(rotationalAccelerationFull,Omega_ini,tsmoi*GYR,args=(rotpars,))
     star.binrotevol=toStack(tsmoi)|toStack(star.binrotevol)
 
     #==============================
@@ -119,7 +123,7 @@ for star in stars:
     tsmoi=star.rotevol[:,0]
     Nfine=len(tsmoi)
     star.binactivity=stack(13)
-    star.acceleration=stack(4)
+    star.acceleration=stack(5)
     """
     Activity Data:
       1:tauc
@@ -150,7 +154,9 @@ for star in stars:
         Prot=2*PI/w/DAY
              
         #ROTATIONAL ACCELERATION
-        star.acceleration+=[rotationalAcceleration(w,t*GYR,rotpars,full=True)]
+        accels=rotationalAccelerationFull(np.array([w,w]),t*GYR,rotpars,full=True)
+        star.acceleration+=[accel[0] for accel in accels]
+        #print t,[accel[0] for accel in accels]
 
         #SURFICIAL MAGNETIC CONDITIONS
         tauc,fstar,Bequi,Bphoto,BTR,Rossby,Mdot,Mdot_hot,Mdot_cold,MATR=\
@@ -164,7 +170,7 @@ for star in stars:
         star.binactivity+=[tauc,fstar,Bequi,Bphoto,BTR,Rossby,
                            Mdot,Mdot_hot,Mdot_cold,MATR,
                            RX,LX,LXUV]
-        
+    #exit(0)
     star.binactivity=toStack(tsmoi)|star.binactivity
     star.acceleration=toStack(tsmoi)|star.acceleration
     
@@ -293,7 +299,7 @@ ax.text(1.07,0.5,r"$P$ (days)",rotation=90,verticalalignment='center',horizontal
 wmin=min(min(w1),min(sw1),min(w2),min(sw2))/OMEGASUN
 wmax=max(max(w1),max(sw1),max(w2),max(sw2))/OMEGASUN
 
-ax.set_xlim((TAU_MIN,12.0))
+ax.set_xlim((TAU_ZAMS,12.0))
 ax.set_ylim((wmin,wmax))
 
 tmin,tmax=ax.get_xlim()
@@ -347,22 +353,24 @@ b+=h+dh
 ax2=fig.add_axes([l,b,w,h])
 
 scale=1E-21
-ax1.plot(raccel1[:,0],raccel1[:,1]/scale,color='b',linestyle='--',label='Star 1 - Tidal')
-ax1.plot(raccel1[:,0],raccel1[:,2]/scale,color='b',linestyle='-.',label='Star 1 - Contraction')
-ax1.plot(raccel1[:,0],raccel1[:,3]/scale,color='b',linestyle=':',label='Star 1 - Magnetized Wind')
-ax1.plot(raccel1[:,0],raccel1[:,4]/scale,color='b',linestyle='-',linewidth=5,zorder=10,alpha=0.2,label='Star 1 - Total')
+ax1.plot(raccel1[:,0],raccel1[:,1]/scale,color='b',linestyle='--',label='Star 1 - Contraction')
+ax1.plot(raccel1[:,0],raccel1[:,2]/scale,color='b',linestyle='-.',label='Star 1 - Differential Rotation')
+ax1.plot(raccel1[:,0],raccel1[:,3]/scale,color='b',linestyle=':',label='Star 1 - Mass-loss')
+ax1.plot(raccel1[:,0],raccel1[:,4]/scale,color='b',linestyle='-',label='Star 1 - Tides')
+ax1.plot(raccel1[:,0],raccel1[:,5]/scale,color='b',linestyle='-',linewidth=5,zorder=10,alpha=0.2,label='Star 1 - Total')
 
-ax2.plot(raccel2[:,0],raccel2[:,1]/scale,color='r',linestyle='--',label='Star 2 - Tidal')
-ax2.plot(raccel2[:,0],raccel2[:,2]/scale,color='r',linestyle='-.',label='Star 2 - Contraction')
-ax2.plot(raccel2[:,0],raccel2[:,3]/scale,color='r',linestyle=':',label='Star 2 - Magnetized Wind')
-ax2.plot(raccel2[:,0],raccel2[:,4]/scale,color='r',linestyle='-',linewidth=5,zorder=10,alpha=0.2,label='Star 2 - Total')
+ax2.plot(raccel2[:,0],raccel2[:,1]/scale,color='r',linestyle='--',label='Star 2 - Contraction')
+ax2.plot(raccel2[:,0],raccel2[:,2]/scale,color='r',linestyle='-.',label='Star 2 - Differential Rotation')
+ax2.plot(raccel2[:,0],raccel2[:,3]/scale,color='r',linestyle=':',label='Star 2 - Mass-loss')
+ax1.plot(raccel1[:,0],raccel1[:,4]/scale,color='r',linestyle='-',label='Star 2 - Tides')
+ax2.plot(raccel2[:,0],raccel2[:,5]/scale,color='r',linestyle='-',linewidth=5,zorder=10,alpha=0.2,label='Star 2 - Total')
 
-tmax=min(star1.taums,star2.taums)
+tmax=min(star1.tau_ms,star2.tau_ms)
 for ax in ax1,ax2:
     ax.set_xscale("log")
     #ax.set_yscale("log")
-    ax.set_xlim((TAU_MIN,tmax))
-    ax.set_ylabel("$\dot\Omega$ ($\times\,10^{-21}$)")
+    ax.set_xlim((TAU_ZAMS,tmax))
+    ax.set_ylabel(r"$\dot\Omega$ ($\\times\,10^{-21}$)")
     ax.legend(loc='best',prop=dict(size=12))
     #ax.grid(which='both')
 
@@ -421,7 +429,7 @@ ax.set_xscale("log")
 ax.set_yscale("log")
 
 ax.set_title(binary.title,position=(0.5,1.02),fontsize=12)
-ax.set_xlim((TAU_MIN,12.0))
+ax.set_xlim((TAU_ZAMS,12.0))
 
 ax.set_ylabel(r"$\dot M$ ($M_\odot$/yr)")
 ax.set_xlabel(r"$\\tau$ (Gyr)")
@@ -480,7 +488,7 @@ ax.set_xscale("log")
 ax.set_yscale("log")
 
 ax.set_title(binary.title,position=(0.5,1.02),fontsize=12)
-ax.set_xlim((TAU_MIN,12.0))
+ax.set_xlim((TAU_ZAMS,12.0))
 
 ax.set_ylabel(r"$L_{\\rm XUV}/L_{\\rm XUV,\odot,present}$")
 ax.set_xlabel(r"$\\tau$ (Gyr)")

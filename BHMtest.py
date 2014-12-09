@@ -828,10 +828,216 @@ def evolutionaryTracksKCBHZP():
     fmodel="tests/%s-model_%s.png"%(starid.replace(" ","_"),model)
     print "Saving file %s..."%fmodel
     fig.savefig(fmodel)
+ 
+def coreEnvelopeCoupling():
+
+    #INPUT PARAMETERS
+    model="PARSEC"
+    star=dict2obj(dict())
+
+    star.Pini=10.0
+    star.M=0.90
+    star.Z=0.0152
+    star.taudisk=10E-3
+    star.K1=1.0*4
+    star.tauc=60.0
+    #star.Kw=5.5E39
+    star.Kw=500E39
+    star.wsat=30.0
+    star.taucont=0.1
+    star.n=3./7
+    star.a=1.0
     
-#TestTorque()
+    track_find,track_data=findTrack(model,star.Z,star.M,verbose=False)
+    track=trackFunctions(track_data)
+    
+    ###################################################
+    #MOI EVOLUTION
+    ###################################################
+    print "MoI evolution..."
+    fig=plt.figure()
+    ax=fig.add_axes([0.1,0.1,0.8,0.8])
+    Ms=np.linspace(0.1,2.0,10.0)
+    ts=np.logspace(np.log10(1E-3),np.log10(1.0E-2),100)
+    for M in Ms:
+        MoIs=[]
+        for t in ts:
+            MoIs+=[stellarMoIt(M,t)]
+        ax.plot(ts,MoIs,label='M = %.2f'%M)
+    ax.set_xscale("log")
+    ax.set_ylabel("$r_g^2$")
+    ax.set_xlabel(r"$\tau$ (Gyr)")
+    ax.legend(loc="best")
+    fig.savefig("tests/rotevol-MoI.png")
+
+    ###################################################
+    #ROTATIONAL INTEGRATION
+    ###################################################
+    wini=2*PI/(star.Pini*DAY)
+    star.tau_ms=4.5
+    star.Rfunc=lambda t:track.R(t*GIGA)
+    star.Tfunc=lambda t:track.T(t*GIGA)
+    star.Lfunc=lambda t:track.L(t*GIGA)
+    star.FeH=0.0
+    Nfine=100
+    ts=np.logspace(np.log10(1.0E-3),np.log10(5.0),Nfine)
+
+    #&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+    #INERTIA MOMENTUM
+    #&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+    print "I evolution..."
+    Rs=[]
+    for t in ts:
+        R=track.R(t*GIGA)
+        Rs+=[R]
+    Rfunc=interp1d(ts,Rs,kind='slinear')
+    dRdts=[0]
+    for i in range(1,Nfine-1):
+        dt=(ts[i+1]-ts[i-1])/4
+        dRdts+=[(Rfunc(ts[i]+dt)-Rfunc(ts[i]-dt))/(2*dt)]
+    dRdts[0]=dRdts[1]
+    dRdts+=[dRdts[-1]]
+
+    Ievo=[]
+    star.taurad=tauRad(star.M)
+    #MoI=stellarMoI(star.M)
+    for i in range(Nfine):
+        t=ts[i]
+        R=Rs[i]
+        dRdt=dRdts[i]
+        MoI=stellarMoIt(star.M,t)
+        facI=MoI*star.M
+        I=facI*R**2
+        dIdt=2**facI*R*dRdt
+        gamma=gammaInertia(star.M,t)
+        beta_conv=1/(1+gamma)
+        beta_core=gamma*beta_conv
+        Ievo+=[[I,dIdt,beta_conv*I,beta_conv*dIdt,beta_core*I,beta_core*dIdt]]
+
+    Ievo=np.array(Ievo)
+    star.Ifunc=interp1d(ts,Ievo[:,0],kind='slinear')
+    star.dIdtfunc=interp1d(ts,Ievo[:,1],kind='slinear')
+
+    fig=plt.figure(figsize=(8,12))
+    axI=fig.add_axes([0.1,0.05,0.85,0.43])
+    axdI=fig.add_axes([0.1,0.52,0.85,0.43])
+
+    axI.plot(ts,np.log10(Ievo[:,0]*MSUN*RSUN**2),label=r'Total')
+    axI.plot(ts,np.log10(Ievo[:,2]*MSUN*RSUN**2),label=r'Convective')
+    #axI.plot(ts,np.log10(Ievo[:,4]*MSUN*RSUN**2),label=r'Core')
+
+    axdI.plot(ts,np.abs(Ievo[:,1]/Ievo[:,0]/GYR),label=r'Total')
+    axdI.plot(ts,np.abs(Ievo[:,3]/Ievo[:,2]/GYR),label=r'Convective')
+    #axdI.plot(ts,np.abs(Ievo[:,5]/Ievo[:,4]/GYR),label=r'Core')
+
+    axdI.set_yscale("log")
+
+    axI.set_ylabel("$\log I$")
+    axdI.set_ylabel("$dI/dt/I$")
+
+    axI.legend(loc="best")
+    axdI.legend(loc="best")
+    axI.set_xlabel(r"$\tau$ (Gyr)")
+    for ax in axI,axdI:
+        ax.grid(which="both")
+        ax.set_xscale("log")
+    fig.savefig("tests/rotevol-IEvol.png")
+
+    #&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+    #ROTATIONAL EVOLUTION INCLUDING DIFFERENTIAL ROTATION EFFECTS
+    #&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+    print "Rotational evolution including differential rotation effects..."
+
+    #CHABOYER, NO DIFFERENTIAL ROTATION
+    rotpars=dict(\
+        star=star,
+        starf=None,binary=None,
+        taudisk=star.taudisk,
+        model='Kawaler',
+        Kw=star.Kw,
+        wsat=star.wsat,
+        tauc=star.tauc,
+        K1=star.K1,
+        n=star.n,
+        a=star.a,
+        taucont=star.taucont,
+        qdifr=True,
+        qcont=True
+        )
+
+    """
+    t=4.57
+    wini=OMEGASUN
+    Omega_ini=np.array([wini,wini])
+    output=rotationalAccelerationFull(Omega_ini,t*GYR,rotpars,full=True,verbose=True)
+    exit(0)
+    #"""
+    #star.Pini=1.0
+    #wini=2*PI/(star.Pini*DAY)
+    #Omega_ini=np.array([wini,2*wini])
+
+    Omega_ini=np.array([wini,wini])
+    #ts=ts[ts>=0.1]
+    ws=odeint(rotationalAccelerationFull,Omega_ini,ts*GYR,args=(rotpars,))
+
+    fig=plt.figure()
+    ax=fig.add_axes([0.1,0.1,0.8,0.8])
+    ax.plot(ts,ws[:,0]/OMEGASUN,'r-')
+    ax.plot(ts,ws[:,1]/OMEGASUN,'b--')
+    ax.plot([4.57],[1.0],'o',color='k',markersize=10)
+    ax.plot(ts,1.0*(ts/TAGE)**-0.5,'k-')
+    ax.set_xscale("log")
+    ax.set_yscale("log")
+    ax.set_ylabel(r"$\Omega/\Omega_\odot$")
+    ax.set_xlabel(r"$\tau$ (Gyr)")
+    #ax.legend(loc="best")
+    ax.grid(which="both")
+    fig.savefig("tests/rotevol-OmegaEvol.png")
+
+    fig=plt.figure()
+    ax=fig.add_axes([0.1,0.1,0.8,0.8])
+    ax.plot(ts,2*PI/ws[:,0]/DAY,'r-')
+    ax.plot(ts,2*PI/ws[:,1]/DAY,'b--')
+    ax.plot([4.57],[PSUN/DAY],'o',color='k',markersize=10)
+    ax.plot(ts,PSUN/DAY*(ts/TAGE)**0.5,'k-')
+    ax.set_xscale("log")
+    ax.set_ylabel(r"$P$ (days)")
+    ax.set_xlabel(r"$\tau$ (Gyr)")
+    #ax.legend(loc="best")
+    ax.grid(which="both")
+    fig.savefig("tests/rotevol-PEvol.png")
+    exit(0)
+
+    #&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+    #ROTATIONAL EVOLUTION
+    #&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+    print "Rotational evolution..."
+
+    rotpars=dict(\
+        star=star,
+        starf=None,binary=None,
+        taudisk=0.01,
+        Kw=1.0,
+        wsat=1.0
+        )
+    ws=odeint(rotationalAcceleration,wini,ts*GYR,args=(rotpars,))
+
+    fig=plt.figure()
+    ax=fig.add_axes([0.1,0.1,0.8,0.8])
+    ax.plot(ts,ws/OMEGASUN)
+    ax.plot([4.57],[1.0],'o',color='k',markersize=10)
+    ax.set_xscale("log")
+    ax.set_yscale("log")
+    ax.set_ylabel("$\Omega/\Omega_\odot$")
+    ax.set_xlabel("$\tau$ (Gyr)")
+    #ax.legend(loc="best")
+    ax.grid(which="both")
+    fig.savefig("tests/rotevol-OmegaEvol.png")
+
+
 #MomentOfInertia()
 #evolutionaryTrack()
 #loadModel()
 #testStellarWind()
-evolutionaryTracksKCBHZP()
+#evolutionaryTracksKCBHZP()
+coreEnvelopeCoupling()

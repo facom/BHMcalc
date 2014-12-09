@@ -198,7 +198,7 @@ hz=toStack(ts)|hz
 shz=toStack(ts)|shz
 
 #CONTINUOUS HABITABLE ZONE
-tms=star1.taums
+tms=star1.tau_ms
 cond=ts>=0.1
 clout=min(hz[cond,3])
 clin=np.interp(tms,ts,hz[:,1])
