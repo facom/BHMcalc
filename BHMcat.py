@@ -24,7 +24,7 @@ Usage=\
 """
 Usage:
    python %s <cat_dir> [<recalculate>] [<sort_field>] [<sort_order>] 
-                       [<display_level>] [<filter>] [<catalogue_id>]
+                       [<display_level>] [<filter>] [<catalogue_id>] [<output>]
 
    <cat_dir>: location of the catalogue
 
@@ -40,12 +40,15 @@ Usage:
 
    <catalogue_id>: Unique ID.
 
+   <output>: kind of output (plain, html)
+
+
 """%argv[0]
 
-catdir,recalculate,sortfield,sortorder,displaylevel,catfilter,catid=\
+catdir,recalculate,sortfield,sortorder,displaylevel,catfilter,catid,output=\
     readArgs(argv,
-             ["str","int","str","int","int","str","str"],
-             [".","1","BHMCatS","0","1","binary_Pbin>0",""],
+             ["str","int","str","int","int","str","str","str"],
+             [".","1","BHMCatS","0","1","binary_Pbin>0","","html"],
              Usage=Usage)
 
 ###################################################
@@ -207,6 +210,38 @@ del(systems["Fields"],systems["FieldsType"],
     systems["PlanetFields"],systems["PlanetFieldsType"],
     systems["PlanetFieldsText"],systems["PlanetFieldsPriority"])
 
+if output=="plain":
+    results=""
+    for system in sortCatalogue(systems,sortfield,reverse=sortorder):
+        string=""
+        for planet in system["PlanetsData"]:
+            planetcat=planet["BHMCatP"]
+            for key in sfields[:-2]:
+                if key=="Planets":
+                    for pkey in pfields[6:-1]:
+                        ptipo=pfieldstyp[pkey]
+                        pvalue=planet[pkey]
+                        pprior=pfieldspri[pkey]
+                        exec("%s=%s('%s')"%(pkey,ptipo,pvalue))
+                        pvalue=adjustValue(pkey,pvalue,ptipo)
+                        string+="%s = %s\n"%(pkey,pvalue)
+                else:
+                    tipo=sfieldstyp[key]
+                    value=system[key]
+                    prior=sfieldspri[key]
+                    exec("%s=%s('%s')"%(key,tipo,value))
+                    value=adjustValue(key,value,tipo)
+                    string+="%s = %s\n"%(key,value)
+            valueADS=system["binary_ADS"]+";"+planet["planet_ADS"] 
+            string+="ADS = %s\n"%(valueADS)
+
+        exec("cond=%s"%catfilter)
+        if cond:
+            results+=string
+
+    print results
+    exit(0)
+            
 #############################################################
 #CREATING HTML TABLE
 #############################################################

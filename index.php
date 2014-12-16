@@ -249,6 +249,10 @@ if(preg_match("/Star1/",$Modes)){
 
   $star1_str_model_sel=selectFunction("star1_str_model",$MODELS,$star1_str_model,
 				      $options="class='sensitive' onchange='idSystem();'");
+
+  $star1_str_rotmodel_sel=selectFunction("star1_str_rotmodel",$ROTMODELS,$star1_str_rotmodel,
+					 $options="class='sensitive' onchange='idSystem();'");
+
 $tabs.=<<<F
   <!-- //////////////////////////////////////////////////////////// -->
   <!-- STAR 1 -->
@@ -271,7 +275,7 @@ $tabs.=<<<F
 		  <input type="text" name="star1_str_StarID" value="$star1_str_StarID" >
 		</td>
 	      </tr>
-	      <tr><td class="help" colspan=2></td></tr>
+	      <tr><td class="help" colspan=2>Apostrophes are mandatory, e.g. 'Star 1'</td></tr>
 	      <!-- ---------------------------------------- -->
 	      <tr>
 		<td class="name">Mass:</td>
@@ -282,34 +286,58 @@ $tabs.=<<<F
 	      </tr>
 	      <tr>
 		<td class="help" colspan=2>
-		  Stellar mass.  Minimum mass 0.1, maximum mass 1.5 M<sub>sun</sub>
+		  Stellar mass.  Maximum recommended mass 1.5 M<sub>sun</sub>
 		</td>
 	      </tr>
 	      <!-- ---------------------------------------- -->
 	      <tr>
-		<td class="name">Metallicity, Z:</td>
+		<td class="name">Metals content, Z:</td>
 		<td class="field">
-		  <input type="text" class="star_Z sensitive" name="star1_Z" value="$star1_Z" 
-			 onchange="$changeFeH;changeValues(['.star_Z'],this);idSystem();">
+		  <input type="text" class="sensitive" name="star1_Z" value="$star1_Z">
 		</td>
 	      </tr>
 	      <tr>
 		<td class="help" colspan=2>
-		  Stellar mass.  Minimum mass 0.1, maximum mass 1.5 M<sub>sun</sub>
+		  Fraction of mass in metals.  Z = 0.015 for the Sun.
+		  Leave 0 to scale it from Y value and [Fe/H]
+		</td>
+	      </tr>
+	      <!-- ---------------------------------------- -->
+	      <tr>
+		<td class="name">Helium content, Y:</td>
+		<td class="field">
+		  <input type="text" class="sensitive" name="star1_Y" value="$star1_Y">
+		</td>
+	      </tr>
+	      <tr>
+		<td class="help" colspan=2>
+		  Fraction of mass in Helium.  For the Sun Y = 0.276.  It never could be 0.
+		</td>
+	      </tr>
+	      <!-- ---------------------------------------- -->
+	      <tr>
+		<td class="name">Fraction of Fe, A:</td>
+		<td class="field">
+		  <input type="text" class="sensitive" name="star1_A" value="$star1_A">
+		</td>
+	      </tr>
+	      <tr>
+		<td class="help" colspan=2>
+		  Fe fraction of metals.  A = 1.0 for pure Iron.
+		  Valid range A = 0.9-1.0.  Typical, A = 0.95.
 		</td>
 	      </tr>
 	      <!-- ---------------------------------------- -->
 	      <tr>
 		<td class="name">Metallicity, [Fe/H]:</td>
 		<td class="field">
-		  <input type="text" class="star_FeH sensitive" name="star1_FeH" value="$star1_FeH" 
-			 onchange="$changeZ;changeValues(['.star_FeH'],this);idSystem();">
+		  <input type="text" class="star_FeH sensitive" name="star1_FeH" value="$star1_FeH">
 		  dex
 		</td>
 	      </tr>
 	      <tr>
 		<td class="help" colspan=2>
-		  Stellar mass.  Minimum mass 0.1, maximum mass 1.5 M<sub>sun</sub>
+		  Observed metallicity.  For the Sun [Fe/H] = 0.
 		</td>
 	      </tr>
 	      <!-- ---------------------------------------- -->
@@ -321,7 +349,7 @@ $tabs.=<<<F
 	      </tr>
 	      <tr>
 		<td class="help" colspan=2>
-		  Stellar mass.  Minimum mass 0.1, maximum mass 1.5 M<sub>sun</sub>
+		  Estimated age of the star.
 		</td>
 	      </tr>
 	      <!-- ---------------------------------------- -->
@@ -355,28 +383,54 @@ $tabs.=<<<F
 	      <!-- ====================== ROTATIONAL EVOLUTION =========================== -->
 	      <tr><td colspan=2 class="section">Rotational Evolution</td></tr>
 	      <!-- ---------------------------------------- -->
-	      <tr><td class="name">PMS period:</td><td class="field"><input type="text" name="star1_Pini" value="$star1_Pini"> days</td></tr>
-	      <tr><td class="help" colspan=2>Help.</td></tr>
-	      <!-- ---------------------------------------- -->
-	      <tr><td class="name">Saturation period:</td><td class="field"><input type="text" name="star1_wsat" value="$star1_wsat"> &Omega;<sub>Sun</sub></td></tr>
-	      <tr><td class="help" colspan=2>Help.</td></tr>
-	      <!-- ---------------------------------------- -->
-	      <tr><td class="name">Wind torque scaling:</td><td class="field"><input type="text" name="star1_Kw" value="$star1_Kw"></td></tr>
-	      <tr><td class="help" colspan=2>Help.</td></tr>
+	      <tr>
+		<td class="name">Rotation Model:</td>
+		<td class="field">$star1_str_rotmodel_sel</td>
+	      </tr>
+	      <tr>
+		<td class="help" colspan=2>
+		  Rotational Evolution model
+		</td>
+	      </tr>
 	      <!-- ---------------------------------------- -->
 	      <tr><td class="name">Disk age:</td><td class="field"><input type="text" name="star1_taudisk" value="$star1_taudisk"> Gyr</td></tr>
-	      <tr><td class="help" colspan=2>Help.</td></tr>
+	      <tr><td class="help" colspan=2>Age of the circumstellar disk.</td></tr>
+	      <!-- ---------------------------------------- -->
+	      <tr><td class="name">Initial period:</td><td class="field"><input type="text" name="star1_Pini" value="$star1_Pini"> days</td></tr>
+	      <tr><td class="help" colspan=2>Initial rotational period.</td></tr>
+	      <!-- ---------------------------------------- -->
+	      <tr><td class="name">Saturation period:</td><td class="field"><input type="text" name="star1_wsat" value="$star1_wsat"> &Omega;<sub>Sun</sub></td></tr>
+	      <tr><td class="help" colspan=2>Leave it zero to scale with convective overturn time (see Gallet & Bouvier (2013).</td></tr>
+	      <!-- ---------------------------------------- -->
+	      <tr><td class="name">AM transport timescale:</td><td class="field"><input type="text" name="star1_tauc" value="$star1_tauc"> Myr</td></tr>
+	      <tr><td class="help" colspan=2>Typical timescale for AM transport inside star.</td></tr>
+	      <!-- ---------------------------------------- -->
+	      <tr><td class="name">Wind torque scaling, K<sub>W</sub>:</td><td class="field"><input type="text" name="star1_Kw" value="$star1_Kw"></td></tr>
+	      <tr><td class="help" colspan=2>Constant in Kawaler model.</td></tr>
+	      <!-- ---------------------------------------- -->
+	      <tr><td class="name">ML/Wind torque scaling, K<sub>C</sub>:</td><td class="field"><input type="text" name="star1_Kc" value="$star1_Kc"></td></tr>
+	      <tr><td class="help" colspan=2>Constant in Chaboyer model.</td></tr>
+	      <!-- ---------------------------------------- -->
+	      <tr><td class="name">Alfven radius scaling, K<sub>1</sub>:</td><td class="field"><input type="text" name="star1_K1" value="$star1_K1"></td></tr>
+	      <tr><td class="help" colspan=2>Constant in Matt model.</td></tr>
 	      <!-- ---------------------------------------- -->
 	      <tr><td class="name">Dynamo exponent, a:</td><td class="field"><input type="text" name="star1_a" value="$star1_a"></td></tr>
-	      <tr><td class="help" colspan=2>Help.</td></tr>
+	      <tr><td class="help" colspan=2>Exponent of magnetic field scaling with rotation.  Normally a = 1.</td></tr>
 	      <!-- ---------------------------------------- -->
 	      <tr><td class="name">Field geometry exponent, n:</td><td class="field"><input type="text" name="star1_n" value="$star1_n"></td></tr>
-	      <tr><td class="help" colspan=2>Help.</td></tr>
+	      <tr><td class="help" colspan=2>Exponent of field geometry decay, n = 3/7 for dipolar field.  Normally n is taken as 1.5.</td></tr>
 
 	      <!-- ====================== OBSERVED =========================== -->
 	      <tr><td colspan=2 class="section">Observed Properties</td></tr>
+	      <div style="display:none">
+	      <!-- ---------------------------------------- -->
+	      <tr><td class="name">Mass (error):</td><td class="field"><input type="text" name="star1_Merr" value="$star1_Merr"> M<sub>Sun</sub></td></tr>
+	      <tr><td class="help" colspan=2>Help.</td></tr>
 	      <!-- ---------------------------------------- -->
 	      <tr><td class="name">Period (velocity):</td><td class="field"><input type="text" name="star1_Protv" value="$star1_Protv"> days</td></tr>
+	      <tr><td class="help" colspan=2>Help.</td></tr>
+	      <!-- ---------------------------------------- -->
+	      <tr><td class="name">Period (velocity,error):</td><td class="field"><input type="text" name="star1_Protverr" value="$star1_Protverr"> days</td></tr>
 	      <tr><td class="help" colspan=2>Help.</td></tr>
 	      <!-- ---------------------------------------- -->
 	      <tr><td class="name">Period (photometry):</td><td class="field"><input type="text" name="star1_Prot" value="$star1_Prot"> days</td></tr>
@@ -402,7 +456,6 @@ $tabs.=<<<F
 	      <!-- ---------------------------------------- -->
 	      <tr><td class="name">Surface Gravity (error):</td><td class="field"><input type="text" name="star1_loggerr" value="$star1_loggerr"> dex (cm s<sup>-2</sup>)</td></tr>
 	      <tr><td class="help" colspan=2>Help.</td></tr>
-
 	      <!-- ====================== HIDDEN =========================== -->
 	      <input type="hidden" name="star1_str_Stype" value="$star1_str_Stype">
 	      <input type="hidden" name="star1_vsini" value="$star1_vsini">
@@ -456,9 +509,14 @@ if(preg_match("/Star2/",$Modes)){
 
   $star2_str_model_sel=selectFunction("star2_str_model",$MODELS,$star2_str_model,
 				      $options="class='sensitive' onchange='idSystem();'");
+
+
+  $star2_str_rotmodel_sel=selectFunction("star2_str_rotmodel",$ROTMODELS,$star2_str_rotmodel,
+					 $options="class='sensitive' onchange='idSystem();'");
+
 $tabs.=<<<F
   <!-- //////////////////////////////////////////////////////////// -->
-  <!-- STAR 1 -->
+  <!-- STAR 2 -->
   <!-- //////////////////////////////////////////////////////////// -->
   <div class="tabbertab" id="star2" title="Star 2">
     <form id="star2_form" action="BHMrun.php">
@@ -478,7 +536,7 @@ $tabs.=<<<F
 		  <input type="text" name="star2_str_StarID" value="$star2_str_StarID" >
 		</td>
 	      </tr>
-	      <tr><td class="help" colspan=2></td></tr>
+	      <tr><td class="help" colspan=2>Apostrophes are mandatory, e.g. 'Star 1'</td></tr>
 	      <!-- ---------------------------------------- -->
 	      <tr>
 		<td class="name">Mass:</td>
@@ -489,34 +547,58 @@ $tabs.=<<<F
 	      </tr>
 	      <tr>
 		<td class="help" colspan=2>
-		  Stellar mass.  Minimum mass 0.1, maximum mass 1.5 M<sub>sun</sub>
+		  Stellar mass.  Maximum recommended mass 1.5 M<sub>sun</sub>
 		</td>
 	      </tr>
 	      <!-- ---------------------------------------- -->
 	      <tr>
-		<td class="name">Metallicity, Z:</td>
+		<td class="name">Metals content, Z:</td>
 		<td class="field">
-		  <input type="text" class="star_Z sensitive" name="star2_Z" value="$star2_Z" 
-			 onchange="$changeFeH;changeValues(['.star_Z'],this);idSystem();">
+		  <input type="text" class="sensitive" name="star2_Z" value="$star2_Z">
 		</td>
 	      </tr>
 	      <tr>
 		<td class="help" colspan=2>
-		  Stellar mass.  Minimum mass 0.1, maximum mass 1.5 M<sub>sun</sub>
+		  Fraction of mass in metals.  Z = 0.015 for the Sun.
+		  Leave 0 to scale it from Y value and [Fe/H]
+		</td>
+	      </tr>
+	      <!-- ---------------------------------------- -->
+	      <tr>
+		<td class="name">Helium content, Y:</td>
+		<td class="field">
+		  <input type="text" class="sensitive" name="star2_Y" value="$star2_Y">
+		</td>
+	      </tr>
+	      <tr>
+		<td class="help" colspan=2>
+		  Fraction of mass in Helium.  For the Sun Y = 0.276.  It never could be 0.
+		</td>
+	      </tr>
+	      <!-- ---------------------------------------- -->
+	      <tr>
+		<td class="name">Fraction of Fe, A:</td>
+		<td class="field">
+		  <input type="text" class="sensitive" name="star2_A" value="$star2_A">
+		</td>
+	      </tr>
+	      <tr>
+		<td class="help" colspan=2>
+		  Fe fraction of metals.  A = 1.0 for pure Iron.
+		  Valid range A = 0.9-1.0.  Typical, A = 0.95.
 		</td>
 	      </tr>
 	      <!-- ---------------------------------------- -->
 	      <tr>
 		<td class="name">Metallicity, [Fe/H]:</td>
 		<td class="field">
-		  <input type="text" class="star_FeH sensitive" name="star2_FeH" value="$star2_FeH" 
-			 onchange="$changeZ;changeValues(['.star_FeH'],this);idSystem();">
+		  <input type="text" class="star_FeH sensitive" name="star2_FeH" value="$star2_FeH">
 		  dex
 		</td>
 	      </tr>
 	      <tr>
 		<td class="help" colspan=2>
-		  Stellar mass.  Minimum mass 0.1, maximum mass 1.5 M<sub>sun</sub>
+		  Observed metallicity.  For the Sun [Fe/H] = 0.
 		</td>
 	      </tr>
 	      <!-- ---------------------------------------- -->
@@ -528,7 +610,7 @@ $tabs.=<<<F
 	      </tr>
 	      <tr>
 		<td class="help" colspan=2>
-		  Stellar mass.  Minimum mass 0.1, maximum mass 1.5 M<sub>sun</sub>
+		  Estimated age of the star.
 		</td>
 	      </tr>
 	      <!-- ---------------------------------------- -->
@@ -562,28 +644,54 @@ $tabs.=<<<F
 	      <!-- ====================== ROTATIONAL EVOLUTION =========================== -->
 	      <tr><td colspan=2 class="section">Rotational Evolution</td></tr>
 	      <!-- ---------------------------------------- -->
-	      <tr><td class="name">PMS period:</td><td class="field"><input type="text" name="star2_Pini" value="$star2_Pini"> days</td></tr>
-	      <tr><td class="help" colspan=2>Help.</td></tr>
-	      <!-- ---------------------------------------- -->
-	      <tr><td class="name">Saturation period:</td><td class="field"><input type="text" name="star2_wsat" value="$star2_wsat"> &Omega;<sub>Sun</sub></td></tr>
-	      <tr><td class="help" colspan=2>Help.</td></tr>
-	      <!-- ---------------------------------------- -->
-	      <tr><td class="name">Wind torque scaling:</td><td class="field"><input type="text" name="star2_Kw" value="$star2_Kw"></td></tr>
-	      <tr><td class="help" colspan=2>Help.</td></tr>
+	      <tr>
+		<td class="name">Rotation Model:</td>
+		<td class="field">$star2_str_rotmodel_sel</td>
+	      </tr>
+	      <tr>
+		<td class="help" colspan=2>
+		  Rotational Evolution model
+		</td>
+	      </tr>
 	      <!-- ---------------------------------------- -->
 	      <tr><td class="name">Disk age:</td><td class="field"><input type="text" name="star2_taudisk" value="$star2_taudisk"> Gyr</td></tr>
-	      <tr><td class="help" colspan=2>Help.</td></tr>
+	      <tr><td class="help" colspan=2>Age of the circumstellar disk.</td></tr>
+	      <!-- ---------------------------------------- -->
+	      <tr><td class="name">Initial period:</td><td class="field"><input type="text" name="star2_Pini" value="$star2_Pini"> days</td></tr>
+	      <tr><td class="help" colspan=2>Initial rotational period.</td></tr>
+	      <!-- ---------------------------------------- -->
+	      <tr><td class="name">Saturation period:</td><td class="field"><input type="text" name="star2_wsat" value="$star2_wsat"> &Omega;<sub>Sun</sub></td></tr>
+	      <tr><td class="help" colspan=2>Leave it zero to scale with convective overturn time (see Gallet & Bouvier (2013).</td></tr>
+	      <!-- ---------------------------------------- -->
+	      <tr><td class="name">AM transport timescale:</td><td class="field"><input type="text" name="star2_tauc" value="$star2_tauc"> Myr</td></tr>
+	      <tr><td class="help" colspan=2>Typical timescale for AM transport inside star.</td></tr>
+	      <!-- ---------------------------------------- -->
+	      <tr><td class="name">Wind torque scaling, K<sub>W</sub>:</td><td class="field"><input type="text" name="star2_Kw" value="$star2_Kw"></td></tr>
+	      <tr><td class="help" colspan=2>Constant in Chaboyer model.</td></tr>
+	      <!-- ---------------------------------------- -->
+	      <tr><td class="name">ML/Wind torque scaling, K<sub>C</sub>:</td><td class="field"><input type="text" name="star2_Kc" value="$star2_Kc"></td></tr>
+	      <tr><td class="help" colspan=2>Constant in Chaboyer model.</td></tr>
+	      <!-- ---------------------------------------- -->
+	      <tr><td class="name">Alfven radius scaling, K<sub>1</sub>:</td><td class="field"><input type="text" name="star2_K1" value="$star2_K1"></td></tr>
+	      <tr><td class="help" colspan=2>Constant in Matt model.</td></tr>
 	      <!-- ---------------------------------------- -->
 	      <tr><td class="name">Dynamo exponent, a:</td><td class="field"><input type="text" name="star2_a" value="$star2_a"></td></tr>
-	      <tr><td class="help" colspan=2>Help.</td></tr>
+	      <tr><td class="help" colspan=2>Exponent of magnetic field scaling with rotation.  Normally a = 1.</td></tr>
 	      <!-- ---------------------------------------- -->
 	      <tr><td class="name">Field geometry exponent, n:</td><td class="field"><input type="text" name="star2_n" value="$star2_n"></td></tr>
-	      <tr><td class="help" colspan=2>Help.</td></tr>
+	      <tr><td class="help" colspan=2>Exponent of field geometry decay, n = 3/7 for dipolar field.  Normally n is taken as 1.5.</td></tr>
 
 	      <!-- ====================== OBSERVED =========================== -->
 	      <tr><td colspan=2 class="section">Observed Properties</td></tr>
+	      <div style="display:none">
+	      <!-- ---------------------------------------- -->
+	      <tr><td class="name">Mass (error):</td><td class="field"><input type="text" name="star2_Merr" value="$star2_Merr"> M<sub>Sun</sub></td></tr>
+	      <tr><td class="help" colspan=2>Help.</td></tr>
 	      <!-- ---------------------------------------- -->
 	      <tr><td class="name">Period (velocity):</td><td class="field"><input type="text" name="star2_Protv" value="$star2_Protv"> days</td></tr>
+	      <tr><td class="help" colspan=2>Help.</td></tr>
+	      <!-- ---------------------------------------- -->
+	      <tr><td class="name">Period (velocity,error):</td><td class="field"><input type="text" name="star2_Protverr" value="$star2_Protverr"> days</td></tr>
 	      <tr><td class="help" colspan=2>Help.</td></tr>
 	      <!-- ---------------------------------------- -->
 	      <tr><td class="name">Period (photometry):</td><td class="field"><input type="text" name="star2_Prot" value="$star2_Prot"> days</td></tr>
@@ -609,7 +717,6 @@ $tabs.=<<<F
 	      <!-- ---------------------------------------- -->
 	      <tr><td class="name">Surface Gravity (error):</td><td class="field"><input type="text" name="star2_loggerr" value="$star2_loggerr"> dex (cm s<sup>-2</sup>)</td></tr>
 	      <tr><td class="help" colspan=2>Help.</td></tr>
-
 	      <!-- ====================== HIDDEN =========================== -->
 	      <input type="hidden" name="star2_str_Stype" value="$star2_str_Stype">
 	      <input type="hidden" name="star2_vsini" value="$star2_vsini">
@@ -628,7 +735,6 @@ $tabs.=<<<F
 	</div>
 	<div id="star2_results_panel" class="results">
 	  <div><center class="title">Results</center><hr width="90%"/></div>
-	  <div class="download" id="star2_download"></div>
 
 	  <div class="stdout" id="star2_stdout">
 	    <a href="tmp/BHMrun-stdout-$SESSID-star" target="_blank">
@@ -639,6 +745,7 @@ $tabs.=<<<F
 	    </a>
 	  </div>
 
+	  <div class="download" id="star2_download"></div>
 	  <div id="star2_results_status_loader" style="background-color:white;">
 	    <div id="star2_results_status" style="background-color:white;">
 	      <iframe class="iframe" id="star2_results_frame" src="web/blank.html" 
@@ -1158,14 +1265,28 @@ $tabs.=<<<F
 	    <table border=0px>
 	      <tr>
 		<!-- ---------------------------------------- -->
-		<td class="name">k:</td>
+		<td class="name">&tau;<sub>int</sub>:</td>
 		<td class="field">
-		  <input type="text" name="rotation_k" value="$rotation_k">
-		</td>
+		  <input type="text" name="rotation_tauint" value="$rotation_tauint"> Myr
+		</td> 
 	      </tr>
 	      <tr>
 		<td class="help" colspan=2>
-		  Exponent.
+		  Common time-scale of interaction among binaries or
+		  with a common accretion disk.
+		</td>
+	      </tr>
+		<!-- ---------------------------------------- -->
+		<td class="name">f<sub>diss</sub>:</td>
+		<td class="field">
+		  <input type="text" name="rotation_fdiss" value="$rotation_fdiss">
+		</td> 
+	      </tr>
+	      <tr>
+		<td class="help" colspan=2>
+		  Fraction of convective turnover time required for
+		  tidal dissipation.  Usually
+		  f<sub>diss</sub>=1.0-3.5.
 		</td>
 	      </tr>
 	      <!-- ---------------------------------------- -->

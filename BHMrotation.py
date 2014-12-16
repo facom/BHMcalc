@@ -99,22 +99,18 @@ for star in stars:
     #==============================
     #ROTATIONAL EVOLUTION
     #==============================
-    tsmoi=star.RMoI[:,0]
+    tsmoi=10**star.Ievo[:,0]/GIGA
+    star.taudisk=rot.tauint
     rotpars=dict(\
         star=star,
         starf=stars[NEXT(i,2)],
         binary=binary,
-        taudisk=star.taudisk,
-        model='Chaboyer',
-        Kw=star.Kw,
-        wsat=star.wsat,
-        tauc=50.0,
-        qdifr=False,
-        qcont=False
+        taucont=TAU_CONT,
+        fdiss=rot.fdiss
         )
     wini=2*PI/(star.Pini*DAY)
     Omega_ini=np.array([wini,wini])
-    star.binrotevol=odeint(rotationalAccelerationFull,Omega_ini,tsmoi*GYR,args=(rotpars,))
+    star.binrotevol=odeint(rotationalTorques,Omega_ini,tsmoi*GYR,args=(rotpars,))
     star.binrotevol=toStack(tsmoi)|toStack(star.binrotevol)
 
     #==============================
@@ -154,7 +150,7 @@ for star in stars:
         Prot=2*PI/w/DAY
              
         #ROTATIONAL ACCELERATION
-        accels=rotationalAccelerationFull(np.array([w,w]),t*GYR,rotpars,full=True)
+        accels=rotationalTorques(np.array([w,w]),t*GYR,rotpars,full=True)
         star.acceleration+=[accel[0] for accel in accels]
         #print t,[accel[0] for accel in accels]
 
@@ -522,7 +518,8 @@ fh.write("""\
 </center>
 <h3>Input Parameters</h3>
 <table>
-  <tr><td>k:</td><td>%.3f</td></tr>
+  <tr><td>&tau;<sub>int</sub> (Myr):</td><td>%.3f</td></tr>
+  <tr><td>f<sub>diss</sub>:</td><td>%.3f</td></tr>
 </table>
 <h3>Rotation Evolution</h3>
 <table>
@@ -574,7 +571,7 @@ fh.write("""\
   </td></tr>
 </table>
 """%(WEB_DIR,rot_webdir,rot_webdir,rot_webdir,WEB_DIR,rot_webdir,
-     rot.k,
+     rot.tauint,rot.fdiss,
      rot_webdir,rot_webdir,rot_webdir,WEB_DIR,rot_webdir,
      rot_webdir,rot_webdir,rot_webdir,WEB_DIR,rot_webdir,
      rot_webdir,rot_webdir,rot_webdir,WEB_DIR,rot_webdir,

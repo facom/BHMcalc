@@ -397,7 +397,6 @@ div.decoration{
  width:30%;
  padding:10px;
 }
-
 </style>
 CSS;
 ?>

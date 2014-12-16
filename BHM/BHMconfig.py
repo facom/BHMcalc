@@ -34,8 +34,9 @@ exec("VERBOSE=0");
 exec("IN_CRITS=('recent venus','runaway greenhouse','moist greenhouse')");
 exec("OUT_CRITS=('maximum greenhouse','early mars')");
 exec("TAU_MIN=0.001");
-exec("TAU_ZAMS=0.1");
+exec("TAU_ZAMS=0.001");
 exec("TAU_MAX=12.5");
+exec("TAU_CONT=20.0");
 exec("NTIMES=100");
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -45,7 +46,7 @@ exec("OBJECT_HASHABLES=dict()")
 exec("OBJECT_HASHABLES['star']=dict(M='%.4f',Z='%.4f',FeH='%.4f',tau='%.4f',str_model='%s')")
 exec("OBJECT_HASHABLES['binary']=dict(Pbin='%.4f',abin='%.4f',ebin='%.4f',str_sys='%s')")
 exec("OBJECT_HASHABLES['planet']=dict(M='%.4f',fHHe='%.4f',CMF='%.4f',tau='%.4f',aorb='%.4f',eorb='%.4f',Porb='%.4f',worb='%.4f',Prot='%.4f')")
-exec("OBJECT_HASHABLES['rotation']=dict(k='%.4f',str_sys='%s')")
+exec("OBJECT_HASHABLES['rotation']=dict(tauint='%.4f',str_sys='%s')")
 exec("OBJECT_HASHABLES['hz']=dict(str_incrit_wd='%s',str_incrit_nr='%s',str_outcrit_wd='%s',str_outcrit_nr='%s',str_sys='%s')")
 exec("OBJECT_HASHABLES['interaction']=dict(tauini='%.4f',tauref='%.4f',nM='%.2f',nP='%.2f',str_refobj='%s',str_sys='%s')")
 

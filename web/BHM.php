@@ -70,6 +70,10 @@ $MODELS=array("'BCA98'"=>"BCA98",
 	      "'BASTI'"=>"BASTI",
 	      "'YZVAR'"=>"YZVAR");
 
+$ROTMODELS=array("'Chaboyer'"=>"Chaboyer (2011)",
+		 "'Kawaler'"=>"Kawaler (1988)",
+		 "'Matt'"=>"Matt (2012)");
+
 $HZINMODELS=array("'recent venus'"=>"Recent Venus",
 		  "'runaway greenhouse'"=>"Runaway Greenhouse",
 		  "'moist greenhouse'"=>"Moist Greenhouse");

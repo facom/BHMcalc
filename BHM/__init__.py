@@ -69,6 +69,7 @@ GIGA=1.0E9
 KILO=1.0E3
 MICRO=1.0E-6
 NANO=1E-9
+MEGA=1E6
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 #EARTH PROPERTIES
@@ -180,6 +181,7 @@ PSUN=25.05*DAY
 OMEGASUN=2*np.pi/PSUN
 #SOLAR METALLICITY
 ZSUN=0.0152
+YSUN=0.275556
 #SOLAR LXUV
 LXSUN=10**27.35 #ergs s^-1 Mamajek 2011
 RXSUN=LXSUN/1E7/LSUN
@@ -393,19 +395,19 @@ def logEntry(str):
     FLOG.write("Log:"+str+"\n")
 
 def array2str(array):
-    array=np.array(array)
-    n=array.shape[0]
-    try:m=array.shape[1]
+    array_s=np.array(array)
+    n=array_s.shape[0]
+    try:m=array_s.shape[1]
     except:m=0
     string="array(["
     for i in xrange(n):
         if m>0:
             string+="\\\n["
             for j in xrange(m):
-                string+="%.17e,"%array[i,j]
+                string+="%.17e,"%array_s[i,j]
             string=string.strip(",")+"],\\\n"
         else:
-            string+="%.17e,"%array[i]
+            string+="%.17e,"%array_s[i]
     string=string.strip(",")+"])"
     return string
 
@@ -498,6 +500,14 @@ def minmaxArrays(arrays):
         amin=min(min(a),amin)
         amax=max(max(a),amax)
     return amin,amax
+
+def tableValue(value,fmt,cond,default):
+    exec("incond=value%s"%cond)
+    if incond:
+        exec("valuestr='%s'%%value"%fmt)
+    else:
+        valuestr=default
+    return valuestr
 
 #GET WORKING DIRECTORY
 PWD=System("pwd",out=True)

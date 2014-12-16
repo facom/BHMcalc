@@ -68,8 +68,8 @@ ROTAGE_STARS={r"Sun":dict(FeH=0.0,M=1.0,tau=4.56,Prot=25.4,up=5),
 #MODEL PARAMETERS
 ###################################################
 RT=2.0 #RSUN, DISTANCE AT WHICH SOLAR WIND GETS ITS TERMINAL VELOCITY
-MMIN_CONV=0.4 #Minimum stellar mass with radiative core
-MMAX_CONV=1.1 #Maximum stellar mass with radiative core
+MMIN_CONV=0.3 #Minimum stellar mass with radiative core
+MMAX_CONV=1.4 #Maximum stellar mass with radiative core
 
 ###################################################
 #ROUTINES
@@ -427,9 +427,19 @@ def evoInterpFunctions(star):
     star.__dict__['Tfunc']=lambda t:funcs[1](np.log10(t))
     star.__dict__['Rfunc']=lambda t:10**funcs[2](np.log10(t))
     star.__dict__['Lfunc']=lambda t:10**funcs[3](np.log10(t))
-    rmoi=star.RMoI
-    star.__dict__['Ifunc']=interp1d(rmoi[:,0],rmoi[:,3],kind='slinear')
-    star.__dict__['dIdtfunc']=interp1d(rmoi[:,0],rmoi[:,4],kind='slinear')
+
+    logtmoi=star.Ievo[:,0]
+    star.__dict__['logIconfunc']=interp1d(logtmoi,star.Ievo[:,1],kind='slinear')
+    star.__dict__['Iradfunc']=interp1d(logtmoi,star.Ievo[:,2],kind='slinear')
+    star.__dict__['logItotfunc']=interp1d(logtmoi,star.Ievo[:,3],kind='slinear')
+    star.__dict__['Rradfunc']=interp1d(logtmoi,star.Ievo[:,4],kind='slinear')
+    star.__dict__['Mradfunc']=interp1d(logtmoi,star.Ievo[:,5],kind='slinear')
+    star.__dict__['dlogIcondtfunc']=interp1d(logtmoi,star.Ievo[:,6],kind='slinear')
+    star.__dict__['dlogIcomdtfunc']=interp1d(logtmoi,star.Ievo[:,7],kind='slinear')
+    star.__dict__['dlogIraddtfunc']=interp1d(logtmoi,star.Ievo[:,8],kind='slinear')
+    star.__dict__['dlogIramdtfunc']=interp1d(logtmoi,star.Ievo[:,9],kind='slinear')
+    star.__dict__['dMraddtfunc']=interp1d(logtmoi,star.Ievo[:,10],kind='slinear')
+    star.__dict__['ka2func']=interp1d(logtmoi,star.Ievo[:,11],kind='slinear')
 
 ###################################################
 #TEST
@@ -781,7 +791,7 @@ def maxPeriod(M,R):
     Pmax=2*PI/Wmax
     return Pmax/DAY
 
-def tidalAcceleration(Mtarg,Rtarg,Ltarg,MoItarg,
+def tidalAcceleration(Mtarg,Rtarg,Ltarg,k2,ka2,fdiss,
                       Mfield,abin,e,n,Omega,
                       verbose=False):
     """
@@ -789,6 +799,18 @@ def tidalAcceleration(Mtarg,Rtarg,Ltarg,MoItarg,
     to body Mfield when body is rotating with angular velocity Omega
     in an orbit with semimajor axis abin (AU), eccentricity e and mean
     angular velocity n (same units as Omega)
+
+    Inputs:
+      Mtarg: Mass of target
+      Rtarg: Radius of target
+      Ltarg: Luminosity of target
+      k2: Gyration radius of target object
+      ka2: Apsidal constant (k_2) for target object
+      fdiss: Fraction of convective time taken to dissipate tide
+
+      Mfield: Mass of rising tides star
+      abin,e,n: Orbital parameters of rising tide object
+      Omega: Instantaneous rotational rate of target object
     
     Returns angular velocity 
     """
@@ -806,8 +828,10 @@ def tidalAcceleration(Mtarg,Rtarg,Ltarg,MoItarg,
     #Maximum rotational rate
     Omega_min=n*f2/((1-e**2)**1.5*f5)
 
-    #Zahn (2008) DISSIPATION TIME
-    tdiss=3.48*((Mtarg*MSUN*(Rtarg*RSUN)**2)/(Ltarg*LSUN))**(1./3)
+    #Zahn (2008) DISSIPATION TIME USE: fdiss=3.48
+    #Claret (2011), A&A 526 (A157) USE: fdiss=1.00
+    tconv=((Mtarg*MSUN*(Rtarg*RSUN)**2)/(Ltarg*LSUN))**(1./3)
+    tdiss=fdiss*tconv
     kdiss=1/tdiss
 
     if verbose:print "tdiss:",tdiss
@@ -815,11 +839,11 @@ def tidalAcceleration(Mtarg,Rtarg,Ltarg,MoItarg,
     if verbose:print "e:",e
 
     #Radius of gyration
-    rg2=MoItarg**2
-    if verbose:print "Radius of Gyration:",rg2
+    if verbose:print "Radius of Gyration:",k2
 
     #Angular acceleration
-    angacc=kdiss/rg2*(Mfield/Mtarg)**2*((Rtarg*RSUN)/(abin*AU))**6*(n/(1-e**2)**6)*(f2-(1-e**2)**1.5*f5*Omega/n)
+    angacc=3*ka2*kdiss/k2*(Mfield/Mtarg)**2*((Rtarg*RSUN)/(abin*AU))**6*(n/(1-e**2)**6)*(f2-(1-e**2)**1.5*f5*Omega/n)
+
     if verbose:print "Factors:",Omega/n,f2/((1-e**2)**1.5*f5)
     if verbose:print "Acc:",angacc
 
@@ -1263,6 +1287,7 @@ def findTrack(model,Z,M,verbose=False):
     Mdirs=listDirectory(Zdir,"M_*")
     Mvals=np.array([])
     for Mdir in Mdirs:
+        #if verbose:PRINTOUT("Comparing mass with track %s"%Mdir)
         matches=re.search("/M_(.+)\.dat",Mdir)
         Mval=float(matches.group(1))
         Mvals=np.append([Mval],Mvals)
@@ -1393,6 +1418,16 @@ def trackArrays(track):
     tracka["L"]=L
     return dict2obj(tracka)
 
+def trackArraysDynamic(track):
+    tracka=dict()
+    for key in track.keys():
+        if '_fun' in key: continue
+        matches=re.search("q(.+)",key)
+        var=matches.group(1)
+        exec("%s=track['%s_fun'](track['%s'])"%(var,key,key))
+        exec("tracka['%s']=%s"%(var,var))
+    return dict2obj(tracka)
+
 def trackFunctions(track):
     trackfunc=dict()
     ts=track["qt_fun"](track["qt"])
@@ -1404,6 +1439,18 @@ def trackFunctions(track):
     trackfunc["T"]=interp1d(ts,T,kind='slinear')
     trackfunc["R"]=interp1d(ts,R,kind='slinear')
     trackfunc["L"]=interp1d(ts,L,kind='slinear')
+    return dict2obj(trackfunc)
+
+def trackFunctionsDynamic(track):
+    trackfunc=dict()
+    t=track["qt_fun"](track["qt"])
+    if t[0]==0:t[0]=1E-10
+    for key in track.keys():
+        if '_fun' in key or key=='qt': continue
+        matches=re.search("q(.+)",key)
+        var=matches.group(1)
+        exec("%s=track['%s_fun'](track['%s'])"%(var,key,key))
+        exec("trackfunc['%s']=interp1d(np.log10(t),%s,kind='slinear')"%(var,var))
     return dict2obj(trackfunc)
 
 def stellarWind(M,R,Mdot,r,vtype="Terminal"):
@@ -1687,18 +1734,36 @@ def rotationalAccelerationFull(Omega,t,params,full=False,verbose=False):
     ###################################################
     if verbose:print "*"*80
     if verbose:print "Calculating rotational acceleration at t = %e yr"%t
+    logt=np.log10(t/GYR*GIGA)
     t=t/GYR
     if verbose:print "Calculating rotational acceleration at t = %e Gyr"%t
+    if verbose:print "Calculating rotational acceleration at log(t) = %f"%logt
 
     ###################################################
     #COMPUTE BASIC STELLAR PROPS.
     ###################################################
-    if t>star.tau_ms:t=star.tau_ms
+    if t>star.tmoi_max:
+        t=star.tmoi_max
+        logt=np.log10(t*GIGA)
 
     M=star.M
     R=star.Rfunc(t)
     L=star.Lfunc(t)
-    if verbose:print "Stellar basic properties: M,R,L =",M,R,L
+    
+    logtmax=np.log10(tminMoI(M))+1
+    logteff=min(logt,logtmax)
+    Iconv=10**star.logIconvfunc(logteff)/1E7
+    Irad=10**star.logIradfunc(logteff)/1E7
+    Itot=10**star.logItotfunc(logteff)/1E7
+    dIconvdt=star.dIconvdtfunc(logteff)
+    dIraddt=star.dIraddtfunc(logteff)
+
+    if dIraddt==0:qcore=0
+    else:qcore=1
+
+    if verbose:
+        print "Stellar basic properties: M,R,L =",M,R,L
+        print "Moments of Inertia (conv,rad,tot): %e,%e,%e = %e"%(Iconv,Irad,Itot,Iconv+Irad)
 
     ###################################################
     #EXTRACT SEPARATE OMEGA COMPONENTS
@@ -1715,22 +1780,6 @@ def rotationalAccelerationFull(Omega,t,params,full=False,verbose=False):
         print "Delta Omega = %e"%Delta_Omega
 
     ###################################################
-    #CALCULATE COMPONENT OF INERTIA MOMENTS
-    ###################################################
-    I=star.Ifunc(t) #TOTAL INERTIA MOMENT
-    gamma=gammaInertia(star.M,t)
-    beta_conv=1/(1+gamma)
-    beta_core=gamma*beta_conv
-    I_conv=beta_conv*I
-    I_core=beta_core*I
-
-    if verbose:
-        facI=MSUN*RSUN**2
-        print "gamma = %e"%gamma
-        print "Beta: conv = %f, core = %f"%(beta_conv,beta_core)
-        print "Itot = %e, Iconv = %e, Icore = %e"%(I*facI,I_conv*facI,I_core*facI)
-
-    ###################################################
     #PREPARE ACCELERATION VECTOR
     ###################################################
     dOdt_cont=np.array([0.0,0.0])
@@ -1738,7 +1787,7 @@ def rotationalAccelerationFull(Omega,t,params,full=False,verbose=False):
     dOdt_mloss=np.array([0.0,0.0])
     dOdt_tide=np.array([0.0,0.0])
     dOdt_tot=np.array([0.0,0.0])
-
+    
     ###################################################
     #COMPUTE DISK CONSTRAINED ACCELERATIONS
     ###################################################
@@ -1747,9 +1796,13 @@ def rotationalAccelerationFull(Omega,t,params,full=False,verbose=False):
         #CONTRACTION 
         #&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
         if qcont:
-            if t<taucont:
-                dOdt_cont=-Omega*star.dIdtfunc(t)/I/GYR
-                if I_core==0:dOdt_cont[1]=0.0
+            if t<=taucont:
+                dOdt_cont[0]=-Omega_conv*dIconvdt
+                if t<=0.1:
+                    dOdt_cont[1]=dOdt_cont[0]
+                else:
+                    dOdt_cont[1]=-Omega_core*dIraddt
+                #print logt,Omega_conv,dOdt_cont
             
         #&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
         #MASS-LOSS
@@ -1790,11 +1843,11 @@ def rotationalAccelerationFull(Omega,t,params,full=False,verbose=False):
             exp_Omega=(1+4*a*n/3.)
             exp_R=2-n
             exp_M=-n/3
-            dJdtw=-Kw*Mdot**exp_Mdot*Omega_conv**exp_Omega*R**exp_R*M**exp_M
+            dJdtw=-Kc*Mdot**exp_Mdot*Omega_conv**exp_Omega*R**exp_R*M**exp_M
         elif model=='Chaboyer':
             dJdtw=-Kw*Omega_conv*min(Omega_conv,wsat*OMEGASUN)**2*R**0.5/M**0.5
             
-        dOdt_mloss[0]=dJdtw/(I_conv*MSUN*RSUN**2)
+        dOdt_mloss[0]=dJdtw/Iconv
 
         if verbose:
             print "Stellar wind torque: dJdt_W = %e"%(dJdtw*1E3/(1E-2)**2)
@@ -1802,8 +1855,17 @@ def rotationalAccelerationFull(Omega,t,params,full=False,verbose=False):
         #&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
         #DIFFERENTIAL ROTATION
         #&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
-        if qdifr:
-            dOdt_difr=np.array([beta_conv,-beta_core])*Delta_Omega/(tauc*MYR)
+        if qdifr and qcore:
+            #COUPLING RATE
+            tc=tauc
+
+            #ANGULAR MOMENTUM TRANSFERE
+            deltaJ=Iconv*Irad/Itot*Delta_Omega
+            #print "t,DJ/Iconv, DJ/Irad = ",t,deltaJ/Iconv,deltaJ/Irad
+            
+            if tc>0:
+                dOdt_difr[0]=deltaJ/Iconv/(tc*MYR)
+                dOdt_difr[1]=-deltaJ/Irad/(tc*MYR)
 
     ###################################################
     #COMPUTE DISK CONSTRAINED ACCELERATIONS
@@ -1818,11 +1880,432 @@ def rotationalAccelerationFull(Omega,t,params,full=False,verbose=False):
                                            verbose=False)
 
     #========================================
+    #IF NO CORE MAKE THEM EQUAL
+    #========================================
+    if not qcore:
+        dOdt_cont[1]=dOdt_cont[0]
+        dOdt_mloss[1]=dOdt_mloss[0]
+
+    #========================================
     #TOTAL ACCELERATION
     #========================================
     dOdt_tot=dOdt_cont+dOdt_difr+dOdt_mloss+dOdt_tide
 
     if verbose:
+        print "t = %.2f Gyr, log(t) = %.2f"%(t,logt)
+        print "dOdt_cont = ",dOdt_cont
+        print "dOdt_mloss = ",dOdt_mloss
+        print "dOdt_difr = ",dOdt_difr
+        print "dOdt_tide = ",dOdt_tide
+        print "="*50
+        print "dOdt_tot = ",dOdt_tot
+        #raw_input()
+
+    if full:
+        return dOdt_cont,dOdt_difr,dOdt_mloss,dOdt_tide,dOdt_tot
+    else:
+        return dOdt_tot
+
+def tminMoI(M):
+    """
+    Time when moment of inertia rach a minimum.  Based on the models
+    of Baraffe et al.
+    """
+    if M<MMIN_CONV or M>MMAX_CONV:
+        logtMyr=10.0
+    else:
+        #logtMyr=-1.18065*M+8.72188 #: First attempt
+        logtMyr=-1.238333*M+8.78733 #: Baraffe
+    return 10**logtMyr
+
+def tradFormation(M):
+    """
+    Time of radiative core formation.
+    """
+
+    if M<MMIN_CONV or M>MMAX_CONV:
+        logtMyr=10.0
+    else:
+        logtMyr=-1.16949*M+7.35288136
+    return 10**logtMyr
+
+def interpolMoI(M,verbose=False):
+
+    #Mvec=np.array([0.4,0.6,0.8,1.0])
+    #dirmoi="BHM/data/Stars/MomentsOfInertia"
+    dirmoi="BHM/data/Stars/MomentsOfInertia/Baraffe2014"
+    Mvec=np.arange(0.2,1.3,0.1)
+    #Mvec=np.arange(0.2,1.3,0.2)
+    
+    #########################################
+    #BRACKET MASS
+    #########################################
+    if M<0.3:
+        Mc=0.2
+        if verbose:print "No interpolation required.  Using M = %.2f"%Mc
+        MoIc=np.loadtxt(dirmoi+"/MoI-M_%.2f.dat"%Mc)
+        facMoI=stellarMoI(M)/stellarMoI(Mc)
+        MoIc[:,8]=MoIc[:,8]*facMoI
+        MoIc[:,9]=MoIc[:,9]*facMoI
+        MoIc[:,11]=MoIc[:,11]*facMoI
+        MoIc[:,12]=MoIc[:,12]*facMoI
+        return MoIc
+
+    Ml,Mc,Mu,match=bracketValue(M,Mvec)
+    if verbose:
+        print "Mass has been bracketed: (%.2f, %.2f, %.2f), match = %.2e"%(Ml,Mc,Mu,match)
+
+    if abs(match)<1E-5 or (Ml==Mc and Mc==Mu and match>0):
+        if verbose:print "Central value.  No interpolation required.  Using Mc = %.2f"%Mc
+        MoIc=np.loadtxt(dirmoi+"/MoI-M_%.2f.dat"%Mc)
+        return MoIc
+
+    if match>0:
+        Ml=Mc
+    elif match<0:
+        Mu=Mc
+        
+    #########################################
+    #TIMES AT MINIMUM
+    #########################################
+    print "Final bracketing: (%.2f, %.2f)"%(Ml,Mu)
+
+    tminl=np.log10(tminMoI(Ml))
+    tminu=np.log10(tminMoI(Mu))
+    tminm=np.log10(tminMoI(M))
+    if verbose:
+        print "Minumum times: (%lf,%lf)"%(tminl,tminu)
+
+    #########################################
+    #READ DATA
+    #########################################
+    MoIl=np.loadtxt(dirmoi+"/MoI-M_%.2f.dat"%Ml)
+    tl,MoIl_funcs=interpMatrix(MoIl)
+    MoIu=np.loadtxt(dirmoi+"/MoI-M_%.2f.dat"%Mu)
+    tu,MoIu_funcs=interpMatrix(MoIu)
+
+    #########################################
+    #INTERPOLATION
+    #########################################
+    tls=tl/tminl
+    tus=tu/tminu
+
+    tmins=max(tls[0],tus[0])
+    tmaxs=min(tls[-1],tus[-1])
+
+    if verbose:
+        print "Valid interpolation time range: (%.2f,%.2f)"%(tmins*tminm,tmaxs*tminm)
+
+    nfields=len(MoIl_funcs)
+    MoIms=stack(nfields)
+    for t in tus[tus<=tmaxs]:
+        tli=t*tminl
+        tlu=t*tminu
+        tlm=t*tminm
+        MoIm=[tlm]
+        for i in xrange(1,nfields):
+            MoIli=MoIl_funcs[i](tli)
+            MoIui=MoIu_funcs[i](tlu)
+            MoIlm=(MoIui-MoIli)/(Mu-Ml)*(M-Ml)+MoIli
+            MoIm+=[MoIlm]
+        MoIms+=MoIm
+
+    MoIms=MoIms.array
+    return MoIms
+
+def YSolarScaled(Z):
+    Y=0.2485+1.78*Z
+    return Y
+
+def ZSolarScaled(Y):
+    Z=(Y-0.2485)/1.78
+    return Y
+
+def solarScaledFeH(Z,A=0.95):
+    Y=YSolarScaled(Z)
+    X=1-Y-Z
+    FeH=np.log10((Z/ZSUN)/(X/XSUN))/A
+    return FeH
+
+def solarScaledZ(FeH,A=1.0):
+    func=lambda Z:solarScaledFeH(Z)-FeH
+    Z=newton(func,0.01)
+    return Z
+
+def couplingRate(deltaO,tauc=57.7,deltaOref=0.2*OMEGASUN,alpha=0.076):
+    """
+    Coupling rate between the radiative interior and the convective
+    envelope.
+
+    See Gallet & Bouvier (2013) and originally Spada et al. (2011)
+    """
+    if np.abs(deltaO)>0:
+        tc=tauc*np.abs(deltaOref/deltaO)**alpha
+    else:
+        tc=0
+    return tc
+
+def betaCoupling(M):
+    Rradmax=0.66*RSUN
+    Mdotmax=1E-7*MSUN/YEAR
+    Iradmax=10**53.5/1E7
+    dIradmax=5.2E-14
+    beta=2./3*(Rradmax**2*Mdotmax)/(Iradmax*dIradmax)
+    return beta
+
+def rotationalTorques(Omega,t,params,full=False,verbose=False):
+    """
+    This calculates the rotational acceleration experienced by the
+    convective envelope and radiative core of a star.
+
+    Inputs:
+
+      Omega: 0: Convective, 1: Core
+
+      t: time in seconds
+
+      params:
+       star: star object.
+       starf: star object for tidal field source.
+       binary: binary object.
+       
+      The star object should have the following mandatory attributes:
+      
+       taudisk: lifetime of the disk
+
+       model: magnetized wind breaking model:
+         'Kawaler': Kawaler+1988
+         'Chaboyer': Kawaler model with saturation
+         'Matt': Matt+2012 for solar like
+
+         According to model the following parameters should be provided:
+
+          'Kawaler':
+              Kw: Normalization constant in the magnetized wind scaling law
+                  (Kawaler, 1988).
+              a: Dynamo scaling exponent (e.g. a = 1)
+              n: Magnetic field exponent (e.g. n = 3./7 for dipolar field, n = 1.5)
+              
+          'Chaboyer':
+              Kc: Normalization constant in the magnetized wind scaling law
+                  (Chaboyer, 2012).
+              wsat: Saturation period.
+              
+          'Matt':
+              K1: Normalization constant for the Matt et al. (2012) breaking
+                  rule.
+              n: Magnetic field exponent (e.g. n = 3./7 for dipolar field, n = 1.5)
+
+    Optional Inputs:
+
+      full: Return the value of each acceleration
+
+      verbose: Show reports on advance
+
+    Outputs:
+      
+      dOdt: Total Accelerations (convective envelope and core)
+      
+      Where: 
+          
+          dOdt = dOdt_cont + dOdt_difr + dOdt_mloss + dOdt_tide
+          
+      If full is True each component will be returned
+    """
+    
+    ###################################################
+    #INPUT PARAMETERS
+    ###################################################
+    star=params['star']
+    starf=params['starf']
+    binary=params['binary']
+    taucont=params['taucont']
+    fdiss=params['fdiss']
+    taudisk=star.taudisk
+    model=star.str_rotmodel.replace("'","")
+    
+    ###################################################
+    #RESCALE TIME
+    ###################################################
+    if verbose:print "*"*80
+    if verbose:print "Calculating rotational acceleration at t = %e yr"%t
+    logt=np.log10(t/GYR*GIGA)
+    t=t/GYR
+    if verbose:print "Calculating rotational acceleration at t = %e Gyr"%t
+    if verbose:print "Calculating rotational acceleration at log(t) = %f"%logt
+
+    ###################################################
+    #COMPUTE BASIC STELLAR PROPS.
+    ###################################################
+    if t>star.tmoi_max:
+        t=star.tmoi_max
+        logt=np.log10(t*GIGA)
+
+    M=star.M
+    R=star.Rfunc(t)
+    L=star.Lfunc(t)
+    
+    #TIME OF STELLAR MOMENT OF INERTIA STABILIZATION
+    logtmax=np.log10(tminMoI(M))+1
+
+    #ASSUME CONSTANT PROPERTIES FOR SECULAR EVOLUTION
+    logteff=logt
+    logteff=min(logt,logtmax)
+
+    MR2=(star.M*MSUN)*(star.R*RSUN)**2
+    Iconv=10**star.logIconfunc(logteff)
+    Irad=star.Iradfunc(logteff)
+    Itot=10**star.logItotfunc(logteff)
+    k2=Itot/MR2
+    ka2=star.ka2func(logteff)
+    
+    dlogIcondt=star.dlogIcondtfunc(logteff)
+    dlogIcomdt=star.dlogIcomdtfunc(logteff)
+    dlogIraddt=star.dlogIraddtfunc(logteff)
+    dlogIramdt=star.dlogIramdtfunc(logteff)
+    
+    #HAS THE CORE FORMED
+    if Irad>0:qcore=1
+    else:qcore=0
+
+    if verbose:
+        print "Stellar basic properties: M,R,L =",M,R,L
+        print "Moments of Inertia (conv,rad,tot): %e,%e,%e = %e"%(Iconv,Irad,Itot,Iconv+Irad)
+        print "Moments of Inertia Derivative (conv,rad): %e,%e"%(dlogIcondt,
+                                                                 dlogIraddt)
+        print "Mass transfer derivative (conv,rad): %e,%e"%(dlogIcomdt,
+                                                            dlogIramdt)
+
+    ###################################################
+    #EXTRACT SEPARATE OMEGA COMPONENTS
+    ###################################################
+    Omega_conv=Omega[0]
+    Omega_core=Omega[1]
+    Delta_Omega=Omega_core-Omega_conv
+    P_conv=2*PI/Omega_conv/DAY
+    P_core=2*PI/Omega_core/DAY
+
+    if verbose:
+        print "Omega: conv = %e, core = %e"%(Omega_conv,Omega_core)
+        print "P: conv = %f, core = %f"%(P_conv,P_core)
+        print "Delta Omega = %e"%Delta_Omega
+
+    ###################################################
+    #PREPARE ACCELERATION VECTOR
+    ###################################################
+    dOdt_cont=np.array([0.0,0.0])
+    dOdt_difr=np.array([0.0,0.0])
+    dOdt_mloss=np.array([0.0,0.0])
+    dOdt_tide=np.array([0.0,0.0])
+    dOdt_tot=np.array([0.0,0.0])
+
+    ###################################################
+    #CONVECTIVE ZONE ACCELERATION
+    ###################################################
+    if t>taudisk:
+        #&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+        #CONTRACTION 
+        #&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+        if t<=taucont:
+            dOdt_cont[0]=-Omega_conv*dlogIcondt-Omega_conv*dlogIcomdt*-0.0
+            
+        #&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+        #MASS-LOSS
+        #&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+        if model=='Kawaler' or model=='Matt':
+            mloss=pyBoreas(M,R,L,P_conv,star.FeH)
+            Mdot=mloss[6]
+            fstar=mloss[1]
+            Bphoto=mloss[3]
+            Bstar=fstar*Bphoto
+            vesc=np.sqrt(2*GCONST*M*MSUN/(RT*R*RSUN))
+            Omegamax=(GCONST*M*MSUN/(R*RSUN)**3)**0.5
+            f=Omega_conv/Omegamax
+            if verbose:
+                print "Mass-loss parameters:"
+                print "\tMdot = %e"%Mdot
+                print "\tfstar = %e"%fstar
+                print "\tBstar = %e"%Bstar
+                print "\tvesc = %e"%vesc
+
+        #&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+        #STELLAR WIND BREAKING
+        #&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+        if model=='Matt':
+            K2=0.0506
+            m=0.2177
+            Gamma=(Bstar)**2*(R*RSUN*1E2)**2/(Mdot*MSUN/YEAR*1E3*vesc*1E2)
+            Den=(K2**2+0.5*f**2)**0.5
+            rA=star.K1*(Gamma/Den)**m
+            dJdtw=-2./3*(Mdot*MSUN/YEAR)*Omega_conv*(R*RSUN)**2*rA**star.n
+            if verbose:
+                print "Matt model intermediate parameters:"
+                print "\tf = %e"%f
+                print "\tGamma = %e"%Gamma
+                print "\trA = %e"%rA
+        elif model=='Kawaler':
+            exp_Mdot=(1-2*star.n/3.)
+            exp_Omega=(1+4*star.a*star.n/3.)
+            exp_R=2-star.n
+            exp_M=-star.n/3
+            dJdtw=-star.Kw*Mdot**exp_Mdot*Omega_conv**exp_Omega*R**exp_R*M**exp_M
+        elif model=='Chaboyer':
+            dJdtw=-star.Kc*Omega_conv*min(Omega_conv,star.wsat_scaled*OMEGASUN)**2*R**0.5/M**0.5
+            
+        dOdt_mloss[0]=dJdtw/Iconv
+
+        if verbose:
+            print "Stellar wind torque: dJdt_W = %e"%(dJdtw*1E3/(1E-2)**2)
+
+    #&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+    #TIDAL ACCELERATION
+    #&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+    if not starf is None:
+        dOdt_tide[0]=tidalAcceleration(M,R,
+                                       star.Lfunc(t),k2,ka2,fdiss,
+                                       starf.M,
+                                       binary.abin,binary.ebin,
+                                       binary.nbin/DAY,Omega_conv,
+                                       verbose=False)
+        
+    ###################################################
+    #RADIATIVE CORE ACCELERATION
+    ###################################################
+    if t<=taucont:
+    #and (t>=star.taudisk or True):
+        #&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+        #CONTRACTION 
+        #&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+        dOdt_cont[1]=dOdt_cont[0]+(-Omega_core*dlogIraddt+Omega_conv*dlogIramdt)*-0.0
+
+    ###################################################
+    #DIFFERENTIAL ROTATION
+    ###################################################
+    if qcore:
+        #COUPLING RATE
+        tc=star.tauc
+
+        #ANGULAR MOMENTUM TRANSFERE
+        deltaJ=Iconv*Irad/Itot*Delta_Omega
+            
+        if tc>0:
+            dOdt_difr[0]=deltaJ/Iconv/(tc*MYR)
+            dOdt_difr[1]=-deltaJ/Irad/(tc*MYR)
+
+    #========================================
+    #IF NO CORE MAKE THEM EQUAL
+    #========================================
+    if not qcore:
+        dOdt_cont[1]=dOdt_cont[0]
+        dOdt_mloss[1]=dOdt_mloss[0]
+
+    #========================================
+    #TOTAL ACCELERATION
+    #========================================
+    dOdt_tot=dOdt_cont+dOdt_difr+dOdt_mloss+dOdt_tide
+
+    if verbose:
+        print "t = %.2f Gyr, log(t) = %.2f"%(t,logt)
         print "dOdt_cont = ",dOdt_cont
         print "dOdt_mloss = ",dOdt_mloss
         print "dOdt_difr = ",dOdt_difr
@@ -1835,3 +2318,18 @@ def rotationalAccelerationFull(Omega,t,params,full=False,verbose=False):
         return dOdt_cont,dOdt_difr,dOdt_mloss,dOdt_tide,dOdt_tot
     else:
         return dOdt_tot
+
+def apsidalMotionConstant(k2):
+    """
+    Estimates the apsidal motion constant k_2 from the giration radius
+    k^2 using a Polytropic model
+    
+    See: Ureche, 1976
+    http://adsabs.harvard.edu/abs/1976IAUS...73..351U
+    """
+
+    #k_2^1/4
+    ka214=1.5109176*k2**0.561435056
+    ka2=ka214**4
+    
+    return ka2

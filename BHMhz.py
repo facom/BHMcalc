@@ -181,7 +181,7 @@ for i in range(1,12,2):
 ###################################################
 #CALCULATE BINARY HABITABLE ZONE EVOLUTION
 ###################################################
-taumax=min(star1.taumax,star2.taumax)
+taumax=min(star1.tau_max,star2.tau_max)
 ts=star1.evotrack[:,0]
 hz=stack(3)
 shz=stack(3)

@@ -459,59 +459,6 @@ def evolutionaryTrack():
 
     fig.savefig("tests/comparisons/compare-luminosity-%s.png"%(datapoint))
 
-
-def findTrack(model,Z,M,verbose=False):
-    modeldir=DATA_DIR+"Stars/EvoTracks/%s"%model
-    if verbose:PRINTOUT("Looking for closest track to Z = %.5f and M = %.2f in model '%s'..."%(Z,M,model))
-
-    if not DIREXISTS(modeldir):
-        PRINTERR("Model '%s' not found."%modeldir)
-        exit(0)
-
-    #FIND THE CLOSEST Z
-    Zdirs=listDirectory(modeldir,"Z*")
-    Zvals=np.array([])
-    for Zdir in Zdirs:
-        matches=re.search("/Z(.+)",Zdir)
-        Zval=float(matches.group(1))
-        Zvals=np.append([Zval],Zvals)
-
-    dlogZ=np.abs(np.log10(Z)-np.log10(Zvals))
-    iZ=dlogZ.argmin()
-    Zfind=Zvals[iZ]
-    dZfind=dlogZ[iZ]/abs(np.log10(Z))
-    Zdir=modeldir+"/Z%.2e"%Zfind
-    if verbose:
-        PRINTOUT("Closest metallicity in model: Z = %.5f (closeness %.1e)."%(Zfind,dZfind))
-        
-    #FIND THE CLOSEST M
-    Mdirs=listDirectory(Zdir,"M_*")
-    Mvals=np.array([])
-    for Mdir in Mdirs:
-        matches=re.search("/M_(.+)\.dat",Mdir)
-        Mval=float(matches.group(1))
-        Mvals=np.append([Mval],Mvals)
-
-    dM=np.abs(M-Mvals)
-    iM=dM.argmin()
-    Mfind=Mvals[iM]
-    dMfind=dM[iM]/M
-    if verbose:
-        PRINTOUT("Closest mass in model: M = %.2f (closeness %.1e)."%(Mfind,dMfind))
-
-    #TRACK LOADING ROUTINE
-    track=loadConf(modeldir+"/track.py")
-    
-    #READ EVOLUTIONARY TRACK
-    try:
-        tfile=Zdir+"/M_%.2f.dat"%Mfind
-        datatrack=track.getTrack(Zfind,Mfind,tfile)
-    except:
-        tfile=Zdir+"/M_%.3f.dat"%Mfind
-        datatrack=track.getTrack(Zfind,Mfind,tfile)
-
-    return [Zfind,dZfind,Mfind,dMfind],datatrack
-
 def loadModel():
     Z=0.005
     M=0.7
@@ -1033,11 +980,806 @@ def coreEnvelopeCoupling():
     #ax.legend(loc="best")
     ax.grid(which="both")
     fig.savefig("tests/rotevol-OmegaEvol.png")
+    
+def testClaret():
+    model="CLARET"
+    M=0.93
+    Z=0.007
+    track_find,track_data=findTrack(model,Z,M,verbose=True)
+    trackarray=trackArraysDynamic(track_data)
+    trackfuncs=trackFunctionsDynamic(track_data)
 
+    """
+    data=np.loadtxt("BHM/data/Stars/EvoTracks/CLARET/Z7.00e-03/M_0.93.dat")
+    i=0
+    for field in data[10,:]:
+        print "Field %d = "%i,
+        print field
+        i+=1
+    exit(0)
+    """
 
+    fig=plt.figure()
+    ax=fig.add_axes([0.1,0.1,0.8,0.8])
+    ax.plot(trackarray.t,trackarray.Rc,'-')
+    ax.set_xlim((1*MEGA,4.5*GIGA))
+    fig.savefig("tests/claret-Rc")
+
+    fig=plt.figure()
+    ax=fig.add_axes([0.1,0.1,0.8,0.8])
+    ax.plot(trackarray.t,np.log10(trackarray.Itot),'-')
+    #ax.set_yscale("log")
+    ax.set_xscale("log")
+    ax.set_xlim((1*MEGA,4.5*GIGA))
+    fig.savefig("tests/claret-Itot")
+
+    fig=plt.figure()
+    ax=fig.add_axes([0.1,0.1,0.8,0.8])
+    ax.plot(trackarray.t,trackarray.R,'-')
+    ax.set_yscale("log")
+    ax.set_xscale("log")
+    ax.set_xlim((1*MEGA,4.5*GIGA))
+    fig.savefig("tests/claret-R")
+
+def MoIComparison():
+
+    model="PARSEC"
+    M=1.00
+    Z=0.0152
+    track_find,track_data=findTrack(model,Z,M,verbose=True)
+    trackarray=trackArrays(track_data)
+    trackfuncs=trackFunctions(track_data)
+    
+    ts=trackarray.ts
+    MoI=stellarMoI(M)
+    Is=MoI*(M*MSUN)*(trackarray.R*RSUN)**2
+    cond=(ts>0.001*GIGA)*(ts<8.0*GIGA)
+    ts=ts[cond]
+    Is=Is[cond]
+
+    MoI_conv=np.loadtxt("tests/MoI.csv")
+    tc=MoI_conv[:,0]
+
+    MoI_rad=np.loadtxt("tests/MoI-rad.csv")
+    tr=MoI_rad[:,0]
+    MoI_rad_f=interp1d(tr,MoI_rad[:,1],kind='slinear')
+
+    def MoI_rad_func(t):
+        try:
+            MoI=MoI_rad_f(t)
+        except:
+            MoI=50
+        return MoI
+
+    MoI_rad_arr=np.array([MoI_rad_func(t) for t in tc])
+
+    MoI_tot=np.zeros_like(MoI_conv)
+
+    MoI_tot[:,0]=MoI_conv[:,0]
+    MoI_tot[:,1]=np.log10(10**MoI_conv[:,1]+10**MoI_rad_arr[:])
+
+    MR2=0.4*(M*MSUN*1E3)*(trackfuncs.R(10**tc)*RSUN*1E2)**2
+    k2=MoI_tot[:,1]-np.log10(MR2)
+    k2_conv=MoI_conv[:,1]-np.log10(MR2)
+    k2_rad=MoI_rad_arr[:]-np.log10(MR2)
+
+    fig=plt.figure()
+    ax=fig.add_axes([0.1,0.1,0.8,0.8])
+    ax.plot(ts,np.log10(Is*1E7),'-')
+    ax.plot(10**tc,MoI_conv[:,1],'b--')
+    ax.plot(10**tc,MoI_rad_arr,'r--')
+    ax.plot(10**tc,MoI_tot[:,1],'k--')
+    ax.plot(10**tc,np.log10(MR2),'k-')
+    ax.set_xlim((1.0*MEGA,TAGE*GIGA))
+    ax.set_xscale("log")
+    fig.savefig("tests/MoI-comparison")
+
+    fig=plt.figure()
+    ax=fig.add_axes([0.1,0.1,0.8,0.8])
+    ax.plot(10**tc,k2,'-')
+    ax.plot(10**tc,k2_conv,'-')
+    ax.plot(10**tc,k2_rad,':')
+    ax.set_xlim((1.0*MEGA,TAGE*GIGA))
+    ax.set_xscale("log")
+    fig.savefig("tests/MoI-k2")
+
+def MoI_preparefunctions():
+    model="BCA98"
+    Z=0.0152
+    Msvec=[0.2,0.4,0.6,0.8,1.0]
+    #Msvec=[1.0]
+    dirmoi="BHM/data/Stars/MomentsOfInertia"
+
+    figk2=plt.figure()
+    ax_dk2=figk2.add_axes([0.15,0.1,0.8,0.2])
+    ax_k2=figk2.add_axes([0.15,0.33,0.8,0.6])
+
+    figMoI=plt.figure()
+    ax_MoI=figMoI.add_axes([0.1,0.1,0.8,0.8])
+
+    for M in Msvec[:]:
+
+        #########################################
+        #LOADING MOMENT OF INERTIA DATA
+        #########################################
+        filemoi=dirmoi+"/MOIconv_M_%.2f.dat"%M
+        print "Loading data for convective region of M = %.2f from '%s'..."%(M,filemoi)
+        MoIconv=np.loadtxt(filemoi)
+        tconv=10**(MoIconv[:,0]+6)
+
+        filemoi=dirmoi+"/MOIrad_M_%.2f.dat"%M
+        print "Loading data for radiative region of M = %.2f from '%s'..."%(M,filemoi)
+        try:
+            MoIrad=np.loadtxt(filemoi)
+        except:
+            print "Not found. Fully convective star."
+            MoIrad=np.transpose(np.vstack((np.transpose(MoIconv[:,0]),
+                                          np.transpose(np.zeros_like(MoIconv[:,0]))
+                                          ))
+                                )
+        print "Finding the closest evolutionary track..."
+        trad=10**(MoIrad[:,0]+6)
+        
+        #########################################
+        #EVOLUTIONARY TRACKS
+        #########################################
+        track_find,track_data=findTrack(model,Z,M,verbose=False)
+        print "Track found with mass: Mt = %.2f"%(track_find[2])
+        trackarray=trackArraysDynamic(track_data)
+        tmod=trackarray.t
+        trackfuncs=trackFunctionsDynamic(track_data)
+
+        #########################################
+        #BUILDING MOMENT OF INERTIA INFORMATION
+        #########################################
+        tmin=max(tconv[0],tmod[0])
+        tmax=min([tmod[-1]])
+        tint=np.concatenate((tconv[tconv>=tmin],tmod[tmod>=tconv[-1]]))
+
+        i=0
+        j=0
+        MoI=stack(11)
+        header="""#MoI:
+#0: log(time)
+#1: log(I_mod)=log(2/5 M R^2)
+#2: log(I_conv)
+#3: log(I_rad)
+#4: log(I_tot)
+#5: log(I_conv/I_mod)
+#6: log(I_rad/I_mod)
+#7: log(I_tot/I_mod)=log(k^2)-log(0.4)
+#8: k^2
+#9: k_conv^2
+#10: k_rad^2
+#11: k^2 (soft)
+#12: k_conv^2 (soft)
+#13: k_rad^2 (soft)\n"""
+        for t in tint:
+            logt=np.log10(t)
+            R=trackfuncs.R(logt)
+            M=trackfuncs.M(logt)
+            logImod=np.log10(0.4*(M*MSUN*1E3)*(R*RSUN*1E2)**2)
+            
+            if t<=tconv[-1]:
+                logIconv=MoIconv[i,1]
+                logIrad=MoIrad[i,1]
+            else:
+                logIconv=MoIconv[-1,1]
+                logIrad=MoIrad[-1,1]
+
+            logItot=np.log10(10**logIconv+10**logIrad)
+
+            """
+            if t<=tconv[-1]:
+                k2=10**((logItot-logImod)+np.log10(0.4))
+                kconv2=10**((logIconv-logImod)+np.log10(0.4))
+                krad2=10**((logIrad-logImod)+np.log10(0.4))
+                """
+            k2=10**((logItot-logImod)+np.log10(0.4))
+            kconv2=10**((logIconv-logImod)+np.log10(0.4))
+            krad2=10**((logIrad-logImod)+np.log10(0.4))
+
+            MoI+=[np.log10(t),
+                  logImod,logIconv,logIrad,logItot,
+                  logIconv-logImod,logIrad-logImod,logItot-logImod,
+                  k2,kconv2,krad2
+                  ]
+            i+=1
+
+        #########################################
+        #SOFTENING K2S
+        #########################################
+        N=len(MoI.array[:,8])
+        order=N/5
+        if order%2==0:order+=1
+        nP=7
+
+        k2s=softArraySG(MoI.array[:,8],deriv=0)
+        dk2s=softArraySG(MoI.array[:,8],deriv=1)
+
+        kconv2s=np.abs(softArraySG(MoI.array[:,9],deriv=0))
+        krad2s=np.abs(softArraySG(MoI.array[:,10],deriv=0))
+
+        MoI=toStack(toStack(MoI|toStack(k2s))|toStack(kconv2s))|toStack(krad2s)
+
+        #########################################
+        #SAVING MOMENT OF INERTIA INFO
+        #########################################
+        fmoi=dirmoi+"/MoI-M_%.2f.dat"%M
+        np.savetxt(fmoi,MoI)
+        
+        fh=open("/tmp/header","w")
+        fh.write(header)
+        fh.close()
+        System("cat /tmp/header %s > /tmp/MoI"%(fmoi))
+        System("cp /tmp/MoI %s"%(fmoi))
+
+        #########################################
+        #PLOTTING
+        #########################################
+        data=MoI
+
+        #CONVECTIVE
+        line,=ax_MoI.plot(data[:,0],data[:,2],'-',label="M=%.2f"%M)
+        color=plt.getp(line,'color')
+
+        #RADIATIVE
+        ax_MoI.plot(data[:,0],data[:,3],'--',color=color)
+
+        #TOTAL
+        ax_MoI.plot(data[:,0],data[:,4],'-',color=color,linewidth=4,alpha=0.3,zorder=-10)
+
+        #K2
+        ax_k2.plot(data[:,0],data[:,8],'-',color=color,label="M=%.2f"%M)
+        ax_k2.plot(data[:,0],data[:,11],'-',color=color,linewidth=5,alpha=0.3,zorder=-5)
+
+        #K2
+        ax_k2.plot(data[:,0],data[:,9],'--',color=color)
+        ax_k2.plot(data[:,0],data[:,10],'-.',color=color)
+
+        #DERIVATIVES OF THE TOTAL
+        ax_dk2.plot(data[:,0],dk2s,'-',color=color,linewidth=5,alpha=0.3,zorder=-5)
+        
+        """
+        #UNCOMMENT WHEN MOI DATA CHANGE
+        #########################################
+        #FIND A MINIMUM
+        #########################################
+        cond=(abs(dk2s)<1E-5)*(np.log10(tint)>7.2)*(np.log10(tint)<8.5)
+        print np.log10(tint[cond])
+        #"""
+        #break
+        #exit(0)
+
+    #########################################
+    #SAVE MINIMUMS
+    #########################################
+    fm=open(dirmoi+"/MoI-mins.dat","w")
+    fm.write("#M  tmin\n")
+    fm.write("0.2 1.0000E+01\n")
+    fm.write("0.4 8.2194E+00\n")
+    fm.write("0.6 8.0338E+00\n")
+    fm.write("0.8 7.8274E+00\n")
+    fm.write("1.0 7.5011E+00\n")
+    fm.close()
+    
+    logtmin=6.0;logtmax=10.0
+    #logtmin=7.2;logtmax=8.5
+
+    ax_MoI.plot([],[],'--',color='k',label="Radiative")
+    ax_MoI.plot([],[],'-',color='k',label="Convective")
+    ax_MoI.plot([],[],'-',color='k',linewidth=4,alpha=0.3,label="Total")
+    ax_MoI.legend(loc="best",prop=dict(size=10))
+    #ax_MoI.set_ylim((50.5,56.0))
+    ax_MoI.set_xlim((logtmin,logtmax))
+    ax_MoI.grid(which='both')
+
+    ax_k2.plot([],[],'-.',color='k',label="Radiative")
+    ax_k2.plot([],[],'--',color='k',label="Convective")
+    ax_k2.plot([],[],'-',color='k',linewidth=4,alpha=0.3,label="Total")
+    ax_k2.set_xticklabels([])
+    ax_k2.legend(loc="best",prop=dict(size=10))
+    ax_k2.grid(which='both')
+    ax_dk2.grid(which='both')
+    ax_dk2.axhline(0,linewidth=2)
+    ax_k2.set_ylabel(r"$k^2$, Pseudo-gyration radius")
+    ax_dk2.set_xlabel(r"$\log \tau({\rm Myr})$")
+    ax_dk2.set_ylabel(r"$dk^2/d\tau$")
+    ax_dk2.set_xlim((logtmin,logtmax))
+    ax_k2.set_xlim((logtmin,logtmax))
+
+    figk2.savefig("tests/MoI-prepare-k2.png"%M)
+    figMoI.savefig("tests/MoI-prepare-MoIs.png"%M)
+
+def MoI_preparefunctions_Baraffe():
+    model="BAR14"
+    #model="PARSEC"
+    Z=0.0152
+    #Msvec=np.arange(0.2,1.3,0.1)
+    Msvec=np.array([1.0])
+
+    dirmoi="BHM/data/Stars/MomentsOfInertia/Baraffe2014"
+
+    figk2=plt.figure()
+    ax_dk2=figk2.add_axes([0.15,0.1,0.8,0.2])
+    ax_k2=figk2.add_axes([0.15,0.33,0.8,0.6])
+
+    figMoI=plt.figure()
+    ax_MoI=figMoI.add_axes([0.1,0.1,0.8,0.8])
+
+    for M in Msvec[:]:
+
+        #########################################
+        #LOADING MOMENT OF INERTIA DATA
+        #########################################
+        filemoi=dirmoi+"/M_%.2f.dat"%M
+        MoIdata=np.loadtxt(filemoi)
+        tdata=MoIdata[:,1]
+        tdata=tdata[tdata>=1E6]
+
+        #########################################
+        #EVOLUTIONARY TRACK
+        #########################################
+        track_find,track_data=findTrack(model,Z,M,verbose=True)
+        print "Track found with mass: Mt = %.2f"%(track_find[2])
+        trackarray=trackArraysDynamic(track_data)
+        tmod=trackarray.t
+        tmod=tmod[tmod>=1E6]
+        trackfuncs=trackFunctionsDynamic(track_data)
+        
+        #print trackfuncs.R(np.log10(4.56*GIGA))
+        #print trackfuncs.L(np.log10(4.56*GIGA))
+        #print trackfuncs.Rrad(np.log10(4.56*GIGA))
+
+        #########################################
+        #BUILDING MOMENT OF INERTIA INFORMATION
+        #########################################
+        tint=tmod
+
+        i=0
+        j=0
+        MoI=stack(11)
+        header="""#MoI:
+#0: log(time)
+#1: log(I_mod)=log(M R^2)
+#2: log(I_conv)
+#3: log(I_rad)
+#4: log(I_tot)
+#5: log(I_conv/I_mod)
+#6: log(I_rad/I_mod)
+#7: log(I_tot/I_mod)=log(k^2)
+#8: k^2
+#9: k_conv^2
+#10: k_rad^2
+#11: k^2 (soft)
+#12: k_conv^2 (soft)
+#13: k_rad^2 (soft)
+#14: R_rad (Rsun)
+#15: M_rad (Msun)\n"""
+
+        for t in tint:
+            logt=np.log10(t)
+            R=trackfuncs.R(logt)
+            M=trackfuncs.M(logt)
+            k2conv=trackfuncs.k2conv(logt)
+            k2rad=trackfuncs.k2rad(logt)
+            k2=k2conv+k2rad
+            Imod=(M*MSUN*1E3)*(R*RSUN*1E2)**2
+            Iconv=k2conv*Imod
+            Irad=k2rad*Imod
+            if Irad==0:Irad=1E-100
+            Itot=k2*Imod
+
+            MoI+=[np.log10(t),
+                  np.log10(Imod),np.log10(Iconv),np.log10(Irad),np.log10(Itot),
+                  np.log10(Iconv/Imod),np.log10(Irad/Imod),np.log10(Itot/Imod),
+                  k2,k2conv,k2rad
+                  ]
+            i+=1
+
+        #########################################
+        #SOFTENING K2S
+        #########################################
+        N=len(MoI.array[:,8])
+
+        k2s=softArraySG(MoI.array[:,8],deriv=0)
+        dk2s=softArraySG(MoI.array[:,8],deriv=1)
+
+        kconv2s=np.abs(softArraySG(MoI.array[:,9],deriv=0))
+        dkconv2s=softArraySG(MoI.array[:,9],deriv=1)
+        krad2s=np.abs(softArraySG(MoI.array[:,10],deriv=0))
+
+        MoI=toStack(toStack(MoI|toStack(k2s))|toStack(kconv2s))|toStack(krad2s)
+
+        #########################################
+        #ADD RRAD AND MRAD
+        #########################################
+        MoIadd=stack(2)
+        for t in tint:
+            logt=np.log10(t)
+            Rrad=trackfuncs.Rrad(logt)
+            Mrad=trackfuncs.Mrad(logt)
+            MoIadd+=[Rrad,Mrad]
+        MoI=toStack(MoI)|MoIadd
+
+        #########################################
+        #SAVING MOMENT OF INERTIA INFO
+        #########################################
+        fmoi=dirmoi+"/MoI-M_%.2f.dat"%M
+        np.savetxt(fmoi,MoI)
+        
+        fh=open("/tmp/header","w")
+        fh.write(header)
+        fh.close()
+        System("cat /tmp/header %s > /tmp/MoI"%(fmoi))
+        System("cp /tmp/MoI %s"%(fmoi))
+
+        #########################################
+        #PLOTTING
+        #########################################
+        data=MoI
+
+        #CONVECTIVE
+        line,=ax_MoI.plot(data[:,0],data[:,2],'-',label="M=%.2f"%M)
+        color=plt.getp(line,'color')
+
+        #RADIATIVE
+        ax_MoI.plot(data[:,0],data[:,3],'--',color=color)
+
+        #TOTAL
+        ax_MoI.plot(data[:,0],data[:,4],'-',color=color,linewidth=4,alpha=0.3,zorder=-10)
+
+        #K2
+        ax_k2.plot(data[:,0],data[:,8],'-',color=color,label="M=%.2f"%M)
+        ax_k2.plot(data[:,0],data[:,11],'-',color=color,linewidth=5,alpha=0.3,zorder=-5)
+
+        #K2
+        ax_k2.plot(data[:,0],data[:,9],'--',color=color)
+        ax_k2.plot(data[:,0],data[:,10],'-.',color=color)
+
+        #DERIVATIVES OF THE TOTAL
+        ax_dk2.plot(data[:,0],dkconv2s,'-',color=color,linewidth=5,alpha=0.3,zorder=-5)
+        
+        """
+        #UNCOMMENT WHEN MOI DATA CHANGE
+        #########################################
+        #FIND A MINIMUM
+        #########################################
+        cond=(abs(dkconv2s)<1E-5)*(np.log10(tint)>7.2)*(np.log10(tint)<8.5)
+        print np.log10(tint[cond])
+        #"""
+        #break
+        #exit(0)
+
+    #########################################
+    #SAVE MINIMUMS
+    #########################################
+    """
+    fm=open(dirmoi+"/MoI-mins.dat","w")
+    fm.write("#M  tmin\n")
+    fm.write("0.2 1.0000E+01\n")
+    fm.write("0.4 8.2194E+00\n")
+    fm.write("0.6 8.0338E+00\n")
+    fm.write("0.8 7.8274E+00\n")
+    fm.write("1.0 7.5011E+00\n")
+    fm.close()
+    """
+    logtmin=6.0;logtmax=10.0
+    #logtmin=7.2;logtmax=8.5
+
+    ax_MoI.plot([],[],'--',color='k',label="Radiative")
+    ax_MoI.plot([],[],'-',color='k',label="Convective")
+    ax_MoI.plot([],[],'-',color='k',linewidth=4,alpha=0.3,label="Total")
+    ax_MoI.legend(loc="best",prop=dict(size=10))
+    ax_MoI.set_ylim((40.5,56.0))
+    ax_MoI.set_xlim((logtmin,logtmax))
+    ax_MoI.grid(which='both')
+
+    ax_k2.plot([],[],'-.',color='k',label="Radiative")
+    ax_k2.plot([],[],'--',color='k',label="Convective")
+    ax_k2.plot([],[],'-',color='k',linewidth=4,alpha=0.3,label="Total")
+    ax_k2.set_xticklabels([])
+    ax_k2.legend(loc="best",prop=dict(size=10))
+    ax_k2.grid(which='both')
+    ax_dk2.grid(which='both')
+    ax_dk2.axhline(0,linewidth=2)
+    ax_k2.set_ylabel(r"$k^2$, Pseudo-gyration radius")
+    ax_dk2.set_xlabel(r"$\log \tau({\rm Myr})$")
+    ax_dk2.set_ylabel(r"$dk^2/d\tau$")
+    ax_dk2.set_xlim((logtmin,logtmax))
+    ax_k2.set_xlim((logtmin,logtmax))
+
+    figk2.savefig("tests/MoI-prepare-k2.png"%M)
+    figMoI.savefig("tests/MoI-prepare-MoIs.png"%M)
+
+def MoI_Interpolation():
+    
+    Mvec=np.array([0.2,0.4,0.6,0.8,1.0])
+    dirmoi="BHM/data/Stars/MomentsOfInertia"
+    logtmins=np.loadtxt(dirmoi+"/MoI-mins.dat")
+
+    M=0.7
+    Ml,Mc,Mu,match=bracketValue(M,Mvec)
+    if match>0:
+        Ml=Mc
+    elif match<0:
+        Mu=Mc
+
+    print "Bracketed by: %.2f, %.2f"%(Ml,Mu)
+    tminl=np.log10(tminMoI(Ml))
+    tminu=np.log10(tminMoI(Mu))
+    tminm=np.log10(tminMoI(M))
+
+    #########################################
+    #READ DATA
+    #########################################
+
+    MoIl=np.loadtxt(dirmoi+"/MoI-M_%.2f.dat"%Ml)
+    tl=MoIl[:,0]
+    moil=interp1d(tl,MoIl[:,11],kind='slinear')
+
+    MoIu=np.loadtxt(dirmoi+"/MoI-M_%.2f.dat"%Mu)
+    tu=MoIu[:,0]
+    moiu=interp1d(tu,MoIu[:,11],kind='slinear')
+
+    MoIc=np.loadtxt(dirmoi+"/MoI-M_%.2f.dat"%Mc)
+    tc=MoIc[:,0]
+    moic=interp1d(tc,MoIc[:,11],kind='slinear')
+
+    #########################################
+    #INTERPOLATION
+    #########################################
+    tls=tl/tminl
+    tus=tu/tminu
+    tmins=max(tls[0],tus[0])
+    tmaxs=min(tls[-1],tus[-1])
+
+    MoIms=stack(2)
+    for t in tus[tus<=tmaxs]:
+        tli=t*tminl
+        tlu=t*tminu
+        tlm=t*tminm
+        MoIli=moil(tli)
+        MoIui=moiu(tlu)
+        MoIlm=(MoIui-MoIli)/(Mu-Ml)*(M-Ml)+MoIli
+        MoIms+=[tlm,MoIlm]
+
+    MoIms=MoIms.array
+    tm=MoIms[:,0]
+    moim=interp1d(tm,MoIms[:,1],kind='slinear')
+
+    #########################################
+    #PLOT
+    #########################################
+    fig=plt.figure()
+    ax=fig.add_axes([0.1,0.1,0.8,0.8])
+    line,=ax.plot(tl,moil(tl),'-',label='M = %.2f'%Ml);colorl=plt.getp(line,"color")
+    line,=ax.plot(tu,moiu(tu),'-',label='M = %.2f'%Mu);coloru=plt.getp(line,"color")
+    line,=ax.plot(tc,moic(tc),'-',color='k',label='M = %.2f'%Mc);coloru=plt.getp(line,"color")
+    line,=ax.plot(tm,moim(tm),'-',label='M = %.2f'%M);coloru=plt.getp(line,"color")
+    ax.axvline(tminl,color=colorl)
+    ax.axvline(tminu,color=coloru)
+    ax.legend(loc="best",prop=dict(size=10))
+    fig.savefig("tests/MoI-M_%.2f.png"%M)
+
+    fig=plt.figure()
+    ax=fig.add_axes([0.1,0.1,0.8,0.8])
+    line,=ax.plot(tl/tminl,moil(tl),'-',label='M = %.2f'%Ml);colorl=plt.getp(line,"color")
+    line,=ax.plot(tu/tminu,moiu(tu),'-',label='M = %.2f'%Mu);coloru=plt.getp(line,"color")
+    line,=ax.plot(tm/tminm,moim(tm),'-',label='M = %.2f'%Mu);coloru=plt.getp(line,"color")
+    ax.axvline(1.0,color=colorl)
+    ax.legend(loc="best",prop=dict(size=10))
+    fig.savefig("tests/MoI-M_%.2f-rescaled.png"%M)
+
+def plotAllMoIs():
+    Msvec=np.arange(0.2,1.25,0.10)
+    #Msvec=np.arange(0.85,1.25,0.10)
+    #Msvec=[0.95]
+    #Msvec=[0.9,1.0,1.1]
+    #Msvec=np.arange(0.4,1.05,0.05)
+    #Msvec=[0.25,0.30,0.35]
+
+    figk2=plt.figure()
+    ax_k2=figk2.add_axes([0.1,0.1,0.8,0.8])
+
+    figMoI=plt.figure()
+    ax_MoI=figMoI.add_axes([0.1,0.1,0.8,0.8])
+
+    figRad=plt.figure()
+    ax_Rad=figRad.add_axes([0.1,0.1,0.8,0.8])
+
+    for M in Msvec:
+        data=interpolMoI(M,verbose=True)
+
+        #CONVECTIVE
+        line,=ax_MoI.plot(data[:,0],data[:,2],'-',label="M=%.2f"%M)
+        color=plt.getp(line,'color')
+        #RADIATIVE
+        ax_MoI.plot(data[:,0],data[:,3],'--',color=color)
+        #TOTAL
+        ax_MoI.plot(data[:,0],data[:,4],'-',color=color,linewidth=4,alpha=0.3,zorder=-10)
+
+        #K2
+        ax_k2.plot(data[:,0],data[:,8],'-',color=color,label="M=%.2f"%M)
+        ax_k2.plot(data[:,0],data[:,11],'-',color=color,linewidth=5,alpha=0.3,zorder=-5)
+
+        #K2
+        ax_k2.plot(data[:,0],data[:,9],'--',color=color)
+        ax_k2.plot(data[:,0],data[:,10],'-.',color=color)
+
+        #RAD
+        ax_Rad.plot(data[:,0],data[:,14],'-',color=color,label="M=%.2f"%M)
+        ax_Rad.plot(data[:,0],data[:,15],'--',color=color)
+
+    logtmin=6.0;logtmax=10.0
+
+    ax_MoI.plot([],[],'--',color='k',label="Radiative")
+    ax_MoI.plot([],[],'-',color='k',label="Convective")
+    ax_MoI.plot([],[],'-',color='k',linewidth=4,alpha=0.3,label="Total")
+    ax_MoI.legend(loc="best",ncol=3,prop=dict(size=10))
+    ax_MoI.set_ylim((50.5,56.0))
+    ax_MoI.set_xlim((logtmin,logtmax))
+    ax_MoI.grid(which='both')
+
+    ax_k2.plot([],[],'-.',color='k',label="Radiative")
+    ax_k2.plot([],[],'--',color='k',label="Convective")
+    ax_k2.plot([],[],'-',color='k',linewidth=4,alpha=0.3,label="Total")
+    ax_k2.set_xticklabels([])
+    ax_k2.legend(loc="best",ncol=3,prop=dict(size=10))
+    ax_k2.grid(which='both')
+    ax_k2.set_ylabel(r"$k^2$, Pseudo-gyration radius")
+    ax_k2.set_xlim((logtmin,logtmax))
+
+    ax_Rad.plot([],[],'-',color='k',label=r"$R_{\rm rad}$ ($R_\odot$)")
+    ax_Rad.plot([],[],'--',color='k',label=r"$M_{\rm rad}$ ($M_\odot$)")
+    ax_Rad.legend(loc="best",ncol=3,prop=dict(size=10))
+    ax_Rad.grid(which='both')
+    ax_Rad.set_ylabel(r"$R_{\rm rad}$, $M_{\rm rad}$")
+    ax_Rad.set_xlim((logtmin,logtmax))
+
+    figk2.savefig("tests/MoI-all-k2.png")
+    figMoI.savefig("tests/MoI-all-MoIs.png")
+    figRad.savefig("tests/MoI-all-Rad.png")
+    
+def MoICalculation():
+
+    #########################################
+    #INPUT
+    #########################################
+    model="PARSEC"
+    M=1.0
+    Z=0.0152
+
+    #########################################
+    #LOAD MOI
+    #########################################
+    MoIdata=interpolMoI(M,verbose=True)
+    tmoi,MoIfunc=interpMatrix(MoIdata)
+    tmin=10**tmoi[0];tmax=10**tmoi[-1]
+
+    #########################################
+    #LOAD STELLAR MODEL
+    #########################################
+    track_find,track_data=findTrack(model,Z,M,verbose=False)
+    trackfuncs=trackFunctionsDynamic(track_data)
+    trackarray=trackArraysDynamic(track_data)
+    tmod=trackarray.t
+    cond=(tmod>=tmin)*(tmod<tmax)
+    tmod=tmod[cond]
+    logt=np.log10(tmod)
+
+    #########################################
+    #CALCULATE M R^2
+    #########################################
+    log02MR2_track=np.log10((M*MSUN*1E3)*\
+                                (trackarray.R[cond]*RSUN*1E2)**2)+\
+                                np.log10(2./5)
+    log02MR2_model=MoIfunc[1](logt)
+    
+    #########################################
+    #CALCULATE I
+    #########################################
+    logk2=np.log10(MoIfunc[11](logt))
+    logkconv2=np.log10(MoIfunc[12](logt))
+    logkrad2=np.log10(MoIfunc[13](logt))
+
+    logItot_track=log02MR2_track-np.log10(2./5)+logk2
+    logIconv_track=log02MR2_track-np.log10(2./5)+logkconv2
+    logIrad_track=log02MR2_track-np.log10(2./5)+logkrad2
+
+    logItot_model=MoIfunc[4](logt)
+    logIconv_model=MoIfunc[2](logt)
+    logIrad_model=MoIfunc[3](logt)
+
+    #########################################
+    #CALCULATE dI/dt
+    #########################################
+    logItot_soft=softArraySG(logItot_track,deriv=0)
+    dIdt=softArraySG(logItot_track,deriv=1)*logItot_soft
+
+    #########################################
+    #PLOT
+    #########################################
+    fig=plt.figure()
+
+    axdI=fig.add_axes([0.1,0.1,0.8,0.2])
+    axI=fig.add_axes([0.1,0.33,0.8,0.6])
+
+    axI.plot(logt,log02MR2_model,label="Model",color='b')
+    axI.plot(logt,log02MR2_track,label="Track",color='r')
+
+    axI.plot(logt,logItot_model,color='b')
+    axI.plot(logt,logItot_track,color='r')
+    axI.plot(logt,logItot_soft,color='r',linewidth=5,zorder=-5,alpha=0.3)
+
+    axI.plot(logt,logIconv_model,'--',color='b')
+    axI.plot(logt,logIconv_track,'--',color='r')
+
+    axI.plot(logt,logIrad_model,'--',color='b')
+    axI.plot(logt,logIrad_track,'--',color='r')
+    
+    axI.set_ylim((50,56))
+
+    axdI.plot(logt,dIdt)
+
+    axI.legend(loc="best")
+    
+    axI.set_xticklabels([])
+
+    for ax in axI,axdI:
+        ax.set_xlim((tmoi[0],tmoi[-1]))
+
+    fig.savefig("tests/MoI-Star-M_%.2f.png"%M)
+
+def derivativeNoisy():
+
+    Ndata=100
+    anoise=0.2
+    nP=2
+
+    ts=np.linspace(0,2*PI,Ndata)
+
+    tmin=0.0
+    tmax=2*PI
+    dt=(tmax-tmin)/Ndata
+    i=0
+    t=tmin
+    ts=[tmin]
+    while t<=tmax:
+        t+=tmin+dt*np.random.rand()
+        ts+=[t]
+        i+=1
+    ts=np.array(ts)
+    Ndata=i+1
+
+    y=np.sin(ts)+anoise*np.random.rand(Ndata)
+    
+    dydt_sim=softArraySG(y,deriv=1,nP=nP)
+    dydt_teo=np.cos(ts)
+    
+    fig=plt.figure()
+    axI=fig.add_axes([0.1,0.33,0.8,0.6])
+    axdI=fig.add_axes([0.1,0.1,0.8,0.2])
+    axI.plot(ts,y)
+    axdI.plot(ts,dydt_teo,label='Teo')
+    fac=Ndata/(2*PI)
+    axdI.plot(ts,fac*dydt_sim,label='Sim')
+    axdI.legend(loc='best',prop=dict(size=8))
+    fig.savefig("tests/dsoft.png")
+    pass
+    
 #MomentOfInertia()
 #evolutionaryTrack()
 #loadModel()
 #testStellarWind()
 #evolutionaryTracksKCBHZP()
-coreEnvelopeCoupling()
+#coreEnvelopeCoupling()
+#testClaret()
+#informationObject()
+#MoIComparison()
+#MoI_preparefunctions()
+MoI_preparefunctions_Baraffe()
+#MoI_Interpolation()
+#plotAllMoIs()
+#MoICalculation()
+#derivativeNoisy()
