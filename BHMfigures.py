@@ -89,16 +89,33 @@ def CompareLuminositiesMassLoss():
     ax.set_xlabel(r"$\tau$ (Gyr)")
     ax.set_ylabel("$\Omega/\Omega_\odot$")
 
+    #DATA FOR OTHER STARS
+    for star_name in ROTAGE_STARS.keys():
+        staro=ROTAGE_STARS[star_name]
+        tau=staro["tau"]
+        Prot=staro["Prot"]
+        ax.plot([tau],[2*PI/(Prot*DAY)/OMEGASUN],'o',markersize=10,markeredgecolor='none',color=cm.gray(0.5),zorder=-10)
+        ax.text(tau,2*PI/(Prot*DAY)/OMEGASUN,star_name,transform=offSet(-10,staro["up"]),horizontalalignment="right",color=cm.gray(0.1),zorder=-10,fontsize=10)
+
     tmin,tmax=ax.get_xlim()
     wmin,wmax=ax.get_ylim()
-    Pmin=2*PI/(wmax*OMEGASUN)/DAY
-    Pmax=2*PI/(wmin*OMEGASUN)/DAY
-    for P in np.logspace(np.log10(Pmin),np.log10(Pmax),10):
+    Pmin=1.0*(2*PI/(wmax*OMEGASUN)/DAY)
+    Pmax=1.0*(2*PI/(wmin*OMEGASUN)/DAY)
+    #Pvec=np.logspace(np.log10(Pmin),np.log10(Pmax),10)
+    Pvec=np.arange(Pmin,Pmax,1.0)
+    i=-1
+    for P in Pvec:
+        i+=1
         if P>Pmax:break
+        if (i%3)!=0:continue
         w=2*PI/(P*DAY)/OMEGASUN
         ax.axhline(w,xmin=0.98,xmax=1.00,color='k')
         ax.text(tmax,w,"%.1f"%P,transform=offSet(5,0),verticalalignment='center',horizontalalignment='left',fontsize=10)
 
+    ax.text(1.07,0.5,r"$P$ (days)",rotation=90,verticalalignment='center',horizontalalignment='center',transform=ax.transAxes)
+
+    ymin,ymax=ax.get_ylim()
+    ax.set_ylim((0.8,ymax))
     fig.savefig(DATADIR+"rot.png")
 
     #############################################################
@@ -123,14 +140,6 @@ def CompareLuminositiesMassLoss():
     ax.set_xscale("log")
     ax.set_yscale("log")
     ax.legend(loc="best",prop=dict(size=10))
-
-    #DATA FOR OTHER STARS
-    for star_name in ROTAGE_STARS.keys():
-        staro=ROTAGE_STARS[star_name]
-        tau=staro["tau"]
-        Prot=staro["Prot"]
-        ax.plot([tau],[2*PI/(Prot*DAY)/OMEGASUN],'o',markersize=10,markeredgecolor='none',color=cm.gray(0.5),zorder=-10)
-        ax.text(tau,2*PI/(Prot*DAY)/OMEGASUN,star_name,transform=offSet(-10,staro["up"]),horizontalalignment="right",color=cm.gray(0.1),zorder=-10,fontsize=10)
 
     ax.text(4.56,1.0,r"$\odot$",
             horizontalalignment='center',verticalalignment='center',
