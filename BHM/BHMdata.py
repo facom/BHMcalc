@@ -164,3 +164,15 @@ def adjustValue(key,value,tipo):
                 j+=1
             value=value.strip(",")
     return value
+
+def loadResults(resdir,verbose=False):
+    results=dict2obj(dict())
+
+    for obj in OBJECTS_ALL:
+        if verbose:print "Reading object %s..."%obj
+        try:
+            exec("results.%s=loadConf(resdir+'%s.conf')+loadConf(resdir+'%s.data')"%(obj,obj,obj))
+        except:
+            results.star2=results.star1
+    
+    return results

@@ -1530,6 +1530,13 @@ $summary=<<<F
 	    </li>
 	    <li class="summaryitem">
 	      <a class="activelink" 
+		 href="JavaScript:loadAjax('BHMutil.php?ACTION=DownloadData&Modes=$oModes','#download_datafiles');">
+		Download data files.
+	      </a>
+	      <div class="target" id="download_datafiles"></div>
+	    </li>
+	    <li class="summaryitem">
+	      <a class="activelink" 
 		 href="JavaScript:loadAjax('BHMutil.php?ACTION=DownloadAll&Modes=$oModes','#download_allfiles');">
 		Download all files.
 	      </a>

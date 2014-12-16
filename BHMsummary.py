@@ -60,5 +60,3 @@ for depmod in OBJECTS_ALL:
         signObject(depmod_type,sys_dir+"/"+depmod_conf)
     if DIREXISTS(depmod_dir):
         print "%s:%s"%(depmod_type,depmod_hash)
-
-        

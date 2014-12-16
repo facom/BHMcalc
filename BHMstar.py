@@ -409,7 +409,7 @@ for i in range(0,Nsmoi):
          pyBoreas(M,R,L,Prot,star.FeH)
      
      #X-RAY EMMISION
-     RX=starRX(Rossby)
+     RX=starRX(Rossby,regime='solar')
      LX=L*RX*LSUN
      LXUV=starLXEUV(LX)
 
@@ -582,6 +582,8 @@ louts=%s #AU
      array2str(star.louts),
      ))
 f.close()
+starn=star_conf.split(".")[0]
+System("cp %s/star.data %s/%s.data"%(star_dir,star_dir,starn))
 
 ###################################################
 #GENERATE FULL REPORT
@@ -1260,10 +1262,14 @@ ax.plot(ts,LXUV/(LXSUN/1E7))
 ax.set_xscale("log")
 ax.set_yscale("log")
 
+ax.text(4.56,1.0,r"$\\odot$",
+        horizontalalignment='center',verticalalignment='center',
+        fontsize=20)
+
 ax.set_title(star.title,position=(0.5,1.02),fontsize=12)
 ax.set_xlim((TAU_ZAMS,star.tau_ms))
 
-ax.set_ylabel(r"$L_{\\rm XUV}/L_{\\rm XUV,\odot,present}$")
+ax.set_ylabel(r"$L_{\\rm XUV}/L_{\\rm XUV,\odot,today}$")
 ax.set_xlabel(r"$\\tau$ (Gyr)")
 
 ax.grid(which='both')

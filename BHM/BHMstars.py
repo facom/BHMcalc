@@ -1239,6 +1239,9 @@ def starRX(Ro,regime='middle'):
     elif regime=='high':
         Rosat=0.13+2*0.02
         RXsat=10**(-3.13+2*0.08)
+    elif regime=='solar':
+        Rosat=0.16
+        RXsat=10**(-3.13)
     else:
         Rosat=0.13-2*0.02
         RXsat=10**(-3.13-2*0.08)

@@ -136,18 +136,20 @@ else if($ACTION=="CleanConfiguration"){
 ////////////////////////////////////////////////////
 else if($ACTION=="DownloadConfig"){
   $outfile="sys-$SESSID.tgz";
+  shell_exec("rm $TMPDIR/$outfile");
   shell_exec("cd $SYSDIR/;tar zcf $TMPDIR/$outfile $SESSID/*.conf");
   $link="<a href='$wTMPDIR/$outfile'>Configuration Tarball</a>";
   echo $link;
  }
 ////////////////////////////////////////////////////
-//DOWNLOAD CONFIGURATION
+//DOWNLOAD All files
 ////////////////////////////////////////////////////
 else if($ACTION=="DownloadAll"){
-  $cmd="$PYTHONCMD BHMsummary.py $SESSDIR";
+  $cmd="$PYTHONCMD BHMsummary.py $SESSDIR $Modes";
   $out=shell_exec($cmd);
   $objects=preg_split("/\s+/",$out);
   $outfile="results-$SESSID.tar";
+  shell_exec("rm $TMPDIR/$outfile");
   foreach($objects as $object){
     if(isBlank($object)){continue;}
     $parts=preg_split("/:/",$object);
@@ -155,6 +157,27 @@ else if($ACTION=="DownloadAll"){
     shell_exec("cd objs;tar -rf $TMPDIR/$outfile $objdir");
   }
   $link="<a href='$wTMPDIR/$outfile'>Results Tarball</a>";
+  echo $link;
+}
+////////////////////////////////////////////////////
+//DOWNLOAD DATA
+////////////////////////////////////////////////////
+else if($ACTION=="DownloadData"){
+  $cmd="$PYTHONCMD BHMsummary.py $SESSDIR $Modes";
+  $out=shell_exec($cmd);
+  $objects=preg_split("/\s+/",$out);
+  $outfile="data-$SESSID.tar";
+  shell_exec("rm $TMPDIR/$outfile");
+  shell_exec("cd $SYSDIR/$SESSID;tar -rf $TMPDIR/$outfile *.conf");
+  shell_exec("rm $TMPDIR/objects.log");
+  foreach($objects as $object){
+    if(isBlank($object)){continue;}
+    $parts=preg_split("/:/",$object);
+    $objdir="$parts[0]-$parts[1]";
+    shell_exec("echo $objdir >> $TMPDIR/objects.log");
+    shell_exec("cd objs/$objdir;tar -rf $TMPDIR/$outfile --exclude 'star.data' *.data");
+  }
+  $link="<a href='$wTMPDIR/$outfile'>Data Tarball</a>";
   echo $link;
 }
 ////////////////////////////////////////////////////

@@ -43,7 +43,7 @@ exec("NTIMES=100");
 #OBJECT HASHABLES
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 exec("OBJECT_HASHABLES=dict()")
-exec("OBJECT_HASHABLES['star']=dict(M='%.4f',Z='%.4f',FeH='%.4f',tau='%.4f',str_model='%s')")
+exec("OBJECT_HASHABLES['star']=dict(M='%.4f',Z='%.4f',FeH='%.4f',tau='%.4f',str_model='%s',str_rotmodel='%s',Pini='%.4f',taudisk='%.4f',wsat='%.4f',Kw='%.4e',Kc='%.4e',tauc='%.4f',K1='%.4f',a='%.4f',n='%.4f')")
 exec("OBJECT_HASHABLES['binary']=dict(Pbin='%.4f',abin='%.4f',ebin='%.4f',str_sys='%s')")
 exec("OBJECT_HASHABLES['planet']=dict(M='%.4f',fHHe='%.4f',CMF='%.4f',tau='%.4f',aorb='%.4f',eorb='%.4f',Porb='%.4f',worb='%.4f',Prot='%.4f')")
 exec("OBJECT_HASHABLES['rotation']=dict(tauint='%.4f',str_sys='%s')")
