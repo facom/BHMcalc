@@ -544,7 +544,6 @@ def IntegratedReferenceValues():
     #SAVING REFERENCE VALUES
     #########################################
     
-
 #CompareLuminositiesMassLoss()
 #IntegratedReferenceFluxes()
 IntegratedReferenceValues()
