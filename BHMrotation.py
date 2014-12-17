@@ -100,7 +100,7 @@ for star in stars:
     #ROTATIONAL EVOLUTION
     #==============================
     tsmoi=10**star.Ievo[:,0]/GIGA
-    star.taudisk=rot.tauint
+    star.taudisk=rot.tauint/1000
     rotpars=dict(\
         star=star,
         starf=stars[NEXT(i,2)],
@@ -411,8 +411,8 @@ Ml2=rot.star2_binactivity[:,7]
 Ml2_func=interp1d(ts2,Ml2,kind='slinear')
 sMl2=star2.activity[:,7]
 
-tmin=max(min(ts1),min(ts2))
-tmax=min(max(ts1),max(ts2))
+tmin=max(min(ts1),min(ts2))*1.0001
+tmax=min(max(ts1),max(ts2))*0.9999
 ts=np.logspace(np.log10(tmin),np.log10(tmax),100)
 
 ax.plot(ts1,Ml1,'b-',label='Star 1 (Tidal)')
@@ -469,8 +469,8 @@ LXUV2=rot.star2_binactivity[:,13]
 LXUV2_func=interp1d(ts2,LXUV2,kind='slinear')
 sLXUV2=star2.activity[:,13]
 
-tmin=max(min(ts1),min(ts2))
-tmax=min(max(ts1),max(ts2))
+tmin=max(min(ts1),min(ts2))*1.0001
+tmax=min(max(ts1),max(ts2))*0.9999
 ts=np.logspace(np.log10(tmin),np.log10(tmax),100)
 
 LSUN=LXSUN/1E7

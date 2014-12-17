@@ -16,7 +16,7 @@ from BHM import *
 ###################################################
 #PACKAGES
 ###################################################
-from scipy.interpolate import interp1d
+from scipy.interpolate import interp1d #as interpol
 from scipy.integrate import quad as integrate,odeint
 from scipy.misc import derivative
 from scipy.linalg import norm
@@ -33,6 +33,12 @@ except:
 ###################################################
 #ROUTINES
 ###################################################
+"""
+def interp1d(Xs,Ys,kind='slinear'):
+    f=interpol(Xs,Ys,kind=kind,bounds_error=False,fill_value=0.0)
+    return f
+"""
+
 def scaleProp(m,alpha,beta):
     """
     Scaling function
