@@ -17,7 +17,7 @@ then
     echo "Reconstructing data tarball..."
     cat BHM/.data/data_* > /tmp/BHMdata.tgz
     echo "Unpacking data into data directory..."
-    tar zxf /tmp/BHMdata.tgz -C BHM/
+    tar zxf /tmp/BHMdata.tgz -C BHM/data
 else
     echo "Data already unpacked."
     echo > BHM/data/.lock
