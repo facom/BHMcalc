@@ -1148,7 +1148,7 @@ def starLXUV(Ls,t):
     return LXUV
 
 #XUV Present Earth Level in erg cm^-2 s^-1
-PEL=starLXUV(1.0,TAGE)/(4*PI*(1*AU*1E2)**2)
+PEL=LXSUN/(4*PI*(1*AU*1E2)**2)
 #XUV IN SI
 PELSI=PEL*(1E-7/(1E-2)**2)
 
