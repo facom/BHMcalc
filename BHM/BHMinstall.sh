@@ -18,9 +18,9 @@ then
     cat BHM/.data/data_* > /tmp/BHMdata.tgz
     echo "Unpacking data into data directory..."
     tar zxf /tmp/BHMdata.tgz -C BHM/data
+    echo > BHM/data/.lock
 else
     echo "Data already unpacked."
-    echo > BHM/data/.lock
 fi
 
 if [ ! -e "web/BHMprotect.php" ]
