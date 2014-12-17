@@ -458,6 +458,7 @@ star.louts=louts
 star.logIconv=star.logIconfunc(np.log10(star.tau*GIGA))
 star.Irad=star.Iradfunc(np.log10(star.tau*GIGA))
 if star.Irad>0:star.logIrad=np.log10(star.Irad)
+else:star.logIrad=0
 star.logItot=star.logItotfunc(np.log10(star.tau*GIGA))
 star.omegaconv=rotevol_funcs[1](star.tau)
 star.Pconv=2*PI/star.omegaconv/DAY

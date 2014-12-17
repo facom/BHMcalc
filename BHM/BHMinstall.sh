@@ -12,7 +12,7 @@
 # DATA INSTALL
 ###################################################
 TMPDIR="tmp"
-if [ ! -d BHM/data/Stars ]
+if [ ! -e BHM/data/.lock ]
 then
     echo "Reconstructing data tarball..."
     cat BHM/.data/data_* > /tmp/BHMdata.tgz
@@ -20,6 +20,7 @@ then
     tar zxf /tmp/BHMdata.tgz -C BHM/
 else
     echo "Data already unpacked."
+    echo > BHM/data/.lock
 fi
 
 if [ ! -e "web/BHMprotect.php" ]
