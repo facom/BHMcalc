@@ -42,11 +42,11 @@ function saveLink($string)
 </html>
 LINK;
 
-  $linkfile=$LINKDIR."$sysid-$md5str.html";
+  $linkfile=$LINKDIR."$sysid-$Modes-$md5str.html";
   $fl=fopen($linkfile,"w");
   fwrite($fl,$linkcontent);
   fclose($fl);
-  $link=$wLINKDIR."$sysid-$md5str.html";
+  $link=$wLINKDIR."$sysid-$Modes-$md5str.html";
   
   return $link;
 }
