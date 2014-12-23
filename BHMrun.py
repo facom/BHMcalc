@@ -20,7 +20,7 @@ initializeEPIP()
 Usage=\
 """
 Usage:
-   python %s <script>.py <sysdir> [<module>.conf|CONFIG:<config_string>] <sleep_before> <qoverride>
+   python %s <script>.py <sysdir> [<module>.conf|LOADCONFIG&<config_string>] <sleep_before> <qoverride>
 
    <script>.py: Script to run
 
@@ -30,7 +30,7 @@ Usage:
 
    or
 
-   CONFIG:<config_string>: Configuration string.  Load system from a
+   LOADCONFIG&<config_string>: Configuration string.  Load system from a
    string instead of doing it from conf files.
 
    <sleep_before>: wait this seconds to start.
@@ -181,7 +181,7 @@ for depmod in OBJECT_PIPE[module_name]:
     if depmod_stg<10 or qover==2:
         if qover:PRINTOUT("Forcing %s"%depmod_type);
         else:PRINTOUT("Running %s (%s)"%(depmod_type,depmod_hash));
-        System("python BHMrun.py BHM%s.py %s %s %d"%(depmod_type,sys_dir,depmod_conf,1),out=False)
+        System("python BHMrun.py BHM%s.py %s %s 0 %d"%(depmod_type,sys_dir,depmod_conf,1),out=False)
     else:PRINTOUT("%s %s ready."%(depmod_type,depmod_hash));
     
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
