@@ -134,7 +134,7 @@ $ajax_summary_Load=ajaxFromCode($code,"document","ready");
 if(isset($LOAD)){$slope=1.0;}
 else{$slope=1.0;}
 $code=ajaxMultipleForm(array("interaction","rotation","hz",
-			     "binary","star1","star2","planet","cat"),"allforms",$slope);
+			     "binary","star1","star2","planet","summary"),"allforms",$slope);
 $ajax_all_Update=ajaxFromCode($code,"'#all_Update'","click");
 $ajax_all_Load=ajaxFromCode($code,"document","ready");
 
