@@ -54,12 +54,14 @@ $src_content
 C;
 }
 
-//WRITE OUTPUT
-$tgt_file="sys/$SESSID/summary.html";
-$ft=fopen($tgt_file,"w");
-fwrite($ft,$tgt_content);
-fclose($ft);
-
-//RETURN OUTPUT
-echo $tgt_file;
+if(is_dir("sys/$SESSID")){
+  //WRITE OUTPUT
+  $tgt_file="sys/$SESSID/summary.html";
+  $ft=fopen($tgt_file,"w");
+  fwrite($ft,$tgt_content);
+  fclose($ft);
+  echo $tgt_file;
+}else{
+  echo "web/noresults.html";
+}
 ?>
