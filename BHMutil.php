@@ -29,10 +29,11 @@ $source_dir=$SESSDIR;
 
 function saveLink($string)
 {
-  global $LINKDIR,$wLINKDIR,$wDIR;
+  global $LINKDIR,$wLINKDIR,$wDIR,$Modes;
   $masterlink="?LOADCONFIG&Modes=$Modes&$string";
   $md5str=md5($masterlink);
-
+  $sysid=$GLOBALS["binary_str_SysID"];
+  $sysid=strtolower(preg_replace("/['\s-_,\.]/","",$sysid));
   $linkcontent=<<<LINK
 <html>
 <head>
@@ -41,11 +42,11 @@ function saveLink($string)
 </html>
 LINK;
 
-  $linkfile=$LINKDIR."$md5str.html";
+  $linkfile=$LINKDIR."$sysid-$md5str.html";
   $fl=fopen($linkfile,"w");
   fwrite($fl,$linkcontent);
   fclose($fl);
-  $link=$wLINKDIR."$md5str.html";
+  $link=$wLINKDIR."$sysid-$md5str.html";
   
   return $link;
 }
