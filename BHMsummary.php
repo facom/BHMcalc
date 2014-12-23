@@ -27,6 +27,7 @@ $cmd="$PYTHONCMD BHMsummary.py $SESSDIR $Mode";
 //OUTPUT
 $stdout="BHMsummary-output-$SESSID";
 $stderr="BHMsummary-error-$SESSID";
+$tgt_content="";
 
 //EXCECUTE COMMAND
 $out=shell_exec($cmd." 2> $TMPDIR/$stderr |tee $TMPDIR/$stdout");
@@ -36,13 +37,15 @@ $objects=preg_split("/\s+/",rtrim($out));
 foreach($objects as $object){
   $parts=preg_split("/:/",$object);
   $module=$parts[0];
-  $hash=$parts[1];
+  if(count($parts)>1){$hash=$parts[1];}
+  else{$hash="";}
 
   //GET OBJECT HASH
   $src_file="objs/$module-$hash/$module.html";
   
   //READ OUTPUT CONTENT
-  $src_content=shell_exec("cat $src_file");
+  if(file_exists($src_file)){$src_content=shell_exec("cat $src_file");}
+  else{$src_content="";}
 
   if(isBlank($src_content)){
     $src_content="<i>No result calculated so far.</i>";

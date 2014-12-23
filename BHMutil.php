@@ -35,18 +35,24 @@ function saveLink($string)
   $sysid=$GLOBALS["binary_str_SysID"];
   $sysid=strtolower(preg_replace("/['\s-_,\.]/","",$sysid));
   $linkcontent=<<<LINK
+<?PHP
+\$RELATIVE="..";
+include_once("../web/BHM.php");
+echo<<<C
 <html>
 <head>
-<meta http-equiv="refresh" content="0;URL=$wDIR/$masterlink">
+<meta http-equiv="refresh" content="0;URL=\$wDIR/$masterlink">
 </head>
 </html>
+C;
+?>
 LINK;
 
-  $linkfile=$LINKDIR."$sysid-$Modes-$md5str.html";
+  $linkfile=$LINKDIR."$sysid-$Modes-$md5str.php";
   $fl=fopen($linkfile,"w");
   fwrite($fl,$linkcontent);
   fclose($fl);
-  $link=$wLINKDIR."$sysid-$Modes-$md5str.html";
+  $link=$wLINKDIR."$sysid-$Modes-$md5str.php";
   
   return $link;
 }
