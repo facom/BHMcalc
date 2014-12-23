@@ -97,6 +97,12 @@ else if($ACTION=="CommandLine"){
   loadConfiguration("$source_dir/interaction.conf","interaction");
   $id=md5($PARSE_STRING);
   $cmd="$PYTHONCMD BHMrun.py BHMinteraction.py $SESSDIR/sys_$id \"LOADCONFIG&Modes=$Modes&$PARSE_STRING\"";
+  $sysid=$GLOBALS["binary_str_SysID"];
+  $sysid=strtolower(preg_replace("/['\s-_,\.]/","",$sysid));
+  $cmdfile=$LINKDIR."$sysid-$Modes-$id.sh";
+  $fl=fopen($cmdfile,"w");
+  fwrite($fl,$cmd."\n");
+  fclose($fl);
   echo $cmd;
 }
 ////////////////////////////////////////////////////
