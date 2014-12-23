@@ -256,11 +256,13 @@ if(preg_match("/Star1/",$Modes)){
   $star1_str_rotmodel_sel=selectFunction("star1_str_rotmodel",$ROTMODELS,$star1_str_rotmodel,
 					 $options="class='sensitive' onchange='idSystem();'");
 
+  if(!preg_match("/Star/",$Modes)){$NumStar="1";}
+  else{$NumStar="";}
 $tabs.=<<<F
   <!-- //////////////////////////////////////////////////////////// -->
   <!-- STAR 1 -->
   <!-- //////////////////////////////////////////////////////////// -->
-  <div class="tabbertab" id="star1" title="Star 1">
+  <div class="tabbertab" id="star1" title="Star $NumStar">
     <form id="star1_form" action="BHMrun.php">
     <div class="tabcontent">
       <div class="wrapper">
