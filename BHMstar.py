@@ -407,6 +407,7 @@ for i in range(0,Nsmoi):
      #SURFICIAL MAGNETIC CONDITIONS
      tauc,fstar,Bequi,Bphoto,BTR,Rossby,Mdot,Mdot_hot,Mdot_cold,MATR=\
          pyBoreas(M,R,L,Prot,star.FeH)
+     #print t,tauc,fstar,Bequi,Bphoto,BTR,Rossby,Mdot,Mdot_hot,Mdot_cold,MATR
      
      #X-RAY EMMISION
      RX=starRX(Rossby,regime='solar')
