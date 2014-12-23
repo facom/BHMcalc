@@ -105,23 +105,55 @@ else if($ACTION=="SaveConfiguration"){
   }
   $id=preg_replace("/'/","",$id);
   $out=shell_exec("grep '>$id<' $cfile");
+
+  $masterlink="<li id='$id'>$Modes: <a href=\"$masterlink\">$id</a></li>\n";
+
   if(!isBlank($out)){
-$content=<<<C
-<i>We have detected a configuration with the same name already. Try to change the ID of the system/planet/star and try again.</i>
-C;
+    $out=shell_exec("cat $cfile");
+    $master=preg_replace("/<li id='$id'>.+<\/li>\n/","$masterlink\n",$out);
+    $fl=fopen($cfile,"w");
+    fwrite($fl,$master);
+    fclose($fl);
+    $signal="<i style='color:red'>Configuration '$id' updated</i>";
   }else{
-  $masterlink=<<<LINK
-
-    <li>$Modes: <a href="$masterlink" target="_blank">$id</a></li>
-
-LINK;
-  $fl=fopen($cfile,"a");
-  fwrite($fl,$masterlink);
-  fclose($fl);
-  $content=shell_exec("cat $cfile");
+    $fl=fopen($cfile,"a");
+    fwrite($fl,$masterlink);
+    fclose($fl);
+    $signal="<i style='color:blue'>New configuration '$id' saved</i>";
   }
-  echo "<ul>$content</ul>";
+  $content=shell_exec("cat $cfile");
+  echo "$signal<ul>$content</ul>";
 }
+////////////////////////////////////////////////////
+//CLEAN CONFIGURATION
+////////////////////////////////////////////////////
+else if($ACTION=="SaveObject"){
+  $id=preg_replace("/'/","",$NewId);
+  $cmd="$PYTHONCMD BHMsummary.py $SESSDIR $ObjType hash";
+  if(isBlank($id) or 
+     preg_match("/\.+/",$id) or
+     preg_match("/\/+/",$id) or
+     preg_match("/\s+/",$id)){
+    echo "Invalid id '$id'";
+    return;
+  }
+  $hash=rtrim(shell_exec($cmd));
+  $parts=preg_split("/-/",$hash);
+  $obj=$parts[0];
+  $tgtdir="$OBJSDIR/$obj-$id";
+  $lnkdir="<a href=\"$wOBJSDIR/$obj-$id/\" target='_blank'>$obj-$id</a>";
+  if(!is_dir($tgtdir)){
+    $cmd="cp -rf $OBJSDIR/$hash $tgtdir && echo '<li>$lnkdir</li>' >> $SESSDIR/objects.html";
+  }else{
+    $cmd="cp -rf $OBJSDIR/$hash/* $tgtdir/";
+  }
+  shell_exec("echo '$cmd' > /tmp/cmd");
+  shell_exec("$cmd &> $TMPDIR/BHMsave-$SESSID");
+  shell_exec("sed -e 's/$hash/$obj-$id/' $OBJSDIR/$hash/$obj.html > $tgtdir/$obj.html");
+  //echo "sed -e 's/$hash/$obj-$id/' $tgtdir/$obj.html &> /tmp/sed";
+  echo "Object $id saved.<br/>Use this link: $lnkdir.";
+}
+
 ////////////////////////////////////////////////////
 //CLEAN CONFIGURATION
 ////////////////////////////////////////////////////

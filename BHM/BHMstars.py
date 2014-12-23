@@ -2275,11 +2275,10 @@ def rotationalTorques(Omega,t,params,full=False,verbose=False):
     #RADIATIVE CORE ACCELERATION
     ###################################################
     if t<=taucont:
-    #and (t>=star.taudisk or True):
         #&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
         #CONTRACTION 
         #&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
-        dOdt_cont[1]=dOdt_cont[0]+(-Omega_core*dlogIraddt+Omega_conv*dlogIramdt)*-0.0
+        dOdt_cont[1]=dOdt_cont[0]
 
     ###################################################
     #DIFFERENTIAL ROTATION

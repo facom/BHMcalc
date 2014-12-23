@@ -456,6 +456,26 @@ $tabs.=<<<F
 	      <!-- ---------------------------------------- -->
 	      <tr><td class="name">Surface Gravity (error):</td><td class="field"><input type="text" name="star1_loggerr" value="$star1_loggerr"> dex (cm s<sup>-2</sup>)</td></tr>
 	      <tr><td class="help" colspan=2>Help.</td></tr>
+
+	      <!-- ---------------------------------------- -->
+	      <tr>
+		<td class="name" valign="top">
+		  <a class="activelink" 
+		     href="JavaScript:loadAjax('BHMutil.php?ACTION=SaveObject&ObjType=Star&NewId='+$('#saveobject_star1').val(),'#saveobjectdisp_star1');">
+		  Save this object:
+		  </a>
+		</td>
+		<td class="field">
+		  <input id="saveobject_star1" type="text" name="saveobject" value="$binary_str_SysID-star1"><br/>
+		  <div class="target" id="saveobjectdisp_star1"></div>
+		</td>
+	      </tr>
+	      <tr>
+		<td class="help" colspan=2>
+		  Pressing the link you will save the object with the name provided in the text box.
+		</td>
+	      </tr>
+
 	      <!-- ====================== HIDDEN =========================== -->
 	      <input type="hidden" name="star1_str_Stype" value="$star1_str_Stype">
 	      <input type="hidden" name="star1_vsini" value="$star1_vsini">
@@ -717,6 +737,25 @@ $tabs.=<<<F
 	      <!-- ---------------------------------------- -->
 	      <tr><td class="name">Surface Gravity (error):</td><td class="field"><input type="text" name="star2_loggerr" value="$star2_loggerr"> dex (cm s<sup>-2</sup>)</td></tr>
 	      <tr><td class="help" colspan=2>Help.</td></tr>
+	      <!-- ---------------------------------------- -->
+	      <tr>
+		<td class="name" valign="top">
+		  <a class="activelink" 
+		     href="JavaScript:loadAjax('BHMutil.php?ACTION=SaveObject&ObjType=Star&NewId='+$('#saveobject_star2').val(),'#saveobjectdisp_star2');">
+		  Save this object:
+		  </a>
+		</td>
+		<td class="field">
+		  <input id="saveobject_star2" type="text" name="saveobject" value="$binary_str_SysID-star2"><br/>
+		  <div class="target" id="saveobjectdisp_star2"></div>
+		</td>
+	      </tr>
+	      <tr>
+		<td class="help" colspan=2>
+		  Pressing the link you will save the object with the name provided in the text box.
+		</td>
+	      </tr>
+
 	      <!-- ====================== HIDDEN =========================== -->
 	      <input type="hidden" name="star2_str_Stype" value="$star2_str_Stype">
 	      <input type="hidden" name="star2_vsini" value="$star2_vsini">
@@ -920,6 +959,25 @@ $tabs.=<<<F
 	      <tr><td class="name">Radius:</td><td class="field"><input type="text" name="planet_R" value="$planet_R"> R<sub>Earth</sub></td></tr>
 	      <tr><td class="help" colspan=2>Help.</td></tr>
 
+	      <!-- ---------------------------------------- -->
+	      <tr>
+		<td class="name" valign="top">
+		  <a class="activelink" 
+		     href="JavaScript:loadAjax('BHMutil.php?ACTION=SaveObject&ObjType=Planet&NewId='+$('#saveobject_planet').val(),'#saveobjectdisp_planet');">
+		  Save this object:
+		  </a>
+		</td>
+		<td class="field">
+		  <input id="saveobject_planet" type="text" name="saveobject" value="$binary_str_SysID-planet"><br/>
+		  <div class="target" id="saveobjectdisp_planet"></div>
+		</td>
+	      </tr>
+	      <tr>
+		<td class="help" colspan=2>
+		  Pressing the link you will save the object with the name provided in the text box.
+		</td>
+	      </tr>
+
 	      <!-- ====================== HIDDEN =========================== -->
 	      <input type="hidden" name="planet_Porberr" value="$planet_Porberr">
 	      <input type="hidden" name="planet_aorberr" value="$planet_aorberr">
@@ -1076,6 +1134,25 @@ $tabs.=<<<F
 	      <tr><td class="name">X-Ray Luminosity:</td><td class="field"><input type="text" name="binary_Lx" value="$binary_Lx"> L<sub>Sun</sub></td></tr>
 	      <tr><td class="help" colspan=2>Help.</td></tr>
 
+	      <!-- ---------------------------------------- -->
+	      <tr>
+		<td class="name" valign="top">
+		  <a class="activelink" 
+		     href="JavaScript:loadAjax('BHMutil.php?ACTION=SaveObject&ObjType=Binary&NewId='+$('#saveobject_binary').val(),'#saveobjectdisp_binary');">
+		  Save this object:
+		  </a>
+		</td>
+		<td class="field">
+		  <input id="saveobject_binary" type="text" name="saveobject" value="$binary_str_SysID-binary"><br/>
+		  <div class="target" id="saveobjectdisp_binary"></div>
+		</td>
+	      </tr>
+	      <tr>
+		<td class="help" colspan=2>
+		  Pressing the link you will save the object with the name provided in the text box.
+		</td>
+	      </tr>
+
 	      <!-- ====================== HIDDEN =========================== -->
 	      <input type="hidden" name="binary_Zfit" value="$binary_Zfit">
 	      <input type="hidden" name="binary_FeHfit" value="$binary_FeHfit">
@@ -1183,6 +1260,7 @@ $tabs.=<<<F
 		</td>
 	      </tr>
 	      <!-- ---------------------------------------- -->
+	      <tr>
 		<td class="name">Outer edge (conservative HZ):</td>
 		<td class="field">
 		  $hz_str_outcrit_nr_sel
@@ -1192,6 +1270,24 @@ $tabs.=<<<F
 	      <tr>
 		<td class="help" colspan=2>
 		  Available: 'maximum greenhouse', 'early mars' (sustained lowercase)
+		</td>
+	      </tr>
+	      <!-- ---------------------------------------- -->
+	      <tr>
+		<td class="name" valign="top">
+		  <a class="activelink" 
+		     href="JavaScript:loadAjax('BHMutil.php?ACTION=SaveObject&ObjType=HZ&NewId='+$('#saveobject_hz').val(),'#saveobjectdisp_hz');">
+		  Save this object:
+		  </a>
+		</td>
+		<td class="field">
+		  <input id="saveobject_hz" type="text" name="saveobject" value="$binary_str_SysID-hz"><br/>
+		  <div class="target" id="saveobjectdisp_hz"></div>
+		</td>
+	      </tr>
+	      <tr>
+		<td class="help" colspan=2>
+		  Pressing the link you will save the object with the name provided in the text box.
 		</td>
 	      </tr>
 	      <!-- ---------------------------------------- -->
@@ -1289,6 +1385,26 @@ $tabs.=<<<F
 		  f<sub>diss</sub>=1.0-3.5.
 		</td>
 	      </tr>
+
+	      <!-- ---------------------------------------- -->
+	      <tr>
+		<td class="name" valign="top">
+		  <a class="activelink" 
+		     href="JavaScript:loadAjax('BHMutil.php?ACTION=SaveObject&ObjType=Rotation&NewId='+$('#saveobject_rot').val(),'#saveobjectdisp_rot');">
+		  Save this object:
+		  </a>
+		</td>
+		<td class="field">
+		  <input id="saveobject_rot" type="text" name="saveobject" value="$binary_str_SysID-rot"><br/>
+		  <div class="target" id="saveobjectdisp_rot"></div>
+		</td>
+	      </tr>
+	      <tr>
+		<td class="help" colspan=2>
+		  Pressing the link you will save the object with the name provided in the text box.
+		</td>
+	      </tr>
+
 	      <!-- ---------------------------------------- -->
 	      <tr>
 		<td class="button" colspan=2>
@@ -1460,6 +1576,25 @@ $tabs.=<<<F
 	      </tr>
 	      <!-- ---------------------------------------- -->
 	      <tr>
+		<td class="name" valign="top">
+		  <a class="activelink" 
+		     href="JavaScript:loadAjax('BHMutil.php?ACTION=SaveObject&ObjType=Interaction&NewId='+$('#saveobject_int').val(),'#saveobjectdisp_int');">
+		  Save this object:
+		  </a>
+		</td>
+		<td class="field">
+		  <input id="saveobject_int" type="text" name="saveobject" value="$binary_str_SysID-int"><br/>
+		  <div class="target" id="saveobjectdisp_int"></div>
+		</td>
+	      </tr>
+	      <tr>
+		<td class="help" colspan=2>
+		  Pressing the link you will save the object with the name provided in the text box.
+		</td>
+	      </tr>
+
+	      <!-- ---------------------------------------- -->
+	      <tr>
 		<td class="button" colspan=2>
 		  <button class="update" id="interaction_Update">Update</button> 
 		  $ajaxform_interaction_Update
@@ -1501,6 +1636,12 @@ F;
 
 if($QCALCMODE){
 $cfile="$SESSDIR/configurations.html";
+$ofile="$SESSDIR/objects.html";
+if(is_file($ofile)){
+  $objects=shell_exec("cat $ofile");
+}else{
+  $objects="<i>No objects saved yet.</i>";
+}
 if(is_file($cfile)){
   $configurations=shell_exec("cat $cfile");
   $downlink=<<<D
@@ -1563,6 +1704,12 @@ $summary=<<<F
 		Clear Configuration</a> 
 	      <div class="listconfig" id="saveconfiguration"><ul>$configurations</ul></div>
 	      $downlink
+	    </li>
+	    <li class="summaryitem">
+	      Saved Objects:
+	      <div class="listconfig" id="saveobjects">
+		<ul>$objects</ul>
+	      </div>
 	    </li>
 	  </ul>
 	</div>

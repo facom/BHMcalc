@@ -19,6 +19,10 @@ from BHM.BHMplanets import *
 from BHM.BHMastro import *
 
 FIGDIR="figures/"
+TMIN=1E-3
+#TMIN_INT=7E-1
+TMIN_INT=1E-2
+TMAX=8.0
 
 def CompareLuminositiesMassLoss():
     """
@@ -74,9 +78,9 @@ def CompareLuminositiesMassLoss():
     tsslow=slow.star1.rotevol[:,0]
     Oslow=slow.star1.rotevol[:,1]/OMEGASUN
 
-    ax.plot(tsnom,Onom,label="Nominal")
-    ax.plot(tsfast,Ofast,label="Fast")
-    ax.plot(tsslow,Oslow,label="Slow")
+    ax.plot(tsnom,Onom,label=r"Nominal: $P_{\rm ini}=7$ days, $\tau_{\rm ce}=7$ Myrs, $K_C=5\times 10^{40}$")
+    ax.plot(tsfast,Ofast,label=r"Fast: $P_{\rm ini}=1.5$ days, $\tau_{\rm ce}=15$ Myrs, $K_C=5.4\times 10^{40}$")
+    ax.plot(tsslow,Oslow,label=r"Slow: $P_{\rm ini}=12$ days, $\tau_{\rm ce}=1$ Myrs, $K_C=4.6\times 10^{40}$")
 
     ax.set_xscale("log")
     ax.set_yscale("log")
@@ -115,14 +119,16 @@ def CompareLuminositiesMassLoss():
     ax.text(1.07,0.5,r"$P$ (days)",rotation=90,verticalalignment='center',horizontalalignment='center',transform=ax.transAxes)
 
     ymin,ymax=ax.get_ylim()
+    ax.set_xlim((TMIN,TMAX))
     ax.set_ylim((0.8,ymax))
-    fig.savefig(DATADIR+"rot.png")
+    ax.grid(which='both')
+    fig.savefig(DATADIR+"Solar-rot.png")
 
     #############################################################
     #PLOT XUV LUMINOSITY
     #############################################################
     fig=plt.figure()
-    ax=fig.add_axes([0.1,0.1,0.8,0.8])
+    ax=fig.add_axes([0.12,0.12,0.8,0.8])
     
     tsnom=nominal.star1.activity[:,0]
     LXUVnom=nominal.star1.activity[:,13]/(LXSUN/1E7)
@@ -139,22 +145,24 @@ def CompareLuminositiesMassLoss():
 
     ax.set_xscale("log")
     ax.set_yscale("log")
-    ax.legend(loc="best",prop=dict(size=10))
+    ax.set_xlim((TMIN,TMAX))
+    ax.legend(loc="best",prop=dict(size=12))
 
     ax.text(4.56,1.0,r"$\odot$",
             horizontalalignment='center',verticalalignment='center',
             fontsize=24)
 
     ax.set_xlabel(r"$\tau$ (Gyr)")
-    ax.set_ylabel(r"$L_{\rm XUV}/L_{\rm XUV,\odot,today}$")
+    ax.set_ylabel(r"$L_{\rm XUV}/L_{\rm XUV,\odot}$")
+    ax.grid(which='both')
 
-    fig.savefig(DATADIR+"XUV.png")
+    fig.savefig(DATADIR+"Solar-XUV.png")
 
     #############################################################
     #PLOT MASS-LOSS
     #############################################################
     fig=plt.figure()
-    ax=fig.add_axes([0.1,0.1,0.8,0.8])
+    ax=fig.add_axes([0.12,0.12,0.8,0.8])
     
     tsnom=nominal.star1.activity[:,0]
     MLnom=nominal.star1.activity[:,7]
@@ -171,7 +179,9 @@ def CompareLuminositiesMassLoss():
 
     ax.set_xscale("log")
     ax.set_yscale("log")
-    ax.legend(loc="best",prop=dict(size=10))
+    ax.set_xlim((TMIN,TMAX))
+    ax.legend(loc="best",prop=dict(size=12))
+    ax.set_xlim((TMIN,TMAX))
 
     ax.text(4.56,MSTSUN*YEAR/MSUN,r"$\odot$",
             horizontalalignment='center',verticalalignment='center',
@@ -179,8 +189,9 @@ def CompareLuminositiesMassLoss():
 
     ax.set_ylabel(r"$\dot M$ ($M_\odot$/yr)")
     ax.set_xlabel(r"$\tau$ (Gyr)")
+    ax.grid(which='both')
 
-    fig.savefig(DATADIR+"ML.png")
+    fig.savefig(DATADIR+"Solar-ML.png")
 
 def IntegratedReferenceFluxes():
     """
@@ -259,12 +270,15 @@ def IntegratedReferenceFluxes():
     ax.set_xscale("log")
     ax.set_yscale("log")
     
-    ax.legend(loc='upper right',prop=dict(size=10))
+    ax.legend(loc='upper right',prop=dict(size=12))
 
     ax.set_xlabel(r"$\tau$ (Gyr)")
     ax.set_ylabel(r"$F_{\rm XUV}$ (PEL)")
+    ax.set_xlim((TMIN_INT,TMAX))
+    ax.set_ylim((1E-1,2E3))
+    ax.grid(which='both')
 
-    fig.savefig(DATADIR+"XUV-Flux.png")
+    fig.savefig(DATADIR+"Solar-XUV-Flux.png")
 
     #############################################################
     #PLOT FLUXES
@@ -304,12 +318,16 @@ def IntegratedReferenceFluxes():
     ax.set_xscale("log")
     ax.set_yscale("log")
     
-    ax.legend(loc='upper right',prop=dict(size=10))
+    ax.legend(loc='upper right',prop=dict(size=12))
 
     ax.set_xlabel(r"$\tau$ (Gyr)")
     ax.set_ylabel(r"$F_{\rm SW}$ (PEL)")
+    ax.set_xlim((TMIN_INT,TMAX))
+    ax.set_ylim((1E-1,3E2))
+    ax.grid(which='both')
 
-    fig.savefig(DATADIR+"SW-Flux.png")
+    fig.savefig(DATADIR+"Solar-SW-Flux.png")
+    return;
 
     #############################################################
     #PLOT INTEGRATED FLUXES
@@ -353,8 +371,9 @@ def IntegratedReferenceFluxes():
 
     ax.set_xlabel(r"$\tau$ (Gyr)")
     ax.set_ylabel(r"$\int_{%.2f\,{\rm Gyr}}^{\tau} F_{\rm XUV}(t)\,dt$ (${\rm j/m}^2$)"%(nominal.interaction.tauini))
+    ax.set_xlim((TMIN_INT,TMAX))
 
-    fig.savefig(DATADIR+"iXUV-Flux.png")
+    fig.savefig(DATADIR+"Solar-iXUV-Flux.png")
 
     #############################################################
     #PLOT INTEGRATED FLUXES
@@ -398,10 +417,206 @@ def IntegratedReferenceFluxes():
 
     ax.set_xlabel(r"$\tau$ (Gyr)")
     ax.set_ylabel(r"$\int_{%.2f\,{\rm Gyr}}^{\tau} F_{\rm SW}(t)\,dt$ (${\rm ions/m}^2$)"%(nominal.interaction.tauini))
+    ax.set_xlim((TMIN_INT,TMAX))
 
-    fig.savefig(DATADIR+"iSW-Flux.png")
+    fig.savefig(DATADIR+"Solar-iSW-Flux.png")
 
-def IntegratedReferenceValues():
+def IntegratedReferenceFluxesTini():
+    """
+    Compare XUV luminosities and mass-loss from a single solar star
+    with different rotational parameters.
+
+    This calculation has been done in part with BHMcalc2
+    """
+    DATADIR=FIGDIR+"CompSolar/"
+    
+    """
+    Fast rotator:
+      tau = 4.56
+      Pini = 1.5 days Gallat & Bouvier 
+      taudisk = 2 Myrs
+      tauc = 1 Myrs
+      Kw = 5.4x10^40
+    """
+    fast=loadResults(DATADIR+"fast/")
+    
+    """
+    Nominal parameters:
+      tau = 4.56
+      Pini = 7 days Gallat & Bouvier 
+      taudisk = 2 Myrs
+      tauc = 7 Myrs
+      Kw = 5.0x10^40
+    """
+    nominal=loadResults(DATADIR+"nominal/")
+
+    """
+    Slow rotator:
+      tau = 4.56
+      Pini = 12.0 days Gallat & Bouvier 
+      taudisk = 2 Myrs
+      tauc = 1 Myrs
+      Kw = 4.6x10^40
+    """
+    slow=loadResults(DATADIR+"slow/")
+
+    #############################################################
+    #PLOT INTEGRATED XUV FLUX
+    #############################################################
+    fig=plt.figure()
+    
+    tsnom=nominal.interaction.intflux[:,0]
+    FiXUVnom_earthf=interp1d(tsnom,nominal.interaction.intflux[:,9],kind='slinear')
+    FiXUVnom_venusf=interp1d(tsnom,nominal.interaction.intflux[:,7],kind='slinear')
+    FiXUVnom_marsf=interp1d(tsnom,nominal.interaction.intflux[:,8],kind='slinear')
+
+    tsfast=fast.interaction.intflux[:,0]
+    FiXUVfast_earthf=interp1d(tsfast,fast.interaction.intflux[:,9],kind='slinear')
+    FiXUVfast_venusf=interp1d(tsfast,fast.interaction.intflux[:,7],kind='slinear')
+    FiXUVfast_marsf=interp1d(tsfast,fast.interaction.intflux[:,8],kind='slinear')
+    
+    tsslow=slow.interaction.intflux[:,0]
+    FiXUVslow_earthf=interp1d(tsslow,slow.interaction.intflux[:,9],kind='slinear')
+    FiXUVslow_venusf=interp1d(tsslow,slow.interaction.intflux[:,7],kind='slinear')
+    FiXUVslow_marsf=interp1d(tsslow,slow.interaction.intflux[:,8],kind='slinear')
+
+    #PLOT GLOBAL
+    tref=1E-2
+    facabs=GYR*PELSI
+    ax.fill_between(tsslow,
+                    facabs*(FiXUVslow_earthf(tsnom)-FiXUVslow_earthf(tref)),
+                    facabs*(FiXUVfast_earthf(tsnom)-FiXUVfast_earthf(tref)),
+                    color='b',alpha=0.3)
+    ax.plot(tsnom,facabs*(FiXUVnom_earthf(tsnom)-FiXUVnom_earthf(tref)),'b-',label='Earth')
+
+    ax.fill_between(tsslow,
+                    facabs*(FiXUVslow_venusf(tsslow)-FiXUVslow_venusf(tref)),
+                    facabs*(FiXUVfast_venusf(tsslow)-FiXUVfast_venusf(tref)),
+                    color='g',alpha=0.3)
+    ax.plot(tsslow,facabs*(FiXUVnom_venusf(tsslow)-FiXUVnom_venusf(tref)),'g-',label='Venus')
+
+    ax.fill_between(tsslow,
+                    facabs*(FiXUVslow_marsf(tsslow)-FiXUVslow_marsf(tref)),
+                    facabs*(FiXUVfast_marsf(tsslow)-FiXUVfast_marsf(tref)),
+                    color='r',alpha=0.3)
+    ax.plot(tsslow,facabs*(FiXUVnom_marsf(tsslow)-FiXUVnom_marsf(tref)),'r-',label='Mars')
+    logTickLabels(ax,-2,1,(1,),frm="%.2f",axis='x',notation='sci',fontsize=10)
+    ax.set_xlim((tref,1.0))
+    ax.set_ylim((1E12,2E16))
+    ax.legend(loc='upper left',prop=dict(size=12))
+    ax.set_xlabel(r"$\tau$ (Gyr)")
+    ax.set_ylabel(r"$\Phi_{\rm XUV}(\tau\,;\,\tau_{\rm ini})$=$\int_{;\tau_{\rm ini}}\,F_{\rm XUV}(t)\,dt$   [j/m$^2$]")
+    ax.grid(which='both')
+
+    #PLOT SECONDARY
+    tref=0.7
+    facabs=GYR*PELSI
+    axi.fill_between(tsslow,
+                    facabs*(FiXUVslow_earthf(tsnom)-FiXUVslow_earthf(tref)),
+                    facabs*(FiXUVfast_earthf(tsnom)-FiXUVfast_earthf(tref)),
+                    color='b',alpha=0.3)
+    axi.plot(tsnom,facabs*(FiXUVnom_earthf(tsnom)-FiXUVnom_earthf(tref)),'b-',label='Earth')
+
+    axi.fill_between(tsslow,
+                    facabs*(FiXUVslow_venusf(tsslow)-FiXUVslow_venusf(tref)),
+                    facabs*(FiXUVfast_venusf(tsslow)-FiXUVfast_venusf(tref)),
+                    color='g',alpha=0.3)
+    axi.plot(tsslow,facabs*(FiXUVnom_venusf(tsslow)-FiXUVnom_venusf(tref)),'g-',label='Venus')
+
+    axi.fill_between(tsslow,
+                    facabs*(FiXUVslow_marsf(tsslow)-FiXUVslow_marsf(tref)),
+                    facabs*(FiXUVfast_marsf(tsslow)-FiXUVfast_marsf(tref)),
+                    color='r',alpha=0.3)
+    axi.plot(tsslow,facabs*(FiXUVnom_marsf(tsslow)-FiXUVnom_marsf(tref)),'r-',label='Mars')
+    logTickLabels(axi,-1,1,(1,),frm="%.2f",axis='x',notation='sci',fontsize=10)
+    axi.set_xlim((tref,TMAX))
+    axi.set_ylim((1E12,2E15))
+    axi.set_title(r"$\tau_{\rm ini}=%.2f$ Gyr"%tref,position=(0.5,1.02))
+
+    fig.savefig(DATADIR+"Solar-iXUV-Flux-Sec.png")
+
+    #############################################################
+    #PLOT INTEGRATED SW FLUX
+    #############################################################
+    fig=plt.figure()
+    ax=fig.add_axes([0.15,0.1,0.8,0.8])
+    axi=fig.add_axes([0.40,0.15,0.52,0.32])
+    for axs in ax,axi:
+        axs.set_xscale("log")
+        axs.set_yscale("log")
+    
+    tsnom=nominal.interaction.intflux[:,0]
+    FiSWnom_earthf=interp1d(tsnom,nominal.interaction.intflux[:,27],kind='slinear')
+    FiSWnom_venusf=interp1d(tsnom,nominal.interaction.intflux[:,23],kind='slinear')
+    FiSWnom_marsf=interp1d(tsnom,nominal.interaction.intflux[:,25],kind='slinear')
+
+    tsfast=fast.interaction.intflux[:,0]
+    FiSWfast_earthf=interp1d(tsfast,fast.interaction.intflux[:,27],kind='slinear')
+    FiSWfast_venusf=interp1d(tsfast,fast.interaction.intflux[:,23],kind='slinear')
+    FiSWfast_marsf=interp1d(tsfast,fast.interaction.intflux[:,25],kind='slinear')
+    
+    tsslow=slow.interaction.intflux[:,0]
+    FiSWslow_earthf=interp1d(tsslow,slow.interaction.intflux[:,27],kind='slinear')
+    FiSWslow_venusf=interp1d(tsslow,slow.interaction.intflux[:,23],kind='slinear')
+    FiSWslow_marsf=interp1d(tsslow,slow.interaction.intflux[:,25],kind='slinear')
+
+    #PLOT GLOBAL
+    tref=1E-2
+    facabs=GYR*SWPEL
+    ax.fill_between(tsslow,
+                    facabs*(FiSWslow_earthf(tsnom)-FiSWslow_earthf(tref)),
+                    facabs*(FiSWfast_earthf(tsnom)-FiSWfast_earthf(tref)),
+                    color='b',alpha=0.3)
+    ax.plot(tsnom,facabs*(FiSWnom_earthf(tsnom)-FiSWnom_earthf(tref)),'b-',label='Earth')
+
+    ax.fill_between(tsslow,
+                    facabs*(FiSWslow_venusf(tsslow)-FiSWslow_venusf(tref)),
+                    facabs*(FiSWfast_venusf(tsslow)-FiSWfast_venusf(tref)),
+                    color='g',alpha=0.3)
+    ax.plot(tsslow,facabs*(FiSWnom_venusf(tsslow)-FiSWnom_venusf(tref)),'g-',label='Venus')
+
+    ax.fill_between(tsslow,
+                    facabs*(FiSWslow_marsf(tsslow)-FiSWslow_marsf(tref)),
+                    facabs*(FiSWfast_marsf(tsslow)-FiSWfast_marsf(tref)),
+                    color='r',alpha=0.3)
+    ax.plot(tsslow,facabs*(FiSWnom_marsf(tsslow)-FiSWnom_marsf(tref)),'r-',label='Mars')
+    logTickLabels(ax,-2,1,(1,),frm="%.2f",axis='x',notation='sci',fontsize=10)
+    ax.set_xlim((tref,1.0))
+    ax.set_ylim((1E26,1E31))
+    ax.legend(loc='upper left',prop=dict(size=12))
+    ax.set_xlabel(r"$\tau$ (Gyr)")
+    ax.set_ylabel(r"$\Phi_{\rm SW}(\tau\,;\,\tau_{\rm ini})$=$\int_{\tau_{\rm ini}}\,F_{\rm SW}(t)\,dt$   [part./m$^2$]")
+    #ax.set_title(r"$\tau_{\rm ini}=%.2f$ Gyr"%tref,position=(0.5,1.02))
+    ax.grid(which='both')
+
+    #PLOT SECONDARY
+    tref=0.7
+    facabs=GYR*SWPEL
+    axi.fill_between(tsslow,
+                    facabs*(FiSWslow_earthf(tsnom)-FiSWslow_earthf(tref)),
+                    facabs*(FiSWfast_earthf(tsnom)-FiSWfast_earthf(tref)),
+                    color='b',alpha=0.3)
+    axi.plot(tsnom,facabs*(FiSWnom_earthf(tsnom)-FiSWnom_earthf(tref)),'b-',label='Earth')
+
+    axi.fill_between(tsslow,
+                    facabs*(FiSWslow_venusf(tsslow)-FiSWslow_venusf(tref)),
+                    facabs*(FiSWfast_venusf(tsslow)-FiSWfast_venusf(tref)),
+                    color='g',alpha=0.3)
+    axi.plot(tsslow,facabs*(FiSWnom_venusf(tsslow)-FiSWnom_venusf(tref)),'g-',label='Venus')
+
+    axi.fill_between(tsslow,
+                    facabs*(FiSWslow_marsf(tsslow)-FiSWslow_marsf(tref)),
+                    facabs*(FiSWfast_marsf(tsslow)-FiSWfast_marsf(tref)),
+                    color='r',alpha=0.3)
+    axi.plot(tsslow,facabs*(FiSWnom_marsf(tsslow)-FiSWnom_marsf(tref)),'r-',label='Mars')
+    logTickLabels(axi,-1,1,(1,),frm="%.2f",axis='x',notation='sci',fontsize=10)
+    axi.set_xlim((tref,TMAX))
+    axi.set_ylim((1E28,5E30))
+    axi.set_title(r"$\tau_{\rm ini}=%.2f$ Gyr"%tref,position=(0.5,1.02))
+
+    fig.savefig(DATADIR+"Solar-iSW-Flux-Sec.png")
+
+def IntegratedMassLoss():
     """
     Compare XUV luminosities and mass-loss from a single solar star
     with different rotational parameters.
@@ -447,34 +662,44 @@ def IntegratedReferenceValues():
 
     tmars=tearth=tvenus=4.54
 
-    #VALUES FOR MARS
+    ###################################################
+    #STELLAR WIND EFFECTS
+    ###################################################
+    #PRIMARY CO_2 RICH ATMOSPHERES
+    tini=1E-2
+    tend=0.3
+
+    #SECONDARY CO_2 RICH ATMOSPHERES
+    #tini=0.7
+    #tend=4.5
+    
     facabs=GYR*SWPEL
 
     ts,intflux_slow=interpMatrix(slow.interaction.intflux)
     ts,intflux_nominal=interpMatrix(nominal.interaction.intflux)
     ts,intflux_fast=interpMatrix(fast.interaction.intflux)
 
-    iSW_mars_min=intflux_slow[25](tmars)*facabs
-    iSW_mars_nom=intflux_nominal[25](tmars)*facabs
-    iSW_mars_max=intflux_fast[25](tmars)*facabs
+    iSW_mars_min=(intflux_slow[25](tend)-intflux_slow[25](tini))*facabs
+    iSW_mars_nom=(intflux_nominal[25](tend)-intflux_nominal[25](tini))*facabs
+    iSW_mars_max=(intflux_fast[25](tend)-intflux_fast[25](tini))*facabs
 
-    iSW_earth_min=intflux_slow[27](tearth)*facabs
-    iSW_earth_nom=intflux_nominal[27](tearth)*facabs
-    iSW_earth_max=intflux_fast[27](tearth)*facabs
+    iSW_earth_min=(intflux_slow[27](tend)-intflux_slow[27](tini))*facabs
+    iSW_earth_nom=(intflux_nominal[27](tend)-intflux_nominal[27](tini))*facabs
+    iSW_earth_max=(intflux_fast[27](tend)-intflux_fast[27](tini))*facabs
 
-    iSW_venus_min=intflux_slow[23](tvenus)*facabs
-    iSW_venus_nom=intflux_nominal[23](tvenus)*facabs
-    iSW_venus_max=intflux_fast[23](tvenus)*facabs
+    iSW_venus_min=(intflux_slow[23](tend)-intflux_slow[23](tini))*facabs
+    iSW_venus_nom=(intflux_nominal[23](tend)-intflux_nominal[23](tini))*facabs
+    iSW_venus_max=(intflux_fast[23](tend)-intflux_fast[23](tini))*facabs
 
     facabs=GYR*PELSI
-    iXUV_venus_min=intflux_slow[7](tvenus)*facabs
-    iXUV_venus_nom=intflux_nominal[7](tvenus)*facabs
-    iXUV_venus_max=intflux_fast[7](tvenus)*facabs
+    iXUV_venus_min=(intflux_slow[7](tend)-intflux_slow[7](tini))*facabs
+    iXUV_venus_nom=(intflux_nominal[7](tend)-intflux_nominal[7](tini))*facabs
+    iXUV_venus_max=(intflux_fast[7](tend)-intflux_fast[7](tini))*facabs
 
-    iXUV_earth_min=intflux_slow[9](tearth)*facabs
-    iXUV_earth_nom=intflux_nominal[9](tearth)*facabs
-    iXUV_earth_max=intflux_fast[9](tearth)*facabs
-    
+    iXUV_earth_min=(intflux_slow[9](tend)-intflux_slow[9](tini))*facabs
+    iXUV_earth_nom=(intflux_nominal[9](tend)-intflux_nominal[9](tini))*facabs
+    iXUV_earth_max=(intflux_fast[9](tend)-intflux_fast[9](tini))*facabs
+
     print "Range of Stellar Wind flux on Mars: %e - %e ions/m^2"%(iSW_mars_min,iSW_mars_max)
     print "Range of Stellar Wind flux on Earth: %e - %e ions/m^2"%(iSW_earth_min,iSW_earth_max)
     print "Range of Stellar Wind flux on Venus: %e - %e ions/m^2"%(iSW_venus_min,iSW_venus_max)
@@ -485,7 +710,6 @@ def IntegratedReferenceValues():
     #########################################
     #CONVERT STELLAR WIND FLUX IN BARS
     #########################################
-
     #==============================
     #MARS
     #==============================
@@ -525,26 +749,339 @@ def IntegratedReferenceValues():
     #########################################
     #CONVERT XUV FLUX IN MASS-LOSS
     #########################################
-
     #==============================
     #VENUS
     #==============================
     HMl_venus_min=massLossGiant(3.0e3,iXUV_venus_min)/MVENUS
     HMl_venus_max=massLossGiant(3.0e3,iXUV_venus_max)/MVENUS
-    print HMl_venus_min,HMl_venus_max
+    print "Hydrogen mass-loss Venus:",HMl_venus_min,HMl_venus_max
 
     #==============================
     #EARTH
     #==============================
     HMl_earth_min=massLossGiant(3.0e3,iXUV_earth_min)/MEARTH
     HMl_earth_max=massLossGiant(3.0e3,iXUV_earth_max)/MEARTH
-    print HMl_earth_min,HMl_earth_max
+    print "Hydrogen mass-loss Earth:",HMl_earth_min,HMl_earth_max
     
     #########################################
     #SAVING REFERENCE VALUES
     #########################################
+ 
+def analyseKeplerSystems():
+    #SOLAR REFERENCE
+    DATADIR=FIGDIR+"CompSolar/"
+
+    #SOLAR REFERENCE
+    try:argv[1]
+    except:
+        print "You should provide a system name."
+        exit(1)
+    if argv[1]=="KIC-9632895":
+        systemid="KIC-9632895";taumin=1.0;taumax=2.5
+        planetid="%sb"%systemid
+        SWmin_out=1E26;SWmax_out=1E31
+        SWmin_in=1E28;SWmax_in=5E30
+        XUVmin_out=1E12;XUVmax_out=2E16
+        XUVmin_in=1E13;XUVmax_in=2E15
+    elif argv[1]=="Kepler-16":
+        systemid="Kepler-16";taumin=2.0;taumax=4.0
+        planetid="%sb"%systemid
+        SWmin_out=1E24;SWmax_out=1E31
+        SWmin_in=1E27;SWmax_in=5E30
+        XUVmin_out=1E12;XUVmax_out=2E16
+        XUVmin_in=1E13;XUVmax_in=2E15
+    elif argv[1]=="Kepler-47":
+        systemid="Kepler-47";taumin=2.0;taumax=4.0
+        planetid="%sc"%systemid
+        SWmin_out=1E26;SWmax_out=1E31
+        SWmin_in=1E27;SWmax_in=5E30
+        XUVmin_out=1E12;XUVmax_out=2E16
+        XUVmin_in=1E13;XUVmax_in=2E15
+    else:
+        print "No valid system provided."
+        exit(1)
+
+    fast=loadResults(DATADIR+"fast/")
+    nominal=loadResults(DATADIR+"nominal/")
+    slow=loadResults(DATADIR+"slow/")
+
+    DATADIR=FIGDIR+"Systems/"+systemid+"/"
+    system=loadResults(DATADIR)
+
+    ###################################################
+    # COMPARE SW FLUXES
+    ###################################################
+    tsslow=slow.interaction.lumflux[:,0]
+    FSWslow_mars=slow.interaction.lumflux[:,33]
+    FSWfast_mars=fast.interaction.lumflux[:,33]
+    FSWslow_venus=slow.interaction.lumflux[:,31]
+    FSWfast_venus=fast.interaction.lumflux[:,31]
+    FSWslow_earth=slow.interaction.lumflux[:,35]
+    FSWfast_earth=fast.interaction.lumflux[:,35]
+    FSWnom_earth=nominal.interaction.lumflux[:,35]
+    FSWnom_venus=nominal.interaction.lumflux[:,31]
+    FSWnom_mars=nominal.interaction.lumflux[:,33]
+
+    ts=system.interaction.lumflux[:,0]
+    FSW=system.interaction.lumflux[:,23]
+    FSWin=system.interaction.lumflux[:,19]
+    FSWout=system.interaction.lumflux[:,21]
+
+    fig=plt.figure()
+    ax=fig.add_axes([0.1,0.1,0.8,0.8])
+
+    ax.plot(tsslow,FSWnom_mars,color='r',linewidth=2)
+    ax.fill_between(tsslow,FSWslow_mars,FSWfast_mars,color='r',alpha=0.2,zorder=10)
+
+    ax.plot(tsslow,FSWnom_earth,color='b',linewidth=2)
+    ax.fill_between(tsslow,FSWslow_earth,FSWfast_earth,color='b',alpha=0.2,zorder=10)
+
+    ax.plot(tsslow,FSWnom_venus,color='g',linewidth=2)
+    ax.fill_between(tsslow,FSWslow_venus,FSWfast_venus,color='g',alpha=0.2,zorder=10)
+
+    ax.plot(ts,FSW,color='k',linewidth=5,label='%s'%planetid)
+    ax.fill_between(ts,FSWin,FSWout,color='k',alpha=0.3)
+
+    ax.plot([],[],linewidth=10,color='k',alpha=0.3,label='%s BHZ'%systemid)
+    ax.plot([],[],linewidth=10,color='r',alpha=0.3,label='Mars Reference')
+    ax.plot([],[],linewidth=10,color='b',alpha=0.3,label='Earth Reference')
+    ax.plot([],[],linewidth=10,color='g',alpha=0.3,label='Venus Reference')
+
+    ax.set_xscale("log")
+    ax.set_yscale("log")
+    ax.set_xlim((1E-2,5.0))
+    ax.axvspan(taumin,taumax,color='k',alpha=0.2)
+
+    ax.set_xlabel(r"$\tau$ (Gyr)")
+    ax.set_ylabel(r"$F_{\rm SW}$ (PEL)")
+    ax.grid(which='both')
+
+    ax.legend(loc='lower left')
+    fig.savefig(FIGDIR+"Kepler-SW-%s.png"%systemid)
+
+    ###################################################
+    # COMPARE XUV FLUXES
+    ###################################################
+    tsslow=slow.interaction.lumflux[:,0]
+    FXUVslow_mars=slow.interaction.lumflux[:,16]
+    FXUVfast_mars=fast.interaction.lumflux[:,16]
+    FXUVnom_mars=nominal.interaction.lumflux[:,16]
+
+    FXUVslow_earth=slow.interaction.lumflux[:,17]
+    FXUVfast_earth=fast.interaction.lumflux[:,17]
+    FXUVnom_earth=nominal.interaction.lumflux[:,17]
+
+    FXUVslow_venus=slow.interaction.lumflux[:,15]
+    FXUVfast_venus=fast.interaction.lumflux[:,15]
+    FXUVnom_venus=nominal.interaction.lumflux[:,15]
+
+    ts=system.interaction.lumflux[:,0]
+    FXUV=system.interaction.lumflux[:,11]
+    FXUVin=system.interaction.lumflux[:,9]
+    FXUVout=system.interaction.lumflux[:,10]
+
+    fig=plt.figure()
+    ax=fig.add_axes([0.1,0.1,0.8,0.8])
+
+    ax.plot(tsslow,FXUVnom_mars,color='r',linewidth=2)
+    ax.fill_between(tsslow,FXUVslow_mars,FXUVfast_mars,color='r',alpha=0.2,zorder=10)
+
+    ax.plot(tsslow,FXUVnom_earth,color='b',linewidth=2)
+    ax.fill_between(tsslow,FXUVslow_earth,FXUVfast_earth,color='b',alpha=0.2,zorder=10)
+
+    ax.plot(tsslow,FXUVnom_venus,color='g',linewidth=2)
+    ax.fill_between(tsslow,FXUVslow_venus,FXUVfast_venus,color='g',alpha=0.2,zorder=10)
+
+    ax.plot(ts,FXUV,color='k',linewidth=5,label='%s'%planetid)
+    ax.fill_between(ts,FXUVin,FXUVout,color='k',alpha=0.3)
+
+    ax.plot([],[],linewidth=10,color='k',alpha=0.3,label='%s BHZ'%systemid)
+    ax.plot([],[],linewidth=10,color='r',alpha=0.3,label='Mars Reference')
+    ax.plot([],[],linewidth=10,color='b',alpha=0.3,label='Earth Reference')
+    ax.plot([],[],linewidth=10,color='g',alpha=0.3,label='Venus Reference')
+
+    ax.set_xscale("log")
+    ax.set_yscale("log")
+    ax.set_xlim((1E-2,5.0))
+    ax.axvspan(taumin,taumax,color='k',alpha=0.2)
+
+    ax.set_xlabel(r"$\tau$ (Gyr)")
+    ax.set_ylabel(r"$F_{\rm XUV}$ (PEL)")
+    ax.grid(which='both')
+
+    ax.legend(loc='lower left',prop=dict(size=10))
+    fig.savefig(FIGDIR+"Kepler-XUV-%s.png"%systemid)
+
+    ###################################################
+    # COMPARE INTEGRATED SW FLUXES
+    ###################################################
+    tini=1E-2
+    tmax=1.0
+    facabs=GYR*SWPEL
+
+    tsslow=slow.interaction.intflux[:,0]
+    FiSWslow_marsf=interp1d(tsslow,slow.interaction.intflux[:,25],kind='slinear')
+    FiSWfast_marsf=interp1d(tsslow,fast.interaction.intflux[:,25],kind='slinear')
+    FiSWnom_marsf=interp1d(tsslow,nominal.interaction.intflux[:,25],kind='slinear')
+
+    FiSWslow_venusf=interp1d(tsslow,slow.interaction.intflux[:,23],kind='slinear')
+    FiSWfast_venusf=interp1d(tsslow,fast.interaction.intflux[:,23],kind='slinear')
+    FiSWnom_venusf=interp1d(tsslow,nominal.interaction.intflux[:,23],kind='slinear')
+
+    FiSWslow_earthf=interp1d(tsslow,slow.interaction.intflux[:,27],kind='slinear')
+    FiSWfast_earthf=interp1d(tsslow,fast.interaction.intflux[:,27],kind='slinear')
+    FiSWnom_earthf=interp1d(tsslow,nominal.interaction.intflux[:,27],kind='slinear')
+
+    ts=system.interaction.intflux[:,0]
+    FiSWf=interp1d(ts,system.interaction.intflux[:,15],kind='slinear')
+    FiSWinf=interp1d(ts,system.interaction.intflux[:,11],kind='slinear')
+    FiSWoutf=interp1d(ts,system.interaction.intflux[:,13],kind='slinear')
+
+    fig=plt.figure()
+    ax=fig.add_axes([0.12,0.1,0.8,0.8])
+    axi=fig.add_axes([0.37,0.15,0.52,0.32])
+    for axs in ax,axi:
+        axs.set_xscale("log")
+        axs.set_yscale("log")
+    
+    ax.plot(tsslow,facabs*(FiSWnom_marsf(tsslow)-FiSWnom_marsf(tini)),color='r',linewidth=2,zorder=10)
+    ax.fill_between(tsslow,facabs*(FiSWslow_marsf(tsslow)-FiSWslow_marsf(tini)),facabs*(FiSWfast_marsf(tsslow)-FiSWfast_marsf(tini)),color='r',alpha=0.2,zorder=10)
+
+    ax.plot(tsslow,facabs*(FiSWnom_earthf(tsslow)-FiSWnom_earthf(tini)),color='b',linewidth=2,zorder=10)
+    ax.fill_between(tsslow,facabs*(FiSWslow_earthf(tsslow)-FiSWslow_earthf(tini)),facabs*(FiSWfast_earthf(tsslow)-FiSWfast_earthf(tini)),color='b',alpha=0.2,zorder=10)
+    
+    ax.plot(tsslow,facabs*(FiSWnom_venusf(tsslow)-FiSWnom_venusf(tini)),color='g',linewidth=2,zorder=10)
+    ax.fill_between(tsslow,facabs*(FiSWslow_venusf(tsslow)-FiSWslow_venusf(tini)),facabs*(FiSWfast_venusf(tsslow)-FiSWfast_venusf(tini)),color='g',alpha=0.2,zorder=10)
+    
+    ax.plot(ts,facabs*(FiSWf(ts)-FiSWf(tini)),color='k',linewidth=5,label='%s'%planetid)
+    ax.fill_between(ts,facabs*(FiSWinf(ts)-FiSWinf(tini)),facabs*(FiSWoutf(ts)-FiSWoutf(tini)),color='k',alpha=0.5)
+
+    ax.plot([],[],linewidth=10,color='k',alpha=0.3,label='%s BHZ'%systemid)
+    ax.plot([],[],linewidth=10,color='r',alpha=0.3,label='Mars Reference')
+    ax.plot([],[],linewidth=10,color='b',alpha=0.3,label='Earth Reference')
+    ax.plot([],[],linewidth=10,color='g',alpha=0.3,label='Venus Reference')
+
+    ax.set_xlim((tini,tmax))
+    ax.set_ylim((SWmin_out,SWmax_out))
+    ax.grid(which="both")
+    logTickLabels(ax,-2,0,(1,),frm="%.2f",axis='x',notation='sci',fontsize=10)
+    
+    ax.set_xlabel(r"$\tau$ (Gyr)")
+    ax.set_ylabel(r"$\Phi_{\rm SW}(\tau\,;\,\tau_{\rm ini})$ [part./m$^2$]")
+
+    ax.legend(loc='upper left',prop=dict(size=10))
+
+    tini=0.7
+    tmax=5.0
+
+    axi.plot(tsslow,facabs*(FiSWnom_marsf(tsslow)-FiSWnom_marsf(tini)),color='r',linewidth=1,zorder=10)
+    axi.fill_between(tsslow,facabs*(FiSWslow_marsf(tsslow)-FiSWslow_marsf(tini)),facabs*(FiSWfast_marsf(tsslow)-FiSWfast_marsf(tini)),color='r',alpha=0.2,zorder=10)
+
+    axi.plot(tsslow,facabs*(FiSWnom_earthf(tsslow)-FiSWnom_earthf(tini)),color='b',linewidth=1,zorder=10)
+    axi.fill_between(tsslow,facabs*(FiSWslow_earthf(tsslow)-FiSWslow_earthf(tini)),facabs*(FiSWfast_earthf(tsslow)-FiSWfast_earthf(tini)),color='b',alpha=0.2,zorder=10)
+    
+    axi.plot(tsslow,facabs*(FiSWnom_venusf(tsslow)-FiSWnom_venusf(tini)),color='g',linewidth=1,zorder=10)
+    axi.fill_between(tsslow,facabs*(FiSWslow_venusf(tsslow)-FiSWslow_venusf(tini)),facabs*(FiSWfast_venusf(tsslow)-FiSWfast_venusf(tini)),color='g',alpha=0.2,zorder=10)
+    
+    axi.plot(ts,facabs*(FiSWf(ts)-FiSWf(tini)),color='k',linewidth=2,label='%s'%planetid)
+    axi.fill_between(ts,facabs*(FiSWinf(ts)-FiSWinf(tini)),facabs*(FiSWoutf(ts)-FiSWoutf(tini)),color='k',alpha=0.5)
+    axi.axvspan(taumin,taumax,color='k',alpha=0.2)
+
+    logTickLabels(axi,-1,1,(1,),frm="%.2f",axis='x',notation='sci',fontsize=10)
+
+    axi.set_xlim((tini,tmax))
+    axi.set_ylim((SWmin_in,SWmax_in))
+    axi.set_title(r"$\tau_{\rm ini}=%.2f$ Gyr"%tini,position=(0.5,1.02))
+
+    fig.savefig(FIGDIR+"Kepler-iSW-%s.png"%systemid)
+
+    ###################################################
+    # COMPARE INTEGRATED XUV FLUXES
+    ###################################################
+    tini=1E-2
+    tmax=1.0
+    facabs=GYR*PELSI
+
+    tsslow=slow.interaction.intflux[:,0]
+    FiXUVslow_marsf=interp1d(tsslow,slow.interaction.intflux[:,8],kind='slinear')
+    FiXUVfast_marsf=interp1d(tsslow,fast.interaction.intflux[:,8],kind='slinear')
+    FiXUVnom_marsf=interp1d(tsslow,nominal.interaction.intflux[:,8],kind='slinear')
+
+    FiXUVslow_venusf=interp1d(tsslow,slow.interaction.intflux[:,7],kind='slinear')
+    FiXUVfast_venusf=interp1d(tsslow,fast.interaction.intflux[:,7],kind='slinear')
+    FiXUVnom_venusf=interp1d(tsslow,nominal.interaction.intflux[:,7],kind='slinear')
+
+    FiXUVslow_earthf=interp1d(tsslow,slow.interaction.intflux[:,9],kind='slinear')
+    FiXUVfast_earthf=interp1d(tsslow,fast.interaction.intflux[:,9],kind='slinear')
+    FiXUVnom_earthf=interp1d(tsslow,nominal.interaction.intflux[:,9],kind='slinear')
+
+    ts=system.interaction.intflux[:,0]
+    FiXUVf=interp1d(ts,system.interaction.intflux[:,3],kind='slinear')
+    FiXUVinf=interp1d(ts,system.interaction.intflux[:,1],kind='slinear')
+    FiXUVoutf=interp1d(ts,system.interaction.intflux[:,2],kind='slinear')
+
+    fig=plt.figure()
+    ax=fig.add_axes([0.12,0.1,0.8,0.8])
+    axi=fig.add_axes([0.37,0.15,0.52,0.32])
+    for axs in ax,axi:
+        axs.set_xscale("log")
+        axs.set_yscale("log")
+    
+    ax.plot(tsslow,facabs*(FiXUVnom_marsf(tsslow)-FiXUVnom_marsf(tini)),color='r',linewidth=2,zorder=10)
+    ax.fill_between(tsslow,facabs*(FiXUVslow_marsf(tsslow)-FiXUVslow_marsf(tini)),facabs*(FiXUVfast_marsf(tsslow)-FiXUVfast_marsf(tini)),color='r',alpha=0.2,zorder=10)
+
+    ax.plot(tsslow,facabs*(FiXUVnom_earthf(tsslow)-FiXUVnom_earthf(tini)),color='b',linewidth=2,zorder=10)
+    ax.fill_between(tsslow,facabs*(FiXUVslow_earthf(tsslow)-FiXUVslow_earthf(tini)),facabs*(FiXUVfast_earthf(tsslow)-FiXUVfast_earthf(tini)),color='b',alpha=0.2,zorder=10)
+    
+    ax.plot(tsslow,facabs*(FiXUVnom_venusf(tsslow)-FiXUVnom_venusf(tini)),color='g',linewidth=2,zorder=10)
+    ax.fill_between(tsslow,facabs*(FiXUVslow_venusf(tsslow)-FiXUVslow_venusf(tini)),facabs*(FiXUVfast_venusf(tsslow)-FiXUVfast_venusf(tini)),color='g',alpha=0.2,zorder=10)
+    
+    ax.plot(ts,facabs*(FiXUVf(ts)-FiXUVf(tini)),color='k',linewidth=5,label='%s'%planetid)
+    ax.fill_between(ts,facabs*(FiXUVinf(ts)-FiXUVinf(tini)),facabs*(FiXUVoutf(ts)-FiXUVoutf(tini)),color='k',alpha=0.5)
+
+    ax.plot([],[],linewidth=10,color='k',alpha=0.3,label='%s BHZ'%systemid)
+    ax.plot([],[],linewidth=10,color='r',alpha=0.3,label='Mars Reference')
+    ax.plot([],[],linewidth=10,color='b',alpha=0.3,label='Earth Reference')
+    ax.plot([],[],linewidth=10,color='g',alpha=0.3,label='Venus Reference')
+
+    ax.set_xlim((tini,tmax))
+    ax.set_ylim((XUVmin_out,XUVmax_out))
+    ax.grid(which="both")
+    logTickLabels(ax,-2,0,(1,),frm="%.2f",axis='x',notation='sci',fontsize=10)
+    
+    ax.set_xlabel(r"$\tau$ (Gyr)")
+    ax.set_ylabel(r"$\Phi_{\rm XUV}(\tau\,;\,\tau_{\rm ini})$ [part./m$^2$]")
+
+    ax.legend(loc='upper left',prop=dict(size=10))
+
+    tini=0.7
+    tmax=5.0
+
+    axi.plot(tsslow,facabs*(FiXUVnom_marsf(tsslow)-FiXUVnom_marsf(tini)),color='r',linewidth=1,zorder=10)
+    axi.fill_between(tsslow,facabs*(FiXUVslow_marsf(tsslow)-FiXUVslow_marsf(tini)),facabs*(FiXUVfast_marsf(tsslow)-FiXUVfast_marsf(tini)),color='r',alpha=0.2,zorder=10)
+
+    axi.plot(tsslow,facabs*(FiXUVnom_earthf(tsslow)-FiXUVnom_earthf(tini)),color='b',linewidth=1,zorder=10)
+    axi.fill_between(tsslow,facabs*(FiXUVslow_earthf(tsslow)-FiXUVslow_earthf(tini)),facabs*(FiXUVfast_earthf(tsslow)-FiXUVfast_earthf(tini)),color='b',alpha=0.2,zorder=10)
+    
+    axi.plot(tsslow,facabs*(FiXUVnom_venusf(tsslow)-FiXUVnom_venusf(tini)),color='g',linewidth=1,zorder=10)
+    axi.fill_between(tsslow,facabs*(FiXUVslow_venusf(tsslow)-FiXUVslow_venusf(tini)),facabs*(FiXUVfast_venusf(tsslow)-FiXUVfast_venusf(tini)),color='g',alpha=0.2,zorder=10)
+    
+    axi.plot(ts,facabs*(FiXUVf(ts)-FiXUVf(tini)),color='k',linewidth=2,label='%s'%planetid)
+    axi.fill_between(ts,facabs*(FiXUVinf(ts)-FiXUVinf(tini)),facabs*(FiXUVoutf(ts)-FiXUVoutf(tini)),color='k',alpha=0.5)
+    axi.axvspan(taumin,taumax,color='k',alpha=0.2)
+
+    logTickLabels(axi,-1,1,(1,),frm="%.2f",axis='x',notation='sci',fontsize=10)
+
+    axi.set_xlim((tini,tmax))
+    axi.set_ylim((XUVmin_in,XUVmax_in))
+    axi.set_title(r"$\tau_{\rm ini}=%.2f$ Gyr"%tini,position=(0.5,1.02))
+
+    fig.savefig(FIGDIR+"Kepler-iXUV-%s.png"%systemid)
+
+    exit(0)
     
 #CompareLuminositiesMassLoss()
 #IntegratedReferenceFluxes()
-IntegratedReferenceValues()
-
+#IntegratedMassLoss()
+analyseKeplerSystems()
+#IntegratedReferenceFluxesTini()

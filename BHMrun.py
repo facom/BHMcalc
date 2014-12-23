@@ -86,6 +86,7 @@ if 'LOADCONFIG' in module_conf:
     for module in data.keys():
         #print "Module:",module
         fm=open("%s/%s.conf"%(sys_dir,module),"w")
+        qkey=False
         for key in data[module].keys():
             value=data[module][key]
             if 'str' in key:
@@ -93,11 +94,12 @@ if 'LOADCONFIG' in module_conf:
                     entry="%s=\"'%s'\"\n"%(key,value)
                 else:
                     entry="%s=\"%s\"\n"%(key,value)
+                if 'sys' in key:qkey=True
             else:
                 entry="%s=%s\n"%(key,value)
             #print "Entry: ",entry
             fm.write(entry)
-        fm.write("str_sys=\"'%s'\"\n"%sys_str)
+        if not qkey:fm.write("str_sys=\"'%s'\"\n"%sys_str)
         fm.close()
         
     #PREPARE TO RUN

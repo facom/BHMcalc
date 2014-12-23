@@ -274,15 +274,35 @@ if star1.Prot>0:
      else:
          ax.axhspan(wmin1,wmax1,color='b',alpha=0.3)
 
+if star1.Protv>0:
+     Protv=star1.Protv;
+     Protverr=max(star1.Protverr,0.0);
+     wmax1=PSUN/DAY/(Protv-Protverr);wmin1=PSUN/DAY/(Protv+Protverr);
+     wmean1=(wmin1+wmax1)/2;werr1=(wmax1-wmin1)/2
+     if binary.taumin>0:
+         ax.errorbar(taumean,wmean1,xerr=tauerr,yerr=werr1,linewidth=2,color='c')
+     else:
+         ax.axhspan(wmin1,wmax1,color='c',alpha=0.3)
+
 if star2.Prot>0:
      Prot=star2.Prot;
      Proterr=max(star2.Proterr,0.0);
      wmax2=PSUN/DAY/(Prot-Proterr);wmin2=PSUN/DAY/(Prot+Proterr);
      wmean2=(wmin2+wmax2)/2;werr2=(wmax2-wmin2)/2
      if binary.taumin>0:
-         ax.errorbar(taumean,wmean2,xerr=tauerr,yerr=werr2,linewidth=2,color='b')
+         ax.errorbar(taumean,wmean2,xerr=tauerr,yerr=werr2,linewidth=2,color='r')
      else:
-         ax.axhspan(wmin2,wmax2,color='b',alpha=0.3)
+         ax.axhspan(wmin2,wmax2,color='r',alpha=0.3)
+
+if star2.Protv>0:
+     Protv=star2.Protv;
+     Protverr=max(star2.Protverr,0.0);
+     wmax2=PSUN/DAY/(Protv-Protverr);wmin2=PSUN/DAY/(Protv+Protverr);
+     wmean2=(wmin2+wmax2)/2;werr2=(wmax2-wmin2)/2
+     if binary.taumin>0:
+         ax.errorbar(taumean,wmean2,xerr=tauerr,yerr=werr2,linewidth=2,color='g')
+     else:
+         ax.axhspan(wmin2,wmax2,color='g',alpha=0.3)
 
 ax.set_xscale("log")
 ax.set_yscale("log")

@@ -67,7 +67,7 @@ def logTickLabels(ax,perini,perfin,nperper,
             else:
                 ex=np.log10(yval[i])
                 if notation is 'sci':
-                    yl+=[r"10$^{%d}$"%ex]
+                    yl+=[r"$\;\;\;$10$^{%d}$"%ex]
                 else:
                     yl+=[frm%yval[i]]
             yt+=[yval[i]]
