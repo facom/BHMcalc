@@ -56,7 +56,7 @@ commit:
 pull:
 	@echo "Getting the lattest changes from branch $(BRANCH)..."
 	@git reset --hard HEAD	
-	@git pull
+	@git pull origin $(BRANCH)
 
 seedtemplate:
 	python BHMrun.py BHMinteraction.py sys/template interaction.conf 
