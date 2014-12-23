@@ -143,7 +143,7 @@ PRINTOUT("End of Hydrogen Burning Phase = %.3f"%star.tau_ms)
 
 if star.tau>star.tau_ms:
      PRINTERR("We cannot simulate the star beyond the Hydrogen Burning phase (provided age %.2f Gyr)"%star.tau)
-     errorCode("INPUT_ERROR")
+     star.tau=0.999*star.tau_ms
 
 ###################################################
 #RADIUS AND MOMENT OF INERTIA EVOLUTION
@@ -326,7 +326,7 @@ PRINTOUT("Limits for rotational evolution simulation: [%.2f,%.2f]"%(star.tmoi_mi
 
 if star.tau>star.tmoi_max:
      PRINTERR("We cannot simulate rotation beyond model maximum (provided age %.2f Gyr)"%star.tau)
-     errorCode("INPUT_ERROR")
+     star.tau=0.999*star.tmoi_max
 
 ###################################################
 #ROTATION EVOLUTION
