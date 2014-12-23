@@ -34,7 +34,7 @@ cleanall:
 	@touch tmp/seed
 	@rm -r tmp/*
 
-deepclean:clean
+deepclean:cleanall
 	@echo "Cleaning temporary directories..."
 	@rm -rf tmp/*
 	@touch objs/seed
