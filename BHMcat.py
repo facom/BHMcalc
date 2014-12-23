@@ -86,6 +86,7 @@ if recalculate:
     #SYSTEMS
     #////////////////////////////////////////
     for system in sortCatalogue(systems,"BHMCatS"):
+
         #========================================
         #METAL FRACTION
         #========================================
@@ -310,6 +311,11 @@ i=0
 PRINTOUT("Generating table sorting by field '%s'..."%sortfield)
 fk=open("%s/BHMcat.keys"%catdir,"w")
 for system in sortCatalogue(systems,sortfield,reverse=sortorder):
+    #========================================
+    #BAN POTENTIAL SYSTEMS
+    #========================================
+    if 'P' in system["BHMCatS"]:continue
+
     for planet in system["PlanetsData"]:
         planetcat=planet["BHMCatP"]
         if ((i%2)==0):clase="row_light"
