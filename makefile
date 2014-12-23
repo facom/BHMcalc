@@ -39,6 +39,7 @@ deepclean:cleanall
 	@rm -rf tmp/*
 	@touch objs/seed
 	@rm -r objs/*
+	@touch links/seed
 	@rm -r links/*
 
 reset:
