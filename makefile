@@ -39,6 +39,7 @@ deepclean:clean
 	@rm -rf tmp/*
 	@touch objs/seed
 	@rm -r objs/*
+	@rm -r links/*
 
 reset:
 	@echo "Resetting access.log..."
