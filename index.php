@@ -256,7 +256,7 @@ if(preg_match("/Star1/",$Modes)){
   $star1_str_rotmodel_sel=selectFunction("star1_str_rotmodel",$ROTMODELS,$star1_str_rotmodel,
 					 $options="class='sensitive' onchange='idSystem();'");
 
-  if(!preg_match("/Star/",$Modes)){$NumStar="1";}
+  if($Modes!="Star1"){$NumStar="1";}
   else{$NumStar="";}
 $tabs.=<<<F
   <!-- //////////////////////////////////////////////////////////// -->

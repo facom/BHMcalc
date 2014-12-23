@@ -154,6 +154,7 @@ if star.tau>star.tau_ms:
 PRINTOUT("Loading MoI model...")
 MoIdata=interpolMoI(star.M,verbose=True)
 logtmoi,MoIfunc=interpMatrix(MoIdata)
+logtmoi=logtmoi[logtmoi<np.log10(star.tau_max*GIGA)]
 
 #========================================
 #EVOLUTION OF MOMENT OF INERTIA
