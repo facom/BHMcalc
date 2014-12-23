@@ -26,11 +26,30 @@ if(preg_match("/template/",$SESSDIR)){
   shell_exec("cp -rf $SYSDIR/template/* $SESSDIR/");
 }
 $source_dir=$SESSDIR;
-/*
-if(!is_dir($SESSDIR)){$source_dir=$SYSDIR."template/";}
-else{$source_dir=$SYSDIR."$SESSID/";}
-shell_exec("echo '$SESSDIR $source_dir' > /tmp/m");
-*/
+
+function saveLink($string)
+{
+  global $LINKDIR,$wLINKDIR,$wDIR;
+  $masterlink="?LOADCONFIG&Modes=$Modes&$string";
+  $md5str=md5($masterlink);
+
+  $linkcontent=<<<LINK
+<html>
+<head>
+<meta http-equiv="refresh" content="0;URL=$wDIR/$masterlink">
+</head>
+</html>
+LINK;
+
+  $linkfile=$LINKDIR."$md5str.html";
+  $fl=fopen($linkfile,"w");
+  fwrite($fl,$linkcontent);
+  fclose($fl);
+  $link=$wLINKDIR."$md5str.html";
+  
+  return $link;
+}
+
 if(false){}
 ////////////////////////////////////////////////////
 //GENERATE MASTER LINK
@@ -53,9 +72,9 @@ else if($ACTION=="MasterLink"){
   loadConfiguration("$source_dir/rotation.conf","rotation");
   loadConfiguration("$source_dir/planet.conf","planet");
   loadConfiguration("$source_dir/interaction.conf","interaction");
-  $masterlink="?LOADCONFIG&Modes=$Modes&$PARSE_STRING";
+  $link=saveLink($PARSE_STRING);
   echo<<<LINK
-<a href="$masterlink" target="_blank">Copy this link</a>
+<a href="$link" target="_blank">Copy this link</a>
 LINK;
 }
 ////////////////////////////////////////////////////
@@ -85,7 +104,7 @@ else if($ACTION=="SaveConfiguration"){
   loadConfiguration("$source_dir/planet.conf","planet");
   loadConfiguration("$source_dir/interaction.conf","interaction");
   $id=md5($PARSE_STRING);
-  $masterlink="?LOADCONFIG&Modes=$Modes&$PARSE_STRING";
+  $masterlink=saveLink($PARSE_STRING);
   $cfile="$SESSDIR/configurations.html";
   if(!is_file($cfile)){$out=shell_exec("echo > $cfile");}
 
