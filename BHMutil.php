@@ -100,9 +100,15 @@ else if($ACTION=="CommandLine"){
   $sysid=$GLOBALS["binary_str_SysID"];
   $sysid=strtolower(preg_replace("/['\s-_,\.]/","",$sysid));
   $cmdfile=$LINKDIR."$sysid-$Modes-$id.sh";
+  
+$script=<<<SCRIPT
+$cmd 0 $1 &> tmp/$sysid-$Modes-$id.log
+SCRIPT;
+  
   $fl=fopen($cmdfile,"w");
-  fwrite($fl,$cmd."\n");
+  fwrite($fl,$script);
   fclose($fl);
+
   echo $cmd;
 }
 ////////////////////////////////////////////////////
