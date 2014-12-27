@@ -2,71 +2,143 @@
 $help=<<<C
 <div class="tabbertab" id="Introduction" title="Help">
   <div class="tabcontent">
-  
-    <p class="title">About</p>
+    
+    <p class="title">Help topics</p>
 
     <p>
-
-      $BHMcalc is the result of the collaboration between the group of
-      <b>Prof. Paul Mason</b> in the <a
-      href="http://academics.utep.edu/Default.aspx?tabid=18742">University
-      of Texas, El Paso</a> and the <a
-      href="http://urania.udea.edu.co/facom">Computational Physics and
-      Astrophysics Group</a> of the University of Antioquia
-      (Medell&iacute;n, Colombia), lead by <b>Prof. Jorge
-      I. Zuluaga</b>, Fulbright Visitor Scholar at the <a
-      href="http://www.cfa.harvard.edu/">Harvard-Smithsonian Center
-      for Astrophysics</a>.
-
-    </p>
-  
-    <p>
-      This tool is intended to <b>gain insights</b> about the complex
-      landscape of circumbinary planets and their potentially
-      habitable environments.  <b>$BHMcalc is not aimed to provide
-      detailed predictions</b> about actual circumbinary systems.
-      However, if used properly their results could provide useful
-      constraints for already existing planetary systems.
+      <ul>
+	<li><a href="?HELP#Presentation">Presentation</a></li>
+	<li>
+	  <a href="?HELP#QuickStart">Quick Start</a>
+	  <ul>
+	    <li><a href="?HELP#BHMCatalogue">The BHM Catalogue</a></li>
+	    <li><a href="?HELP#CalculationModes">Calculation Modes</a></li>
+	  </ul>
+	</li>
+	<li><a href="?HELP#Gallery">Snapshots and Gallery</a></li>
+      </ul>
     </p>
 
-    <a name="References"></a>
+    <p class="title"><a name="Presentation">Presentation</a></p>
+    
+    <img src="$wDIR/doc/figures/binaries.png" width="300px" align="left" style="margin-right:30px;margin-bottom:30px"/>
+
     <p>
-      If you are using the $BHMcalc for <b>research purposes</b> do
-      not forget to <b style='color:red'>cite properly the scientific
-      literature on which it is based</b>.  When citing $BHMcalc
-      please refer to the following published literature:
+      Thousands of planets around other stars have been discovered so
+      far (for an updated list see the <a href="http://exoplanet.eu"
+      target="_blank">Exoplanets Encyclopedia</a>).
+      Although <b>nearly half of the stars in the Galaxy have one or
+      more stellar companions</b> (binary and multiple systems), most
+      of these planets have been discovered around single stars.
+    </p>
+
+    <p>
+      In the last few years, the advent of very sensitive photometric
+      and astrometric survey instruments (Kepler, Gaia), has finally
+      allowed the discovery of the first planetary systems around
+      multiple stellar systems.  Today a dozen of them have been
+      catalogued and well described (see
+      the <a href="?Modes=Catalogue" target="_blank">BHM Catalogue</a>
+      in this website).
+    </p>
+    
+    <p>
+      Against all odds, planets can be formed and stay for billions of
+      years around multiple stars.  They can either orbit only one of
+      the stars in the system in a so-called <b>"s-type" orbit</b>
+      (see figure), or they can orbit two close stars in a <b>"p-type"
+      orbit</b> (circumbinary planets).
+    </p>
+
+    <p>
+      Circumbinary Planets (planets orbiting two stars)
+      or <b><i>Tatooines</i></b> as they are informally called, have
+      proven to be the most interesting objects.  Not only the dynamic
+      of their orbits is much more complex but the conditions they
+      could face while orbiting two stars lead to astrobiological
+      relevant effects.
+    </p>
+
+    <p>
+      $BHMcalc is a web tool intended to explore the complex parameter
+      space of Circumbinary Planets in order to <b>gain some
+      insight</b> about their properties and more specifically about
+      their potential to host habitable environments.  Beyond only
+      helping to explore the properties of hypothetical systems, the
+      calculator can also be used to <b>constraint the conditions</b>
+      around already discovered circumbinary systems.
+    </p>
+    
+    <p>
+      $BHMcalc can be used to calculate/constraint:
       <ul>
 	<li>
-	  <a href="http://adsabs.harvard.edu/abs/2013ApJ...774L..26M">[Mason+2013]</a>
-	  Mason, P. A., Zuluaga, J. I., Clark, J. M., &
-	  Cuartas-Restrepo, P. A. (2013). <i>Rotational Synchronization
-	  May Enhance Habitability for Circumbinary Planets: Kepler
-	  Binary Case Studies</i>. <b>The Astrophysical Journal Letters</b>,
-	  774(2), L26. (ADS:
-	  2013ApJ...774L..26M, <a href="http://arxiv.org/abs/1307.4624">arXiv:1307.4624</a>)
+	  The evolution of basic stellar properties, radius,
+	  luminosity, etc., using stellar evolutionary tracks provided
+	  by different groups (Star Mode).
 	</li>
-	<br/>
 	<li>
-	  <a href="http://adsabs.harvard.edu/abs/2014arXiv1408.5163M">[Mason+2014]</a>
-	  Mason, P. A., Zuluaga, J. I., Cuartas-Restrepo, P. A., &
-	  Clark, J. M. (2014). Circumbinary Habitability
-	  Niches. Accepted for publication in the International
-	  Journal of Astrobiology.  (ADS:
-	  2014arXiv1408.5163M, <a href="http://arxiv.org/abs/1408.5163">arXiv:1408.5163</a>)
+	  Rotational evolution of single stars using different
+	  rotational evolutionary models (Star Mode).
 	</li>
-      </ul>	  
+	<li>
+	  Stellar activity as a function of time using the
+	  Cranmer & Saar solar-inspired model (Star Mode).
+	</li>
+	<li>
+	  Basic properties of solid and ice/gas planets (Planet
+	  Mode).
+	</li>
+	<li>
+	  Thermal evolution and magnetic properties of planets
+	  with masses from super-Earths to Jovian planets (Planet
+	  Mode).
+	</li>
+	<li>
+	  Basic orbital properties of binary systems (Binary Mode).
+	</li>
+	<li>
+	  Limits of the Circumbinary Habitable Zone (BHZ) and
+	  their evolution in time (Habitable Zone Mode).
+	</li>
+	<li>
+	  limits of the Continuous Circumbinary Habitable Zone
+	  (CBHZ) and the habitability timespan of planets in
+	  binaries (Habitable Zone Mode).
+	</li>
+	<li>
+	  Insolation and Photosynthetic Photon Flux Density (PPFD) in
+	  circumbinary planets (Habitable Zone Mode).
+	</li>
+	<li>
+	  Rotational evolution of stars in binaries including
+	  the effect of tidal interaction (Interaction Mode).
+	</li>
+	<li>
+	  Evolution of activity of stars in binary systems (Interaction Mode).
+	</li>
+	<li>
+	  Stellar wind properties (flux and dynamic pressure)
+	  around moderately separated binaries (Interaction Mode).
+	</li>
+	<li>
+	  X-ray luminosity of stars in binaries and its flux on
+	  circumbinary planets (Interaction Mode).
+	</li>
+      </ul>
     </p>
-
-    <p class="title">Quick Start</p>
 
     <p>
-      $BHMcalc is mainly intended to <b>gain insights</b> about the
-      complex parameter space of circumbinary planets and their
-      potentially habitable environments.  Beyond exploring the
-      properties of hypothetical systems, the calculator could also be
-      used to <b>constraint the conditions</b> in already discovered
-      circumbinary systems.
+      $BHMcalc is specifically designed to calculate these and other
+      properties in the particular case of binaries with moderate
+      separations and orbital periods, i.e. 5 days &lt;
+      P<sub>bin</sub> &lt; 60 days.  Although some of the tools
+      available here (stellar and planetary evolution models) apply
+      irrespectively binary separations, the most important modules
+      are only designed for these particular systems.
     </p>
+
+    <p class="title"><a name="QuickStart">Quick Start</a></p>
 
     <p>
      $BHMcalc works as a regular windows application. Its usage is
@@ -74,8 +146,8 @@ $help=<<<C
     </p>
     
     <p>
-      The calculator could be used in different ways (<i>modes</i>):
-      you can browse the <a href="?HELP#BHMcat">BHM catalogue</a>
+      The calculator can be used in different ways (<i>modes</i>): you
+      can browse the <a href="?HELP#BHMcat">BHM catalogue</a>
       (Catalogue Mode), calculate the properties of a single star
       (Star Mode) or a planet (Planet Mode) or simply proceed to do
       the full thing (Interaction Mode), ie. calculate the property of
@@ -95,7 +167,7 @@ $help=<<<C
     </p>
 
     <a name="Modes"></a>
-    <p class="subtitle"><a name="BHMcat">Catalogue Mode</a></p>
+    <p class="subtitle"><a name="BHMCatalogue">Catalogue Mode</a></p>
 
     <p>
       $BHMcalc comes along with a selection of real binary systems to
@@ -107,14 +179,14 @@ $help=<<<C
       and last but not least, a list of what we have called <i>Binary
       Habitability Niches</i>, ie. binaries with properties well
       suited for the action of what we have called the <b>BHM
-      mechanism</b>.
+      mechanism</b> [Mason+2014].
     </p>
     
     <p>
-      In the catalogue mode a dynamic table with the basic properties
-      of the binary systems will be load.  You will be able to sort,
-      filter and search into the catalogue using the form controls at
-      the beginning of the table.
+      In the Catalogue Mode a dynamic table with the basic properties
+      of the binary systems will be displayed.  You will be able to
+      sort, filter and search into the catalogue using the form
+      controls at the top of the table.
     </p>
 
     <center>
@@ -127,42 +199,46 @@ $help=<<<C
 
     <p>
       Beside browsing and filtering the binaries in the catalogue, you
-      will be able to load each star, planet and the systems as a
-      whole into the calculation modes.  This will allow you to play
-      with the system and study the impact that different model
-      parameters have in their radiation and plasma environment.
+      will also be able to load each star, planet or the whole system
+      into the calculation modes.
     </p>
 
     <p>
-      Since all the objects in the catalogue has been already load
-      into the $BHMcalc, they are the right place to start playing
-      with the calculation modes.  So, we encorauge you to load your
-      preferred system into the calculator before coming through the
-      next section.  <a href="?Modes=Catalogue" target="_blank">Click
-      here</a> to load the catalogue in a different tab and select a
-      binary system to play with.
+      All the objects in the catalogue has been already load into the
+      $BHMcalc.  As a result, all their properties have been already
+      calculated and available to explore in depth.  This is the right
+      place to start playing with the calculation modes.
+    </p>
+
+    <p>
+      We encorauge you to load your preferred system into the
+      calculator before going through the next
+      sections.  <a href="?Modes=Catalogue" target="_blank">Click
+      here</a> to load the catalogue and select a binary system to
+      play with.
     </p>
     
     <p class="subtitle"><a name="CalculationModes">Calculation Modes</a></p>
 
     <p>
-      When an object is load from the catalogue a calculation mode is
-      activated.  If you click into the binary system link in the
-      catalogue the <i>Interaction Mode</i> will be activated.  If
-      instead you click into a star the <i>Star Mode</i> will be load.
+      When an object is load from the catalogue, a calculation mode is
+      activated.  If you click in the binary system link
+      the <i>Interaction Mode</i> will be activated.  If instead, you
+      click the link of the star, the <i>Star Mode</i> will be load.
     </p>
 
     <p>
       Each mode has its own set of tabs depending on its purpose.  The
-      Star Mode is just intended for exploring the properties and
-      evolution of single stars.  So, only the Star tab is open.
-      However if the Binary Mode is load, 4 instead of 1 tab will be
-      available: Star 1, Star 2, Planet and Binary itself.
+      Star Mode, for example, is just intended for exploring the
+      properties and evolution of single stars.  So, only the Star tab
+      will be open in this mode.  On the other hand, if the Binary
+      Mode is load, four instead of one tabs will be available: Star
+      1, Star 2, Planet and Binary itself.
     </p>
 
     <p>
-      Each tab have the same structure: an input form and a result
-      panel.
+      Each tab have the same structure: two panels, one cointanining
+      an input form and the other one the result panel.
     </p>
 
     <center>
@@ -174,22 +250,44 @@ $help=<<<C
     </center>
 
     <p>
-      The calculator use something called <i>AJAX</i> (Asyncrhonous
+      The calculator use a technology called <i>AJAX</i> (Asyncrhonous
       JavaScript And XML).  This allows you to calculate something on
       backgorund without reloading the page or while you are doing
-      something else in the calculator.  Great, eh?  That's precisely
-      the purpose of the <b>Update</b> button.  This button lets you
-      to commit a calculation after changing some value in the input
-      form.  
+      something else in the calculator.  This is precisely the purpose
+      of the <b>Update</b> button.  This button will let you to commit
+      a calculation after changing some value in the input form.  You
+      do not need to reload the page or expect for the calculation to
+      end, to continue exploring or changing other fields in the
+      calculator.
     </p>
 
     <p>
-      By default, when you load an already existing object, the result
-      panel will not be full with the calculated results.  This is to
-      avoid overloading the server.  As a result, you will need to
-      update each tab once the object is load into the calculator.
+      By default, when you load an already existing object (an object
+      from the catalogue or a configuration you have saved in your
+      session directory), a new tab, the Summary tab, will be
+      available.  In the summary tab, a panel with the results already
+      calculated and stored in the server, will be loaded.
     </p>
 
+    <center>
+      <div class="figure" style="width:80%">
+	<img src="$wDIR/doc/figures/summary.png" width="100%"/>
+	<p></p>
+	<div class="caption">The summary tab.</div>
+      </div>
+    </center>
+
+    <p> Using the summary tab you will be able to: Download files
+      related to the system (configuration, data, images). Generate a
+      link to the system; you will be able to "bookmark" this link or
+      send it to a collaborator. Generate the command line required to
+      calculate the properties of the system using the offline
+      calculator.  Save and load stored configurations; saved
+      configurations will be available only in the same session of the
+      browser.  If you use another browser or clean the cookies the
+      session information will change.
+    </p>
+    
     <p>
       The calculator uses a scheme of dependencies on which a given
       object can only be calculated after other one has been
@@ -197,97 +295,10 @@ $help=<<<C
       rotation and activity evolution of a binary system, the
       properties of their stars should be first updated.  Thus, when
       changing something in a system, we recommend to update first the
-      more complex object.  This will probably impact the time you
-      need to wait for a result but will ensure you the least clicks
-      possible.  If you want to proceed safer you can better update
-      each object at a time.
-    </p>
-
-    <p>
-      And that's it! The rest is just play and have some fun and of
-      course neat scientific results.
-    </p>
-    
-    <p class="title">The Science of $BHMcalc</p>
-    
-    <p>
-      
-      Most of the science behind $BHMcalc is fully explained in the
-      papers motivating its creation in the first place (see the
-      <a href="?TABID=0#References">references section</a> in the Main
-      tab).  We have "steal" a bunch of great astrophyical models and
-      data from other researchers, to create this tool.  Anything you
-      can find here will incomplete by far.  We provide here some
-      details on the science behind the calculator, especially
-      intended to understand some of the input information required to
-      use the calculator.
-
-    </p>
-
-    <p class="subtitle">Stellar Models</p>
-
-    <p>
-      There are several really obvious parameters (stellar ID, mass)
-      but other deserves an explanations:
-    </p>
-
-    <p>
-      Input parameters:
-      <ul>
-	<li>
-	  <b>Metallicity</b> (Z, [Fe/H]): You can provide
-	  metallicity in two different forms.  By indicating the
-	  fraction of metals (Z) or the amount of iron relative to the
-	  Sun.  When one of them is changed the form automatically sets
-	  the other one assuming a sun scaled value of the Helum
-	  fraction Y.
-	</li>
-	<br/>
-
-	<li>
-	  <b>Stellar Model</b>: Nowadays a significant number of
-	  stellar evolution models, are available in the literature.
-	  Most of them have fundamental differences and more
-	  importantly have subtle (and sometimes not so subtle)
-	  differences in the predicted properties, we have compiled
-	  results from at least 4 stellar evolution models.  The
-	  models in the calculator contain evolutionary tracks for
-	  stars with different metallicities and masses.  In order to
-	  avoid interpolation issues the calculator selects the
-	  ecolutionary track closer to the mass and metallicity
-	  provided with the input form.
-	</li>
-	<br/>
-
-	<li>
-	  <b>PMS period</b>: Period of rotation during the pre main
-	  sequence phase.
-	</li>
-	<br/>
-
-	<li>
-	  <b>Saturation period</b>: period of rotation at which the
-	  magnetic activity of the star is saturated.  It is expressed
-	  as factor of the present rotational rate of the Sun.
-	</li>
-	<br/>
-
-	<li>
-	  <b>Wind torque scaling</b>: The constant of proportionality
-	  in the magnetic torque law.  It is determined by fitting the
-	  rotational evolution of the sun to its present value..
-	</li>
-	<br/>
-
-	<li>
-	  <b>Disk age</b>: Age of the circumstellar disk.  It is
-	  assumed that the disk provide a way to lock the angular
-	  momentum evolution of the star during the pre main sequence
-	  phase.
-	</li>
-	<br/>
-	
-      </ul>
+      more complex object first.  This will probably impact the time
+      you need to wait for a result but will ensure you the least
+      clicks possible.  If you want to proceed safer you can better
+      update each object at a time.
     </p>
 
     <p>
@@ -299,6 +310,121 @@ $help=<<<C
 
     <p class="title"><a name="Gallery">Snapshots and Gallery</a></p>
     <p>
+
+    <div class="decoration">
+      <a href="$wDIR/web/gallery/stellar-rotation.png">
+	<img src="$wDIR/web/gallery/stellar-rotation.png" width="100%"/>
+      </a>
+      <br/>
+      <div class="caption">
+	Stellar rotation evolution for the primary of Kepler-34.
+      </div>
+    </div>
+
+    <div class="decoration">
+      <a href="$wDIR/web/gallery/rot-evolution.png">
+	<img src="$wDIR/web/gallery/rot-evolution.png" width="100%"/>
+      </a>
+      <br/>
+      <div class="caption">
+	Evolution of rotation for the components of Kepler-34.
+      </div>
+    </div>
+
+    <div class="decoration">
+      <a href="$wDIR/web/gallery/mass-loss-gas.png">
+	<img src="$wDIR/web/gallery/mass-loss-gas.png" width="100%"/>
+      </a>
+      <br/>
+      <div class="caption">
+	Mass-loss from gas giants in the Habitable Zone of Niche-02
+	planet.
+      </div>
+    </div>
+
+    <div class="decoration">
+      <a href="$wDIR/web/gallery/flux-XUV-absolute.png">
+	<img src="$wDIR/web/gallery/flux-XUV-absolute.png" width="100%"/>
+      </a>
+      <br/>
+      <div class="caption">
+	Flux of XUV radiation in the HZ of Niche-02.
+      </div>
+    </div>
+
+    <div class="decoration">
+      <a href="$wDIR/web/gallery/standoff-distance.png">
+	<img src="$wDIR/web/gallery/standoff-distance.png" width="100%"/>
+      </a>
+      <br/>
+      <div class="caption">
+	Magnetospheric standoff distance calculated for Kepler-35b.
+      </div>
+    </div>
+
+    <div class="decoration">
+      <a href="$wDIR/web/gallery/stellar-props.png">
+	<img src="$wDIR/web/gallery/stellar-props.png" width="100%"/>
+      </a>
+      <br/>
+      <div class="caption">
+	Evolution of KIC-9632895 using the closest PARSEC evolutionary
+	track.
+      </div>
+    </div>
+
+    <div class="decoration">
+      <a href="$wDIR/web/gallery/standoff-distance-earthlike.png">
+	<img src="$wDIR/web/gallery/standoff-distance-earthlike.png" width="100%"/>
+      </a>
+      <br/>
+      <div class="caption">
+	Magnetospheric standoff radius as a function of time for an
+	Earth-like planet in the middle of the BHZ of Niche-08
+      </div>
+    </div>
+    
+    <div class="decoration">
+      <a href="$wDIR/web/gallery/iHZ.png">
+	<img src="$wDIR/web/gallery/iHZ.png" width="100%"/>
+      </a>
+      <br/>
+      <div class="caption">
+	Habitable Zone of Kepler-16.
+      </div>
+    </div>
+
+    <div class="decoration">
+      <a href="$wDIR/web/gallery/hz-evolution.png">
+	<img src="$wDIR/web/gallery/hz-evolution.png" width="100%"/>
+      </a>
+      <br/>
+      <div class="caption">
+	Continuous Habitable Zone of KIC-9632895.
+      </div>
+    </div>
+
+    <div class="decoration">
+      <a href="$wDIR/web/gallery/planet-schematic-gas.png">
+	<img src="$wDIR/web/gallery/planet-schematic-gas.png" width="100%"/>
+      </a>
+      <br/>
+      <div class="caption">
+	Schematic diagram of the size and interior structure of the
+	ice/gas giant Kepler-47c.
+      </div>
+    </div>
+    
+    <div class="decoration">
+      <a href="$wDIR/web/gallery/planet-schematic.png">
+	<img src="$wDIR/web/gallery/planet-schematic.png" width="100%"/>
+      </a>
+      <br/>
+      <div class="caption">
+	Schematic representation of the Earth interior as calculated
+	with the Planet module.
+      </div>
+    </div>
 
     <div class="decoration">
       <a href="$wDIR/web/gallery/sunset.jpg">

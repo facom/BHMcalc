@@ -35,7 +35,7 @@ NEXT_PATCH_VERSION = $(MAJOR).$(MINOR).$(shell expr $(PATCH) + 1)-b$(BUILD)
 
 
 version:
-	@echo "This is version $(VERSION)"
+	@echo "This is version $(TAG_PREFIX)$(VERSION)"
 	@echo "Version: $(VERSION)"
 	@echo "Last build: $(BUILD)"
 	@echo "Next patch: $(NEXT_PATCH_VERSION)"
