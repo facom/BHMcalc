@@ -1,6 +1,6 @@
 <?PHP
 $help=<<<C
-<div class="tabbertab" id="Introduction" title="About">
+<div class="tabbertab" id="Introduction" title="Help">
   <div class="tabcontent">
   
     <p class="title">About</p>
@@ -58,6 +58,15 @@ $help=<<<C
     </p>
 
     <p class="title">Quick Start</p>
+
+    <p>
+      $BHMcalc is mainly intended to <b>gain insights</b> about the
+      complex parameter space of circumbinary planets and their
+      potentially habitable environments.  Beyond exploring the
+      properties of hypothetical systems, the calculator could also be
+      used to <b>constraint the conditions</b> in already discovered
+      circumbinary systems.
+    </p>
 
     <p>
      $BHMcalc works as a regular windows application. Its usage is

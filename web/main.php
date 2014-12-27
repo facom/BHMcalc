@@ -7,19 +7,19 @@ $main=<<<C
       Welcome to the <b>Binary Habitability (and More) Calculator</b>, $BHMcalc!
     </p>
 
-    <p>
+    <p> 
       $BHMcalc is a web application intended to explore the vast
       configuration space of <b><i>Circumbinary Planetary System</i>
       </b> (aka. <a href="?HELP#Gallery"><i>Tatooines</i></a>).  You
-      can use $BHMcalc to calculate the evolution of stars in
-      binaries, the changing properties of planets thriving around
-      them and their complex interactions, ultimate leading to (or
-      limiting) habitable environments.
+      can use $BHMcalc to calculate the evolution of stars and planets
+      in binaries and the complex interactions between them ultimately
+      leading to (or limiting) the existence of <b>habitable
+      environments around binaries</b>.
     </p>
 
     <p>
-      To start with, please select the <a href="?HELP#Modes">$BHMcalc
-      Mode</a>:
+      Please select the <a href="?HELP#Modes">$BHMcalc Mode</a> you
+      want to use:
     </p>
 
     <div style="text-align:center">
@@ -44,6 +44,12 @@ $main=<<<C
       </button>
     </form>
     </div>
+
+    <p>
+      For a <b>quick start</b>, <b>detailed instructions</b> or a description of the
+      <b>functioning and science behind</b> $BHMcalc please refer to
+      the <a href="?HELP">Help section</a>.
+    </p>
 
   </div>
 </div>
