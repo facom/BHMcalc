@@ -309,8 +309,8 @@ $help=<<<C
     </p>
 
     <p class="title"><a name="Gallery">Snapshots and Gallery</a></p>
-    <p>
 
+    <p>
     <div class="decoration">
       <a href="$wDIR/web/gallery/stellar-rotation.png">
 	<img src="$wDIR/web/gallery/stellar-rotation.png" width="100%"/>
@@ -425,17 +425,21 @@ $help=<<<C
 	with the Planet module.
       </div>
     </div>
-
+    </p>
+    <br/>
+    <p>
     <div class="decoration">
       <a href="$wDIR/web/gallery/sunset.jpg">
 	<img src="$wDIR/web/gallery/sunset.jpg" width="100%"/>
       </a>
       <br/>
       <div class="caption">
-	Sunset. Credit: Paramount Pictures/CBS Studios. <a href="http://en.memory-alpha.org/wiki/File:Risan_sunset.jpg">Source</a>
+	Sunset in a Circumbinary Planet. Credit: Paramount
+	Pictures/CBS
+	Studios. <a href="http://en.memory-alpha.org/wiki/File:Risan_sunset.jpg">Source</a>
       </div>
     </div>
-
+    
     <div class="decoration">
       <a href="$wDIR/web/gallery/wondering.png">
 	<img src="$wDIR/web/gallery/wondering.png" width="100%"/>
@@ -445,10 +449,7 @@ $help=<<<C
 	"<i>Is there any life around single stars?</i>". Credit:
 	Alejandro Rua, Medellin, Colombia.
       </div>
-    </div>
-
     </p>
-
   </div>
 </div>
 C;
