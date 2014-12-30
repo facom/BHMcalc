@@ -513,5 +513,8 @@ def tableValue(value,fmt,cond,default):
 
 #GET WORKING DIRECTORY
 PWD=System("pwd",out=True)
-WEB_DIR=PWD.replace(WEB_COMMON,"")+"/"
-SUBWEB_DIR=PWD.replace(WEB_COMMON,"")+"/web/"
+WEB_DIR=PWD
+SUBWEB_DIR=PWD
+for web_dir in WEB_COMMON:
+    WEB_DIR=WEB_DIR.replace(web_dir,"")+"/"
+    SUBWEB_DIR=SUBWEB_DIR.replace(web_dir,"")+"/web/"

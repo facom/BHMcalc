@@ -302,7 +302,7 @@ NNNI-1
 I-1
 I0
 tp123
-bS'0\xa8\x1bgj\x94\x8f?'
+bS'\xc1\xa8\x1bgj\x94\x8f?'
 p124
 tp125
 Rp126
@@ -3632,7 +3632,7 @@ p1283
 sg118
 g3
 (g121
-S'\t\xde\r\x1a\x9e\x07~?'
+S'\xff\xdd\r\x1a\x9e\x07~?'
 p1284
 tp1285
 Rp1286
@@ -3930,7 +3930,7 @@ F1.9
 sg1171
 g3
 (g121
-S'R\xb3\x00z^\xd5}?'
+S'i\xb3\x00z^\xd5}?'
 p1323
 tp1324
 Rp1325
@@ -4637,7 +4637,7 @@ p1408
 sg118
 g3
 (g121
-S'0\xa8\x1bgj\x94\x8f?'
+S'\xc1\xa8\x1bgj\x94\x8f?'
 p1409
 tp1410
 Rp1411
@@ -6450,7 +6450,7 @@ p1622
 sg118
 g3
 (g121
-S'0\xa8\x1bgj\x94\x8f?'
+S'\xc1\xa8\x1bgj\x94\x8f?'
 p1623
 tp1624
 Rp1625
@@ -6779,7 +6779,7 @@ p1659
 sg118
 g3
 (g121
-S'\xff\x07\xf4,5d\x84?'
+S'\x11\x08\xf4,5d\x84?'
 p1660
 tp1661
 Rp1662
@@ -7077,7 +7077,7 @@ F5.0
 sg1171
 g3
 (g121
-S'\xa5"\xf8\xd1\xa4/F?'
+S'\xb2"\xf8\xd1\xa4/F?'
 p1699
 tp1700
 Rp1701
@@ -8150,7 +8150,7 @@ p1844
 sg118
 g3
 (g121
-S'0\xa8\x1bgj\x94\x8f?'
+S'\xc1\xa8\x1bgj\x94\x8f?'
 p1845
 tp1846
 Rp1847
@@ -8237,9 +8237,9 @@ p1861
 g401
 F7.0
 sg409
-F0.0
+F10.1
 sg417
-F0.0
+F10.1
 sg425
 F0.0
 sg433
@@ -8457,7 +8457,7 @@ F2.01909
 sg1171
 g3
 (g121
-S'0\xa8\x1bgj\x94\x8f?'
+S'\xc1\xa8\x1bgj\x94\x8f?'
 p1889
 tp1890
 Rp1891
@@ -8506,7 +8506,7 @@ p1898
 sg118
 g3
 (g121
-S'\xe7C\xb1\xc2\x0bc\x80?'
+S'\xfbC\xb1\xc2\x0bc\x80?'
 p1899
 tp1900
 Rp1901
@@ -8803,7 +8803,7 @@ F0.92
 sg1171
 g3
 (g121
-S'\xff\x07\xf4,5d\x84?'
+S'\x11\x08\xf4,5d\x84?'
 p1937
 tp1938
 Rp1939
@@ -8876,7 +8876,7 @@ p1948
 sg118
 g3
 (g121
-S'\x17\xc4\xeb\x8f\x9cG\x82?'
+S'\x12\xc4\xeb\x8f\x9cG\x82?'
 p1949
 tp1950
 Rp1951
@@ -9347,7 +9347,7 @@ F4.1
 sg1171
 g3
 (g121
-S'\xf5aR\xa613\x82?'
+S'\xebaR\xa613\x82?'
 p2000
 tp2001
 Rp2002
@@ -9401,7 +9401,7 @@ p2012
 sg118
 g3
 (g121
-S'0\xa8\x1bgj\x94\x8f?'
+S'\xc1\xa8\x1bgj\x94\x8f?'
 p2013
 tp2014
 Rp2015
@@ -10392,7 +10392,7 @@ p2127
 sg118
 g3
 (g121
-S'0\xa8\x1bgj\x94\x8f?'
+S'\xc1\xa8\x1bgj\x94\x8f?'
 p2128
 tp2129
 Rp2130
@@ -11056,7 +11056,7 @@ p2205
 sg118
 g3
 (g121
-S'0\xa8\x1bgj\x94\x8f?'
+S'\xc1\xa8\x1bgj\x94\x8f?'
 p2206
 tp2207
 Rp2208
@@ -12034,7 +12034,7 @@ p2311
 sg118
 g3
 (g121
-S'0\xa8\x1bgj\x94\x8f?'
+S'\xc1\xa8\x1bgj\x94\x8f?'
 p2312
 tp2313
 Rp2314
@@ -13375,7 +13375,7 @@ p2476
 sg118
 g3
 (g121
-S'0\xa8\x1bgj\x94\x8f?'
+S'\xc1\xa8\x1bgj\x94\x8f?'
 p2477
 tp2478
 Rp2479
@@ -17132,7 +17132,7 @@ p3399
 sg118
 g3
 (g121
-S'0\xa8\x1bgj\x94\x8f?'
+S'\xc1\xa8\x1bgj\x94\x8f?'
 p3400
 tp3401
 Rp3402
@@ -18882,7 +18882,7 @@ p3726
 sg118
 g3
 (g121
-S'\xf0\xd5|I\xa8\xd3\x88?'
+S'\xfe\xd5|I\xa8\xd3\x88?'
 p3727
 tp3728
 Rp3729
@@ -19179,7 +19179,7 @@ F2.4
 sg1171
 g3
 (g121
-S'\x95\x00#\x0cUZ\x86?'
+S'\xa1\x00#\x0cUZ\x86?'
 p3765
 tp3766
 Rp3767
@@ -19889,7 +19889,7 @@ p3851
 sg118
 g3
 (g121
-S'0\xa8\x1bgj\x94\x8f?'
+S'\xc1\xa8\x1bgj\x94\x8f?'
 p3852
 tp3853
 Rp3854
@@ -20218,7 +20218,7 @@ p3888
 sg118
 g3
 (g121
-S'\x1f\xe4\x96\xebQ\xbf\x86?'
+S'\x12\xe4\x96\xebQ\xbf\x86?'
 p3889
 tp3890
 Rp3891
@@ -20515,7 +20515,7 @@ F32.6
 sg1171
 g3
 (g121
-S'h3|\x07\xbb\xa5\x83?'
+S'p3|\x07\xbb\xa5\x83?'
 p3927
 tp3928
 Rp3929
@@ -20569,7 +20569,7 @@ p3939
 sg118
 g3
 (g121
-S'0\xa8\x1bgj\x94\x8f?'
+S'\xc1\xa8\x1bgj\x94\x8f?'
 p3940
 tp3941
 Rp3942
@@ -21599,7 +21599,7 @@ p4052
 sg118
 g3
 (g121
-S'\x949l\xffz\xc4\x81?'
+S'\xa09l\xffz\xc4\x81?'
 p4053
 tp4054
 Rp4055
@@ -21896,7 +21896,7 @@ F3.5
 sg1171
 g3
 (g121
-S'\x949l\xffz\xc4\x81?'
+S'\xa09l\xffz\xc4\x81?'
 p4091
 tp4092
 Rp4093
@@ -21950,7 +21950,7 @@ p4103
 sg118
 g3
 (g121
-S'0\xa8\x1bgj\x94\x8f?'
+S'\xc1\xa8\x1bgj\x94\x8f?'
 p4104
 tp4105
 Rp4106
