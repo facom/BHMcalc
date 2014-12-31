@@ -421,8 +421,7 @@ Mgmax=Giants[Mcs].time[0].Mjmax
 
 #GIANT MASSES
 Mgs=np.logspace(np.log10(Mgmin),np.log10(Mgmax),5)
-#Mgs=[1.0]
-Rgs=Giants[Mcs].Radius(Mgs,env.tauini)
+Rgs=np.array([Giants[Mcs].Radius(M,env.tauini) for M in Mgs])
 rhogs=Mgs/(Rgs**3)*(MJUP/(4.0*PI/3*RJUP**3))
 Ngs=len(Mgs)
 
@@ -450,7 +449,7 @@ for t in ts:
 
     #IF REMAINING MASS IS BELOW MINIMUM FIX AT MINIMUM
     cond=Mrgs<Mc*MEARTH
-    Mrgs[cond]=Mc*MEARTH*np.ones_like(cond)
+    Mrgs[cond]=Mc*MEARTH*np.ones_like(Mrgs[cond])
 
     mloss+=list(Mlgs/MEARTH)
 
