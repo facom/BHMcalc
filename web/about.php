@@ -21,15 +21,16 @@ $about=<<<C
       papers:
 
       <ul>
+
 	<li>
-	  <a href="http://adsabs.harvard.edu/abs/2013ApJ...774L..26M">[Zuluaga+2015]</a>
+	  <!--<a href="http://adsabs.harvard.edu/abs/2013ApJ...774L..26M">[Zuluaga+2015]</a>-->
+	  [Zuluaga+2015]
 	  Zuluaga, J.I., Mason, P.A. & Cuartas-Restrepo,
 	  P. A. (2015). <i>Constraining the Radiation and Plasma
 	  Environment of Kepler Circumbinary habitable zone
-	  planets</i>. Submitted to the Astrophysical Journal. ArXiv
-	  e-prints (ADS:
-	  2013ApJ...774L..26M, <a href="http://arxiv.org/abs/1307.4624">arXiv:1412.4624</a>)
+	  planets</i>. <b>Submitted to the Astrophysical Journal</b>.
 	</li>
+
 	<br/>
 	<li>
 	  <a href="http://adsabs.harvard.edu/abs/2013ApJ...774L..26M">[Mason+2013]</a>
