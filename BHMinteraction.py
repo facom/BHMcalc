@@ -421,8 +421,9 @@ Mgmax=Giants[Mcs].time[0].Mjmax
 
 #GIANT MASSES
 Mgs=np.logspace(np.log10(Mgmin),np.log10(Mgmax),5)
+Mgs[0]=Mgmin
+Mgs[-1]=Mgmax
 Rgs=np.array([Giants[Mcs].Radius(M,env.tauini) for M in Mgs])
-print Rgs
 rhogs=Mgs/(Rgs**3)*(MJUP/(4.0*PI/3*RJUP**3))
 Ngs=len(Mgs)
 
