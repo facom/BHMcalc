@@ -14,12 +14,20 @@
 To Do
 =====
 
-- Upload all the objects in the calculator tabs if they have been
-  already calculated.
+- Correct link of Zuluaga+2015 paper.
 
-- Reduce the size of the URL for uploading a given configuration.
+- Hide extra parameters from input forms to avoid confusion.
 
-- Include a download images and html only link in the Summary tab.
+- Record a video explaining the usage of the calculator.
+
+- Fast links to interesting results.
+
+- Allow to update automatically an object accoding to a give request
+  (e.g. see the HZ of a system for illustration purposes).
+
+- Compile information about each module as it was done with Star.
+
+- Encrypt developer guide.
 
 - Include a complete list of other references in the About tab.
 
@@ -30,6 +38,13 @@ To Do
 
 Done
 ====
+
+- Upload all the objects in the calculator tabs if they have been
+  already calculated.
+
+- Reduce the size of the URL for uploading a given configuration.
+
+- Include a download images and html only link in the Summary tab.
 
 Notes:
 =====
