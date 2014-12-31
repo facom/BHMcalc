@@ -15,8 +15,6 @@
 ###################################################
 */
 include_once("web/BHM.php");
-$server=shell_exec("hostname");
-echo "SERVER=$server<br/>";
 ?>
 <?PHP
 //////////////////////////////////////////////////////////////////////////////////
@@ -1799,7 +1797,8 @@ $footer=<<<C
   Developed by <a href="mailto:jorge.zuluaga@udea.edu.co">Jorge I. Zuluaga</a>
   <img src="web/copyleft.jpg" width=10px> 2014,
   Viva la BHM!, 
-  Session ID: $SESSID. $qdir.
+  Session ID: $SESSID.
+  Server: $SERVER.
 </div>
 C;
 

@@ -20,6 +20,7 @@
 //GLOBAL VARIABLES
 //////////////////////////////////////////////////////////////
 $CONTENT="";
+$SERVER=shell_exec("hostname");
 
 //==============================
 //GETTING LOCATION
