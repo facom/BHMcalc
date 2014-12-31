@@ -27,7 +27,28 @@ To Do
 
 - Compile information about each module as it was done with Star.
 
-- Encrypt developer guide.
+- Add a "News" or "Changeslog" section in the "About" page.
+
+- Add a bug report floating form to report issues with given
+  configurations.
+
+- Correct catalogue according to findings using the calculator.
+
+- Remove link to "Download Configuration Files".  Only useful for
+  advanced users and redundant with "Download All Files".
+
+- Hide generate command line or restrict it only for admin users.
+
+- Create an administrator mode.
+
+- Creat a dummy mode.
+
+- Interpolate planetary properties taking into account differences in
+  innercore formation.
+
+- Double check BHM Catalogue display when browser session is new.
+
+- Logarithmic scale in the thermal and magnetic evolution of planets.
 
 - Include a complete list of other references in the About tab.
 
