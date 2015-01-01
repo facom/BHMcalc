@@ -15,7 +15,6 @@
 ###################################################
 */
 include_once("web/BHM.php");
-accessLog("browse");
 ?>
 <?PHP
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -35,6 +34,7 @@ if(isset($LOADCONFIG)){
   echo "$header<body>Loading $Modes configuration...</body>";
   return;
 }
+accessLog("browse");
 
 //////////////////////////////////////////////////////////////////////////////////
 //INTERFACE SELECTION
