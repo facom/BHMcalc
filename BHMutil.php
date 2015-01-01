@@ -251,6 +251,47 @@ else if($ACTION=="DownloadData"){
   echo $link;
 }
 ////////////////////////////////////////////////////
+//GENERATE MASTER LINK
+////////////////////////////////////////////////////
+else if($ACTION=="BugReport"){
+  loadConfiguration("$source_dir/star1.conf","star1");
+  loadConfiguration("$source_dir/star2.conf","star2");
+  loadConfiguration("$source_dir/binary.conf","binary");
+  loadConfiguration("$source_dir/hz.conf","hz");
+  loadConfiguration("$source_dir/rotation.conf","rotation");
+  loadConfiguration("$source_dir/planet.conf","planet");
+  loadConfiguration("$source_dir/interaction.conf","interaction");
+  $link=saveLink($PARSE_STRING);
+  $masterlink=<<<LINK
+<a href="$link" target="_blank">Link</a>
+LINK;
+  //MD5 STRING
+  $md5str=md5($masterlink.$bug_email.$bug_report.$SESSID);
+  $out=shell_exec("grep $md5str $LOGDIR/bugs.html");
+  if(!isBlank($out)){
+    echo "<i style='color:red'>Bug report already sent (hash $md5str).</i>";
+    return;
+  }
+  //FILL A BUG REPORT
+  $fl=fopen("$LOGDIR/bugs.html","a");
+  $report=<<<REPORT
+<hr/>
+Date: $datetime<br/>
+Id: $md5str<br/>
+E-mail:<a href="mailto:$bug_email">$bug_email</a><br/>
+Report:<br/>
+<block>
+$bug_report
+</block>
+<br/>
+System Link: $masterlink
+<p></p>
+REPORT;
+  fwrite($fl,$report);
+  fclose($fl);
+  echo "<i style='color:blue'>Bug report sent (hash $md5str).</i>";
+}
+////////////////////////////////////////////////////
 //DEFAULT BEHAVIOR
 ////////////////////////////////////////////////////
 else{

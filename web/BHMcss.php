@@ -290,7 +290,7 @@ div.download{
  background:white;
  padding:2px;
  border:solid black 1px;
- z-index=100;
+ z-index:100;
  top:40px;
  right:90px;
  display:none;
@@ -302,7 +302,7 @@ div.stdout{
  background:white;
  padding:2px;
  border:solid black 1px;
- z-index=100;
+ z-index:100;
  top:40px;
  left:45%;
  display:none;

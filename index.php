@@ -17,6 +17,11 @@
 include_once("web/BHM.php");
 ?>
 <?PHP
+//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+//COMMON CONTENT
+//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+$BHMcalc="<b style='font-family:Courier;color:red'>BHMcalc</b>";
+
 //////////////////////////////////////////////////////////////////////////////////
 //LOAD A CONFIGURATION
 //////////////////////////////////////////////////////////////////////////////////
@@ -137,6 +142,10 @@ $code=ajaxMultipleForm(array("interaction","rotation","hz",
 			     "binary","star1","star2","planet","summary"),"allforms",$slope);
 $ajax_all_Update=ajaxFromCode($code,"'#all_Update'","click");
 $ajax_all_Load=ajaxFromCode($code,"document","ready");
+
+//BUG REPORT
+$codebug=ajaxMultipleFormSimple("bug_form","bug_result");
+$ajax_bug=ajaxFromCode($codebug,"\"#bug_send\"","click");
 
 //LOAD CATALOGUE
 $ajax_cat_Load=ajaxFromCode($codecat,"document","ready");
@@ -1337,7 +1346,7 @@ F;
 }
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-//HABITABILITY
+//INTERACTION
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 if(preg_match("/Interactions/",$Modes)){
   $TABID=7;
@@ -1639,6 +1648,43 @@ $tabs.=<<<F
 F;
 }
 
+//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+//BUG REPORT
+//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+$parts=preg_split("/:/",$Modes);
+$bug_mode=$parts[count($parts)-1];
+$bug_report=<<<B
+<div style="position:fixed;top:30px;right:10px">
+  <div style="text-align:right;padding:10px;z-index:100">
+    <a href="JavaScript:void(0)" style="font-size:10px;background:white;padding:10px;text-align:right" onclick="display('bug_box')">Bug Report</a>
+  </div>
+  <div id="bug_box" style="display:none;border:solid black 1px;padding:10px;background:white;width:500px;font-size:12px;z-index:1000">
+    <h3>Bug Report</h3>
+    <p>Thank you for your active involvement in the improvement of
+    $BHMcalc.  Filling a bug report is simple.</p><p>Provide
+    (optionally) your contact information below and a brief
+    description of the bug.</p><p>When submiting your report we will
+    attach information about the system you are presently running.
+    You do not need to provide any detailed information about the
+    system.</p>
+    <form id="bug_form" action="BHMutil.php">
+      <input type="hidden" name="datetime" value="$DATETIME">
+      <input type="hidden" name="ACTION" value="BugReport">
+      <input type="hidden" name="Modes" value="$Modes">
+      E-mail (optional) : <input name="bug_email" value="bug@bhmcalc.net"><br/>
+      Report:<br/>
+      <div id="bug_report" style="padding:10px;background:lightgray">
+	<textarea rows="5" style="width:100%" name="bug_report">I have detected a problem with the calculator when running the tool in the '$bug_mode' mode. See details below.</textarea>
+      </div>
+      <div id="bug_result" style="padding:10px">Status: <i>Not sent</i></div>
+      <button id="bug_send">Report</button>
+      $ajax_bug
+      <a href="JavaScript:void(0)" style="font-size:10px;float:right" onclick="display('bug_box')">Hide</a>
+    </form>
+  </div>
+</div>
+B;
+
 if($QCALCMODE){
 $cfile="$SESSDIR/configurations.html";
 $ofile="$SESSDIR/objects.html";
@@ -1772,11 +1818,6 @@ C;
 //CHOOSE CONTENT
 //////////////////////////////////////////////////////////////////////////////////
 
-//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-//COMMON CONTENT
-//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-$BHMcalc="<b style='font-family:Courier;color:red'>BHMcalc</b>";
-
 //##############################
 //INTRODUCTION
 //##############################
@@ -1825,6 +1866,7 @@ if(isset($HELP)){$TABID=2;}
 //////////////////////////////////////////////////////////////////////////////////
 $CONTENT.=<<<C
 <div class="tabber maintabber" name="tabber" id="$TABID">
+  $bug_report
   $updateall
   $main
   $summary

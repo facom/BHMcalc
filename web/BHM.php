@@ -47,6 +47,9 @@ $OBJSDIR=$ROOTDIR.$wDIR.$wOBJSDIR;
 $wLINKDIR="links/";
 $LINKDIR=$ROOTDIR.$wDIR.$wLINKDIR;
 
+$wLOGDIR="logs/";
+$LOGDIR=$ROOTDIR.$wDIR.$wLOGDIR;
+
 //PYTHON COMMAND
 $PYTHONCMD="PYTHONPATH=. MPLCONFIGDIR=$TMPDIR python";
 
@@ -90,6 +93,17 @@ $HZOUTMODELS=array("'early mars'"=>"Early Mars",
 
 $REFOBJS=array("'Earth'"=>"Earth",
 	       "'Saturn'"=>"Saturn");
+
+//////////////////////////////////////////////////////////////
+//DATE
+//////////////////////////////////////////////////////////////
+$TODAY=getdate();
+$YEAR=$TODAY['year'];//e.g. 2005
+$MONTH=100+$TODAY['mon'];
+$MONTH=substr($MONTH,1,2);//e.g. 01, 12
+$DAY=$TODAY['mday'];//e.g. 12, 31
+$DATE="$DAY-$MONTH-$YEAR";//e.g. 12-02-2005
+$DATETIME=$TODAY['hours']."-".$DATE;
 
 //////////////////////////////////////////////////////////////
 //CSS
@@ -319,6 +333,38 @@ $code.=<<<CODE
       e.unbind();
    });
    $("#$element").submit();
+CODE;
+ return $code;
+}
+
+function ajaxMultipleFormSimple($form,$element)
+{
+  $code="";
+
+$code.=<<<CODE
+$("#$form").submit(function(e){
+ var postData = $("#$form").serializeArray();
+ var formURL = $("#$form").attr("action");
+ e.preventDefault();
+ if(!ajaxLoading){
+   ajaxLoading=true;
+   $.ajax({
+     url : formURL,
+     type: "GET",
+     data : postData,
+     success:function(data, textStatus, jqXHR) 
+	 {
+	     $("#$element").html("Status:"+data);
+	 },
+     error: function(jqXHR, textStatus, errorThrown) 
+	 {
+	     $("#$element").html("Status: <i>Error</i>");
+	 }
+     });
+   }else{ajaxLoading=false;}
+      e.unbind();
+   });
+   $("#$form").submit();
 CODE;
  return $code;
 }
