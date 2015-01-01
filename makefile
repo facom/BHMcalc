@@ -33,7 +33,6 @@ NEXT_MAJOR_VERSION = $(shell expr $(MAJOR) + 1).0.0-b$(BUILD)
 NEXT_MINOR_VERSION = $(MAJOR).$(shell expr $(MINOR) + 1).0-b$(BUILD)
 NEXT_PATCH_VERSION = $(MAJOR).$(MINOR).$(shell expr $(PATCH) + 1)-b$(BUILD)
 
-
 version:
 	@echo "This is version $(TAG_PREFIX)$(VERSION)"
 	@echo "Version: $(VERSION)"
@@ -51,6 +50,7 @@ clean:
 	@find . -name "*#*" -exec rm -rf {} \;
 	@find . -name "*.pyc" -exec rm -rf {} \;
 	@find . -name "screenlog*" -exec rm -rf {} \;
+	@echo -n > logs/access.log
 
 cleanall:
 	@echo "Cleaning session directories..."
