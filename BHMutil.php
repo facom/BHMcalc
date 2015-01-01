@@ -263,7 +263,7 @@ else if($ACTION=="BugReport"){
   loadConfiguration("$source_dir/interaction.conf","interaction");
   $link=saveLink($PARSE_STRING);
   $masterlink=<<<LINK
-<a href="$link" target="_blank">Link</a>
+<a href="../$link" target="_blank">Link</a>
 LINK;
   //MD5 STRING
   $md5str=md5($masterlink.$bug_email.$bug_report.$SESSID);
@@ -280,9 +280,11 @@ Date: $datetime<br/>
 Id: $md5str<br/>
 E-mail:<a href="mailto:$bug_email">$bug_email</a><br/>
 Report:<br/>
-<block>
+<div style="padding:20px">
+<i>
 $bug_report
-</block>
+</i>
+</div>
 <br/>
 System Link: $masterlink
 <p></p>
