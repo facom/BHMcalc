@@ -15,6 +15,7 @@
 ###################################################
 */
 include_once("web/BHM.php");
+
 if(preg_match("/template/",$SESSDIR)){
   $SESSID=session_id();
   $wSESSDIR=$wSYSDIR."$SESSID/";
@@ -46,6 +47,8 @@ fclose($fc);
 //////////////////////////////////////////////////////////////
 //SUBMIT EXECUTION
 //////////////////////////////////////////////////////////////
+accessLog("run $module $pipepos $qover");
+
 //COMMAND
 $cmd="$PYTHONCMD BHMrun.py BHM${module}.py $SESSDIR $object.conf $pipepos $qover";
 

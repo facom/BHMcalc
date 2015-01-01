@@ -15,6 +15,7 @@
 ###################################################
 */
 include_once("web/BHM.php");
+accessLog("browse");
 ?>
 <?PHP
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1658,7 +1659,7 @@ $bug_report=<<<B
   <div style="text-align:right;padding:10px;z-index:100">
     <a href="JavaScript:void(0)" style="font-size:10px;background:white;padding:10px;text-align:right" onclick="display('bug_box')">Bug Report</a>
   </div>
-  <div id="bug_box" style="display:none;border:solid black 1px;padding:10px;background:white;width:500px;font-size:12px;z-index:1000">
+  <div id="bug_box" style="display:none;border:solid black 1px;padding:10px;background:white;width:500px;font-size:12px;z-index:100000">
     <h3>Bug Report</h3>
     <p>Thank you for your active involvement in the improvement of
     $BHMcalc.  Filling a bug report is simple.</p><p>Provide

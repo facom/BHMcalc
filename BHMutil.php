@@ -15,6 +15,7 @@
 ###################################################
 */
 include_once("web/BHM.php");
+accessLog("util $ACTION $Modes");
 ?>
 
 <?PHP

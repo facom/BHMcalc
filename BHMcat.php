@@ -15,6 +15,7 @@
 ###################################################
 */
 include_once("web/BHM.php");
+accessLog("catalogue $qover $sortfield $sortorder");
 ?>
 
 <?PHP

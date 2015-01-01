@@ -97,13 +97,15 @@ $REFOBJS=array("'Earth'"=>"Earth",
 //////////////////////////////////////////////////////////////
 //DATE
 //////////////////////////////////////////////////////////////
+date_default_timezone_set("EST");
 $TODAY=getdate();
 $YEAR=$TODAY['year'];//e.g. 2005
 $MONTH=100+$TODAY['mon'];
 $MONTH=substr($MONTH,1,2);//e.g. 01, 12
 $DAY=$TODAY['mday'];//e.g. 12, 31
 $DATE="$DAY-$MONTH-$YEAR";//e.g. 12-02-2005
-$DATETIME=$TODAY['hours']."-".$DATE;
+$TIME=$TODAY['hours'].":".$TODAY['minutes'].":".$TODAY['seconds'];
+$DATETIME=$DATE."-".$TIME;
 
 //////////////////////////////////////////////////////////////
 //CSS
@@ -176,22 +178,16 @@ function checkFunction($name,$value){
   return $check;
 }
 
-function access($referer){
-  global $DIR,$WEBDIR;
-
-  date_default_timezone_set("EST");
-  $PhpGlobal["TODAY"]=getdate();
-  $PhpGlobal["YEAR"]=$PhpGlobal["TODAY"]['year'];//e.g. 2005
-  $PhpGlobal["MONTH"]=100+$PhpGlobal["TODAY"]['mon'];
-  $PhpGlobal["MONTH"]=substr($PhpGlobal["MONTH"],1,2);//e.g. 01, 12
-  $PhpGlobal["DAY"]=$PhpGlobal["TODAY"]['mday'];//e.g. 12, 31
-  $PhpGlobal["DATE"]="$PhpGlobal[DAY]-$PhpGlobal[MONTH]-$PhpGlobal[YEAR]";//e.g. 12-02-2005
-  $date=$PhpGlobal["TODAY"]['hours']."-".$PhpGlobal["DATE"];
+function accessLog($action="browse"){
+  //phpinfo();
+  $datetime=$GLOBALS["DATETIME"];
   $agent=$_SERVER["HTTP_USER_AGENT"];
   $remote=$_SERVER["REMOTE_ADDR"];
   $self=$_SERVER["PHP_SELF"];
-  $hitstr="$date**$remote**$referer**$self**$agent\n";
-  $logfile="$DIR/access.log";
+  $referer=$_SERVER["REQUEST_URI"];
+  $sessid=$GLOBALS["SESSID"];
+  $hitstr="$datetime**$sessid**$remote**$referer**$self**$agent**$action\n";
+  $logfile="$GLOBALS[LOGDIR]/access.log";
   if(file_exists($logfile)){
     $fl=fopen($logfile,"a");
   }else{
@@ -473,4 +469,5 @@ function isBlank($string){
   if(!preg_match("/[\w\d]+/",$string)){return 1;}
   else{return 0;}
 }
+
 ?>
