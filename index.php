@@ -1797,7 +1797,8 @@ $(document).ready(function(){
 </script>
 <div class="message_out" id="message">
   <center>
-    <div class="message_in">
+    <!--class="message_in"-->
+    <div style="background:pink;padding:10px;width:40%;font-size:12px;">
       This website is optimized to work with the Google Chrome web browser.
     </div>
   </center>
