@@ -278,6 +278,8 @@ LINK;
   $report=<<<REPORT
 <hr/>
 Date: $datetime<br/>
+IP: $_SERVER[REMOTE_ADDR]<br/>
+Session: $SESSID<br/>
 Id: $md5str<br/>
 E-mail:<a href="mailto:$bug_email">$bug_email</a><br/>
 Report:<br/>

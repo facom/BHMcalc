@@ -48,7 +48,6 @@ $help="";
 $summary="";
 if(!isset($Modes)){$Modes="Basic";}
 $oModes=$Modes;
-//echo "Mode: $Modes<br/>";
 if($Modes=="Binary"){$Modes="Star1:Star2:Planet:$Modes";}
 if($Modes=="Habitability"){$Modes="Star1:Star2:Planet:Binary:$Modes";}
 if($Modes=="Interactions"){$Modes="Star1:Star2:Planet:Binary:Habitability:$Modes";}
@@ -1649,7 +1648,7 @@ $bug_mode=$parts[count($parts)-1];
 $bug_report=<<<B
 <div style="position:fixed;top:30px;right:10px">
   <div style="text-align:right;padding:10px;z-index:100">
-    <a href="JavaScript:void(0)" style="font-size:10px;background:white;padding:10px;text-align:right" onclick="display('bug_box')">Bug Report</a>
+    <a href="JavaScript:void(0)" style="font-size:10px;background:white;padding:10px;text-align:right" onclick="display('bug_box');">Bug Report</a>
   </div>
   <div id="bug_box" style="display:none;border:solid black 1px;padding:10px;background:white;width:500px;font-size:12px;z-index:100000">
     <h3>Bug Report</h3>
@@ -1780,12 +1779,35 @@ $TABID=1;
 //////////////////////////////////////////////////////////////////////////////////
 //BASIC CONTENT
 //////////////////////////////////////////////////////////////////////////////////
+//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+//CHECK BORWSER
+//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+$agent=$_SERVER["HTTP_USER_AGENT"];
+$qchrome=0;
+if(preg_match("/chrome/i",$agent)){$qchrome=1;}
+if(!$qchrome){
+$message=<<<MSG
+<div style="position:fixed;top:0px;width:100%;text-align:center;">
+  <center>
+    <div style="background:pink;padding:10px;width:40%;font-size:12px">
+      This website is optimized to work with the Google Chrome web browser.
+    </div>
+  </center>
+</div>
+MSG;
+}
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 //HEADER
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 $header=mainHeader();
-echo "<html>$header<body>";
+echo<<<HEAD
+<html>
+$header
+<body>
+$message
+HEAD;
+
 include_once("web/BHMtracking.php");
 $CONTENT.="";
 if($VERBOSE){
