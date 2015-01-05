@@ -24,5 +24,11 @@ $stdout="BHMcat-stdout-$SESSID";
 $stderr="BHMcat-stderr-$SESSID";
 $cmd="$PYTHONCMD BHMcat.py $SESSDIR $qover $sortfield $sortorder $displaylevel \"$catfilter\" $catid";
 $out=shell_exec($cmd." 2> $TMPDIR/$stderr |tee $TMPDIR/$stdout");
-echo "$wSESSDIR/BHMcat$catid.html";
+if(file_exists("$SESSDIR/BHMcat$catid.html")){
+  echo "$wSESSDIR/BHMcat$catid.html";
+  shell_exec("echo 'Hola' > /tmp/def1");
+}else{
+  echo "$wSESSDIR/BHMcat.html";
+  shell_exec("echo 'Hola' > /tmp/def2");
+}
 ?>

@@ -216,7 +216,7 @@ $tabs.=<<<C
 	<option value="4">All properties and errors</option>
       </select>
       Filter : <input type="text" name="catfilter" value="binary_Pbin>0">
-      <a href=JavaScript:$('.help').toggle('fast',null) style="font-size:10px">Show/Hide Help</a>
+      <a href="JavaScript:$('.help').toggle('fast',null)" style="font-size:10px">Show/Hide Help</a>
       <div class="help" style="display:none">
 	<b>Filter examples</b>:<br/>
 	Periods in a given range: binary_Pbin>10 and binary_Pbin<40<br/>
