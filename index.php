@@ -1883,7 +1883,6 @@ C;
 //////////////////////////////////////////////////////////////////////////////////
 $serverip=$_SERVER["SERVER_ADDR"];
 if($serverip!="127.0.0.1"){
-echo $serverip;
 $CONTENT.=<<<TRACKING
 <script>
 (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
