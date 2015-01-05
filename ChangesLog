@@ -1,0 +1,6 @@
+Changes introduced in the most recent build:
+
+<ul>
+<li>(Interface) Problems with the display of BHMcat in browsers different than Google Chrome.</li>
+<li>(Interface) Warning message concerning Browser differences.</li>
+</ul>
