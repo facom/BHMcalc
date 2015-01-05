@@ -1071,10 +1071,10 @@ bbox=dict(fc='w',ec='none')
 ts,Ievo=interpMatrix(star.Ievo)
 
 yplots=[Ievo[1](ts)]
-ax.plot(ts,Ievo[1](ts),color='r',label='Convective Envelope')
+ax.plot(ts/GIGA,Ievo[1](ts),color='r',label='Convective Envelope')
 if star.M>=MMIN_CONV:
    cond=Ievo[2](ts)>0
-   ax.plot(ts[cond],np.log10(Ievo[2](ts[cond])),color='b',label='Radiative Core')
+   ax.plot(ts[cond]/GIGA,np.log10(Ievo[2](ts[cond])),color='b',label='Radiative Core')
    yplots+=[Ievo[1](ts)]
 
 #DECORATIONS
@@ -1084,7 +1084,7 @@ ax.set_ylabel(r"$\\log\, I$ (kg m$^2$)")
 
 ymin,ymean,ymax=minmeanmaxArrays(yplots)
 ax.set_ylim((44,ymax))
-ax.set_xlim((ts[0],ts[-1]))
+ax.set_xlim((ts[0]/GIGA,ts[-1]/GIGA))
 ax.set_title(star.title,position=(0.5,1.02),fontsize=12)
 ax.grid(which="both")
 ax.legend(loc='upper right',prop=dict(size=11))
