@@ -74,6 +74,7 @@ if(!is_dir($SESSIONDIR)){
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 //READING CONFIGURATION FILES
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+//*
 loadConfiguration("$source_dir/star1.conf","star1");
 loadConfiguration("$source_dir/star2.conf","star2");
 loadConfiguration("$source_dir/binary.conf","binary");
@@ -81,7 +82,7 @@ loadConfiguration("$source_dir/hz.conf","hz");
 loadConfiguration("$source_dir/rotation.conf","rotation");
 loadConfiguration("$source_dir/planet.conf","planet");
 loadConfiguration("$source_dir/interaction.conf","interaction");
-sleep(1);
+//*/
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 //ADJUST VALUES
@@ -1816,7 +1817,13 @@ echo<<<HEAD
 <html>
 $header
 <body>
-$message
+  <div id="body" style="background-color:white;opacity:0.2;position:fixed;width:98%">
+    <center>
+      <div id="rendering" style="z-index:10000;float:center;position:absolute;right:0px">
+	<img src="web/load.gif">
+      </div>
+    </center>
+$message 
 HEAD;
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1915,6 +1922,15 @@ C;
 //////////////////////////////////////////////////////////////////////////////////
 //CLOSING MATTER
 //////////////////////////////////////////////////////////////////////////////////
-$CONTENT.="</body></html>";
+$CONTENT.=<<<CONTENT
+<script>
+  $(window).bind("load",function(){
+  $("#body").css("opacity","1.0");
+  $("#rendering").css("display","none");
+  });
+</script>
+</body>
+</html>
+CONTENT;
 echo $CONTENT;
 ?>
