@@ -1787,9 +1787,17 @@ $qchrome=0;
 if(preg_match("/chrome/i",$agent)){$qchrome=1;}
 if(!$qchrome){
 $message=<<<MSG
-<div style="position:fixed;top:0px;width:100%;text-align:center;">
+<script>
+$(document).ready(function(){
+    setTimeout(function(){
+	//$('#message').hide('dissolve');
+	$('#message').fadeOut();
+      },5000);
+  });
+</script>
+<div class="message_out" id="message">
   <center>
-    <div style="background:pink;padding:10px;width:40%;font-size:12px">
+    <div class="message_in">
       This website is optimized to work with the Google Chrome web browser.
     </div>
   </center>
@@ -1808,7 +1816,14 @@ $header
 $message
 HEAD;
 
+//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+//TRACKING
+//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 include_once("web/BHMtracking.php");
+
+//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+//VERBOSE INFORMATION
+//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 $CONTENT.="";
 if($VERBOSE){
 $CONTENT.=<<<C
