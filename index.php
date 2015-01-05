@@ -515,7 +515,7 @@ $tabs.=<<<F
 	  <div class="download" id="star1_download"></div>
 	  <div id="star1_results_status_loader" style="background-color:white;">
 	    <div id="star1_results_status" style="background-color:white;">
-	      <iframe class="iframe" id="star1_results_frame" src="web/blank.html" style="border:solid black 1px"
+	      <iframe class="iframe" id="star1_results_frame" src="web/blank.html"
 		      scrolling="yes" onload="adjustiFrame(this);">
 	      </iframe>
 	    </div>
