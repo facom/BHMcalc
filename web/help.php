@@ -311,6 +311,77 @@ $help=<<<C
     <p class="title"><a name="Gallery">Snapshots and Gallery</a></p>
 
     <p>
+
+    <div class="decoration" style="width:48%">
+      <a href="$wDIR/web/gallery/BHMss1.png">
+	<img src="$wDIR/web/gallery/BHMss1.png" width="100%"/>
+      </a>
+      <br/><br/>
+      <div class="caption">
+      	$BHMcalc screenshot.  The Calculation Modes.
+      </div>
+    </div>
+
+    <div class="decoration" style="width:48%">
+      <a href="$wDIR/web/gallery/BHMss2.png">
+	<img src="$wDIR/web/gallery/BHMss2.png" width="100%"/>
+      </a>
+      <br/><br/>
+      <div class="caption">
+      	$BHMcalc screenshot.  The summary tab.
+      </div>
+    </div>
+
+    <div class="decoration" style="width:48%">
+      <a href="$wDIR/web/gallery/BHMss3.png">
+	<img src="$wDIR/web/gallery/BHMss3.png" width="100%"/>
+      </a>
+      <br/><br/>
+      <div class="caption">
+      	$BHMcalc screenshot.  The Star module tab.
+      </div>
+    </div>
+
+    <div class="decoration" style="width:48%">
+      <a href="$wDIR/web/gallery/BHMss4.png">
+	<img src="$wDIR/web/gallery/BHMss4.png" width="100%"/>
+      </a>
+      <br/><br/>
+      <div class="caption">
+      	$BHMcalc screenshot.  The BHM Catalogue.
+      </div>
+    </div>
+
+    <div class="decoration" style="width:48%">
+      <a href="$wDIR/web/gallery/BHMss5.png">
+	<img src="$wDIR/web/gallery/BHMss5.png" width="100%"/>
+      </a>
+      <br/><br/>
+      <div class="caption">
+      	$BHMcalc screenshot.  The BHM Catalogue sorted by binary semimajor axis.
+      </div>
+    </div>
+
+    <div class="decoration" style="width:48%">
+      <a href="$wDIR/web/gallery/BHMss6.png">
+	<img src="$wDIR/web/gallery/BHMss6.png" width="100%"/>
+      </a>
+      <br/><br/>
+      <div class="caption">
+      	$BHMcalc screenshot.  The Habitable Zone module.
+      </div>
+    </div>
+
+    <div class="decoration" style="width:48%">
+      <a href="$wDIR/web/gallery/BHMss7.png">
+	<img src="$wDIR/web/gallery/BHMss7.png" width="100%"/>
+      </a>
+      <br/><br/>
+      <div class="caption">
+      	$BHMcalc screenshot.  The Bug Report form
+      </div>
+    </div>
+
     <div class="decoration">
       <a href="$wDIR/web/gallery/stellar-rotation.png">
 	<img src="$wDIR/web/gallery/stellar-rotation.png" width="100%"/>
