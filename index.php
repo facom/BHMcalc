@@ -15,7 +15,6 @@
 ###################################################
 */
 include_once("web/BHM.php");
-include_once("web/BHMtracking.php");
 ?>
 <?PHP
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1786,7 +1785,9 @@ $TABID=1;
 //HEADER
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 $header=mainHeader();
-$CONTENT.="<html>$header<body>";
+echo "<html>$header<body>";
+include_once("web/BHMtracking.php");
+$CONTENT.="";
 if($VERBOSE){
 $CONTENT.=<<<C
 Sessid:$SESSID<br/>
