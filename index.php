@@ -1795,7 +1795,8 @@ $(document).ready(function(){
       },5000);
   });
 </script>
-<div class="message_out" id="message">
+<!--class="message_out"-->
+<div id="message" style="position:fixed;top:0px;width:100%;text-align:center;height:0px">
   <center>
     <!--class="message_in"-->
     <div style="background:pink;padding:10px;width:40%;font-size:12px;">

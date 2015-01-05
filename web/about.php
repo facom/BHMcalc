@@ -1,5 +1,6 @@
 <?PHP
 $VERSION=rtrim(shell_exec("make version"));
+$CHANGESLOG=rtrim(shell_exec("cat ChangesLog"));
 $about=<<<C
 <div class="tabbertab" id="Introduction" title="About">
   <div class="tabcontent">
@@ -61,6 +62,9 @@ $about=<<<C
     <pre>$VERSION</pre>
 
     <p class="title">Changes Log</p>
+    <p>
+    $CHANGESLOG
+    </p>
     
   </div>
 </div>

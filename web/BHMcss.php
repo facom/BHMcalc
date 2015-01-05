@@ -398,20 +398,6 @@ div.decoration{
  width:30%;
  padding:10px;
 }
-
-div.message_out{
- position:fixed;
- top:0px;
- width:100%;
- text-align:center;   
-}
-
-div.message_in{
- background:pink;
- padding:10px;
- width:40%;
- font-size:12px;
-}
 </style>
 CSS;
 ?>
