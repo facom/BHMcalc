@@ -81,6 +81,7 @@ loadConfiguration("$source_dir/hz.conf","hz");
 loadConfiguration("$source_dir/rotation.conf","rotation");
 loadConfiguration("$source_dir/planet.conf","planet");
 loadConfiguration("$source_dir/interaction.conf","interaction");
+sleep(1);
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 //ADJUST VALUES
