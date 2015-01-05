@@ -337,6 +337,7 @@ div.listconfig{
 
 td.field_cat{
   font-size:11px;
+  white-space:nowrap;
 }
 tr.header{
  background:gray;

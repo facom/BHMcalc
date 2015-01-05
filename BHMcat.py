@@ -287,7 +287,7 @@ for key in sfields[:-3]:
         text="&Delta;"+text
     if "\\" in text:
         text=re.sub(r"\\(\w+)",r"&\1;",text)
-    table+="<td class='field_cat pri%s' style='width:1px;white-space:nowrap'>%s</td>"%(prior,text)
+    table+="<td class='field_cat pri%s'>%s</td>"%(prior,text)
 #PLANET
 for key in pfields[6:-1]:
     text=pfieldstext[key]
@@ -300,8 +300,8 @@ for key in pfields[6:-1]:
         text="&Delta;"+text
     if "\\" in text:
         text=re.sub(r"\\(\w+)",r"&\1;",text)
-    table+="<td class='field_cat pri%s' style='width:1px;white-space:nowrap'>%s</td>"%(prior,text)
-table+="<td class='field_cat' style='width:1px;white-space:nowrap'>References</td>"
+    table+="<td class='field_cat pri%s'>%s</td>"%(prior,text)
+table+="<td class='field_cat'>References</td>"
 table+="</tr>\n"
 
 #////////////////////////////////////////
@@ -332,7 +332,7 @@ for system in sortCatalogue(systems,sortfield,reverse=sortorder):
                     exec("%s=%s('%s')"%(pkey,ptipo,pvalue))
                     qstring+="%s=%s&"%(pkey,pvalue)
                     pvalue=adjustValue(pkey,pvalue,ptipo)
-                    row+="<td class='field_cat pri%s' style='width:1px;white-space:nowrap'>%s</td>"%(pprior,pvalue)                    
+                    row+="<td class='field_cat pri%s'>%s</td>"%(pprior,pvalue)                    
                     if i==0:fk.write("%s\n"%pkey)
             else:
                 if i==0:fk.write("%s\n"%key)
@@ -343,7 +343,7 @@ for system in sortCatalogue(systems,sortfield,reverse=sortorder):
                 #if 'str_' in key:value="'%s'"%value
                 qstring+="%s=%s&"%(key,value)
                 value=adjustValue(key,value,tipo)
-                row+="<td class='field_cat pri%s' style='width:1px;white-space:nowrap'>%s</td>"%(prior,value)
+                row+="<td class='field_cat pri%s'>%s</td>"%(prior,value)
                
         for key in system["PlanetsModel"][planetcat].keys():
             value=system["PlanetsModel"][planetcat][key]
@@ -353,7 +353,7 @@ for system in sortCatalogue(systems,sortfield,reverse=sortorder):
         #print valueADS
         valueADS=adjustValue("ADS",valueADS,"str")
         #exit(0)
-        row+="<td class='field_cat' style='width:1px;white-space:nowrap'>%s</td>"%(valueADS)
+        row+="<td class='field_cat'>%s</td>"%(valueADS)
         row+="</tr>\n"
 
         maxchar=14
