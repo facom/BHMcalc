@@ -1882,6 +1882,7 @@ C;
 //TRACKING CODE
 //////////////////////////////////////////////////////////////////////////////////
 $serverip=$_SERVER["SERVER_ADDR"];
+echo $serverip;
 if($serverip!="127.0.0.1"){
 $CONTENT.=<<<TRACKING
 <script>
