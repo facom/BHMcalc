@@ -56,8 +56,12 @@ $about=<<<C
       simpler version of the tool was released along
       the <b>[Mason+2014]</b> paper and it is presently unavailable.
     </p>
-
+    
+    <p class="title">Version</p>
     <pre>$VERSION</pre>
+
+    <p class="title">Changes Log</p>
+    
   </div>
 </div>
 C;
