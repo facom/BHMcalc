@@ -246,12 +246,23 @@ if output=="plain":
 #############################################################
 #CREATING HTML TABLE
 #############################################################
+#DISPLAY METHOD
+"""
+disprop="display";
+none="none";
+block="block";
+#"""
+#"""
+disprop="visibility";
+none="collapse";
+block="visible";
+#"""
 #DISPLAY LEVEL
 prilevel=[0]
 for level in xrange(1,5):
     if level<=displaylevel:
-        pri='block'
-    else:pri='none'
+        pri=block
+    else:pri=none
     prilevel+=[pri]
 
 table=""
@@ -263,22 +274,28 @@ table+="""
 <head>
   <link rel="stylesheet" type="text/css" href="BHM.css">
   <style>
-    td.pri1{display:block;}
-    td.pri2{display:%s;}
-    td.pri3{display:%s;}
-    td.pri4{display:%s;}
-    td.pri100{display:none;}
+    td.pri1{%s:%s;}
+    td.pri2{%s:%s;}
+    td.pri3{%s:%s;}
+    td.pri4{%s:%s;}
+    td.pri100{%s:%s;}
   </style>
 </head>
 <body>
 <table>
-"""%(prilevel[2],prilevel[3],prilevel[4])
+"""%(disprop,block,
+     disprop,prilevel[2],
+     disprop,prilevel[3],
+     disprop,prilevel[4],
+     disprop,none)
 
 table+="<tr class='header'>"
 #SYSTEM
 for key in sfields[:-3]:
     text=sfieldstext[key]
     prior=sfieldspri[key]
+    #-#
+    if int(prior)>displaylevel:continue
     if "_" in text:
         text=text.replace("_","<sub>")
         text=text+"</sub>"
@@ -288,10 +305,13 @@ for key in sfields[:-3]:
     if "\\" in text:
         text=re.sub(r"\\(\w+)",r"&\1;",text)
     table+="<td class='field_cat pri%s'>%s</td>"%(prior,text)
+
 #PLANET
 for key in pfields[6:-1]:
     text=pfieldstext[key]
     prior=pfieldspri[key]
+    #-#
+    if int(prior)>displaylevel:continue
     if "_" in text:
         text=text.replace("_","<sub>")
         text=text+"</sub>"
@@ -312,7 +332,7 @@ PRINTOUT("Generating table sorting by field '%s'..."%sortfield)
 fk=open("%s/BHMcat.keys"%catdir,"w")
 for system in sortCatalogue(systems,sortfield,reverse=sortorder):
     #========================================
-    #BAN POTENTIAL SYSTEMS
+    #BAN POTENTIAL SYSTEMS: OTHER CATALOGUES
     #========================================
     if 'P' in system["BHMCatS"]:continue
 
@@ -332,6 +352,8 @@ for system in sortCatalogue(systems,sortfield,reverse=sortorder):
                     exec("%s=%s('%s')"%(pkey,ptipo,pvalue))
                     qstring+="%s=%s&"%(pkey,pvalue)
                     pvalue=adjustValue(pkey,pvalue,ptipo)
+                    #-#
+                    if int(pprior)>displaylevel:continue
                     row+="<td class='field_cat pri%s'>%s</td>"%(pprior,pvalue)                    
                     if i==0:fk.write("%s\n"%pkey)
             else:
@@ -343,6 +365,8 @@ for system in sortCatalogue(systems,sortfield,reverse=sortorder):
                 #if 'str_' in key:value="'%s'"%value
                 qstring+="%s=%s&"%(key,value)
                 value=adjustValue(key,value,tipo)
+                #-#
+                if int(prior)>displaylevel:continue
                 row+="<td class='field_cat pri%s'>%s</td>"%(prior,value)
                
         for key in system["PlanetsModel"][planetcat].keys():
@@ -350,9 +374,7 @@ for system in sortCatalogue(systems,sortfield,reverse=sortorder):
             qstring+="%s=%s&"%(key,value)
 
         valueADS=system["binary_ADS"]+";"+planet["planet_ADS"] 
-        #print valueADS
         valueADS=adjustValue("ADS",valueADS,"str")
-        #exit(0)
         row+="<td class='field_cat'>%s</td>"%(valueADS)
         row+="</tr>\n"
 

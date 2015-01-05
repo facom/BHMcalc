@@ -334,10 +334,10 @@ div.listconfig{
  //background:lightyellow;
  display:block;
 }
-
 td.field_cat{
   font-size:11px;
   white-space:nowrap;
+  width:1px;
 }
 tr.header{
  background:gray;
