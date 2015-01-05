@@ -87,14 +87,6 @@ loadConfiguration("$source_dir/interaction.conf","interaction");
 //ADJUST VALUES
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 $planet_Morb=$star1_M+$star2_M;
-$CONTENT.=<<<C
-<script>
-function changePlanetMorb(){
-  Morb=parseFloat($("input[name=star1_M]").val())+parseFloat($("input[name=star2_M]").val());
-  $("input[name=planet_Morb]").attr("value",Morb);
-}
-</script>
-C;
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 //AJAX FORM

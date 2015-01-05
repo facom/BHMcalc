@@ -164,6 +164,12 @@ $HEADER=<<<HEADER
   <script src="web/md5.js"></script>
   <script src="web/BHM.js"></script>
   <script src="web/tabber.js"></script>
+  <script>
+function changePlanetMorb(){
+  Morb=parseFloat($("input[name=star1_M]").val())+parseFloat($("input[name=star2_M]").val());
+  $("input[name=planet_Morb]").attr("value",Morb);
+}
+ </script>
   <link rel="stylesheet" type="text/css" href="web/BHM.css">
   <script type="text/javascript">
   //setInterval("refreshiFrames()",2000);  
