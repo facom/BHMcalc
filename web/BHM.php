@@ -142,7 +142,7 @@ function mainHeader($refresh="",$options="?")
     $refreshcode="<meta http-equiv='refresh' content='$refresh;URL=$options'>";
   }
   $serverip=$_SERVER["SERVER_ADDR"];
-  if($serverip!="127.0.0.1" and isBlank($refreshcode)){
+  if($serverip=="127.0.0.1" and isBlank($refreshcode)){
 $TRACK=<<<TRACKING
 <script>
 (function(i,s,o,g,r,a,m){i["GoogleAnalyticsObject"]=r;i[r]=i[r]||function(){
