@@ -159,7 +159,7 @@ TRACKING;
 $HEADER=<<<HEADER
 <head>
   $refreshcode
-  $TRACKING
+  $TRACK
   <script src="web/jquery.js"></script>
   <script src="web/md5.js"></script>
   <script src="web/BHM.js"></script>
