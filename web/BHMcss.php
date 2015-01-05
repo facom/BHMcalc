@@ -292,7 +292,7 @@ div.download{
  border:solid black 1px;
  z-index:100;
  top:40px;
- right:90px;
+ right:95px;
  display:none;
  font-size:12px
 }

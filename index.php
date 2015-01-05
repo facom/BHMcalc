@@ -217,7 +217,7 @@ $tabs.=<<<C
 	<option value="4">All properties and errors</option>
       </select>
       Filter : <input type="text" name="catfilter" value="binary_Pbin>0">
-      <a href="JavaScript:$('.help').toggle('fast',null)" style="font-size:10px">Show/Hide Help</a>
+      <a href="JavaScript:void(0)" style="font-size:10px" onclick="$('.help').toggle('fast',null)">Show/Hide Help</a>
       <div class="help" style="display:none">
 	<b>Filter examples</b>:<br/>
 	Periods in a given range: binary_Pbin>10 and binary_Pbin<40<br/>
@@ -1648,9 +1648,9 @@ F;
 $parts=preg_split("/:/",$Modes);
 $bug_mode=$parts[count($parts)-1];
 $bug_report=<<<B
-<div style="position:fixed;top:30px;right:10px">
+<div style="position:fixed;top:35px;right:0px">
   <div style="text-align:right;padding:10px;z-index:100">
-    <a href="JavaScript:void(0)" style="font-size:10px;background:white;padding:10px;text-align:right" onclick="display('bug_box');">Bug Report</a>
+    <a href="JavaScript:void(0)" style="font-size:10px;background:white;padding:10px;text-align:right;border:solid black 1px;" onclick="display('bug_box');">Bug Report</a>
   </div>
   <div id="bug_box" style="display:none;border:solid black 1px;padding:10px;background:white;width:500px;font-size:12px;z-index:100000">
     <h3>Bug Report</h3>

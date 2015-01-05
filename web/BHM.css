@@ -254,7 +254,7 @@ input{
 iframe{
  width:100%;
  scrolling:false;
- border:1px;
+ border:0px;
 }
 
 div.download{
@@ -264,7 +264,7 @@ div.download{
  border:solid black 1px;
  z-index:100;
  top:40px;
- right:90px;
+ right:95px;
  display:none;
  font-size:12px
 }

@@ -24,30 +24,30 @@ $about=<<<C
       <ul>
 
 	<li>
-	  <a href="http://arxiv.org/abs/1501.00296">[Zuluaga+2015]</a>
+	  <a href="http://arxiv.org/abs/1501.00296" target="_blank">[Zuluaga+2015]</a>
 	  Zuluaga, J.I., Mason, P.A. & Cuartas-Restrepo,
 	  P. A. (2015). <i>Constraining the Radiation and Plasma
 	  Environment of Kepler Circumbinary habitable zone
-	  planets</i>. <b>Submitted to the Astrophysical Journal</b> (<a href="http://arxiv.org/abs/1501.00296">arXiv:1501.00296</a>).
+	  planets</i>. <b>Submitted to the Astrophysical Journal</b> (<a href="http://arxiv.org/abs/1501.00296" target="_blank">arXiv:1501.00296</a>).
 	</li>
 
 	<br/>
 	<li>
-	  <a href="http://adsabs.harvard.edu/abs/2013ApJ...774L..26M">[Mason+2013]</a>
+	  <a href="http://adsabs.harvard.edu/abs/2013ApJ...774L..26M" target="_blank">[Mason+2013]</a>
 	  Mason, P. A., Zuluaga, J. I., Clark, J. M., &
 	  Cuartas-Restrepo, P. A. (2013). <i>Rotational Synchronization
 	  May Enhance Habitability for Circumbinary Planets: Kepler
 	  Binary Case Studies</i>. <b>The Astrophysical Journal Letters</b>,
 	  774(2), L26. (ADS:
-	  2013ApJ...774L..26M, <a href="http://arxiv.org/abs/1307.4624">arXiv:1307.4624</a>)
+	  2013ApJ...774L..26M, <a href="http://arxiv.org/abs/1307.4624" target="_blank">arXiv:1307.4624</a>)
 	</li>
 	<br/>
 	<li>
-	  <a href="http://adsabs.harvard.edu/abs/2014arXiv1408.5163M">[Mason+2014]</a>
+	  <a href="http://adsabs.harvard.edu/abs/2014arXiv1408.5163M" target="_blank">[Mason+2014]</a>
 	  Mason, P. A., Zuluaga, J. I., Cuartas-Restrepo, P. A., &
 	  Clark, J. M. (2014). Circumbinary Habitability
 	  Niches. <b>International Journal of Astrobiology</b>.  (ADS:
-	  2014arXiv1408.5163M, <a href="http://arxiv.org/abs/1408.5163">arXiv:1408.5163</a>)
+	  2014arXiv1408.5163M, <a href="http://arxiv.org/abs/1408.5163" target="_blank">arXiv:1408.5163</a>)
 	</li>
       </ul>	  
     </p>
