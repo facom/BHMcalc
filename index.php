@@ -1825,11 +1825,11 @@ $header
   </div>
   <!--BODY-->
      <div id="body" style="background-color:white;opacity:0.2;width:100%;height:100%">
-    <center>
-      <div id="rendering" style="z-index:10000;float:center;position:absolute;right:0px;border:solid black 0px;">
-	<img src="web/load.gif">
-      </div>
-    </center>
+       <center>
+	 <div id="rendering" style="z-index:10000;float:center;position:absolute;right:0px;border:solid black 0px;">
+	   <img src="web/load.gif">
+	 </div>
+       </center>
 HEAD;
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
