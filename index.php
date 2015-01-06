@@ -14,8 +14,8 @@
 # Web Interface
 ###################################################
 */
-$QMAINTAINANCE="block";
-//$QMAINTAINANCE="none";
+//$QMAINTAINANCE="block";
+$QMAINTAINANCE="none";
 include_once("web/BHM.php");
 ?>
 <?PHP
