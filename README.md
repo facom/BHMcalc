@@ -33,6 +33,12 @@ field.
 If you need to cite this software please include a reference to one
 (or all) of the following papers:
 
+- Zuluaga, J.I., Mason, P. A., & Cuartas-Restrepo,
+  P. A. (2015). Constraining the Radiation and Plasma Environment of
+  the Kepler Habitable Zone Circumbinary Planets. Submitted to
+  Astrophysical Journal. arXiv preprint arXiv:1501.00296
+  ([arXiv](http://arxiv.org/abs/1501.00296)).
+
 - Mason, P. A., Zuluaga, J. I., Clark, J. M., & Cuartas-Restrepo,
   P. A. (2013). Rotational Synchronization May Enhance Habitability
   for Circumbinary Planets: Kepler Binary Case Studies. The
