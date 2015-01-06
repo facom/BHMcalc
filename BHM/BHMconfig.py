@@ -21,6 +21,7 @@ exec("OBJ_DIR='objs/'");
 exec("LOG_DIR='logs/'");
 exec("DATA_DIR='BHM/data/'");
 exec("WEB_COMMON=['/var/www/html','/var/www']");
+exec("WEB_COMMON=['/var/www/html/BHMcalc','/var/www/BHMcalc']+WEB_COMMON");
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 #BEHAVIOR

@@ -56,7 +56,7 @@ if($Modes=="Interactions"){$Modes="Star1:Star2:Planet:Binary:Habitability:$Modes
 //SESSION DIRECTORY
 //////////////////////////////////////////////////////////////////////////////////
 if(!is_dir($SESSIONDIR)){
-  $source_dir=$SYSDIR."template/";
+  $source_dir=$SYSDIR."/template";
   echoVerbose("No session directory.");
   $qdir="No session directory.";
   if(!isset($TABID)){$TABID=0;}
@@ -184,7 +184,7 @@ if(preg_match("/Catalogue/",$Modes)){
   //$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
   //CATALOGUE KEYS
   //$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-  $keys=file($SESSDIR."BHMcat.keys");
+  $keys=file($SESSDIR."/BHMcat.keys");
   $catfields="";
   foreach($keys as $key){
     $key=rtrim($key);

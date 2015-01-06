@@ -25,30 +25,55 @@ $SERVER=shell_exec("hostname");
 //==============================
 //GETTING LOCATION
 //==============================
-if(!isset($RELATIVE)){$RELATIVE=".";}
-$dir=rtrim(shell_exec("cd $RELATIVE;pwd"));
-$parts=preg_split("/\//","$dir");
-$BHMDIR=$parts[count($parts)-1];
-$ROOTDIR=preg_replace("/$BHMDIR/","",rtrim(shell_exec("cd $RELATIVE;pwd")));
-$wDIR="/$BHMDIR/";
-$DIR=$ROOTDIR.$wDIR;
-//echo "$ROOTDIR,$DIR,$wDIR<br/>";
+//FOLDER RESPECT TO ROOT DIRECTORY
+$HTTP_HOST=$_SERVER["HTTP_HOST"];
+$BASEDIR="";
 
-//OTHER DIRECTORIES
-$wSYSDIR=$wDIR."sys/";
+//BASE DIRECTORY
+if(!isset($RELATIVE)){$RELATIVE=".";}
+$DIR=rtrim(shell_exec("cd $RELATIVE;pwd"));
+$ROOTDIR=preg_replace("/$BASEDIR/","",rtrim(shell_exec("cd $RELATIVE;pwd")));
+$wDIR="$BASEDIR";
+$DIR=$ROOTDIR.$wDIR;
+
+//SYSTEM DIRECTORY
+$wSYSDIR=$wDIR."/sys";
 $SYSDIR=$ROOTDIR.$wSYSDIR;
 
-$wTMPDIR="tmp/";
+//TEMPORARY DIRECTORY
+$wTMPDIR=$wDIR."/tmp";
 $TMPDIR=$ROOTDIR.$wDIR.$wTMPDIR;
 
-$wOBJSDIR="objs/";
+//OBJECTS DIRECTORY
+$wOBJSDIR=$wDIR."/objs";
 $OBJSDIR=$ROOTDIR.$wDIR.$wOBJSDIR;
 
-$wLINKDIR="links/";
+//LINKS DIRECTORY
+$wLINKDIR=$wDIR."/links";
 $LINKDIR=$ROOTDIR.$wDIR.$wLINKDIR;
 
-$wLOGDIR="logs/";
+//LOGS DIRECTORY
+$wLOGDIR=$wDIR."/logs";
 $LOGDIR=$ROOTDIR.$wDIR.$wLOGDIR;
+
+//SHOW DIRECTORIES
+if(isset($_GET["DIR"])){
+echo<<<DIR
+<pre>
+Directories:
+    Basedirectory: $BASEDIR
+    Installation Directory: $DIR
+    Root directory: $ROOTDIR
+    Web directory: $wDIR
+    Directory: $DIR
+    Temporary: $wTMPDIR, $TMPDIR
+    Objects: $wOBJSDIR, $OBJSDIR
+    Link: $wLINKDIR, $LINKDIR
+    Log: $wLOGDIR, $LOGDIR
+</pre>
+DIR;
+  exit(0);
+}
 
 //PYTHON COMMAND
 $PYTHONCMD="PYTHONPATH=. MPLCONFIGDIR=$TMPDIR python";
@@ -122,12 +147,12 @@ if(!file_exists($CSSFILE) or isset($GENCSS)){
 //////////////////////////////////////////////////////////////
 if(!isset($_SESSION)){session_start();}
 $SESSID=session_id();
-$wSESSDIR=$wSYSDIR."$SESSID/";
+$wSESSDIR=$wSYSDIR."/$SESSID";
 $SESSDIR=$ROOTDIR.$wSESSDIR;
 $SESSIONDIR=$SESSDIR;
 if(!is_dir($SESSDIR)){
   $SESSIONDIR=$SESSDIR;
-  $wSESSDIR=$wSYSDIR."template/";
+  $wSESSDIR=$wSYSDIR."/template";
   $SESSDIR=$ROOTDIR.$wSESSDIR;
 }
 

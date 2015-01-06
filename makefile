@@ -52,7 +52,7 @@ clean:
 	@find . -name "screenlog*" -exec rm -rf {} \;
 	@echo -n > logs/access.log
 
-cleanall:
+cleanall:clean
 	@echo "Cleaning session directories..."
 	@touch sys/seed
 	@rm -r sys/*
@@ -61,7 +61,7 @@ cleanall:
 	@touch tmp/seed
 	@rm -r tmp/*
 
-deepclean:cleanall
+deepclean:cleanall 
 	@echo "Cleaning temporary directories..."
 	@rm -rf tmp/*
 	@touch objs/seed

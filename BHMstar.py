@@ -44,7 +44,7 @@ star,star_str,star_hash,star_dir=makeObject("star",
                                             sys_dir+"/"+star_conf,
                                             qover=qover)
 PRINTOUT("Object directory '%s' created"%star_dir)
-star_webdir=WEB_DIR+star_dir
+star_webdir="/"+WEB_DIR+star_dir
 
 #METALLICITY AND ISOCHRONE GRID
 if star.Z==0:

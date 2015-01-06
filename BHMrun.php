@@ -18,7 +18,7 @@ include_once("web/BHM.php");
 
 if(preg_match("/template/",$SESSDIR)){
   $SESSID=session_id();
-  $wSESSDIR=$wSYSDIR."$SESSID/";
+  $wSESSDIR=$wSYSDIR."/$SESSID";
   $SESSDIR=$ROOTDIR.$wSESSDIR;
   shell_exec("mkdir -p $SESSDIR");
   shell_exec("cp -rf $SYSDIR/template/* $SESSDIR/");
@@ -29,7 +29,7 @@ if(preg_match("/template/",$SESSDIR)){
 //////////////////////////////////////////////////////////////
 //CREATE CONFIGURATION FILE
 //////////////////////////////////////////////////////////////
-$confile=$SESSDIR."$object.conf";
+$confile=$SESSDIR."/$object.conf";
 $fc=fopen($confile,"w");
 foreach(array_keys($_GET) as $key){
   if(!preg_match("/${object}_(.+)/",$key,$matches)){continue;}
@@ -62,14 +62,14 @@ $parts=preg_split("/--sig--\s*/",$out);
 
 //GET OBJECT HASH
 $hash=rtrim(end($parts));
-$src_file="objs/$module-$hash/$module.html";
+$src_file="/objs/$module-$hash/$module.html";
 
 if(file_exists($DIR.$src_file)){
   //RETURN OUTPUT
   echo $src_file;
 }else{
   //GENERATE REPORT
-  $err_file=$wSESSDIR."error-report.html";
+  $err_file=$wSESSDIR."/error-report.html";
   $fe=fopen($ROOTDIR.$err_file,"w");
 $error=<<<ERROR
   <html>
@@ -80,8 +80,8 @@ $error=<<<ERROR
   <i>An error has been raised when executing the calculator scripts.
   Check the standard and error outputs of the scripts:</i>
   <p>
-  <a href="$wDIR/$wTMPDIR/$stdout">Standard output</a><br/>
-  <a href="$wDIR/$wTMPDIR/$stderr">Error output</a><br/>
+  <a href="$wTMPDIR/$stdout">Standard output</a><br/>
+  <a href="$wTMPDIR/$stderr">Error output</a><br/>
   </p>
   </body>
   </html>
