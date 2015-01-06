@@ -23,6 +23,13 @@ $CONTENT="";
 $SERVER=shell_exec("hostname");
 
 //==============================
+//EXCLUDED IPs
+//==============================
+$EXCLUDED_IPS=
+  array("172.31.13.244",
+	"172.31.31.159",
+	"127.0.0.1");
+//==============================
 //GETTING LOCATION
 //==============================
 //FOLDER RESPECT TO ROOT DIRECTORY
@@ -211,10 +218,15 @@ function checkFunction($name,$value){
 }
 
 function accessLog($action="browse"){
-  //phpinfo();
+  global $EXCLUDED_IPS;
   $datetime=$GLOBALS["DATETIME"];
   $agent=$_SERVER["HTTP_USER_AGENT"];
   $remote=$_SERVER["REMOTE_ADDR"];
+  echo "Remote: $remote<br/>";
+  foreach($EXCLUDED_IPS as $addr){
+    echo "ADDRS:$addr<br/>";
+    if($remote==$addr){return;}
+  }
   $self=$_SERVER["PHP_SELF"];
   $parts=preg_split("/\?/",$_SERVER["REQUEST_URI"]);
   $referer=$parts[0];
