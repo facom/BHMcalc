@@ -54,7 +54,7 @@ Versions
 --------
 
 An on-line version of BHMcalc is available at:
-http://bit.ly/BHM-calculator.  
+http://bhmcalc.net. 
 
 This version is intended to be used by non-programmer or for those not
 interested on dealing with source code coming from a different
