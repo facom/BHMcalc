@@ -1792,17 +1792,19 @@ $message=<<<MSG
 <script>
 $(document).ready(function(){
     setTimeout(function(){
-	//$('#message').hide('dissolve');
 	$('#message').fadeOut();
       },5000);
   });
 </script>
-<!--class="message_out"-->
-<div id="message" style="position:fixed;top:0px;width:100%;text-align:center;height:0px">
+<div style="position:fixed;top:0px;width:100%;text-align:center;height:0px">
   <center>
-    <!--class="message_in"-->
-    <div style="background:pink;padding:10px;width:40%;font-size:12px;">
+    <div id="message" style="background:pink;padding:10px;width:40%;font-size:12px;">
       This website is optimized to work with the Google Chrome web browser.
+    </div>
+    <div id="ad" style="background:lightyellow;padding:10px;width:30%;font-size:12px;font-style:italic;">
+      <img src="web/maw.png" width=40px align="left"/>
+      This site is under maintainance or being updated.<br/>
+      Several functionalities could be out of order temporarily.
     </div>
   </center>
 </div>
