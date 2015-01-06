@@ -61,15 +61,15 @@ if(isset($_GET["DIR"])){
 echo<<<DIR
 <pre>
 Directories:
-    Basedirectory: $BASEDIR
-    Installation Directory: $DIR
-    Root directory: $ROOTDIR
-    Web directory: $wDIR
-    Directory: $DIR
-    Temporary: $wTMPDIR, $TMPDIR
-    Objects: $wOBJSDIR, $OBJSDIR
-    Link: $wLINKDIR, $LINKDIR
-    Log: $wLOGDIR, $LOGDIR
+    BASEDIR: $BASEDIR
+    DIR: $DIR
+    ROOTDIR: $ROOTDIR
+    WDIR: $wDIR
+    DIR: $DIR
+    TMPDIR: $wTMPDIR, $TMPDIR
+    OBJ: $wOBJSDIR, $OBJSDIR
+    LINK: $wLINKDIR, $LINKDIR
+    LOG: $wLOGDIR, $LOGDIR
 </pre>
 DIR;
   exit(0);

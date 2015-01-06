@@ -78,7 +78,7 @@ if star1_hash==star2_hash:
 ###################################################
 rot,rot_str,rot_hash,rot_dir=\
     makeObject("rotation",sys_dir+"/"+rot_conf,qover=qover)
-rot_webdir=WEB_DIR+rot_dir
+rot_webdir="/"+WEB_DIR+rot_dir
 PRINTOUT("Object hash:%s"%rot_hash)
 
 ###################################################

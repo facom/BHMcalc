@@ -98,7 +98,7 @@ tp,thermevol=interpMatrix(planet.thermevol)
 ###################################################
 env,env_str,env_hash,env_dir=\
     makeObject("interaction",sys_dir+"/"+env_conf,qover=qover)
-env_webdir=WEB_DIR+env_dir
+env_webdir="/"+WEB_DIR+env_dir
 PRINTOUT("Object hash:%s"%env_hash)
 env.str_refobj=env.str_refobj.replace("'","")
 ###################################################

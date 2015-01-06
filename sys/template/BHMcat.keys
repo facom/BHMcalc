@@ -60,7 +60,15 @@ RA
 DEC
 planet_str_PlanetID
 planet_M
+planet_Merr
 planet_R
+planet_Rerr
+planet_Morb
 planet_aorb
+planet_aorberr
 planet_Porb
+planet_Porberr
 planet_eorb
+planet_eorberr
+planet_worb
+planet_worberr

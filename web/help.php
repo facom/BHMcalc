@@ -21,7 +21,7 @@ $help=<<<C
 
     <p class="title"><a name="Presentation">Presentation</a></p>
     
-    <img src="$wDIR/doc/figures/binaries.png" width="300px" align="left" style="margin-right:30px;margin-bottom:30px"/>
+    <img src="$wDIR/docs/figures/binaries.png" width="300px" align="left" style="margin-right:30px;margin-bottom:30px"/>
 
     <p>
       Thousands of planets around other stars have been discovered so
@@ -155,7 +155,7 @@ $help=<<<C
     </p>
     <center>
       <div class="figure">
-	<img src="$wDIR/doc/figures/modes.png" width="100%"/>
+	<img src="$wDIR/docs/figures/modes.png" width="100%"/>
 	<div class="caption">The Calculator Modes</div>
       </div>
     </center>
@@ -191,7 +191,7 @@ $help=<<<C
 
     <center>
       <div class="figure" style="width:80%">
-	<img src="$wDIR/doc/figures/catalogue.png" width="100%"/>
+	<img src="$wDIR/docs/figures/catalogue.png" width="100%"/>
 	<p></p>
 	<div class="caption">The BHM Catalogue dynamic table</div>
       </div>
@@ -243,7 +243,7 @@ $help=<<<C
 
     <center>
       <div class="figure" style="width:80%">
-	<img src="$wDIR/doc/figures/tab.png" width="100%"/>
+	<img src="$wDIR/docs/figures/tab.png" width="100%"/>
 	<p></p>
 	<div class="caption">The common structure of a calculation tab.</div>
       </div>
@@ -271,7 +271,7 @@ $help=<<<C
 
     <center>
       <div class="figure" style="width:80%">
-	<img src="$wDIR/doc/figures/summary.png" width="100%"/>
+	<img src="$wDIR/docs/figures/summary.png" width="100%"/>
 	<p></p>
 	<div class="caption">The summary tab.</div>
       </div>

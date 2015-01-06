@@ -75,7 +75,7 @@ PRINTOUT("Loading object from '%s'"%ihz_conf)
 ihz,ihz_str,ihz_hash,ihz_dir=\
      makeObject("hz",sys_dir+"/"+ihz_conf,qover=qover)
 PRINTOUT("Object directory '%s' created"%ihz_dir)
-ihz_webdir=WEB_DIR+ihz_dir
+ihz_webdir="/"+WEB_DIR+ihz_dir
 
 ###################################################
 #CALCULATE BINARY HABITABLE ZONE AT TAU

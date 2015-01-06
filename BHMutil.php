@@ -21,8 +21,8 @@ accessLog("util $ACTION $Modes");
 <?PHP
 if(preg_match("/template/",$SESSDIR)){
   $SESSID=session_id();
-  $wSESSDIR=$wSYSDIR."$SESSID/";
-  $SESSDIR=$ROOTDIR.$wSESSDIR;
+  $wSESSDIR=$wSYSDIR."/$SESSID";
+  $SESSDIR=$ROOTDIR."/".$wSESSDIR;
   shell_exec("mkdir -p $SESSDIR");
   shell_exec("cp -rf $SYSDIR/template/* $SESSDIR/");
 }
@@ -49,11 +49,11 @@ C;
 ?>
 LINK;
 
-  $linkfile=$LINKDIR."$sysid-$Modes-$md5str.php";
+  $linkfile=$LINKDIR."/$sysid-$Modes-$md5str.php";
   $fl=fopen($linkfile,"w");
   fwrite($fl,$linkcontent);
   fclose($fl);
-  $link=$wLINKDIR."$sysid-$Modes-$md5str.php";
+  $link=$wLINKDIR."/$sysid-$Modes-$md5str.php";
   
   return $link;
 }
@@ -100,7 +100,7 @@ else if($ACTION=="CommandLine"){
   $cmd="$PYTHONCMD BHMrun.py BHMinteraction.py $SESSDIR/sys_$id \"LOADCONFIG&Modes=$Modes&$PARSE_STRING\"";
   $sysid=$GLOBALS["binary_str_SysID"];
   $sysid=strtolower(preg_replace("/['\s-_,\.]/","",$sysid));
-  $cmdfile=$LINKDIR."$sysid-$Modes-$id.sh";
+  $cmdfile=$LINKDIR."/$sysid-$Modes-$id.sh";
   
 $script=<<<SCRIPT
 $cmd 0 $1 &> tmp/$sysid-$Modes-$id.log
@@ -188,8 +188,12 @@ else if($ACTION=="SaveObject"){
   }
   shell_exec("echo '$cmd' > /tmp/cmd");
   shell_exec("$cmd &> $TMPDIR/BHMsave-$SESSID");
-  shell_exec("sed -e 's/$hash/$obj-$id/' $OBJSDIR/$hash/$obj.html > $tgtdir/$obj.html");
-  //echo "sed -e 's/$hash/$obj-$id/' $tgtdir/$obj.html &> /tmp/sed";
+  shell_exec("sed -e 's/$hash/$obj-$id/g' $OBJSDIR/$hash/$obj.html > $tgtdir/$obj.html");
+  $parts=preg_split("/\s*,\s*/",rtrim(shell_exec("ls -m $OBJSDIR/$hash/*.py")));
+  foreach($parts as $file){
+    $filename=rtrim(shell_exec("basename $file"));
+    shell_exec("sed -e 's/$hash/$obj-$id/g' $file > $tgtdir/$filename");
+  }
   echo "Object $id saved.<br/>Use this link: $lnkdir.";
 }
 

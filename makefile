@@ -93,13 +93,13 @@ seedtemplate:
 
 decrypt:
 	@echo "Decrypting Developer Guide..."
-	@openssl enc -d -aes-256-cbc -in doc/DEVELOPER.enc -out doc/DEVELOPER.txt
+	@openssl enc -d -aes-256-cbc -in docs/DEVELOPER.enc -out docs/DEVELOPER.txt
 
 encrypt:
 	@echo "Encrypting Developer Guide..."
-	@openssl enc -aes-256-cbc -in doc/DEVELOPER.txt -out doc/DEVELOPER.enc
+	@openssl enc -aes-256-cbc -in docs/DEVELOPER.txt -out docs/DEVELOPER.enc
 
 edit:
-	@emacs -nw *.py web/*.php BHM/*.py *.php makefile doc/*.txt README.md
+	@emacs -nw *.py web/*.php BHM/*.py *.php makefile docs/*.txt README.md
 
 

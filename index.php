@@ -1849,7 +1849,7 @@ C;
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 $CONTENT.=<<<C
 <h1>
-<a style='font-size:36' href="$wDIR">
+<a style='font-size:36' href="$wDIR/">
   BHM Calculator
 </a><sup> <b style='color:red'>2.0</b><br/>
   <i style="font-size:18px">Binary Habitability and More</i></sup>

@@ -70,7 +70,7 @@ binary,binary_str,binary_hash,binary_dir=makeObject("binary",
                                             sys_dir+"/"+binary_conf,
                                             qover=qover)
 PRINTOUT("Object directory '%s' created"%binary_dir)
-binary_webdir=WEB_DIR+binary_dir
+binary_webdir="/"+WEB_DIR+binary_dir
 
 ###################################################
 #CALCULATE BASIC PROPERTIES OF BINARY

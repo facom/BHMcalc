@@ -47,7 +47,7 @@ PRINTOUT("Loading object from '%s'"%(planet_conf))
 planet,planet_str,planet_hash,planet_dir=makeObject("planet",
                                             sys_dir+"/"+planet_conf,
                                             qover=qover)
-planet_webdir=WEB_DIR+planet_dir
+planet_webdir="/"+WEB_DIR+planet_dir
 PRINTOUT("Object hash:%s"%planet_hash)
 
 ###################################################
