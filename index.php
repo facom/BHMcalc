@@ -1798,17 +1798,8 @@ $(document).ready(function(){
       },5000);
   });
 </script>
-<div style="position:fixed;top:0px;width:100%;text-align:center;height:0px">
-  <center>
-    <div id="message" style="background:pink;padding:10px;width:40%;font-size:12px;">
-      This website is optimized to work with the Google Chrome web browser.
-    </div>
-    <div id="ad" style="display:$QMAINTAINANCE;background:lightyellow;padding:10px;width:30%;font-size:12px;font-style:italic;">
-      <img src="web/maw.png" width=40px align="left"/>
-      This site is under maintainance or it is being updated.
-      Several functionalities could be temporarily out of order.
-    </div>
-  </center>
+<div id="message" style="background:pink;padding:10px;width:40%;font-size:12px;">
+  This website is optimized to work with the Google Chrome web browser.
 </div>
 MSG;
 }
@@ -1821,13 +1812,24 @@ echo<<<HEAD
 <html>
 $header
 <body>
-    <div id="body" style="background-color:white;opacity:0.2;width:100%;height:100%">
+  <!--MESSAGE AREA-->
+  <div style="position:fixed;top:0px;width:100%;text-align:center;height:0px">
+    <center>
+      <div id="ad" style="display:$QMAINTAINANCE;background:lightyellow;padding:10px;width:30%;font-size:12px;font-style:italic;">
+	<img src="web/maw.png" width=40px align="left"/>
+	This site is under maintainance or it is being updated.
+	Several functionalities could be temporarily out of order.
+      </div>
+      $message
+    </center>
+  </div>
+  <!--BODY-->
+     <div id="body" style="background-color:white;opacity:0.2;width:100%;height:100%">
     <center>
       <div id="rendering" style="z-index:10000;float:center;position:absolute;right:0px;border:solid black 0px;">
 	<img src="web/load.gif">
       </div>
     </center>
-$message 
 HEAD;
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
