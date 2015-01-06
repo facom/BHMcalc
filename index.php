@@ -14,6 +14,8 @@
 # Web Interface
 ###################################################
 */
+$QMAINTAINANCE="block";
+//$QMAINTAINANCE="none";
 include_once("web/BHM.php");
 ?>
 <?PHP
@@ -1801,10 +1803,10 @@ $(document).ready(function(){
     <div id="message" style="background:pink;padding:10px;width:40%;font-size:12px;">
       This website is optimized to work with the Google Chrome web browser.
     </div>
-    <div id="ad" style="background:lightyellow;padding:10px;width:30%;font-size:12px;font-style:italic;">
+    <div id="ad" style="display:$QMAINTAINANCE;background:lightyellow;padding:10px;width:30%;font-size:12px;font-style:italic;">
       <img src="web/maw.png" width=40px align="left"/>
-      This site is under maintainance or being updated.<br/>
-      Several functionalities could be out of order temporarily.
+      This site is under maintainance or it is being updated.
+      Several functionalities could be temporarily out of order.
     </div>
   </center>
 </div>
