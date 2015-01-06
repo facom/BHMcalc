@@ -524,4 +524,18 @@ function isBlank($string){
   else{return 0;}
 }
 
+function createSessionDir($string){
+  global $GLOBALS;
+  if(preg_match("/template/",$GLOBALS["SESSDIR"])){
+    //echo "Creating Session directory $string...<br/>";
+    $GLOBALS["SESSID"]=session_id();
+    $GLOBALS["wSESSDIR"]=$GLOBALS["wSYSDIR"]."/".$GLOBALS["SESSID"];
+    $GLOBALS["SESSDIR"]=$GLOBALS["ROOTDIR"]."/".$GLOBALS["wSESSDIR"];
+    shell_exec("mkdir -p $GLOBALS[SESSDIR]");
+    shell_exec("cp -rf $GLOBALS[SYSDIR]/template/* $GLOBALS[SESSDIR]/");
+  }else{
+    //echo "Session directory already existing...<br/>";
+  }
+}
+
 ?>

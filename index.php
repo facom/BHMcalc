@@ -28,12 +28,14 @@ $BHMcalc="<b style='font-family:Courier;color:red'>BHMcalc</b>";
 //LOAD A CONFIGURATION
 //////////////////////////////////////////////////////////////////////////////////
 if(isset($LOADCONFIG)){
+  createSessionDir("Load config");
+  //echo "Session directory: $SESSDIR...";
   $stdout="BHMrun-load-$SESSID";
   $stderr="BHMrun-load-$SESSID";
   $cmd="$PYTHONCMD BHMrun.py - $SESSDIR \"$QUERY_STRING\"";
   $out=shell_exec($cmd." 2> $TMPDIR/$stderr |tee $TMPDIR/$stdout");
   $header=mainHeader("1","?Modes=$Modes");
-  echo "$header<body>Loading $Modes configuration...</body>";
+  echo "$header<body>Loading data into calculator...</body>";
   return;
 }
 accessLog("browse");
@@ -48,7 +50,11 @@ $tabs="";
 $main="";
 $help="";
 $summary="";
-if(!isset($Modes)){$Modes="Basic";}
+if(!isset($Modes)){
+  $Modes="Basic";
+}else if(!preg_match("/Catalogue/",$Modes)){
+  createSessionDir("New mode $Modes");
+}
 $oModes=$Modes;
 if($Modes=="Binary"){$Modes="Star1:Star2:Planet:$Modes";}
 if($Modes=="Habitability"){$Modes="Star1:Star2:Planet:Binary:$Modes";}
@@ -152,22 +158,13 @@ $force_update=<<<F
   <a href="JavaScript:void(0)" class="force" onclick="forceUpdate('.force','.qover')">Smart</a> 
 F;
 
-$changeFeH=<<<C
-  changeAjax('$wDIR/BHMutil.php?ACTION=Metals&ZtoFeH','.star_Z','.star_FeH');
-C;
-$changeZ=<<<C
-  changeAjax('$wDIR/BHMutil.php?ACTION=Metals&FeHtoZ','.star_FeH','.star_Z');
-C;
-
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 //CODE TO EXECUTE WHEN DOCUMENT IS READY
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 $document_load=<<<C
 <script>
   $(document).ready(function(){
-      $changeZ
-      changeValues(['.star_Z'],'input[name=star1_Z]');
-      changeValues(['.star_FeH'],'input[name=star1_FeH]');
+      //USE THIS TO EXECUTE SOME EVENT AT INDEX LOAD
     });
 </script>
 C;
