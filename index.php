@@ -196,7 +196,7 @@ $tabs.=<<<C
   <!-- CATALOGUE -->
   <!-- //////////////////////////////////////////////////////////// -->
   <div class="tabbertab" id="Introduction" title="BHM Catalogue">
-    <p><b>Binary Habitability Catalogue</b></p>
+    <p><b>BHM Catalogue</b></p>
     <form id="cat_form" action="BHMcat.php">
       <input type="hidden" name="catid" value="$SESSID">
       Sort field:
