@@ -1083,5 +1083,82 @@ def analyseKeplerSystems():
 #CompareLuminositiesMassLoss()
 #IntegratedReferenceFluxes()
 #IntegratedMassLoss()
-analyseKeplerSystems()
+#analyseKeplerSystems()
 #IntegratedReferenceFluxesTini()
+
+#################################################################################
+# BHM CALCULATOR PAPER
+#################################################################################
+def plotAllMoIs():
+    #Msvec=np.arange(0.2,1.25,0.10)
+    Msvec=np.arange(0.2,1.25,0.40)
+    Msvec=np.concatenate((Msvec,np.arange(0.15,1.25,0.40),[1.2]))
+    Msvec.sort()
+
+    Msvec=np.array([0.15,0.3,0.45,0.6,0.75,0.9,1.15])
+
+    figk2=plt.figure()
+    ax_k2=figk2.add_axes([0.12,0.12,0.8,0.8])
+
+    figMoI=plt.figure()
+    ax_MoI=figMoI.add_axes([0.1,0.1,0.8,0.8])
+
+    figRad=plt.figure()
+    ax_Rad=figRad.add_axes([0.1,0.1,0.8,0.8])
+
+    for M in Msvec:
+        data=interpolMoI(M,verbose=True)
+
+        #CONVECTIVE
+        line,=ax_MoI.plot(data[:,0],data[:,2],'-',label="M=%.2f"%M)
+        color=plt.getp(line,'color')
+
+        #RADIATIVE
+        ax_MoI.plot(data[:,0],data[:,3],'--',color=color)
+
+        #TOTAL
+        ax_MoI.plot(data[:,0],data[:,4],'-',color=color,linewidth=4,alpha=0.3,zorder=-10)
+
+        #K2
+        ax_k2.plot(data[:,0],data[:,8],'-',color=color,label="M=%.2f"%M)
+        #ax_k2.plot(data[:,0],data[:,11],'-',color=color,linewidth=5,alpha=0.3,zorder=-5)
+
+        #K2
+        ax_k2.plot(data[:,0],data[:,9],'--',color=color)
+        ax_k2.plot(data[:,0],data[:,10],'-.',color=color)
+
+        #RAD
+        ax_Rad.plot(data[:,0],data[:,14],'-',color=color,label="M=%.2f"%M)
+        ax_Rad.plot(data[:,0],data[:,15],'--',color=color)
+
+    logtmin=6.0;logtmax=10.0
+
+    ax_MoI.plot([],[],'--',color='k',label="Radiative")
+    ax_MoI.plot([],[],'-',color='k',label="Convective")
+    ax_MoI.plot([],[],'-',color='k',linewidth=4,alpha=0.3,label="Total")
+    ax_MoI.legend(loc="best",ncol=3,prop=dict(size=10))
+    ax_MoI.set_ylim((50.5,56.0))
+    ax_MoI.set_xlim((logtmin,logtmax))
+    ax_MoI.grid(which='both')
+
+    ax_k2.plot([],[],'-.',color='k',label="Radiative")
+    ax_k2.plot([],[],'--',color='k',label="Convective")
+    ax_k2.plot([],[],'-',color='k',linewidth=4,alpha=0.3,label="Total")
+    ax_k2.legend(loc="lower left",ncol=1,prop=dict(size=10))
+    #ax_k2.grid(which='both')
+    ax_k2.set_ylabel(r"$k^2$")
+    ax_k2.set_xlabel(r"$\log\,\tau$ (yr)")
+    ax_k2.set_xlim((logtmin,logtmax))
+
+    ax_Rad.plot([],[],'-',color='k',label=r"$R_{\rm rad}$ ($R_\odot$)")
+    ax_Rad.plot([],[],'--',color='k',label=r"$M_{\rm rad}$ ($M_\odot$)")
+    ax_Rad.legend(loc="best",ncol=3,prop=dict(size=10))
+    ax_Rad.grid(which='both')
+    ax_Rad.set_ylabel(r"$R_{\rm rad}$, $M_{\rm rad}$")
+    ax_Rad.set_xlim((logtmin,logtmax))
+
+    figk2.savefig("figures/MoI-all-k2.png")
+    figMoI.savefig("figures/MoI-all-MoIs.png")
+    figRad.savefig("figures/MoI-all-Rad.png")
+
+plotAllMoIs()

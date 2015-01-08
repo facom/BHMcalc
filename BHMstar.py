@@ -239,21 +239,24 @@ for logt in np.arange(logtini+dlogt,logtend-dlogt,dlogt):
      #DERIVATIVES
      
      #CONVECTIVE ENVELOPE
-     dlogIcondlogt=derivative(Ievot_funcs[1],logt,dlogt)
-     dlogIcondt=dlogIcondlogt/(t*YEAR)
+     try:
+          dlogIcondlogt=derivative(Ievot_funcs[1],logt,dlogt)
+          dIraddlogt=derivative(Ievot_funcs[2],logt,dlogt)
+          dlogItotdlogt=derivative(Ievot_funcs[3],logt,dlogt)
+          dMdlogt=derivative(Ievot_funcs[5],logt,dlogt)
+     except ValueError as e:
+          PRINTERR("Derivative taken in the last point, log(t) = %f"%logt)
+          PRINTERR("Details:%s"%e)
 
-     #RADIATIVE ENVELOPE
-     dIraddlogt=derivative(Ievot_funcs[2],logt,dlogt)
+     dlogIcondt=dlogIcondlogt/(t*YEAR)
      dIraddt=dIraddlogt/(t*YEAR)
      if Irad>0:dlogIraddt=dIraddt/Irad
      else:dlogIraddt=0.0
 
      #TOTAL
-     dlogItotdlogt=derivative(Ievot_funcs[3],logt,dlogt)
      dlogItotdt=dlogItotdlogt/(t*YEAR)
 
      #MASS TRANSFER
-     dMdlogt=derivative(Ievot_funcs[5],logt,dlogt)
      dMdt=dMdlogt/(t*YEAR)
 
      #TORQUE DUE TO MASS TRANSFER
