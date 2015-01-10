@@ -1868,7 +1868,7 @@ def dipoleMomentGiants():
     qsaved=False
     qsaved=True
     fig=plt.figure()
-    ax=fig.add_axes([0.12,0.1,0.8,0.8])
+    ax=fig.add_axes([0.12,0.12,0.8,0.8])
 
     fs=[0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1.0]
     fs=[0.5,0.9]
@@ -1980,8 +1980,8 @@ def dipoleMomentGiants():
                     horizontalalignment='left',verticalalignment='center',fontsize=10,
                     transform=offSet(10,10),color='k')
             
-    ax.set_xlabel(r"$M_p$ ($M_{\rm Jup}$)")
-    ax.set_ylabel(r"${\cal M}_{\rm dip}$ (${\cal M}_{{\rm dip}\oplus}$)")
+    ax.set_xlabel(r"$M_p$ ($M_{\rm Jup}$)",fontsize=12)
+    ax.set_ylabel(r"${\cal M}_{\rm dip}$ (${\cal M}_{{\rm dip}\oplus}$)",fontsize=12)
     
     ax.set_xlim((Mpvec[0]*MJUP/MEARTH,Mpvec[-1]*MJUP/MEARTH))
     ax.set_ylim((10.0,Mdipmax))
