@@ -9,11 +9,12 @@ $about=<<<C
       group of
       <b>Prof. Paul Mason</b> in
       the <a href="http://academics.utep.edu/Default.aspx?tabid=18742">University
-      of Texas, El Paso</a> and the group of <b>Prof. Jorge
-      I. Zuluaga</b>,
+      of Texas, El Paso</a> and <b>New Mexico State University</b> and
+      the group of <b>Prof. Jorge I. Zuluaga</b>,
       the <a href="http://urania.udea.edu.co/facom">Computational
-      Physics and Astrophysics Group</a> of the University of
-      Antioquia (Medell&iacute;n, Colombia).
+      Physics and Astrophysics Group</a> of
+      the <a href="http://www.udea.edu.co">University of Antioquia</a>
+      (Medell&iacute;n, Colombia).
     </p>
   
     <a name="References"></a>
@@ -57,7 +58,40 @@ $about=<<<C
       simpler version of the tool was released along
       the <b>[Mason+2014]</b> paper and it is presently unavailable.
     </p>
+
+    <a name="Acknowledgement"></a>
+    <p class="title">Acknowledgements</p>
+
+    <p>
+      $BHMcalc is possible thanks to the support and the direct and
+      indirect participation of several institutions and
+      colleagues.<br/><br/>
+
+      Firstly we thank to <b>W. Welsh</b>, <b>N. Haghighapor</b>, <b>G. Torres</b>,
+      <b>S. Cranmer</b> and <b>A. Claret</b> for useful discussions
+      and insightful comments regarding the models applied in the
+      calculator.  <b>I. Baraffe</b> provided several key results for
+      modeling the evolution of stellar rotation of low
+      mass-stars.<br/><br/>
+
+      Jorge I. Zuluaga thanks the <b>Harvard-Smithsonian Center for
+      Astrophysics</b> for their hospitality during a 5 months stay in
+      the winter 2014-2015 where most of the major improvements of the
+      Calculator were achieved.  Thanks to <b>Prof. Dimitar
+      Sasselov</b> for the invitation.<br/><br/>
+
+      The Calculator has been developed under the financial support
+      of: <b>Fulbright Commision, Colombia</b>, the <b>Vicerrectoria
+      de Docencia / Facultad de Ciencias Exactas y Naturales /
+      Instituto de Fisica</b> of the University of Antioquia and the
+      program of <b>Sostenibilidad/CODI/UdeA</b>.<br/><br/>
+
+      Special thanks to <b>Steffen Christensen</b> for testing the
+      tool and finding several major bugs.<br/><br/>
+      
+    </p>
     
+    <a name="Version"></a>
     <p class="title">Version</p>
     <pre>$VERSION</pre>
 

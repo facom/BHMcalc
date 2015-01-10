@@ -1161,4 +1161,845 @@ def plotAllMoIs():
     figMoI.savefig("figures/MoI-all-MoIs.png")
     figRad.savefig("figures/MoI-all-Rad.png")
 
-plotAllMoIs()
+def compareMoIs():
+    figMoI=plt.figure()
+    ax_MoI=figMoI.add_axes([0.1,0.1,0.8,0.8])
+
+    M=1.1
+
+    ###################################################
+    #PARSEC, Z=0.015
+    ###################################################
+    model="PARSEC"
+    Z=0.015
+
+    #INERTIA MOMENT MODEL
+    dataMoI=interpolMoI(M,verbose=True)
+    logtmoi,MoIfunc=interpMatrix(dataMoI)
+
+    #EVOLUTIONARY TRACK
+    pfind,startrack=findTrack(model,Z,M,verbose=True)
+    evoFunc=trackFunctions(startrack)
+
+    tmin=evoFunc.R.x[0]
+    tmax=evoFunc.R.x[-1]
+    logtmoi=logtmoi[(logtmoi>np.log10(tmin))*(logtmoi<np.log10(tmax))]
+
+    Ievo=stack(4)
+    for logt in logtmoi:
+        t=10**logt
+
+        #BULK MOI
+        logMR2=np.log10((M*MSUN*1E3)*(evoFunc.R(t)*RSUN*1E2)**2)
+
+        #TOTAL K2 AND MOI
+        k2=MoIfunc[8](logt)
+        logk2=np.log10(k2)
+        logItot=logk2+logMR2
+
+        #CONVECTIVE K2 AND MOI
+        kconv2=MoIfunc[9](logt)
+        logkconv2=np.log10(kconv2)
+        logIconv=logkconv2+logMR2
+
+        #RADIATIVE K2 AND MOI
+        krad2=MoIfunc[10](logt)
+        Irad=krad2*10**logMR2
+
+        Ievo+=[logt,logItot,logIconv,np.log10(Irad)]
+
+    ax_MoI.plot(Ievo.array[:,0],Ievo.array[:,1],'k-',label='PARSEC, $Z=0.015$')
+    ax_MoI.plot(Ievo.array[:,0],Ievo.array[:,2],'k--')
+    ax_MoI.plot(Ievo.array[:,0],Ievo.array[:,3],'k:')
+
+    ###################################################
+    #PARSEC, Z=0.005
+    ###################################################
+    model="PARSEC"
+    Z=0.005
+
+    #INERTIA MOMENT MODEL
+    dataMoI=interpolMoI(M,verbose=True)
+    logtmoi,MoIfunc=interpMatrix(dataMoI)
+
+    #EVOLUTIONARY TRACK
+    pfind,startrack=findTrack(model,Z,M,verbose=True)
+    evoFunc=trackFunctions(startrack)
+
+    tmin=evoFunc.R.x[0]
+    tmax=evoFunc.R.x[-1]
+    logtmoi=logtmoi[(logtmoi>np.log10(tmin))*(logtmoi<np.log10(tmax))]
+
+    Ievo=stack(4)
+    for logt in logtmoi:
+        t=10**logt
+
+        #BULK MOI
+        logMR2=np.log10((M*MSUN*1E3)*(evoFunc.R(t)*RSUN*1E2)**2)
+
+        #TOTAL K2 AND MOI
+        k2=MoIfunc[8](logt)
+        logk2=np.log10(k2)
+        logItot=logk2+logMR2
+
+        #CONVECTIVE K2 AND MOI
+        kconv2=MoIfunc[9](logt)
+        logkconv2=np.log10(kconv2)
+        logIconv=logkconv2+logMR2
+
+        #RADIATIVE K2 AND MOI
+        krad2=MoIfunc[10](logt)
+        Irad=krad2*10**logMR2
+
+        Ievo+=[logt,logItot,logIconv,np.log10(Irad)]
+
+    ax_MoI.plot(Ievo.array[:,0],Ievo.array[:,1],'b-',label='PARSEC, $Z=0.005$')
+    ax_MoI.plot(Ievo.array[:,0],Ievo.array[:,2],'b--')
+    ax_MoI.plot(Ievo.array[:,0],Ievo.array[:,3],'b:')
+
+    ###################################################
+    #BCA98, Z=0.015
+    ###################################################
+    model="BCA98"
+    Z=0.015
+
+    #INERTIA MOMENT MODEL
+    dataMoI=interpolMoI(M,verbose=True)
+    logtmoi,MoIfunc=interpMatrix(dataMoI)
+
+    #EVOLUTIONARY TRACK
+    pfind,startrack=findTrack(model,Z,M,verbose=True)
+    evoFunc=trackFunctions(startrack)
+
+    tmin=evoFunc.R.x[0]
+    tmax=evoFunc.R.x[-1]
+    logtmoi=logtmoi[(logtmoi>np.log10(tmin))*(logtmoi<np.log10(tmax))]
+
+    Ievo=stack(4)
+    for logt in logtmoi:
+        t=10**logt
+
+        #BULK MOI
+        logMR2=np.log10((M*MSUN*1E3)*(evoFunc.R(t)*RSUN*1E2)**2)
+
+        #TOTAL K2 AND MOI
+        k2=MoIfunc[8](logt)
+        logk2=np.log10(k2)
+        logItot=logk2+logMR2
+
+        #CONVECTIVE K2 AND MOI
+        kconv2=MoIfunc[9](logt)
+        logkconv2=np.log10(kconv2)
+        logIconv=logkconv2+logMR2
+
+        #RADIATIVE K2 AND MOI
+        krad2=MoIfunc[10](logt)
+        Irad=krad2*10**logMR2
+
+        Ievo+=[logt,logItot,logIconv,np.log10(Irad)]
+
+    ax_MoI.plot(Ievo.array[:,0],Ievo.array[:,1],'g-',label='BCA98, $Z=0.015$')
+    ax_MoI.plot(Ievo.array[:,0],Ievo.array[:,2],'g--')
+    ax_MoI.plot(Ievo.array[:,0],Ievo.array[:,3],'g:')
+
+    ###################################################
+    #BCA98, Z=0.005
+    ###################################################
+    model="BCA98"
+    Z=0.005
+
+    #INERTIA MOMENT MODEL
+    dataMoI=interpolMoI(M,verbose=True)
+    logtmoi,MoIfunc=interpMatrix(dataMoI)
+
+    #EVOLUTIONARY TRACK
+    pfind,startrack=findTrack(model,Z,M,verbose=True)
+    evoFunc=trackFunctions(startrack)
+
+    tmin=evoFunc.R.x[0]
+    tmax=evoFunc.R.x[-1]
+    logtmoi=logtmoi[(logtmoi>np.log10(tmin))*(logtmoi<np.log10(tmax))]
+
+    Ievo=stack(4)
+    for logt in logtmoi:
+        t=10**logt
+
+        #BULK MOI
+        logMR2=np.log10((M*MSUN*1E3)*(evoFunc.R(t)*RSUN*1E2)**2)
+
+        #TOTAL K2 AND MOI
+        k2=MoIfunc[8](logt)
+        logk2=np.log10(k2)
+        logItot=logk2+logMR2
+
+        #CONVECTIVE K2 AND MOI
+        kconv2=MoIfunc[9](logt)
+        logkconv2=np.log10(kconv2)
+        logIconv=logkconv2+logMR2
+
+        #RADIATIVE K2 AND MOI
+        krad2=MoIfunc[10](logt)
+        Irad=krad2*10**logMR2
+
+        Ievo+=[logt,logItot,logIconv,np.log10(Irad)]
+
+    ax_MoI.plot(Ievo.array[:,0],Ievo.array[:,1],'c-',label='BCA98, $Z=0.005$')
+    ax_MoI.plot(Ievo.array[:,0],Ievo.array[:,2],'c--')
+    ax_MoI.plot(Ievo.array[:,0],Ievo.array[:,3],'c:')
+
+    logtmin=6.0;logtmax=9.0
+    ax_MoI.legend(loc="best",ncol=1,prop=dict(size=10))
+    ax_MoI.set_ylim((50.5,56.0))
+    ax_MoI.set_xlim((logtmin,logtmax))
+    ax_MoI.set_xlabel(r"$\log\,\tau$ (yr)")
+    ax_MoI.set_ylabel(r"$\log\,I$ (kg m$^{-2}$)")
+    #ax_MoI.grid(which='both')
+
+    figMoI.savefig("figures/MoI-compared.png")
+
+def evolutionaryTracks():
+
+    #LOAD CATALOGUE
+    fpickle="BHM/data/BHMcat/BHMcat.pickle"
+    fl=open(fpickle,'r')
+    systems=pickle.load(fl)
+    fl.close()
+
+    ###############################
+    #SYSTEM: 
+    ###############################
+    #SUN
+    #"""
+    M=1.0
+    Tobs=TSUN
+    Terr=0.0
+    Robs=1.0
+    Rerr=0.0
+    Tomax=7000;Tomin=4000
+    Romin=-1;Romax=10.0
+    #"""
+
+    #KEPLER-16A
+    """
+    M=0.7
+    Tobs=4337
+    Terr=80.0
+    Robs=0.649
+    Rerr=0.001
+    Tomax=6000;Tomin=3500
+    Romin=-1;Romax=10.0
+    #"""
+    
+    #############################################################
+    #HR TRACK
+    #############################################################
+    fig=plt.figure()
+    ax=fig.add_axes([0.1,0.1,0.8,0.8])
+
+    Tarr=[]
+    Rarr=[]
+
+    colors=['r','k','b','c']
+    styles=['-','--',':']
+    
+    models=dict(
+        PARSEC=[0.017,0.004,0.03],
+        YZVAR=[0.017,0.004,0.04],
+        BASTI=[0.01,0.004,0.04],
+        BCA98=[0.015,0.005])
+
+    mkeys=models.keys()
+    mkeys=["BCA98","PARSEC","BASTI","YZVAR"]
+    #mkeys=["BCA98"]
+    
+    j=0
+    for model in mkeys:
+        i=0
+        print "Model: %s"%model
+        for Z in models[model][0:2]:
+            k=i%3
+            print "Plotting track for Z = %.4f, M = %.2f..."%(Z,M)
+            track_finds,track_data=findTracks(model,Z,M,verbose=False)
+            Zi=track_finds[1][0]
+            track=trackArrays(track_data[1])
+            
+            ts=track.ts/GIGA
+            tmin=ts[0]
+            tmax=ts[-1]
+            print "tmin,tmax = ",tmin,tmax
+
+            Ts=track.T
+            Rs=track.R
+            
+            #cond=(ts<4.56)
+            cond=(ts<20.0)
+            ts=ts[cond]
+            Ts=Ts[cond]
+            Rs=Rs[cond]
+            
+            Tarr+=[Ts]
+            Rarr+=[Rs]
+            
+            style=dict(color=colors[j],markersize=5,markeredgecolor='none')
+
+            ax.plot(Ts,Rs,color=colors[j],linestyle=styles[k],label='%s, Z=%.4f'%(model,Z))
+            ax.plot([Ts[0]],[Rs[0]],'s',**style)
+            ax.plot([Ts[-1]],[Rs[-1]],'o',**style)
+            i+=1
+
+        j+=1
+    
+    Tmin,Tmax=minmaxArrays(Tarr)
+    Rmin,Rmax=minmaxArrays(Rarr)
+
+    fac=1.1
+    
+    ax.text(Tobs,Robs,r"$\star$",color='g',
+            fontsize=25,horizontalalignment='center',verticalalignment='center')
+
+    ax.axvspan(Tobs-Terr,Tobs+Terr,color='g',alpha=0.3)
+    ax.axvline(Tobs,color='g')
+
+    ax.axhspan(Robs-Rerr,Robs+Rerr,color='g',alpha=0.3)
+    ax.axhline(Robs,color='g')
+
+    if Tomin<0:Tmin=1/fac*Tmin
+    else:Tmin=Tomin
+
+    if Tomax<0:Tmax=fac*Tmax
+    else:Tmax=Tomax
+
+    if Romin<0:Rmin=1/fac*Rmin
+    else:Rmin=Romin
+
+    if Romax<0:Rmax=fac*Rmax
+    else:Rmax=Romax
+    
+    ax.set_yscale("log")
+
+    logTickLabels(ax,-1,1,(2,1),frm="%.1f",axis='y',notation='normal',fontsize=12)
+
+    ax.set_xlim((Tmax,Tmin))
+    ax.set_ylim((Rmin,Rmax))
+
+    ax.set_xlabel(r"$T_{\rm eff}$ (K)",fontsize=14)
+    ax.set_ylabel("$R/R_\odot$",fontsize=14)
+    
+    ax.set_title("$M = %.1f\,M_\odot$"%(M),
+                 position=(0.5,1.02),fontsize=14)
+
+    #ax.grid(which='both')
+    ax.legend(loc='best',prop=dict(size=10))
+
+    fmodel="figures/EvoTrack-M_%.2f.png"%M
+    print "Saving file %s..."%fmodel
+    fig.savefig(fmodel)
+    
+def massRadiusSolid():
+    
+    qsave=True
+
+    fig=plt.figure()
+    ax=fig.add_axes([0.12,0.1,0.8,0.8])
+
+    dirplgrid=DATA_DIR+"SolidPlanets/MobileLids"
+    loadSolidPlanetsGrid(dirplgrid,verbose=False)
+
+    NC=30
+    NM=10
+
+    CMFs=np.linspace(0.1,0.8,NC)
+    Ms=np.linspace(1.0,7.0,NM)
+    
+    CM,MSS=np.meshgrid(CMFs,Ms)
+    RMS=np.zeros_like(CM)
+    i=0
+    colmap=cm.rainbow
+    for CMF in CMFs:
+        print "Mass-radius relationship for CMF = %.2f"%CMF
+        Rs=[]
+        j=0
+        for M in Ms:
+            print "\tM = %.2f"%M
+            pcell=loadPlanetCell(Mp=M,CMF=CMF,IMF=0.0,dirplgrid=dirplgrid,verbose=False)
+            R=planetProperty(pcell,"Radius",
+                             data="struct")
+            Rs+=[R]
+            RMS[j,i]=R
+            j+=1
+            del(pcell)
+        color=colmap((CMF-CMFs[0])/(CMFs[-1]-CMFs[0]))
+        if i==0 or i==NC-1:
+            label="CMF %.1f"%CMF
+        else:label=""
+        ax.plot(Ms,Rs,label=label,color=color)
+        i+=1
+
+    #EARTH COMPOSITION
+    Rs=[]
+    for M in Ms:
+        pcell=loadPlanetCell(Mp=M,CMF=0.34,IMF=0.0,dirplgrid=dirplgrid,verbose=False)
+        R=planetProperty(pcell,"Radius",
+                         data="struct")
+        Rs+=[R]
+    ax.plot(Ms,Rs,label="Earth Composition",color='k',linewidth=2,zorder=10)
+
+    if qsave:
+        np.savetxt("figures/CM-solid.dat",CM)
+        np.savetxt("figures/MS-solid.dat",MSS)
+        np.savetxt("figures/RM-solid.dat",RMS)
+
+    #SUPER EARTHS
+    for planet in SuperEarths.keys():
+        Mp=SuperEarths[planet]["Mp"]
+        Mperr1=SuperEarths[planet]["Mperr1"]
+        Mperr2=SuperEarths[planet]["Mperr2"]
+        Rp=SuperEarths[planet]["Rp"]
+        Rperr1=SuperEarths[planet]["Rperr1"]
+        Rperr2=SuperEarths[planet]["Rperr2"]
+        line,=ax.plot([Mp],[Rp],'o',markersize=5,markeredgecolor='none')
+        color=plt.getp(line,"color")
+        ax.errorbar(Mp,Rp,xerr=(Mperr2-Mperr1)/2,yerr=(Rperr2-Rperr1)/2,color=color,zorder=1000)
+        planetn=planet.replace("_","-")
+        ax.text(Mp,Rp,planetn,
+                horizontalalignment='left',verticalalignment='top',fontsize=10,
+                transform=offSet(5,-5))
+
+    ax.legend(loc="upper left",prop=dict(size=10))
+    ax.set_xlabel(r"$M_{\rm p}$ ($M_\oplus$)",fontsize=14)
+    ax.set_ylabel(r"$R_{\rm p}$ ($M_\oplus$)",fontsize=14)
+    ax.set_xlim((1.0,7.0))
+    fig.savefig("figures/RM-Solid.png")
+
+def massRadiusSolidContours():
+    
+    figc=plt.figure()
+    axc=figc.add_axes([0.1,0.1,0.85,0.8])
+
+    CM=np.loadtxt("figures/CM-solid.dat")
+    MS=np.loadtxt("figures/MS-solid.dat")
+    RM=np.loadtxt("figures/RM-solid.dat")
+
+    Rmin=0.8
+    Rmax=1.8
+
+    #CONTOUR
+    cont=axc.contourf(MS,CM,RM,levels=np.linspace(Rmin,Rmax,1000.0),cmap=cm.spectral)
+    cbar=plt.colorbar(cont)
+    cbar.ax.set_ylabel(r"$R_{\rm p}$ ($R_\oplus$)",fontsize=14)
+    xts=cbar.ax.get_yticks()
+    xls=[]
+    levels=[]
+    for xt in xts:
+        rs=xt*(Rmax-Rmin)+Rmin
+        levels+=[rs]
+        xls+=["%.2f"%(rs)]
+    cbar.ax.set_yticklabels(xls)
+    cont=axc.contour(MS,CM,RM,levels=levels,
+                     colors=['k']*len(levels),linestyles=[':']*len(levels),linewidth=2)
+
+    planets=[]
+    planets+=['Kepler_10b']
+    planets+=['Kepler_36b']
+    ##planets+=['Kepler_57c']
+    ##planets+=['Kepler_68c']
+    planets+=['Kepler_78b']
+    ##planets+=['Kepler_93b']
+    ##planets+=['Kepler_97b']
+    planets+=['Kepler_99b']
+    ##planets+=['Kepler_100b']
+    ##planets+=['Kepler_102b']
+    ##planets+=['Kepler_406b']
+    for planet in planets:
+        print "Planet ",planet
+        Mp=SuperEarths[planet]["Mp"]
+        Mperr1=SuperEarths[planet]["Mperr1"]
+        Mperr2=SuperEarths[planet]["Mperr2"]
+        Rp=SuperEarths[planet]["Rp"]
+        Rperr1=SuperEarths[planet]["Rperr1"]
+        Rperr2=SuperEarths[planet]["Rperr2"]
+        planetn=planet.replace("_","-")
+        compositionRegion(axc,planetn,Mp,Mperr1,Mperr2,Rp,Rperr1,Rperr2,MS,CM,RM,
+                          color='k',alphalines=0.0,fontsize=10)
+
+    axc.set_xlabel(r"$M_{\rm p}$ ($M_\oplus$)",fontsize=14)
+    axc.set_ylabel(r"CMF",fontsize=14)
+    figc.savefig("figures/RM-Solid-Contour.png")
+
+def massRadiusGas():
+    
+    qsave=True
+
+    fig=plt.figure()
+    ax=fig.add_axes([0.12,0.1,0.8,0.8])
+    
+    loadIceGasGiantsGrid(DATA_DIR+"IceGasGiants/",
+                         verbose=True)
+    Mvec=np.logspace(np.log10(0.03),np.log10(11.0),300)
+    for C in '0','S','10','25','50','100':
+        planet=Giants[C]
+        Mmin=planet.time[7].Mjmin
+        Mmax=planet.time[7].Mjmax
+        tau=4.56
+        
+        Ms=[]
+        Rs=[]
+        for M in np.logspace(np.log10(0.03),np.log10(11.0),300):
+            try:
+                R=planet.Radius(M,tau)
+            except:continue
+            Ms+=[M]
+            Rs+=[R]
+            
+        ax.plot(Ms,Rs,label='C : %s'%C)
+
+    NM=100
+    NF=100
+    logMvec=np.linspace(np.log10(0.03),np.log10(2.0),NM)
+    logfs=np.linspace(np.log10(0.01),np.log10(1.0),NF)
+
+    lFS,lMS=np.meshgrid(logfs,logMvec)
+    lRM=np.zeros_like(lFS)
+
+    i=0
+    for logfHHe in logfs:
+        fHHe=10**logfHHe
+        print "Mass-radius relationship for fHHe = %.4f"%fHHe
+        Ms=[]
+        Rs=[]
+        j=0
+        for logM in logMvec:
+            M=10**logM
+            #print "\tM = %.2f"%M
+            R,T,Q=PlanetIceGasProperties(M,tau,fHHe,verbose=False)
+            if R<0:Rq=1E-3
+            else:Rq=R
+            lRM[j,i]=np.log10(Rq)
+            #print "\t\t",Rq
+            j+=1
+            if R<0:continue
+            Ms+=[M]
+            Rs+=[R]
+        ax.plot(Ms,Rs,label='%.2f'%fHHe)
+        i+=1
+        
+    if qsave:
+        np.savetxt("figures/FS-gas.dat",lFS)
+        np.savetxt("figures/MS-gas.dat",lMS)
+        np.savetxt("figures/RM-gas.dat",lRM)
+
+    ax.legend(loc="lower right",prop=dict(size=10))
+    ax.set_xlabel(r"$M_{\rm p}$ ($M_{\rm Jup}$)",fontsize=14)
+    ax.set_ylabel(r"$R_{\rm p}$ ($R_{\rm Jup}$)",fontsize=14)
+    ax.set_xlim((0.03,10.0))
+    ax.set_ylim((0.2,1.1))
+    ax.set_xscale("log")
+    ax.set_yscale("log")
+    fig.savefig("figures/RM-IceGas.png")
+
+def massRadiusGasContours():
+    
+    figc=plt.figure()
+    axc=figc.add_axes([0.12,0.1,0.85,0.82])
+
+    FS=np.loadtxt("figures/FS-gas.dat")
+    MS=np.loadtxt("figures/MS-gas.dat")
+    RM=np.loadtxt("figures/RM-gas.dat")
+
+    logMmin=MS.min()
+    logMmax=MS.max()
+
+    logfmin=FS.min()
+    logfmax=FS.max()
+
+    cond=RM>-3
+    sRM=RM[cond]
+
+    logRmin=sRM.min()
+    logRmax=sRM.max()
+
+    #CONTOUR
+    cont=axc.contourf(MS,FS,RM,levels=np.linspace(logRmin,logRmax,1000),cmap=cm.spectral)
+    cbar=plt.colorbar(cont)
+    #"""
+    cbar.ax.set_ylabel(r"$R_{\rm p}$ ($R_{\rm Jup}$)",fontsize=14)
+    xts=cbar.ax.get_yticks()
+    rs=np.arange(0.2,1.1,0.1)
+    xls=[]
+    levels=[]
+    for xt in xts:
+        es=xt*(logRmax-logRmin)+logRmin
+        rs=10**(xt*(logRmax-logRmin)+logRmin)
+        xls+=["%.2f"%(rs)]
+        levels+=[es]
+    cbar.ax.set_yticklabels(xls)
+    print levels
+    #"""
+    cont=axc.contour(MS,FS,RM,levels=levels,
+                     colors=['k']*len(levels),linestyles=[':']*len(levels))
+
+    cont=axc.contourf(MS,FS,RM,levels=[-3,logRmin],colors=['w','w'])
+
+    #"""
+    #YTICKS
+    xt=[]
+    xl=[]
+    fmin=10**logfmin
+    fmax=10**logfmax
+    for f in np.concatenate((np.arange(0.01,0.09,0.02),
+                            np.arange(0.1,1.0,0.2))):
+        xt+=[np.log10(f)]
+        xl+=["%.0f%%"%(f*100)]
+    axc.set_yticks(xt)
+    axc.set_yticklabels(xl,fontsize=12)
+
+    #XTICKS
+    xt=[]
+    xl=[]
+    Mmin=10**logMmin
+    Mmax=10**logMmax
+    for M in np.concatenate((np.arange(10,90,20),
+                             np.arange(100,1000,100))):
+        xt+=[np.log10(M*MEARTH/MJUP)]
+        xl+=["%.0f"%(M)]
+    axc.set_xticks(xt)
+    axc.set_xticklabels(xl,fontsize=12)
+    #"""
+
+    #BINARY PLANETS
+    fpickle="BHM/data/BHMcat/BHMcat.pickle"
+    fl=open(fpickle,'r')
+    systems=pickle.load(fl)
+    fl.close()
+    
+    sysids=[]
+    logfps=dict()
+    sysids+=["BHMCatS0001D"];logfps["BHMCatPD0001"]=-2.680055e-01
+    sysids+=["BHMCatS0002D"];logfps["BHMCatPD0002"]=-2.238595e-01
+    sysids+=["BHMCatS0003D"];logfps["BHMCatPD0003"]=-2.243038e-01
+    #sysids+=["BHMCatS0004D"]
+    sysids+=["BHMCatS0005D"];logfps["BHMCatPD0006"]=-8.846251e-01
+    #sysids+=["BHMCatS0006D"]
+    sysids+=["BHMCatS0007D"];logfps["BHMCatPD0008"]=-1.123994e+00
+    sysids+=["BHMCatS0008D"];logfps["BHMCatPD0009"]=-4.753510e-01
+    for sysid in sysids:
+        system=systems[sysid]
+        plids=system["Planets"].split(";")
+        for plid in plids:
+            if plid=="":continue
+            planet=system["PlanetsModel"][plid]
+            pname=planet["PlanetID"]
+            Mp=planet["planet_M"]*MEARTH/MJUP
+            if planet["planet_M"]<15:continue
+            Rp=planet["planet_R"]*REARTH/RJUP
+            print "Planet %s : Mp = %e"%(pname,Mp)
+            print "\tRp = %e"%(Rp)
+            print "\tPlanet id: %s"%plid
+            logMp=np.log10(Mp)
+            logRp=np.log10(Rp)
+            logfp=logfps[plid]
+            """
+            cont=axc.contour(MS,FS,RM,levels=[logRp],colors=['w'],
+                             linestyles='-',linewidth=2,alpha=1.0)
+            path=cont.collections[0].get_paths()[0].vertices
+            #cond=path[:,1]<logfpmax
+            cond=path[:,1]<-0.1
+            xs=path[cond,0];#xs=xs[::-1]
+            ys=path[cond,1];#ys=ys[::-1]
+            path_fun=lambda x:np.interp(x,xs,ys)
+            axc.plot(xs,path_fun(xs),'w:',linewidth=2)
+            logfp=path_fun(logMp)
+            axc.axvline(logMp,color='k',linestyle=':',linewidth=2)
+            #"""
+            print "\tlog(f_H/He) = %e, f_H/He = %e"%(logfp,10**logfp)
+            axc.plot([logMp],[logfp],'w^',markersize=10,markeredgecolor='none')
+            axc.text(logMp,logfp,pname,
+                     horizontalalignment='center',verticalalignment='center',
+                     rotation=0,transform=offSet(5,-20),fontsize=10)
+        
+    #SOLAR SYSTEM GIANTS
+    planets=[]
+    logfps=dict()
+    planets+=['Jupiter'];logfpmax=-0.01;logfps["Jupiter"]=-0.06
+    planets+=['Saturn'];logfpmax=-0.01;logfps["Saturn"]=-1.511201E-1
+    planets+=['Uranus'];logfpmax=-0.8;logfps["Uranus"]=-8.494529E-1
+    planets+=['Neptune'];logfpmax=-0.8;logfps["Neptune"]=-9.335701E-1
+    for planetn in planets:
+        print "Finding ",planetn
+        planet=Planets[planetn]
+        Mp=planet["Mp"]/MJUP
+        Rp=planet["Rp"]/RJUP
+        print "\tRp = %e"%Rp
+        logRp=np.log10(Rp)
+        logMp=np.log10(Mp)
+        logfp=logfps[planetn]
+        """
+        cont=axc.contour(MS,FS,RM,levels=[logRp],colors=['w'],
+                         linestyles='-',linewidth=2,alpha=1.0)
+        path=cont.collections[0].get_paths()[0].vertices
+        #cond=path[:,1]<logfpmax
+        cond=path[:,1]<10.0
+        xs=path[cond,0];#xs=xs[::-1]
+        ys=path[cond,1];#ys=ys[::-1]
+        path_fun=lambda x:np.interp(x,xs,ys)
+        axc.plot(xs,path_fun(xs),'w:',linewidth=2)
+        logfp=path_fun(logMp)
+        axc.axvline(logMp,color='w',linestyle=':',linewidth=2)
+        #"""
+        print "log(f_H/He) = %e, f_H/He = %e"%(logfp,10**logfp)
+        axc.plot([logMp],[logfp],'wo',markersize=10,markeredgecolor='none')
+
+        
+        axc.text(logMp,logfp,planetn,
+                horizontalalignment='left',verticalalignment='center',fontsize=10,
+                transform=offSet(10,10),color='k')
+        
+    axc.set_xlabel(r"$M_{\rm p}$ ($M_{\rm Jup}$)",fontsize=14)
+    axc.set_ylabel(r"$f_{\rm H/He}$ (%)",fontsize=14)
+    axc.grid(axis="both")
+    xmin,xmax=axc.get_xlim()
+    axc.set_xlim((-1.4,0.2))
+    figc.savefig("figures/RM-Gas-Contour.png")
+
+def dipoleMomentGiants():
+    loadIceGasGiantsGrid(DATA_DIR+"IceGasGiants/",
+                         verbose=True)
+
+    qsaved=False
+    qsaved=True
+    fig=plt.figure()
+    ax=fig.add_axes([0.12,0.1,0.8,0.8])
+
+    fs=[0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1.0]
+    fs=[0.5,0.9]
+    fs=np.concatenate(([0.1],np.arange(0.2,1.1,0.2)))
+
+    planet=dict2obj(dict())
+    planet.Prot=0.5
+    planet.tau=4.56
+    Mdipmin=1E100
+    Mdipmax=0
+    NF=len(fs)
+    NM=50
+    Mpvec=np.logspace(np.log10(0.03),np.log10(2.0),NM)
+
+    i=0
+    for f in fs:
+        print "Calculating magnetic field for f_H/He = %.3f"%f
+        Ms=[]
+        Mdips=[]
+        if not qsaved:
+            for Mp in Mpvec:
+                planet.Mg=Mp
+                planet.fHHe=f
+                planet.Rg,planet.T,planet.Qconv=PlanetIceGasProperties(planet.Mg,
+                                                                       planet.tau,
+                                                                       planet.fHHe,
+                                                                       verbose=False)
+                if planet.Rg<0:continue
+                planet.R=planet.Rg*RJUP/REARTH
+                planet.M=planet.Mg*RJUP/REARTH
+                planet.Rc,planet.Ric,planet.rho,\
+                    planet.rhoc,planet.sigma,planet.kappa=\
+                    giantStructure(planet.Mg,planet.Rg)
+                planet.Mdip=planetaryDipoleMoment(planet)/MDIPE
+                Ms+=[planet.Mg]
+                Mdips+=[planet.Mdip]
+                #print "\tMp=%.2f, Rp=%.2f, Mdip=%e"%(planet.Mg,planet.Rg,planet.Mdip)
+            np.savetxt("figures/Ms-f-%.2e.dat"%f,Ms)
+            np.savetxt("figures/Mdip-f-%.2e.dat"%f,Mdips)
+        else:
+            Ms=np.loadtxt("figures/Ms-f-%.2e.dat"%f)
+            Mdips=np.loadtxt("figures/Mdip-f-%.2e.dat"%f)
+
+        Mdipmin=min(Mdipmin,min(Mdips))
+        Mdipmax=max(Mdipmax,max(Mdips))
+        ax.plot(np.array(Ms)*MJUP/MEARTH,Mdips,'-',label='%.2f'%f)
+        i+=1
+    
+    #GIANT PLANETS
+    planets=[]
+    planets+=['Jupiter'];
+    planets+=['Saturn'];
+    planets+=['Uranus'];
+    planets+=['Neptune'];
+    for planetn in planets:
+        planeta=Planets[planetn]
+        Mp=planeta["Mp"]/MJUP
+        Mdip=planeta["Mdip"]/MDIPE
+        ax.plot([Mp*MJUP/MEARTH],[Mdip],"ks",markersize=10)
+        ax.text(Mp*MJUP/MEARTH,Mdip,planetn,
+                horizontalalignment='left',verticalalignment='center',fontsize=10,
+                transform=offSet(10,10),color='k')
+
+    #CIRCUMBINARY PLANETS
+    fpickle="BHM/data/BHMcat/BHMcat.pickle"
+    fl=open(fpickle,'r')
+    systems=pickle.load(fl)
+    fl.close()
+    sysids=[]
+    logfps=dict()
+    sysids+=["BHMCatS0001D"];logfps["BHMCatPD0001"]=-2.680055e-01
+    sysids+=["BHMCatS0002D"];logfps["BHMCatPD0002"]=-2.238595e-01
+    sysids+=["BHMCatS0003D"];logfps["BHMCatPD0003"]=-2.243038e-01
+    sysids+=["BHMCatS0005D"];logfps["BHMCatPD0006"]=-8.846251e-01
+    sysids+=["BHMCatS0007D"];logfps["BHMCatPD0008"]=-1.123994e+00
+    sysids+=["BHMCatS0008D"];logfps["BHMCatPD0009"]=-4.753510e-01
+    fpickle="BHM/data/BHMcat/BHMcat.pickle"
+    for sysid in sysids:
+        system=systems[sysid]
+        plids=system["Planets"].split(";")
+        for plid in plids:
+            if plid=="":continue
+            planeta=system["PlanetsModel"][plid]
+            pname=planeta["PlanetID"]
+            planet.M=planeta["planet_M"]
+            planet.Mg=planet.M*MEARTH/MJUP
+            if planet.M<15:continue
+
+            planet.Rg=planeta["planet_R"]*REARTH/RJUP
+            print "Planet %s (%s) : Mp = %e"%(pname,plid,planet.M)
+            print "\tRp = %e"%(planet.Rg)
+
+            f=10**logfps[plid]
+            planet.fHHe=f
+            print "\tf = %e"%f
+
+            planet.Rg,planet.T,planet.Qconv=PlanetIceGasProperties(planet.Mg,
+                                                                   planet.tau,
+                                                                   planet.fHHe,
+                                                                   verbose=False)
+
+            planet.R=planet.Rg*RJUP/REARTH
+            planet.Rc,planet.Ric,planet.rho,\
+                planet.rhoc,planet.sigma,planet.kappa=\
+                giantStructure(planet.Mg,planet.Rg)
+            planet.Mdip=planetaryDipoleMoment(planet)/MDIPE
+            ax.plot([planet.M],[planet.Mdip],'r^',markersize=10,markeredgecolor='none')
+            ax.text(planet.M,planet.Mdip,pname,
+                    horizontalalignment='left',verticalalignment='center',fontsize=10,
+                    transform=offSet(10,10),color='k')
+            
+    ax.set_xlabel(r"$M_p$ ($M_{\rm Jup}$)")
+    ax.set_ylabel(r"${\cal M}_{\rm dip}$ (${\cal M}_{{\rm dip}\oplus}$)")
+    
+    ax.set_xlim((Mpvec[0]*MJUP/MEARTH,Mpvec[-1]*MJUP/MEARTH))
+    ax.set_ylim((10.0,Mdipmax))
+
+    ax.set_xscale("log")
+    ax.set_yscale("log")
+    logTickLabels(ax,1,3,(3,),frm='%.0f',axis='x',notation='normal',fontsize=10)
+    ax.grid(which='both')
+    ax.legend(loc='best')
+    fig.savefig("figures/Gas-DipoleMoment.png")
+
+
+#plotAllMoIs()
+#compareMoIs()
+#evolutionaryTracks()
+#massRadiusSolid()
+#massRadiusSolidContours()
+#massRadiusGas()
+#massRadiusGasContours()
+dipoleMomentGiants()
+

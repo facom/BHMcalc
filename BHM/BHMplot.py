@@ -74,6 +74,7 @@ def logTickLabels(ax,perini,perfin,nperper,
             
     #print yt,yl
     if axis is 'y':
+        print yl
         ax.set_yticks(yt)
         ax.set_yticklabels(yl,fontsize=fontsize)
     else:
@@ -144,3 +145,44 @@ def offSet(dx,dy):
     toff=offset_copy(ax.transData,fig=fig,
                      x=dx,y=dy,units='dots')
     return toff
+
+def compositionRegion(ax,label,Mp,Mperr1,Mperr2,Rp,Rperr1,Rperr2,MS,CM,RM,
+                      alphalines=1.0,fontsize=10,
+                      **args):
+
+    from BHM.BHMnum import interp1d
+    Mmin=max(Mp+Mperr1,MS.min())
+    Mmax=min(Mp+Mperr2,MS.max())
+    
+    Rmin=max(Rp+Rperr1,RM.min())
+    Rmax=min(Rp+Rperr2,RM.max())
+
+    #MASS REGION
+    ax.axvline(Mmin,color='k',linestyle='--',alpha=alphalines)
+    ax.axvline(Mmax,color='k',linestyle='--',alpha=alphalines)
+    ax.axvline(Mp,color='k',linestyle='-',alpha=alphalines)
+
+    #INTERSECTION
+    cont=ax.contour(MS,CM,RM,levels=[Rp],colors=['k'],linestyles='-',alpha=alphalines)
+    path=cont.collections[0].get_paths()[0].vertices
+    path_fun=lambda x:np.interp(x,path[:,0],path[:,1],left=path[0,1],right=path[-1,1])
+
+    pfunc=interp1d(path[:,0],path[:,1])
+    Cp=pfunc(Mp)
+    ax.plot([Mp],[Cp],'o',color='k',markersize=5)
+
+    #BORDERS
+    cont=ax.contour(MS,CM,RM,levels=[Rmin,Rmax],colors=['k','k'],linestyles='--',alpha=alphalines)
+
+    path1=cont.collections[0].get_paths()[0].vertices
+    path1_fun=lambda x:np.interp(x,path1[:,0],path1[:,1],left=path1[0,1],right=path1[-1,1])
+
+    path2=cont.collections[1].get_paths()[0].vertices
+    path2_fun=lambda x:np.interp(x,path2[:,0],path2[:,1],left=path2[0,1],right=path2[-1,1])
+
+    Mps=np.linspace(Mmin,Mmax,10)
+    ax.fill_between(Mps,path1_fun(Mps),path2_fun(Mps),color='k',alpha=0.3)
+    ax.plot(Mps,path_fun(Mps),color='k',linewidth=2)
+
+    ax.text(Mp,Cp,label,horizontalalignment='left',verticalalignment='top',fontsize=fontsize,
+            transform=offSet(5,-5))

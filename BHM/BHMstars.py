@@ -1385,6 +1385,7 @@ def findTracks(model,Z,M,verbose=False):
             Mcl=Mvals[iM[0]]
             M1=Mvals[iM[1]]
             s1=dM[iM[1]]
+            M2=M1
             for i in xrange(2,len(Mvals)):
                 if dM[iM[i]]*s1<0:
                     M2=Mvals[iM[i]]

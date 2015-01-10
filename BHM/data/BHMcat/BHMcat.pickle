@@ -3783,7 +3783,7 @@ p1305
 sg644
 F0.0
 sg652
-F0.3
+F0.3347
 sg660
 S"'maximum greenhouse'"
 p1306
@@ -6930,7 +6930,7 @@ p1681
 sg644
 F0.0
 sg652
-F0.8
+F0.7516
 sg660
 S"'maximum greenhouse'"
 p1682
@@ -8656,7 +8656,7 @@ p1919
 sg644
 F0.0
 sg652
-F0.52
+F0.5395
 sg660
 S"'maximum greenhouse'"
 p1920
@@ -9207,7 +9207,7 @@ g1977
 sg644
 F0.0
 sg652
-F0.12
+F0.1304
 sg660
 g1978
 sg669
@@ -13184,7 +13184,7 @@ p2452
 sg644
 F0.0
 sg652
-F0.8
+F0.5966
 sg660
 S"'maximum greenhouse'"
 p2453
@@ -21749,7 +21749,7 @@ p4073
 sg644
 F0.0
 sg652
-F0.8
+F0.5972
 sg660
 S"'maximum greenhouse'"
 p4074

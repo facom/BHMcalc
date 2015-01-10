@@ -57,7 +57,7 @@ planet.Mg=planet.M*MEARTH/MJUP
 PRINTOUT("Mass of the planet = %.3f MEarth = %.3f MJup"%(planet.M,planet.Mg))
 
 if planet.M>7 and planet.Mg<0.05:
-    PRINTERR("No model available for this mass.  Calculating evolution for a 7 Earth Masses rocky planet.")
+    PRINTERR("No model available for this mass.  Instead we will calculate the evolution of a 7 Earth Masses rocky planet.")
     planet.M=7
 
 if planet.M<=7:

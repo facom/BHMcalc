@@ -844,7 +844,8 @@ $tabs.=<<<F
 	      </tr>
 	      <tr>
 		<td class="help" colspan=2>
-		  Minimum mass 1.0, maximum mass 320 M<sub>Earth</sub>
+		  For solid planets 1.0 &lt; M &lt; 7.0
+		  M<sub>Earth</sub>.  For ice/gas planets 15 &lt; M &lt; 320 M<sub>Earth</sub>.
 		</td>
 	      </tr>
 	      <!-- ---------------------------------------- -->
@@ -866,7 +867,7 @@ $tabs.=<<<F
 	      </tr>
 	      <tr>
 		<td class="help" colspan=2>
-		  Smaller than 1.  Earth is CMF=0.34
+		  0.1&lt;CMF&lt;0.8.  Earth is CMF=0.34
 		</td>
 	      </tr>
 	      <!-- ---------------------------------------- -->
@@ -1082,7 +1083,7 @@ $tabs.=<<<F
 	      </tr>
 	      <tr>
 		<td class="help" colspan=2>
-		  0&lt;e&gt;1
+		  0&lt;e&lt;1
 		</td>
 	      </tr>
 	      <!-- ---------------------------------------- -->

@@ -88,7 +88,7 @@ else:
 
 #OTHER PARAMETERS
 binary.M=star1.M+star2.M
-binary.mu=float(star1.M)/binary.M
+binary.mu=float(star2.M)/binary.M
 binary.q=float(star2.M)/star1.M
 binary.acrit=aCritical(binary.mu,binary.abin,binary.ebin)
 binary.nsync=nSync(binary.ebin)

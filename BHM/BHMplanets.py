@@ -122,6 +122,9 @@ def MultiBisect(func,ref,a,b,n,verbose=False):
     return ms
 
 def loadIceGasGiantsGrid(dirplgrid,verbose=False):
+    """
+    Taken from Fortney et al. (2007)
+    """
     global GMemin,GMemax,GMjmin,GMjmax,GMsmax,GRjmin,GRjmax,GRsmax,Gtimes
     if verbose:PRINTOUT("Loading Ice-Gas Giants Grid")
     #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -415,7 +418,7 @@ def PlanetIceGasProperties(Mp,tau,fHHe=1.0,verbose=False,tolM=1E-2):
         Mpmax=Giants[C].time[it].Mjmax
         if Mp<Mpmin or Mp>Mpmax:
             if verbose:print "Mass %e is out of range (%e,%e)"%(Mp,Mpmin,Mpmax)
-            return -1
+            return -1,-1,-1
         else:
             return Giants[C].Radius(Mp,tau),0,0
     else:
@@ -429,34 +432,41 @@ def PlanetIceGasProperties(Mp,tau,fHHe=1.0,verbose=False,tolM=1E-2):
             Mpmin=Giants[C].time[it].Mjmin
             Mpmax=Giants[C].time[it].Mjmax
             if verbose:print "\tExtreme masses: %e - %e"%(Mpmin,Mpmax)
+
             Mpvec=np.logspace(np.log10(Mpmin),np.log10(Mpmax),50)
+
             qold=0
             f1=0
             for M in Mpvec[::-1]:
-                M=round(M,3)
+                #M=round(M,3)
                 f2=1-Mc/M
-                if verbose:print "\t\tTesting M = %e, f = %e against fHHe = %e"%(M,f2,fHHe)
+                if f2<0:f2=0
+                if verbose:print "\t\tTesting M = %e, f = 1 - %e/%e = %e against fHHe = %e"%(M,Mc,M,f2,fHHe)
                 if f2<fHHe and qold:
                     M2=M
-                    R2=Giants[C].Radius(M,tau)
-                    T2=Giants[C].Tinterior(M,tau)
-                    Q2=Giants[C].Qinterior(M,tau)
+                    CT=C
+                    if f2==0:
+                        CT='S'
+                    R2=Giants[CT].Radius(M,tau)
+                    T2=Giants[CT].Tinterior(M,tau)
+                    Q2=Giants[CT].Qinterior(M,tau)
+                    
                     M=(M2-M1)/(f2-f1)*(fHHe-f1)+M1
                     R=(R2-R1)/(f2-f1)*(fHHe-f1)+R1
                     T=(T2-T1)/(f2-f1)*(fHHe-f1)+T1
                     Q=(Q2-Q1)/(f2-f1)*(fHHe-f1)+Q1
                     if verbose:
-                        print "\tM = %e"%M
-                        print "\tf1 = %e, R1 = %e, T1 = %e, Q1 = %e"%(f1,R1,T1,Q1)
-                        print "\tf2 = %e, R2 = %e, T2 = %e, Q2 = %e"%(f2,R2,T2,Q2)
-                        print "\tf = %e, R = %e, T = %e, Q = %e"%(fHHe,R,T,Q)
+                        print "\t\t\tM = %e"%M
+                        print "\t\t\tf1 = %e, R1 = %e, T1 = %e, Q1 = %e"%(f1,R1,T1,Q1)
+                        print "\t\t\tf2 = %e, R2 = %e, T2 = %e, Q2 = %e"%(f2,R2,T2,Q2)
+                        print "\t\t\tf = %e, R = %e, T = %e, Q = %e"%(fHHe,R,T,Q)
                     break
                 f1=f2
                 M1=M
                 R1=Giants[C].Radius(M,tau)
                 T1=Giants[C].Tinterior(M,tau)
                 Q1=Giants[C].Qinterior(M,tau)
-                if verbose:print "\tM1 = %e, f1 = %e, R1 = %e, T1 = %e, Q1 = %e, tau = %e"%(M1,f1,R1,T1,Q1,tau)
+                if verbose:print "\t\t\tM1 = %e, f1 = %e, R1 = %e, T1 = %e, Q1 = %e, tau = %e"%(M1,f1,R1,T1,Q1,tau)
                 qold=1
             Ms+=[M]
             Rs+=[R]
@@ -476,13 +486,15 @@ def PlanetIceGasProperties(Mp,tau,fHHe=1.0,verbose=False,tolM=1E-2):
         Qref=Qs[-1]
     if verbose:print "dM = %e, Ms = "%dM,Ms
     if dM>tolM:
-        if verbose:print "Mass %e is out of range (%e,%e)"%(Mp,Ms[0],Ms[-1])
-        if Mp>0.3:
-            Mc=10*MEARTH/MJUP
+        if verbose:
+            print "Mass %e is out of range after searching (%e,%e)"%(Mp,Ms[0],Ms[-1])
+        if Mp>0.3 and False:
+            Mc=100*MEARTH/MJUP
             f1=1-Mc/Mp
-            R1=Giants['10'].Radius(Mp,tau)
-            T1=Giants['10'].Tinterior(Mp,tau)
-            Q1=Giants['10'].Qinterior(Mp,tau)
+            if f1<0:f1=0.0
+            R1=Giants['100'].Radius(Mp,tau)
+            T1=Giants['100'].Tinterior(Mp,tau)
+            Q1=Giants['100'].Qinterior(Mp,tau)
             f2=1.0
             R2=Giants['0'].Radius(Mp,tau)
             T2=Giants['0'].Tinterior(Mp,tau)
@@ -1364,3 +1376,232 @@ def surfacePressure(Matm,M,R):
     g=GCONST*M/R**2
     Patm=Matm*g/(2*A)/1E5
     return Patm
+
+###################################################
+#SUPER EARTHS
+###################################################
+"""
+Data from Howe, Burrows & Verne (2014)
+"""
+SuperEarths=dict(
+    Kepler_10b=dict(Rp=1.416,Rperr1=-0.036,Rperr2=+0.033,
+                   Mp=4.56,Mperr1=-1.29,Mperr2=+1.17),
+    Kepler_36b=dict(Rp=1.486,Rperr1=-0.035,Rperr2=+0.035,
+                   Mp=4.45,Mperr1=-0.27,Mperr2=+0.33),
+    Kepler_57c=dict(Rp=1.55,Rperr1=-0.04,Rperr2=+0.04,
+                   Mp=5.4,Mperr1=-3.7,Mperr2=+3.7),
+    Kepler_68c=dict(Rp=0.953,Rperr1=-0.037,Rperr2=+0.042,
+                   Mp=4.8,Mperr1=-3.6,Mperr2=+2.5),
+    Kepler_78b=dict(Rp=1.173,Rperr1=-0.089,Rperr2=+0.159,
+                    Mp=1.86,Mperr1=-0.25,Mperr2=+0.38),
+    Kepler_93b=dict(Rp=1.50,Rperr1=-0.03,Rperr2=+0.03,
+                    Mp=2.59,Mperr1=-2.0,Mperr2=+2.0),
+    Kepler_97b=dict(Rp=1.48,Rperr1=-0.13,Rperr2=+0.13,
+                    Mp=3.51,Mperr1=-1.90,Mperr2=+1.90),
+    Kepler_99b=dict(Rp=1.48,Rperr1=-0.08,Rperr2=+0.08,
+                    Mp=6.15,Mperr1=-1.30,Mperr2=+1.30),
+    Kepler_102b=dict(Rp=1.18,Rperr1=-0.04,Rperr2=+0.04,
+                     Mp=3.8,Mperr1=-1.8,Mperr2=+1.8),
+    Kepler_406b=dict(Rp=1.43,Rperr1=-0.03,Rperr2=+0.03,
+                     Mp=6.35,Mperr1=-1.40,Mperr2=+1.40),
+    )
+   
+#&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+#SOLAR SYSTEM GIANTS
+#&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+Planets=dict(
+    Jupiter=dict(
+        Name='Jupiter',
+        Mdip=1.8E4*MDIPE,#A m^2
+        Rp=7.1492E7,#m
+        Mp=1.899E27,#kg
+        a=5.2,#AU
+        amoon=1.0704E9,#m
+        mname='Ganymede',
+        Period=9.925*HOUR,
+        Teff=124.4,#K
+        Qint=3.35E17,#W
+        Rc=0.90,#Rp
+        Ric=0.90/2,#Rp
+        rhoc=1.624156e+03,#kg m^-3
+        fHHe=8.709636e-01,
+        Models=dict(
+            G2005=dict2obj(dict(
+                    cite="Guillot (2005)",
+                    symbol='bs',
+                    Teff=124.4,#K
+                    Qint=3.35E17,#W
+                    Rc=0.9,#Rp
+                    Ric=0.9/2,#Rp
+                    rhoc=1.624156e+03,#kg m^-3
+                    )),
+            ),
+        sigma=0.1*6E5,#S m
+        kappa=1E-6,#m^2 s^-1
+        Rol=1E-2,
+        ),
+    Saturn=dict(
+        Name='Saturn',
+        Mdip=580*MDIPE,#A m^2
+        Mp=5.685E26,#kg
+        Rp=6.0268E7,#m
+        a=9.53,#AU
+        amoon=1.221E9,#m
+        mname='Titan',
+        Period=10.5*HOUR,
+        Teff=95.0,#K
+        Qint=8.63E16,#W
+        Rc=0.5,#Rp
+        Ric=0.5/2,#Rp
+        rhoc=1.563453e+03,#kg m^-3
+        fHHe=7.061223e-01,
+        Models=dict(
+            G2005=dict2obj(dict(
+                    cite="Guillot (2005)",
+                    symbol='bs',
+                    Teff=95.0,#K
+                    Qint=8.63E16,#W
+                    Rc=0.5,#Rp
+                    Ric=0.5/2,#Rp
+                    rhoc=1.563453e+03,#kg m^-3
+                    ))
+            ),
+        sigma=0.1*6E5,#S m
+        kappa=1E-6,#m^2 s^-1
+        Rol=1E-2,
+        ),
+    Uranus=dict(
+        Name='Uranus',
+        Mdip=50*MDIPE,#A m^2
+        Mp=8.682E25,#kg
+        Rp=2.559E7,#m
+        a=19.19,#AU
+        amoon=4.363E8,#m
+        mname='Miranda',
+        Period=17.2*HOUR,
+        Teff=59.1,#K
+        Qint=3.4E14,#W
+        Rc=0.66656,#Rp
+        Ric=0.66656/2,#Rp
+        rhoc=2.542606e+03,#kg m^-3
+        fHHe=1.414318e-01,
+        Models=dict(
+            G2005=dict2obj(dict(
+                    cite="Guillot (2005)",
+                    symbol='bs',
+                    Teff=59.1,#K
+                    Qint=3.4E14,#W
+                    Rc=0.66656,#Rp
+                    Ric=0.66656/2,#Rp
+                    rhoc=2.542606e+03,#kg m^-3
+                    ))
+            ),
+        sigma=0.03*6E5,#S m
+        kappa=1E-6,#m^2 s^-1
+        Rol=5E-3,
+        ),
+    Neptune=dict(
+        Name='Neptune',
+        Mdip=24*MDIPE,#A m^2
+        Mp=1.028E26,#kg
+        Rp=2.4764E7,#m
+        a=30.0690,#AU
+        amoon=3.548E8,#m
+        mname='Triton',
+        Period=16.1*HOUR,
+        Teff=59.3,#K
+        Qint=3.3E15,#W
+        Rc=8.068624e-01,#Rp
+        Ric=8.068624e-01/2,#Rp
+        rhoc=2.597534e+03,#kg m^-3
+        fHHe=1.165279e-01,
+        Models=dict(
+            G2005=dict2obj(dict(
+                    cite="Guillot (2005)",
+                    symbol='bs',
+                    Teff=59.3,#K
+                    Qint=3.3E15,#W
+                    Rc=8.068624e-01,#Rp
+                    Ric=8.068624e-01/2,#Rp
+                    rhoc=2.597534e+03,#kg m^-3
+                    ))
+            ),
+        sigma=0.03*6E5,#S m
+        kappa=1E-6,#m^2 s^-1
+        Rol=5E-3,
+        ),
+    Earth=dict(
+        Mdip=1*MDIPE,#A m^2
+        Mp=5.98E24,#kg
+        Rp=6.371E6,#m
+        a=1.0,#AU
+        amoon=3.84E8,#m
+        mname='Moon',
+        Period=24.0*HOUR,
+        Teff=255.0,#K
+        Qint=3.0E12,#W
+        Rc=0.5462,#Rp
+        Ric=0.1915,#Rp
+        rhoc=1.1E4,#kg m^-3
+        Models=dict(
+            Z2013=dict2obj(dict(
+                    cite="Zuluaga et al. (2013)",
+                    symbol='co',
+                    Teff=255.0,#K
+                    Qint=3.0E12,#W
+                    Rc=0.5462,#Rp
+                    Ric=0.1915,#Rp
+                    rhoc=1.1E4,#kg m^-3
+                    ))
+            ),
+        sigma=6E5,#S m
+        kappa=8E-6,#m^2 s^-1
+        Rol=1E-1,
+        ),
+    Ganymede=dict(
+        Mdip=2E-3*MDIPE,#A m^2
+        Mp=1.4819E23,#kg
+        Rp=2.6312E6,#m
+        a=5.2,#AU
+        amoon=0,#m
+        mname='',
+        Period=7.15*DAY, # Synchronous
+        Teff=0,#K
+        Rc=0.25,#Rp,Kivelson, 2002
+        Qint=3E-3*4*np.pi*(0.25*2.6312E6)**2,#W,Hauck et al. 2006
+        Ric=0.0,#0.5-0.2*2.26E6/(0.5*2.6E6),#Rp, OC,2006
+        rhoc=5.15E3,#kg m^-3, Sarson, Zhang, Schubert, 1997
+        Models=dict(
+            H2006a=dict2obj(dict(
+                    cite="Hauck et al. (2006), M1",
+                    symbol='g^',
+                    Teff=0,#K
+                    Rc=0.25,#Rp
+                    Qint=10E-3*4*np.pi*(0.25*2.6341E6)**2,#W
+                    Ric=0.6*0.25,#Rp
+                    rhoc=5.99E3,#kg m^-3
+                    )),
+            H2006b=dict2obj(dict(
+                    cite="Hauck et al. (2006), M2",
+                    symbol='rv',
+                    Teff=0,#K
+                    Rc=0.25,#Rp
+                    Qint=3E-3*4*np.pi*(0.25*2.6341E6)**2,#W
+                    Ric=0.4*0.25,#Rp
+                    rhoc=5.99E3,#kg m^-3
+                    )),
+            OC2006=dict2obj(dict(
+                    cite="Olson & Christensen (2006)",
+                    symbol='m>',
+                    Teff=0,#K
+                    Rc=0.2,#Rp
+                    Qint=0.3*3E12*(Rc_E/(0.2*2.6341E6)),#W
+                    Ric=0.0,#Rp
+                    rhoc=5.99E3,#kg m^-3
+                    ))
+            ),
+        sigma=6E5,#S m
+        kappa=1E-6,#m^2 s^-1
+        Rol=0.05,
+        )
+    )
