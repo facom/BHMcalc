@@ -1914,7 +1914,7 @@ def dipoleMomentGiants():
 
         Mdipmin=min(Mdipmin,min(Mdips))
         Mdipmax=max(Mdipmax,max(Mdips))
-        ax.plot(np.array(Ms)*MJUP/MEARTH,Mdips,'-',label='%.2f'%f)
+        ax.plot(np.array(Ms)*MJUP/MEARTH,Mdips,'-',label=r'$f_{\rm H/He}=%.2f$'%f)
         i+=1
     
     #GIANT PLANETS
@@ -1975,20 +1975,19 @@ def dipoleMomentGiants():
                 planet.rhoc,planet.sigma,planet.kappa=\
                 giantStructure(planet.Mg,planet.Rg)
             planet.Mdip=planetaryDipoleMoment(planet)/MDIPE
-            ax.plot([planet.M],[planet.Mdip],'r^',markersize=10,markeredgecolor='none')
+            ax.plot([planet.M],[planet.Mdip],'rv',markersize=10,markeredgecolor='none')
             ax.text(planet.M,planet.Mdip,pname,
                     horizontalalignment='left',verticalalignment='center',fontsize=10,
                     transform=offSet(10,10),color='k')
             
-    ax.set_xlabel(r"$M_p$ ($M_{\rm Jup}$)",fontsize=12)
-    ax.set_ylabel(r"${\cal M}_{\rm dip}$ (${\cal M}_{{\rm dip}\oplus}$)",fontsize=12)
+    ax.set_xlabel(r"$M_p$ ($M_\oplus$)",fontsize=14)
+    ax.set_ylabel(r"${\cal M}_{\rm dip}$ (${\cal M}_{{\rm dip}\oplus}$)",fontsize=14)
     
-    ax.set_xlim((Mpvec[0]*MJUP/MEARTH,Mpvec[-1]*MJUP/MEARTH))
-    ax.set_ylim((10.0,Mdipmax))
-
     ax.set_xscale("log")
     ax.set_yscale("log")
     logTickLabels(ax,1,3,(3,),frm='%.0f',axis='x',notation='normal',fontsize=10)
+    ax.set_xlim((Mpvec[0]*MJUP/MEARTH,Mpvec[-1]*MJUP/MEARTH))
+    ax.set_ylim((10.0,Mdipmax))
     ax.grid(which='both')
     ax.legend(loc='best')
     fig.savefig("figures/Gas-DipoleMoment.png")
