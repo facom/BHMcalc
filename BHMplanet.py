@@ -49,10 +49,12 @@ planet,planet_str,planet_hash,planet_dir=makeObject("planet",
                                             qover=qover)
 planet_webdir="/"+WEB_DIR+planet_dir
 PRINTOUT("Object hash:%s"%planet_hash)
+planet.hash=planet_hash
 
 ###################################################
 #CALCULATE PROPERTIES OF THE PLANET
 ###################################################
+planet.Mp=planet.M
 planet.Mg=planet.M*MEARTH/MJUP
 PRINTOUT("Mass of the planet = %.3f MEarth = %.3f MJup"%(planet.M,planet.Mg))
 
@@ -82,12 +84,12 @@ if planet.M<=7:
     #----------------------------------------
     #BULK PROPERTIES
     #----------------------------------------
-    planet.R=planetProperty(pcell,"Radius",
+    planet.Rp=planetProperty(pcell,"Radius",
                             data="struct")
-    planet.A=4*PI*(planet.R*Rp_E)**2
-    planet.Rg=planet.R*Rp_E/RJUP
-    planet.rho=planet.M*MEARTH/(4./3*PI*(planet.R*Rp_E)**3)
-    planet.g=GCONST*(planet.M*MEARTH)/(planet.R*REARTH)**2
+    planet.A=4*PI*(planet.Rp*Rp_E)**2
+    planet.Rg=planet.Rp*Rp_E/RJUP
+    planet.rho=planet.M*MEARTH/(4./3*PI*(planet.Rp*Rp_E)**3)
+    planet.g=GCONST*(planet.M*MEARTH)/(planet.Rp*REARTH)**2
     planet.Rc=planetProperty(pcell,"CoreRadius",
                              data="struct")
     planet.rhoc=planetProperty(pcell,"CoreDensity",
@@ -99,7 +101,7 @@ if planet.M<=7:
     planet.Mdipmax=planetProperty(pcell,
                                   "AbsoluteMaximumDipoleMoment",
                                   data="tevol",
-                                  R=planet.R,
+                                  R=planet.Rp,
                                   M=planet.M,
                                   Rc=planet.Rc,
                                   rhoc=planet.rhoc,
@@ -110,7 +112,7 @@ if planet.M<=7:
     planet.tMdipmax=planetProperty(pcell,
                                    "TimeMaximumDipoleMoment",
                                    data="tevol",
-                                   R=planet.R,
+                                   R=planet.Rp,
                                    M=planet.M,
                                    Rc=planet.Rc,
                                    rhoc=planet.rhoc,
@@ -137,7 +139,7 @@ if planet.M<=7:
                                   "TemporalMaximumDipoleMoment",
                                    t=planet.tau,
                                    data="tevol",
-                                   R=planet.R,
+                                   R=planet.Rp,
                                    M=planet.M,
                                    Rc=planet.Rc,
                                    rhoc=planet.rhoc,
@@ -193,10 +195,10 @@ elif planet.Mg>=0.05:
         PRINTERR("No planetary model for giants with this mass and composition.")
         errorCode("RANGE_ERROR");
     planet.Qconv=planet.Q
-    planet.R=planet.Rg*RJUP/REARTH
+    planet.Rp=planet.Rg*RJUP/REARTH
     
-    planet.A=4*PI*(planet.R*Rp_E)**2
-    planet.g=GCONST*(planet.M*MEARTH)/(planet.R*REARTH)**2
+    planet.A=4*PI*(planet.Rp*Rp_E)**2
+    planet.g=GCONST*(planet.M*MEARTH)/(planet.Rp*REARTH)**2
 
     #----------------------------------------
     #INTERIOR PROPERTIES
@@ -245,6 +247,7 @@ elif planet.Mg>=0.05:
 else:
     if planet.M<1.0:
         PRINTOUT("Planet is Sub-Earth")
+        errorCode("RANGE_ERROR")
     else:
         PRINTOUT("Planet is out of range")
         errorCode("RANGE_ERROR")
@@ -252,7 +255,7 @@ else:
 
 if planet.worb<0:planet.worb=0
 if planet.Mg<0.05:
-    planet.title=r"$M_p=%.3f\,M_{\\rm Earth}$, CMF=%.2f, $\\tau=%.2f$ Gyr, $R_p=%.3f\,R_{\\rm Earth}$"%(planet.M,planet.CMF,planet.tau,planet.R)
+    planet.title=r"$M_p=%.3f\,M_{\\rm Earth}$, CMF=%.2f, $\\tau=%.2f$ Gyr, $R_p=%.3f\,R_{\\rm Earth}$"%(planet.M,planet.CMF,planet.tau,planet.Rp)
 else:
     planet.title=r"$M_p=%.3f\,M_{\\rm Jup}$, $f_{\\rm H/He}=%.3f$, $\\tau=%.2f$ Gyr, $R_p=%.3f\,R_{\\rm Jup}$"%(planet.Mg,planet.fHHe,planet.tau,planet.Rg)
 
@@ -296,15 +299,14 @@ ephemeris=toStack(ts)|rorbs
 fd=open(planet_dir+"planet.data","w")
 fd.write("""\
 from numpy import array
-
-#TITLE
-title="%s"
-orbit="%s"
+#OBJECT HASH
+hash="%s"
 
 #BULK PROPERTIES
 type = "%s"
+Mp=%.17e #Mearth
+Rp=%.17e #Rearth
 Mg = %.17e #Mjup
-R=%.17e #Rearth
 Rg=%.17e #Rjup
 A=%.17e #m^2
 g=%.17e #m/s^2
@@ -317,41 +319,43 @@ rhoc=%.17e #Inner core density
 sigma=%.17e #Sigma in dynamo region
 kappa=%.17e #Kappa in dynamo region
 
-#THERMAL (INSTANTANEOUS) PROPERTIES
+#THERMAL AND MAGNETIC (INSTANTANEOUS) PROPERTIES
+tdyn=%.17e #Estimated dynamo lifetime 
 Q=%.17e #Total heat emitted
-Qconv=%.17e #Heat dissipated in a dynamo
 T=%.17e #Effective black body temperature
+Qconv=%.17e #Heat dissipated in a dynamo
 Mdip=%.17e #MdipEarth
+Mdipmax=%.17e #Maximum dipole moment (whole evolution)
+tMdipmax=%.17e #Time of maximum dipole moment
 Mdipmaxt=%.17e #Maximum dipole moment (until age)
 
-#MAGNETIC PROPERTIES
-tdyn=%.17e #Estimated dynamo lifetime 
-tMdipmax=%.17e #Time of maximum dipole moment
-Mdipmax=%.17e #Maximum dipole moment (whole evolution)
+#THERMAL OUTPUT EVOLUTION
+thermevol=%s
 
 #ORBITAL PROPERTIES
 Porb=%.17e #days
 aorb=%.17e #AU
 norb=%.17e #rad days^-1
 
-#THERMAL OUTPUT EVOLUTION
-thermevol=%s
-
 #ORBIT EPHEMERIS
 ephemeris=%s
-"""%(planet.title,
-     planet.orbit,
+
+#TITLE
+title="%s"
+orbit="%s"
+"""%(planet.hash,
      planet.type,
-     planet.Mg,planet.R,planet.Rg,
+     planet.Mp,planet.Rp,
+     planet.Mg,planet.Rg,
      planet.A,planet.g,planet.rho,
-     planet.Rc,planet.Ric,planet.rhoc,
-     planet.sigma,planet.kappa,
-     planet.Q,planet.Qconv,planet.T,planet.Mdip,planet.Mdipmaxt,
-     planet.tdyn,planet.tMdipmax,planet.Mdipmax,
-     planet.Porb,planet.aorb,planet.norb,
+     planet.Rc,planet.Ric,planet.rhoc,planet.sigma,planet.kappa,
+     planet.tdyn,
+     planet.Q,planet.T,planet.Qconv,
+     planet.Mdip,planet.Mdipmax,planet.tMdipmax,planet.Mdipmaxt,
      array2str(thermevol),
-     array2str(ephemeris)
-     ))
+     planet.Porb,planet.aorb,planet.norb,
+     array2str(ephemeris),
+     planet.title,planet.orbit))
 fd.close()
 
 ###################################################
@@ -375,9 +379,9 @@ ax=fig.add_axes([0.0,0.0,1.0,1.0])
 RJ=11.2
 color='c'
 
-plan=patches.Circle((0.0,0.0),planet.R,fc=color,ec='none',zorder=-10)
-core=patches.Circle((0.0,0.0),planet.Rc*planet.R,fc='b',alpha=0.3,ec='none',zorder=-5)
-icore=patches.Circle((0.0,0.0),planet.Ric*planet.R,fc='r',alpha=0.3,ec='none',zorder=-5)
+plan=patches.Circle((0.0,0.0),planet.Rp,fc=color,ec='none',zorder=-10)
+core=patches.Circle((0.0,0.0),planet.Rc*planet.Rp,fc='b',alpha=0.3,ec='none',zorder=-5)
+icore=patches.Circle((0.0,0.0),planet.Ric*planet.Rp,fc='r',alpha=0.3,ec='none',zorder=-5)
 
 earth=patches.Circle((0.0,0.0),1.0,
                      linestyle='dashed',fc='none',zorder=10)
@@ -392,7 +396,7 @@ ax.add_patch(jupiter)
 
 ax.text(0.0,1.0,'Earth',fontsize=12,transform=offSet(0,5),horizontalalignment='center')
 ax.text(0.0,RJ,'Jupiter',fontsize=12,transform=offSet(0,5),horizontalalignment='center')
-ax.text(0.0,-planet.R,'%%s'%%planet.str_PlanetID.replace("'",""),fontsize=14,transform=offSet(0,-10),horizontalalignment='center',verticalalignment='top')
+ax.text(0.0,-planet.Rp,'%%s'%%planet.str_PlanetID.replace("'",""),fontsize=14,transform=offSet(0,-10),horizontalalignment='center',verticalalignment='top')
 
 ax.set_xticks([])
 ax.set_yticks([])
@@ -401,7 +405,7 @@ ax.set_title(planet.title,position=(0.5,0.05),fontsize=16)
 
 if planet.Mg<0.05:Rscale=1.0
 else:Rscale=RJ
-rang=max(1.5*Rscale,1.5*planet.R)
+rang=max(1.5*Rscale,1.5*planet.Rp)
 ax.set_xlim((-rang,+rang))
 ax.set_ylim((-rang,+rang))
 """%(planet_dir,planet_dir),watermarkpos="inner")
@@ -462,7 +466,16 @@ for prop in props.keys():
     ax.plot(ts,ps/pm,label="%%s=%%.2e"%%(prop,pm),**st)
 
 ax.set_yscale("log")
-ax.legend(prop=dict(size=10))
+
+if 'Gas' in planet.type:
+    ax.set_xscale("log")
+
+ax.set_xlim((0.1,10.0))
+ax.legend(loc='best',prop=dict(size=10))
+
+ax.set_xlabel(r"$\\tau$ (Gyr)")
+ax.set_ylabel(r"Property/Mean value")
+
 ax.grid()
 ax.set_xlim((TAU_MIN,planet.tdyn))
 ax.set_title(planet.title,position=(0.5,1.02),fontsize=16)
@@ -514,67 +527,26 @@ fh.write("""\
 <head>
   <link rel="stylesheet" type="text/css" href="%s/web/BHM.css">
 </head>
-<h2>Planetary Properties</h2>
-<center>
-  <a target="_blank" href="%s/planet-schematic.png" target="_blank">
-    <img width=60%% src="%s/planet-schematic.png">
-  </a>
-  <br/>
-  <i>Schematic Representation</i>
-  (
-  <a target="_blank" href="%s/planet-schematic.png.txt">data</a>|
-  <a target="_blank" href="%s/BHMreplot?dir=%s&plot=planet-schematic.py">replot</a>
-  )
-</center>
-<h3>Input physical properties</h3>
-<table >
-  <tr><td>Mass (M<sub>E</sub>,M<sub>Jup</sub>):</td><td>%.3f, %.3f</td></tr>
-  <tr><td>f<sub>H/He</sub>:</td><td>%.3f</td></tr>
-  <tr><td>CMF (Earth = 0.34):</td><td>%.2f</td></tr>
-  <tr><td>&tau; (Gyr):</td><td>%.2f</td></tr>
-</table>
-<h3>Planetary Orbit Properties:</h3>
-<table >
-  <tr><td>a (AU):</td><td>%.2f</td></tr>
-  <tr><td>e:</td><td>%.2f</td></tr>
-  <tr><td>&omega; (<sup>o</sup>):</td><td>%.1f</td></tr>
-  <tr><td>P<sub>orb</sub> (days):</td><td>%.2f</td></tr>
-  <tr><td>P<sub>rot</sub> (days):</td><td>%.3f</td></tr>
-  <tr><td colspan=2>
-      <a target="_blank" href="%s/planet-orbit.png">
-	<img width=100%% src="%s/planet-orbit.png">
-      </a>
-      <br/>
-      <i>Orbit</i>
-	(
-	<a target="_blank" href="%s/planet-orbit.png.txt">data</a>|
-	<a target="_blank" href="%s/BHMreplot?dir=%s&plot=planet-orbit.py">replot</a>
-	)
-  </td></tr>
-</table>
-<h3>Other Bulk Properties:</h3>
+<h2>Properties of Planet %s</h2>
+
+<h3>Plots</h3>
+<h4>Schematic Representation</h4>
 <table>
-  <tr><td>R<sub>p</sub> (R<sub>Earth</sub>,R<sub>Jupiter</sub>):</td><td>%.3f,%.3f</td></tr>
-  <tr><td>A (m<sup>2</sup>)):</td><td>%.2e</td></tr>
-  <tr><td>g (m/s<sup>2</sup>):</td><td>%.3f</td></tr>
-  <tr><td>&rho; (kg/m<sup>3</sup>):</td><td>%.3f</td></tr>
+<tr><td>
+    <a href="%s/planet-schematic.png" target="_blank">
+      <img width=100%% src="%s/planet-schematic.png">
+    </a>
+    <br/>
+    <div class="caption">
+    <i>Schematic Representation</i>
+    (
+    <a href="%s/planet-schematic.png.txt" target="_blank">data</a>|
+    <a href="%s/BHMreplot.php?dir=%s&plot=planet-schematic.py" target="_blank">replot</a>
+    )
+    </div>
+</td></tr>
 </table>
-<h3>Interior Properties:</h3>
-<table>
-  <tr><td>R<sub>core</sub> (R<sub>p</sub>):</td><td>%.2f</td></tr>
-  <tr><td>R<sub>inner,core</sub> (R<sub>p</sub>):</td><td>%.2f</td></tr>
-  <tr><td>&rho;<sub>core</sub> (kg/m<sup>3</sup>):</td><td>%.1f</td></tr>
-</table>
-<h3>Thermal and magnetic properties:</h3>
-<table>
-  <tr><td>Q (W):</td><td>%.2e</td></tr>
-  <tr><td>T<sub>eff</sub> (K):</td><td>%.2f</td></tr>
-  <tr><td>Q<sub>dyn</sub> (W):</td><td>%.2e</td></tr>
-  <tr><td>t<sub>dyn</sub> (Gyr):</td><td>%.2f</td></tr>
-  <tr><td>M<sub>dip</sub> (M<sub>dip,Earth</sub>):</td><td>%.2f</td></tr>
-  <tr><td>M<sub>dip,max</sub> (M<sub>dip,Earth</sub>):</td><td>%.2f</td></tr>
-  <tr><td>t<sub>dip,max</sub> (Gyr):</td><td>%.2f</td></tr>
-</table>
+
 <h3>Thermal and magnetic evolution:</h3>
 <table>
   <tr><td>
@@ -582,23 +554,112 @@ fh.write("""\
 	<img width=100%% src="%s/thermal-evolution.png">
       </a>
       <br/>
+      <div class="caption">
       <i>Evolution of stellar properties</i>
 	(
 	<a target="_blank" href="%s/thermal-evolution.png.txt">data</a>|
 	<a target="_blank" href="%s/BHMreplot?dir=%s&plot=thermal-evolution.py">replot</a>
 	)
+      </div>
   </td></tr>
 </table>
-"""%(WEB_DIR,planet_webdir,planet_webdir,planet_webdir,WEB_DIR,planet_webdir,
-     planet.M,planet.Mg,
-     planet.fHHe,planet.CMF,planet.tau,
-     planet.aorb,planet.eorb,planet.worb,planet.Porb,planet.Prot,
+
+<h3>Planetary Orbit:</h3>
+<table>
+  <tr><td colspan=2>
+      <a target="_blank" href="%s/planet-orbit.png">
+	<img width=100%% src="%s/planet-orbit.png">
+      </a>
+      <br/>
+      <div class="caption">
+      <i>Orbit</i>
+	(
+	<a target="_blank" href="%s/planet-orbit.png.txt">data</a>|
+	<a target="_blank" href="%s/BHMreplot?dir=%s&plot=planet-orbit.py">replot</a>
+	)
+      </div>
+  </td></tr>
+</table>
+
+<h3>Numerical Properties</h3>
+
+<h3>Basic Input Properties</h3>
+<table>
+  <tr><td>Mass (M<sub>E</sub>,M<sub>Jup</sub>):</td><td>%.3f, %.3f</td></tr>
+  <tr><td>&tau; (Gyr):</td><td>%.2f</td></tr>
+  <tr><td>CMF (Earth = 0.34):</td><td>%.2f</td></tr>
+  <tr><td>f<sub>H/He</sub>:</td><td>%.3f</td></tr>
+  <tr><td>P<sub>rot</sub> (days):</td><td>%.3f</td></tr>
+</table>
+
+<h3>Observed Properties</h3>
+<table>
+  <tr><td>R (R<sub>Earth</sub>):</td><td>%s &pm; %s</td></tr>
+  <tr><td>M (M<sub>Earth</sub>):</td><td>%s &pm; %s</td></tr>
+  <tr><td>a<sub>orb</sub> (AU):</td><td>%s &pm; %s</td></tr>
+  <tr><td>e<sub>orb</sub>:</td><td>%s &pm; %s</td></tr>
+  <tr><td>P<sub>orb</sub>:</td><td>%s &pm; %s</td></tr>
+  <tr><td>&omega;<sub>orb</sub>:</td><td>%s &pm; %s</td></tr>
+</table>
+
+<h3>Bulk Properties:</h3>
+<table>
+  <tr><td>Planet type:</td><td>%s</td></tr>
+  <tr><td>M<sub>p</sub> (M<sub>Earth</sub>,M<sub>Jupiter</sub>):</td><td>%.3f,%.3f</td></tr>
+  <tr><td>R<sub>p</sub> (R<sub>Earth</sub>,R<sub>Jupiter</sub>):</td><td>%.3f,%.3f</td></tr>
+  <tr><td>A (m<sup>2</sup>)):</td><td>%.2e</td></tr>
+  <tr><td>g (m/s<sup>2</sup>):</td><td>%.3f</td></tr>
+  <tr><td>&rho; (kg/m<sup>3</sup>):</td><td>%.3f</td></tr>
+</table>
+
+<h3>Interior Structure Properties:</h3>
+<table>
+  <tr><td>R<sub>core</sub> (R<sub>p</sub>):</td><td>%.2f</td></tr>
+  <tr><td>R<sub>inner,core</sub> (R<sub>p</sub>):</td><td>%.2f</td></tr>
+  <tr><td>&rho;<sub>core</sub> (kg/m<sup>3</sup>):</td><td>%.1f</td></tr>
+  <tr><td>&sigma;</sub> (S/m):</td><td>%.3e</td></tr>
+  <tr><td>&kappa;</sub>:</td><td>%.3e</td></tr>
+</table>
+
+<h3>Thermal and magnetic properties:</h3>
+<table>
+  <tr><td>t<sub>dyn</sub> (Gyr):</td><td>%.2f</td></tr>
+  <tr><td>Q (W):</td><td>%.2e</td></tr>
+  <tr><td>T<sub>eff</sub> (K):</td><td>%.2f</td></tr>
+  <tr><td>Q<sub>conv</sub> (W):</td><td>%.2e</td></tr>
+  <tr><td>M<sub>dip</sub> (M<sub>dip,Earth</sub>):</td><td>%.2f</td></tr>
+  <tr><td>M<sub>dip,max</sub> (M<sub>dip,Earth</sub>):</td><td>%.2f</td></tr>
+  <tr><td>t<sub>dip,max</sub> (Gyr):</td><td>%.2f</td></tr>
+  <tr><td>M<sub>dip,max,t</sub> (M<sub>dip,Earth</sub>):</td><td>%.2f</td></tr>
+</table>
+
+<h3>Planetary Orbit Properties:</h3>
+<table >
+  <tr><td>P (days):</td><td>%.2f</td></tr>
+  <tr><td>a (AU):</td><td>%.2f</td></tr>
+  <tr><td>n (rad/day):</td><td>%.2f</td></tr>
+</table>
+"""%(WEB_DIR,
+     planet.str_PlanetID,
      planet_webdir,planet_webdir,planet_webdir,WEB_DIR,planet_webdir,
-     planet.R,planet.Rg,planet.A,planet.g,planet.rho,
-     planet.Rc,planet.Ric,planet.rhoc,
-     planet.Q,planet.T,planet.Qconv,
-     planet.tdyn,planet.Mdip,planet.Mdipmax,planet.tMdipmax,
-     planet_webdir,planet_webdir,planet_webdir,WEB_DIR,planet_webdir
+     planet_webdir,planet_webdir,planet_webdir,WEB_DIR,planet_webdir,
+     planet_webdir,planet_webdir,planet_webdir,WEB_DIR,planet_webdir,
+     planet.Mp,planet.Mg,
+     planet.tau,planet.CMF,planet.fHHe,planet.Prot,
+     tableValue(planet.R,"%.4f",">0","-"),tableValue(planet.Rerr,"%.4f",">0","-"),
+     tableValue(planet.M,"%.4f",">0","-"),tableValue(planet.Merr,"%.4f",">0","-"),
+     tableValue(planet.aorb,"%.4f",">0","-"),tableValue(planet.aorberr,"%.4f",">0","-"),
+     tableValue(planet.eorb,"%.4f",">0","-"),tableValue(planet.eorberr,"%.4f",">0","-"),
+     tableValue(planet.Porb,"%.4f",">0","-"),tableValue(planet.Porberr,"%.4f",">0","-"),
+     tableValue(planet.worb,"%.4f",">0","-"),tableValue(planet.worberr,"%.4f",">0","-"),
+     planet.type,
+     planet.Mp,planet.Mg,
+     planet.Rp,planet.Rg,
+     planet.A,planet.g,planet.rho,
+     planet.Rc,planet.Ric,planet.rhoc,planet.sigma,planet.kappa,
+     planet.tdyn,planet.Q,planet.T,planet.Qconv,
+     planet.Mdip,planet.Mdipmax,planet.tMdipmax,planet.Mdipmaxt,
+     planet.Porb,planet.aorb,planet.norb
      ))
 fh.close()
 

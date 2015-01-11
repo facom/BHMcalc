@@ -71,6 +71,7 @@ binary,binary_str,binary_hash,binary_dir=makeObject("binary",
                                             qover=qover)
 PRINTOUT("Object directory '%s' created"%binary_dir)
 binary_webdir="/"+WEB_DIR+binary_dir
+binary.hash=binary_hash
 
 ###################################################
 #CALCULATE BASIC PROPERTIES OF BINARY
@@ -206,17 +207,31 @@ fh.write("""\
   <link rel="stylesheet" type="text/css" href="%s/web/BHM.css">
 </head>
 <h2>Binary Properties</h2>
-<center>
-  <a target="_blank" href="%s/binary-orbit.png">
-    <img width=100%% src="%s/binary-orbit.png">
-  </a>
-  <br/>
-  <i>Schematic Representation</i>
-  (
-  <a target="_blank" href="%s/binary-orbit.png.txt">data</a>|
-  <a target="_blank" href="%s/BHMreplot.php?dir=%s&plot=binary-orbit.py">replot</a>
-  )
-</center>
+
+<h3>Plots</h3>
+
+<h4>Orbit</h4>
+
+<table>
+  <tr><td>
+      <center>
+	<a target="_blank" href="%s/binary-orbit.png">
+	  <img width=100%% src="%s/binary-orbit.png">
+	</a>
+	<br/>
+	<div class="caption">
+	<i>Schematic Representation</i>
+	(
+	<a target="_blank" href="%s/binary-orbit.png.txt">data</a>|
+	<a target="_blank" href="%s/BHMreplot.php?dir=%s&plot=binary-orbit.py">replot</a>
+	)
+	</div>
+      </center>
+</td></tr>
+</table>
+
+<h3>Numerical Properties</h3>
+
 <h3>Basic Properties</h3>
 <table>
   <tr><td>M (M<sub>Sun</sub>):</td><td>%.3f</td></tr>
@@ -232,7 +247,8 @@ fh.write("""\
   <tr><td>n<sub>sync</a> (P<sub>sync</sub>/P<sub>bin</sub>):</td><td>%.3f</td></tr>
   <tr><td>P<sub>sync</a> (days):</td><td>%.3f</td></tr>
 </table>
-"""%(WEB_DIR,binary_webdir,binary_webdir,binary_webdir,WEB_DIR,binary_webdir,
+"""%(WEB_DIR,
+     binary_webdir,binary_webdir,binary_webdir,WEB_DIR,binary_webdir,
      binary.M,binary.mu,binary.q,
      binary.Pbin,binary.abin,binary.ebin,
      binary.acrit,binary.nsync,binary.Psync

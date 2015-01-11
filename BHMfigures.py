@@ -1992,6 +1992,109 @@ def dipoleMomentGiants():
     ax.legend(loc='best')
     fig.savefig("figures/Gas-DipoleMoment.png")
 
+def acritPlot():
+
+    fig=plt.figure()
+    ax=fig.add_axes([0.12,0.12,0.8,0.8])
+
+    Z=0.015
+    model="PARSEC"
+    mu=0.15
+    Ms=[0.5,0.7,1.0]
+    ebins=np.logspace(np.log10(1E-2),np.log10(0.7),10)
+
+    i=0
+    rmin=1E100
+    rmax=0.0
+
+    P1=10.0
+    P2=20.0
+    
+    for M1 in Ms:
+        
+        pfind,startrack=findTrack(model,Z,M1,verbose=True)
+        trackfunc1=trackFunctions(startrack)
+        tau=(startrack['qt'][-1]+startrack['qt'][0])/2
+        
+        M2=mu/(1-mu)*M1
+        pfind,startrack=findTrack(model,Z,M1,verbose=True)
+        trackfunc2=trackFunctions(startrack)
+
+        print "Calculating for M1 = %.2f, M2 = %.2f at tau = %.2f Gyr"%(M1,M2,tau/GIGA)
+
+        L1=trackfunc1.L(tau)
+        T1=trackfunc1.T(tau)
+
+        L2=trackfunc2.L(tau)
+        T2=trackfunc2.T(tau)
+        
+        q=M2/M1
+
+        Pbin=P1
+        abin=aKepler(Pbin,M1,M2)
+        lin,lout=HZbin(q,L1,L2,T1,abin,crits=['recent venus','early mars'])
+        acs1=aCritical(mu,abin,ebins)/abin
+        lin1=lin*np.ones_like(ebins)/abin
+        line,=ax.plot(ebins,lin1)
+        color=plt.getp(line,"color")
+        rmin=min(rmin,acs1.min(),lin1.min())
+        rmax=max(rmax,acs1.max(),lin1.max())
+
+        if i==len(Ms)-1:
+            ax.text(ebins[-1],lin1[0],r"$P_{\rm bin}=%.0f$ days"%Pbin,transform=offSet(-5,5),
+                    horizontalalignment='right',verticalalignment='bottom',fontsize=12)
+
+        Pbin=P2
+        abin=aKepler(Pbin,M1,M2)
+        lin,lout=HZbin(q,L1,L2,T1,abin,crits=['recent venus','early mars'])
+        lin2=lin*np.ones_like(ebins)/abin
+        acs2=aCritical(mu,abin,ebins)/abin
+        ax.plot(ebins,lin2,color=color)
+        rmin=min(rmin,acs2.min(),lin2.min())
+        rmax=max(rmax,acs2.max(),lin2.max())
+
+        if i==len(Ms)-1:
+            ax.text(ebins[-1],lin2[0],r"$P_{\rm bin}=%.0f$ days"%Pbin,transform=offSet(-5,-5),
+                    horizontalalignment='right',verticalalignment='top',fontsize=12)
+        
+        ax.fill_between(ebins,lin1,lin2,color=color,alpha=0.3)
+        ax.text(1E-2,lin1[0],r"$M_1=%.2f\,M_\odot$"%M1,transform=offSet(5,-5),
+                horizontalalignment='left',verticalalignment='top',fontsize=14)
+        
+        i+=1
+
+    print "rmin,rmax:",rmin,rmax
+
+    mus=[0.1,0.2,0.3,0.4,0.5]
+    #mus=[mu]
+    mus=[0.1,0.5]
+    M1=1.0
+    colors=['r','b']
+    i=0
+    for mu in mus:
+        M2=mu/(1-mu)*M1
+        Pbin=30.0
+        abin=aKepler(Pbin,M1,M2)
+        acs=aCritical(mu,abin,ebins)/abin
+        ax.plot(ebins,acs,label=r"$\mu$ = %.1f"%mu,linewidth=2,color=colors[i])
+        i+=1
+
+    ax.set_yscale("log")
+    ax.set_xscale("log")
+
+    ax.set_xlabel(r"$e$",fontsize=14)
+    ax.set_ylabel(r"$a_{\rm crit}/a_{\rm bin}$ , $l_{\rm in}/a_{\rm bin}$",fontsize=14)
+
+    logTickLabels(ax,0,2,(1,),frm="%.1f",axis="y",notation="normal",fontsize=12)
+    logTickLabels(ax,-2,0,(3,2),frm="%.2f",axis="x",notation="normal",fontsize=12)
+
+    ax.set_xlim(ebins[0],ebins[-1])
+    ax.set_ylim((1.5,1.2*rmax))
+
+    ax.grid(which='both')
+    ax.legend(loc='lower right')
+    fig.savefig("figures/CriticalDistance.png")
+
 
 #plotAllMoIs()
 #compareMoIs()
@@ -2000,5 +2103,5 @@ def dipoleMomentGiants():
 #massRadiusSolidContours()
 #massRadiusGas()
 #massRadiusGasContours()
-dipoleMomentGiants()
-
+#dipoleMomentGiants()
+acritPlot()

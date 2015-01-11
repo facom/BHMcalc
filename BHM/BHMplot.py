@@ -74,7 +74,7 @@ def logTickLabels(ax,perini,perfin,nperper,
             
     #print yt,yl
     if axis is 'y':
-        print yl
+        #print yl
         ax.set_yticks(yt)
         ax.set_yticklabels(yl,fontsize=fontsize)
     else:

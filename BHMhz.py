@@ -76,6 +76,7 @@ ihz,ihz_str,ihz_hash,ihz_dir=\
      makeObject("hz",sys_dir+"/"+ihz_conf,qover=qover)
 PRINTOUT("Object directory '%s' created"%ihz_dir)
 ihz_webdir="/"+WEB_DIR+ihz_dir
+ihz.hash=ihz_hash
 
 ###################################################
 #CALCULATE BINARY HABITABLE ZONE AT TAU
@@ -237,27 +238,32 @@ from numpy import array
 #TITLE
 title="%s"
 
+#TIMES
+tau = %.17e #Gyr
+taumax = %.17e #Gyr
+taums = %.17e #Gyr
+tauhl = %.17e #Gyr
+
+#BHZ INSTANTANEOUS LIMITS
+linwd = %.17e #AU
+loutwd = %.17e #AU
+leeq = %.17e #AU
+linnr = %.17e #AU
+loutnr = %.17e #AU
+
+#CHZ
+clin = %.17e #Gyr
+clout = %.17e #Gyr
+loutmax = %.17e #Gyr
+
 #HZ INITIALS
 ini_inwd = "%s"
 ini_outwd = "%s"
 ini_innr = "%s"
 ini_outnr = "%s"
 
-#HZ EDGES
-taumax = %.17e #Gyr
-tau = %.17e #Gyr
-leeq = %.17e #AU
-linwd = %.17e #AU
-loutwd = %.17e #AU
-linnr = %.17e #AU
-loutnr = %.17e #AU
-
-#CHZ
-taums = %.17e #Gyr
-tauhl = %.17e #Gyr
-clin = %.17e #Gyr
-clout = %.17e #Gyr
-loutmax = %.17e #Gyr
+#FLUX AND PHOTON DENSITY
+insolation=%s
 
 #FLUX AND PHOTON DENSITY STATS
 #COLS:mean,min,max,range,st.dev.
@@ -265,24 +271,21 @@ loutmax = %.17e #Gyr
 fstats=%s
 pstats=%s
 
-#FLUX AND PHOTON DENSITY
-insolation=%s
-
 #BINARY HABITABLE ZONE EVOLUTION
 hz=%s
 
 #PRIMARY HABITABLE ZONE EVOLUTION
 shz=%s
 """%(ihz.title,
-     ini_inwd,ini_outwd,ini_innr,ini_outnr,
-     taumax,ihz.tau,
-     ihz.leeq,
+     ihz.tau,taumax,tms,texit,
      linwd,loutwd,
+     ihz.leeq,
      linnr,loutnr,
-     tms,texit,clin,clout,loutmax,
+     clin,clout,loutmax,
+     ini_inwd,ini_outwd,ini_innr,ini_outnr,
+     array2str(insolation),
      array2str(fstats.array),
      array2str(pstats.array),
-     array2str(insolation),
      array2str(hz),
      array2str(shz)
      ))
@@ -546,20 +549,70 @@ fh.write("""\
 <head>
   <link rel="stylesheet" type="text/css" href="%s/web/BHM.css">
 </head>
-<h2>Circumbinary Habitable Zone (HZ)</h2>
-<center>
-  <a target="_blank" href="%s/iHZ.png">
-    <img width=60%% src="%s/iHZ.png">
-  </a>
-  <br/>
-  <i>Instantaneous Habitable Zone</i>
-  (
-  <a target="_blank" href="%s/iHZ.png.txt">data</a>|
-  <a target="_blank" href="%s/BHMreplot.php?dir=%s&plot=iHZ.py">replot</a>
-  )
-</center>
-<h3>HZ Edges</h3>
+
+<h2>BHZ of %s</h2>
+
+<h3>Plots</h3>
+
+<h4>Instantaneous BHZ</h4>
+
 <table>
+  <tr><td colspan=2>
+      <a target="_blank" href="%s/iHZ.png">
+	<img width=100%% src="%s/iHZ.png">
+      </a>
+      <br/>
+      <div class="caption">
+      <i>Instantaneous Habitable Zone</i>
+	(
+	<a target="_blank" href="%s/iHZ.png.txt">data</a>|
+	<a target="_blank" href="%s/BHMreplot.php?dir=%s&plot=iHZ.py">replot</a>
+	)
+      </div>
+  </td></tr>
+</table>
+
+<h4>Insolation and Photosynthetic Photon Flux Density</h4>
+
+<table>
+  <tr><td colspan=2>
+      <a target="_blank" href="%s/insolation.png">
+	<img width=100%% src="%s/insolation.png">
+      </a>
+      <br/>
+      <div class="caption">
+      <i>Insolation</i>
+	(
+	<a target="_blank" href="%s/insolation.png.txt">data</a>|
+	<a target="_blank" href="%s/BHMreplot.php?dir=%s&plot=insolation.py">replot</a>
+	)
+      </div>
+  </td></tr>
+</table>
+
+<h4>Continuous BHZ</h4>
+
+<table>
+  <tr><td colspan=2>
+      <a target="_blank" href="%s/hz-evolution.png">
+	<img width=100%% src="%s/hz-evolution.png">
+      </a>
+      <br/>
+      <div class="caption">
+      <i>Evolution of Habitable Zone</i>
+	(
+	<a target="_blank" href="%s/hz-evolution.png.txt">data</a>|
+	<a target="_blank" href="%s/BHMreplot.php?dir=%s&plot=hz-evolution.py">replot</a>
+	)
+      </div>
+  </td></tr>
+</table>
+
+<h3>Numerical Properties</h3>
+
+<h3>Instantaneous BHZ Limits</h3>
+<table>
+  <tr><td>&tau;(Gyr)</td><td>%.3f</td></tr>
   <tr><td>l<sub>Earth,eq</sub> (AU):</td><td>%.3f</td></tr>
   <tr><td colspan=2><b>Wide HZ</b></td></tr>
   <tr><td>l<sub>in,%s</sub> (AU):</td><td>%.3f</td></tr>
@@ -572,46 +625,28 @@ fh.write("""\
 <table>
   <tr><td>&tau;<sub>MS</sub> (Gyr):</td><td>%.3f</td></tr>
   <tr><td>&tau;<sub>p,HL</sub> (Gyr):</td><td>%.3f</td></tr>
-  <tr><td>l<sub>in,max</sub> (AU):</td><td>%.3f</td></tr>
-  <tr><td>l<sub>out,min</sub> (AU):</td><td>%.3f</td></tr>
-  <tr><td colspan=2>
-      <a target="_blank" href="%s/hz-evolution.png">
-	<img width=100%% src="%s/hz-evolution.png">
-      </a>
-      <br/>
-      <i>Instantaneous Habitable Zone</i>
-	(
-	<a target="_blank" href="%s/hz-evolution.png.txt">data</a>|
-	<a target="_blank" href="%s/BHMreplot.php?dir=%s&plot=hz-evolution.py">replot</a>
-	)
-  </td></tr>
+  <tr><td>l<sub>cin,max</sub> (AU):</td><td>%.3f</td></tr>
+  <tr><td>l<sub>cout,min</sub> (AU):</td><td>%.3f</td></tr>
 </table>
 <h3>Insolation and Photon Flux</h3>
 <table>
   <tr><td>&lt;S(Planet,a=%.2f,e=%.2f)&gt; [W/m<sup>2</sup>,S<sub>Sun</sub>]:</td><td>%.3f, %.3f</td></tr>
   <tr><td>S(Planet)/S<sub>Sun</sub>(min,max,range,std):</td><td>%.3f,%.3f,%.3f,%.3f</td></tr>
-  <tr><td colspan=2>
-      <a target="_blank" href="%s/insolation.png">
-	<img width=100%% src="%s/insolation.png">
-      </a>
-      <br/>
-      <i>Instantaneous Habitable Zone</i>
-	(
-	<a target="_blank" href="%s/insolation.png.txt">data</a>|
-	<a target="_blank" href="%s/BHMreplot.php?dir=%s&plot=insolation.py">replot</a>
-	)
-  </td></tr>
 </table>
-"""%(WEB_DIR,ihz_webdir,ihz_webdir,ihz_webdir,WEB_DIR,ihz_webdir,
+"""%(WEB_DIR,
+     binary.str_SysID,
+     ihz_webdir,ihz_webdir,ihz_webdir,WEB_DIR,ihz_webdir,
+     ihz_webdir,ihz_webdir,ihz_webdir,WEB_DIR,ihz_webdir,
+     ihz_webdir,ihz_webdir,ihz_webdir,WEB_DIR,ihz_webdir,
+     ihz.tau,
      leeq,
      ini_inwd,linwd,ini_outwd,loutwd,
      ini_innr,linnr,ini_outnr,loutnr,
-     tms,texit,clin,clout,
-     ihz_webdir,ihz_webdir,ihz_webdir,WEB_DIR,ihz_webdir,
+     tms,texit,
+     clin,clout,
      planet.aorb,planet.eorb,fstats.array[0,0],fstats.array[0,0]/SOLAR_CONSTANT,
      fstats.array[0,1]/SOLAR_CONSTANT,fstats.array[0,2]/SOLAR_CONSTANT,
-     fstats.array[0,3]/SOLAR_CONSTANT,fstats.array[0,4]/SOLAR_CONSTANT,
-     ihz_webdir,ihz_webdir,ihz_webdir,WEB_DIR,ihz_webdir
+     fstats.array[0,3]/SOLAR_CONSTANT,fstats.array[0,4]/SOLAR_CONSTANT
      ))
 fh.close()
 

@@ -60,6 +60,11 @@ def aCritical(mu,a,e):
     ac=(1.6+(5.1*e)-(2.22*e**2)+(4.12*mu)-(4.27*e*mu)-(5.09*mu**2)+(4.61*e**2*mu**2))*a
     return ac
 
+def aCriticalRange(mu,a,e):
+    
+    ac=(1.6+(5.1*e)-(2.22*e**2)+(4.12*mu)-(4.27*e*mu)-(5.09*mu**2)+(4.61*e**2*mu**2))*a
+    return ac
+
 def eCritical(mu,abin,a):
     ecrit=lambda x:aCritical(mu,abin,x)-a
     e=bisectFunction(ecrit,0.0,1.0)

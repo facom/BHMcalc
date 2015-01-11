@@ -592,15 +592,18 @@ def AverageFlux(d,**args):
 def HZbin(q,Ls1,Ls2,Teffbin,abin,
           Seff=Seff2014,
           crits=['recent venus','early mars'],
-          eeq=False):
+          eeq=False,
+          verbose=False):
     global NCALLS
-
+    if verbose:print "Input:",q,Ls1,Ls2,Teffbin,abin
+    
     rc2=abin/(q+1)
     rc1=q*rc2
     args=dict(Ls1=Ls1,Ls2=Ls2,rc1=rc1,rc2=rc2)
 
     #EFFECTIVE FLUXES
     Seffin,Seffout=Seff(Teffbin,crits=crits)
+    if verbose:print "Seffs:",Seffin,Seffout
 
     #INNER LIMIT
     AF=lambda x:AverageFlux(x,**args)-Seffin
