@@ -2339,3 +2339,15 @@ def apsidalMotionConstant(k2):
     ka2=ka214**4
     
     return ka2
+
+    
+def StellarGTRLTrack(Z,M,t,trackfunc):
+    try:
+        g=trackfunc.g(t*GIGA)
+        T=trackfunc.T(t*GIGA)
+        R=trackfunc.R(t*GIGA)
+        L=trackfunc.L(t*GIGA)
+    except:
+        g=T=R=L=-1
+    return g,T,R,L
+    

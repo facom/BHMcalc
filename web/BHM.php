@@ -98,8 +98,7 @@ if(isset($VERBOSE)){$VERBOSE=1;}
 else{$VERBOSE=0;}
 
 $wCSSFILE="web/BHM.css";
-
-$CSSFILE=$DIR."web/BHM.css";
+$CSSFILE=$DIR."/web/BHM.css";
 
 //QUERY STRING
 $QUERY_STRING=$_SERVER["QUERY_STRING"];
@@ -112,9 +111,9 @@ $MODELS=array("'BCA98'"=>"BCA98",
 	      "'BASTI'"=>"BASTI",
 	      "'YZVAR'"=>"YZVAR");
 
-$ROTMODELS=array("'Chaboyer'"=>"Chaboyer (2011)",
+$ROTMODELS=array("'Chaboyer'"=>"Chaboyer et al. (1995)",
 		 "'Kawaler'"=>"Kawaler (1988)",
-		 "'Matt'"=>"Matt (2012)");
+		 "'Matt'"=>"Matt et al. (2012)");
 
 $HZINMODELS=array("'recent venus'"=>"Recent Venus",
 		  "'runaway greenhouse'"=>"Runaway Greenhouse",
@@ -143,7 +142,8 @@ $DATETIME=$DATE."-".$TIME;
 //CSS
 //////////////////////////////////////////////////////////////
 if(!file_exists($CSSFILE) or isset($GENCSS)){
-  include_once($DIR."web/BHMcss.php");
+  echo "Generating CSS $CSSFILE...";
+  include_once($DIR."/web/BHMcss.php");
   $fc=fopen($CSSFILE,"w");
   fwrite($fc,$CSS);
   fclose($fc);

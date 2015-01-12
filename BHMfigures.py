@@ -2095,6 +2095,392 @@ def acritPlot():
     ax.legend(loc='lower right')
     fig.savefig("figures/CriticalDistance.png")
 
+def plotBinarySpectrum():
+
+    from numpy import *
+    #////////////////////////////////////////
+    #BINARY PROPERTIES
+    #////////////////////////////////////////
+    Z=0.015
+    M1=1.0
+    M2=0.8
+    q=M2/M1
+    Pbin=15
+    ebin=0.3
+    tau=2.0
+    model="PARSEC"
+
+    pfind,startrack=findTrack(model,Z,M1,verbose=True)
+    trackfunc1=trackFunctions(startrack)
+
+    pfind,startrack=findTrack(model,Z,M2,verbose=True)
+    trackfunc2=trackFunctions(startrack)
+
+    #////////////////////////////////////////
+    #DERIVED PROPERTIES
+    #////////////////////////////////////////
+    lambo=10*NANO
+    lambi=1E+4*NANO
+    lambs=logspace(log10(lambo),log10(lambi),1000)
+    for i in xrange(1):
+
+        #ORBITAL
+        abin=aKepler(Pbin,M1,M2)
+        #print abin
+
+        #STELLAR PROPERTIES
+        g1,T1,R1,L1=StellarGTRLTrack(Z,M1,tau,trackfunc1)
+        g2,T2,R2,L2=StellarGTRLTrack(Z,M2,tau,trackfunc2)
+        #print g1,T1,R1,L1
+        #print g2,T2,R2,L2
+
+        #HABITABLE ZONE
+        lin,lout,aHZ=HZbin(M2/M1,L1,L2,T1,abin,
+                           crits=['recent venus','early mars'],
+                           eeq=True
+                           )
+        #print lin,aHZ,lout
+
+        #TEST EFFECTIVE TEMPERATURE VARIATIONS
+        """
+        EFFECTIVE TEMPERATURES FOR WHICH THE HZ LIMITS ARE THE SAME IN
+        A RANGE 2.5%
+        """
+        atol=3.5/100
+        filetrange="tmp/Trange-%.1f-%.1e"%(T1,atol)
+        if not FILEEXISTS(filetrange):
+            aH,mid,lou=HZ(L1,T1)
+            #print aH
+            Ttu=T1;Ttd=T1
+            deltaT=10.0
+            qup=0
+            qdown=0
+            print deltaT
+            while True:
+                aHZtu,mid,loutt=HZ(L1,Ttu)
+                aHZtd,mid,loutt=HZ(L1,Ttd)
+                #print aHZtu,aHZtd
+
+                #print Ttd,Ttu
+                Ttu=Ttu+deltaT
+                Ttd=Ttd-deltaT
+                #print Ttd,Ttu
+                if (fabs(aHZtu-aH)/aH>atol or Ttu>=7200) and not qup:
+                    Ttup=Ttu
+                    qup=True
+                    print "qup found..."
+                if (fabs(aHZtd-aH)/aH>atol or Ttd<=2600) and not qdown:
+                    Ttdown=Ttd
+                    qdown=True
+                    print "qdown found..."
+                if qdown and qup:break
+                #raw_input()
+            savetxt(filetrange,[Ttd,Ttu])
+        else:
+            Ttd,Ttu=loadtxt(filetrange)
+
+        print "Temperature Range: ",Ttd,Ttu
+
+        #BINARY PHASE
+        a1=q*abin/(1+q)
+        a2=abin/(1+q)
+
+        fig=plt.figure()
+        ax=fig.add_axes([0.12,0.1,0.8,0.8])
+
+        r=aHZ
+        r=lin
+        i=0
+        for theta in [-90*DEG,90*DEG]:
+            R1=sqrt((r+a1*sin(theta))**2+(a1*cos(theta))**2)
+            R2=sqrt((r-a2*sin(theta))**2+(a2*cos(theta))**2)
+   
+            A1=(4*pi*(R1*AU)**2)
+            A2=(4*pi*(R2*AU)**2)
+            
+            #COMPUTE THE STELLAR FLUX
+            #Component 1
+            I1=planckDistrib(lambs,T1)/A1
+            I2=planckDistrib(lambs,T2)/A2
+            IT=I1+I2
+        
+            I1func=interp1d(lambs/NANO,I1,kind='slinear')
+            I2func=interp1d(lambs/NANO,I2,kind='slinear')
+            ITfunc=interp1d(lambs/NANO,IT,kind='slinear')
+           
+            N1,dN=integrate(I1func,lambo/NANO,lambi/NANO)
+            N2,dN=integrate(I2func,lambo/NANO,lambi/NANO)
+            NT,dN=integrate(ITfunc,lambo/NANO,lambi/NANO)
+    
+            ax.plot(lambs/NANO,I1/N1,'b--',linewidth=2)
+            ax.plot(lambs/NANO,I2/N2,'r-.',linewidth=2)
+            ax.plot(lambs/NANO,IT/NT,'k-',linewidth=2)
+
+        #RANGE OF EFFECTIVE TEMPERATURES OF SINGLE STAR HAVING THE SAME LIMITS AS T1
+        Itu=planckDistrib(lambs,Ttu)/A1
+        Itfuncu=interp1d(lambs/NANO,Itu,kind='slinear')
+        Ntu,dN=integrate(Itfuncu,lambo/NANO,lambi/NANO)
+
+        Itd=planckDistrib(lambs,Ttd)/A1
+        Itfuncd=interp1d(lambs/NANO,Itd,kind='slinear')
+        Ntd,dN=integrate(Itfuncd,lambo/NANO,lambi/NANO)
+
+        ax.fill_between(lambs/NANO,Itu/Ntu,Itd/Ntd,color='k',alpha=0.2)
+
+        #DECORATION
+        ax.set_yscale('log')
+        ax.set_xlim((10,3000))
+        ymax=max(Itu/Ntu)
+        ax.set_ylim((ymax/100,ymax))
+        ax.set_xlabel("$\lambda$ (nm)",fontsize=14)
+        ax.set_ylabel("Normalized spectra",fontsize=14)
+
+        ax.plot([],[],'b--',label='Primary')
+        ax.plot([],[],'r-.',label='Secondary')
+        ax.plot([],[],'k-',label='Combined')
+        ax.plot([],[],'k-',label='%.1f%% Tolerance'%(atol*100),linewidth=5,alpha=0.3)
+        
+        ax.set_title(r"$M_1$ = %.2f, $M_2$ = %.2f, $P_{\rm bin}$ = %.0f, $e_{\rm bin}$ = %0.1f"%(M1,M2,Pbin,ebin),position=(0.5,1.02))
+        plt.legend(loc='upper right',prop=dict(size=12))
+        plt.xticks(fontsize=14)
+        plt.yticks(fontsize=14)
+        saveFig("figures/BinarySpectrum-M1_%.2f-M2_%.2f-P_%.0f-e_%.1f.png"%(M1,M2,Pbin,ebin),watermark="")
+
+def compareRotationEvolution():
+    DATADIR=FIGDIR+"RotSolar/"
+    C95=loadResults(DATADIR+"C95/")
+    K88=loadResults(DATADIR+"K88/")
+    M12=loadResults(DATADIR+"M12/")
+    
+    fig=plt.figure()
+    ax=fig.add_axes([0.12,0.1,0.8,0.8])
+
+    tC95=C95.star1.rotevol[:,0]
+    PconvC95=C95.star1.rotevol[:,1]/OMEGASUN
+    PradC95=C95.star1.rotevol[:,2]/OMEGASUN
+    ax.plot(tC95,PconvC95,'b-',label=r"Chaboyer et al. (1995): $K_C=%.2e$"%C95.star1.Kc)
+    ax.plot(tC95,PradC95,'b--')
+
+    tK88=K88.star1.rotevol[:,0]
+    PconvK88=K88.star1.rotevol[:,1]/OMEGASUN
+    PradK88=K88.star1.rotevol[:,2]/OMEGASUN
+    ax.plot(tK88,PconvK88,'r-',label=r"Kawaler (1988): $a=%.1f$, $n=%.2f$, $K_W=%.2e$"%(K88.star1.a,K88.star1.n,K88.star1.Kw))
+    ax.plot(tK88,PradK88,'r--')
+
+    tM12=M12.star1.rotevol[:,0]
+    PconvM12=M12.star1.rotevol[:,1]/OMEGASUN
+    PradM12=M12.star1.rotevol[:,2]/OMEGASUN
+    ax.plot(tM12,PconvM12,'g-',label=r"Matt et al. (2012): $K_1=%.2f$"%(M12.star1.K1))
+    ax.plot(tM12,PradM12,'g--')
+
+    #DATA FOR OTHER STARS
+    for star_name in ROTAGE_STARS.keys():
+        if ('Proxima' in star_name) or ('Barnard' in star_name):continue
+        staro=ROTAGE_STARS[star_name]
+        tau=staro["tau"]
+        Prot=staro["Prot"]
+        ax.plot([tau],[2*PI/(Prot*DAY)/OMEGASUN],'o',markersize=10,markeredgecolor='none',color=cm.gray(0.5),zorder=-10)
+        ax.text(tau,2*PI/(Prot*DAY)/OMEGASUN,star_name,transform=offSet(-10,staro["up"]),horizontalalignment="right",color=cm.gray(0.1),zorder=-10,fontsize=10)
+
+    ax.set_xscale("log")
+    ax.set_yscale("log")
+    ax.legend(loc="best",prop=dict(size=11))
+
+    ax.set_xlabel(r"$\tau$ (Gyr)")
+    ax.set_ylabel("$\Omega/\Omega_\odot$")
+
+    ax.set_ylim((0.5,300))
+    
+    tmin,tmax=ax.get_xlim()
+    wmin,wmax=ax.get_ylim()
+    Pmin=1.0*(2*PI/(wmax*OMEGASUN)/DAY)
+    Pmax=1.0*(2*PI/(wmin*OMEGASUN)/DAY)
+    Pvec=np.arange(Pmin,Pmax,1.0)
+    i=-1
+    for P in Pvec:
+        i+=1
+        if P>Pmax:break
+        w=2*PI/(P*DAY)/OMEGASUN
+        ax.axhline(w,xmin=0.98,xmax=1.00,color='k')
+        if (i%5)!=0 or w<0.8:continue
+        ax.text(tmax,w,"%.1f"%P,transform=offSet(5,0),verticalalignment='center',horizontalalignment='left',fontsize=10)
+
+    ax.text(1.07,0.5,r"$P$ (days)",rotation=90,verticalalignment='center',horizontalalignment='center',transform=ax.transAxes)
+
+    #ymin,ymax=ax.get_ylim()
+    #ax.set_xlim((TMIN,TMAX))
+    #ax.set_ylim((0.8,ymax))
+    ax.grid(which='both')
+
+    saveFig("figures/RotSolar.png",watermark="")
+
+def binaryHZPanels():
+
+    from numpy import *
+    #//////////////////////////////////////////////////
+    #FIGURE CREATION
+    #//////////////////////////////////////////////////
+    fig=plt.figure()
+    l=0.1;w=0.42;b=0.1;h=0.8;
+    axT=fig.add_axes([l,b,w,h])
+
+    l+=w
+    axD=fig.add_axes([l,b,w,h])
+    axD.set_yticklabels([])
+
+    #//////////////////////////////////////////////////
+    #CONSTANTS
+    #//////////////////////////////////////////////////
+    stylesingle="--"
+    stylebinary="-"
+    tau=4.56
+
+    #################################################################################
+    #DISPARATE CASE
+    #################################################################################
+
+    #//////////////////////////////////////////////////
+    #PARAMETERS
+    #//////////////////////////////////////////////////
+    model="PARSEC"
+    Z=0.015
+    M1=1.0 #Msun
+
+    pfind,startrack=findTrack(model,Z,M1,verbose=True)
+    trackfunc1=trackFunctions(startrack)
+    g1,Teff1,R1,Ls1=StellarGTRLTrack(Z,M1,tau,trackfunc1)
+    lin1,aHZ1,lout1=HZ(Ls1,Teff1)
+    
+    #//////////////////////////////////////////////////
+    #PROPERTIES
+    #//////////////////////////////////////////////////
+    print "Disparate Primary component:"
+    print "\tMs = %.2f Msun, Ls = %.2e Lsun, Teff = %.1f"%(M1,Ls1,Teff1)
+    print "\tHabitable Zone: %.2f,%.2f,%.2f AU"%(lin1,aHZ1,lout1)
+
+    #M2s=[0.2,0.6,1.0] #Msun
+    M2s=linspace(0.2,1.0,30)
+    M2s=arange(0.2,1.1,0.05)
+
+    #Pbins=[5*DAY,90*DAY] #seconds
+    Pbins=[15*DAY] #seconds
+
+    #//////////////////////////////////////////////////
+    #CALCULATIONS
+    #//////////////////////////////////////////////////
+    linsgs=[];aHZsgs=[];loutsgs=[]
+    arg=[dict(linewidth=2),dict(linewidth=1)]
+    i=0
+    for Pbin in Pbins:
+        linbs=[];aHZbs=[];loutbs=[]
+        linTbs=[];aHZTbs=[];loutTbs=[]
+        acTs=[];acDs=[]
+        Mss=[]
+        for M2 in M2s:
+            pfind,startrack=findTrack(model,Z,M2,verbose=True)
+            trackfunc2=trackFunctions(startrack)
+
+            g2,Teff2,R2,Ls2=StellarGTRLTrack(Z,M2,tau,trackfunc2)
+            linsg,aHZsg,loutsg=HZ(Ls2,Teff2)
+
+            linsgs+=[linsg];aHZsgs+=[(linsg+loutsg)/2];loutsgs+=[loutsg]
+            print "Disparate Secondary component:"
+            print "\tMs = %.2f Msun, Ls = %.2e Lsun, Teff = %.1f"%(M2,Ls2,Teff2)
+            print "\tHZ: %e,%e,%e AU"%(linsg,aHZsg,loutsg)
+            
+            #Distance
+            abin=(Pbin**2*GCONST*((M1+M2)*MSUN)/(2*np.pi**2))**(1./3)
+            abinT=(Pbin**2*GCONST*((M2+M2)*MSUN)/(2*np.pi**2))**(1./3)
+
+            acTs+=[aCritical(1.0,abinT/AU,0.3)]
+            acDs+=[aCritical(M2/M1,abinT/AU,0.3)]
+
+            #Binary effective temperature
+            Teffbin=Teff1
+            TeffbinT=Teff2
+
+            #Disparate Binary HZ limits
+            lin,lout,aHZ=HZbin(M2/M1,Ls1,Ls2,Teffbin,abin/AU,eeq=True)
+            linbs+=[lin];aHZbs+=[aHZ];loutbs+=[lout]
+
+            #Twin Binary HZ limits
+            linT,loutT,aHZT=HZbin(1.0,Ls2,Ls2,TeffbinT,abinT/AU,eeq=True)
+            if linT>0:
+                linTbs+=[linT];aHZTbs+=[aHZT];loutTbs+=[loutT]
+                Mss+=[M2]
+
+            print "Disparate Binary system:"
+            print "\tBinary period: %e days"%(Pbin/DAY)
+            print "\tBinary semimajor axis: %e AU"%(abin/AU)
+            print "\tHZ: %e,%e,%e AU"%(lin,aHZ,lout)
+
+            print "Twin Binary system:"
+            print "\tBinary period: %e days"%(Pbin/DAY)
+            print "\tBinary semimajor axis: %e AU"%(abinT/AU)
+            print "\tHZ: %e,%e,%e AU"%(linT,aHZT,loutT)
+
+            """
+            linT,aHZT,loutT,R1in,R2in,R1out,R2out=HZbin3(1.0,Ls2,Ls2,TeffbinT,abinT,
+                                                         extra=True)
+            print R1in,R2in,R1out,R2out
+            exit(0)
+            """
+
+        axD.plot(linbs,M2s,linestyle=stylebinary,color='g',**arg[i])
+        axD.plot(aHZbs,M2s,linestyle=stylebinary,color='b',**arg[i])
+        axD.plot(loutbs,M2s,linestyle=stylebinary,color='r',**arg[i])
+
+        axT.plot(linTbs,Mss,linestyle=stylebinary,color='g',**arg[i])
+        axT.plot(aHZTbs,Mss,linestyle=stylebinary,color='b',**arg[i])
+        axT.plot(loutTbs,Mss,linestyle=stylebinary,color='r',**arg[i])
+        
+        if i==0:
+            for ax in axD,axT:
+                ax.plot(linsgs,M2s,linestyle=stylesingle,color='g')
+                ax.plot(aHZsgs,M2s,linestyle=stylesingle,color='b')
+                ax.plot(1.05*array(loutsgs),M2s,linestyle=stylesingle,color='r')
+        
+        axT.plot(acTs,M2s,linestyle='-',color='k')
+        axD.plot(acDs,M2s,linestyle='-',color='k')
+        i+=1
+
+    #//////////////////////////////////////////////////
+    #DECORATION
+    #//////////////////////////////////////////////////
+        
+    axT.text(acTs[-1]+0.01,M2s[-1]-0.05,"$a_{\rm crit}(e=0.5)$",fontsize=10,rotation=270)
+    axD.text(acTs[-1]+0.1,M2s[-1]-0.02,"$a_{\rm crit}(e=0.5)$",fontsize=10,rotation=280,
+             rotation_mode='anchor',horizontalalignment='left')
+
+    axT.text(0.9,0.05,r'$P_{\rm bin}$=%.0f days'%(Pbins[0]/DAY),color='k',fontsize=14,
+             horizontalalignment='right',transform=ax.transAxes)
+
+    #axT.plot([0],[0],color='k',label=r'$P_{\rm bin}$=%.1f days'%(Pbins[0]/DAY),**arg[0])
+    #axT.plot([0],[0],color='k',label=r'$P_{\rm bin}$=%.1f days'%(Pbins[1]/DAY),**arg[1])
+
+    axT.set_ylabel("$M_\star$ ($M_\odot$)",fontsize=14)
+    for ax in axD,axT:
+        ax.set_xlabel("a (AU)",fontsize=14)
+        ax.set_ylim((M2s[0],M2s[-1]))
+        #ax.set_xscale('log')
+        #ax.grid()
+
+    axD.axvspan(lin1,lout1,alpha=0.1)
+    axT.set_xticks(axT.get_xticks()[:-1])
+    axD.set_title("Disparate, $M_1=1.0$ $M_\odot$, $M_2=M_\star$",
+                  position=(0.5,1.02))
+    axT.set_title("Twins, $M_1=M_2=M_\star$",
+                  position=(0.5,1.02))
+
+    axT.legend(loc='best')
+
+    axD.grid(which="both")
+    axT.grid(which="both")
+    
+    #//////////////////////////////////////////////////
+    #SAVE FIGURE
+    #//////////////////////////////////////////////////
+    saveFig("figures/BinaryHZ",watermark="")
 
 #plotAllMoIs()
 #compareMoIs()
@@ -2104,4 +2490,7 @@ def acritPlot():
 #massRadiusGas()
 #massRadiusGasContours()
 #dipoleMomentGiants()
-acritPlot()
+#acritPlot()
+#plotBinarySpectrum()
+#ocompareRotationEvolution()
+binaryHZPanels()
