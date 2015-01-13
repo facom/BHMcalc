@@ -8,13 +8,15 @@ $about=<<<C
       $BHMcalc is the result of the fruitful collaboration between the
       group of
       <b>Prof. Paul Mason</b> in
-      the <a href="http://academics.utep.edu/Default.aspx?tabid=18742">University
-      of Texas, El Paso</a> and <b>New Mexico State University</b> and
-      the group of <b>Prof. Jorge I. Zuluaga</b>,
-      the <a href="http://urania.udea.edu.co/facom">Computational
-      Physics and Astrophysics Group</a> of
-      the <a href="http://www.udea.edu.co">University of Antioquia</a>
-      (Medell&iacute;n, Colombia).
+      the <a href="http://academics.utep.edu/Default.aspx?tabid=18742"
+      target="_blank">University of Texas, El Paso</a> and <b>New
+      Mexico State University</b> and the group of <b>Prof. Jorge
+      I. Zuluaga</b>, the <a href="http://urania.udea.edu.co/facom"
+      target="_blank">Computational Physics and Astrophysics Group</a>
+      of the <a href="http://www.udea.edu.co">University of
+      Antioquia</a> (Medell&iacute;n, Colombia).  Other colleagues
+      directly involved are <b>Dr. Pablo Cuartas</b> (FACom/UdeA)
+      and <b>Joni Clark</b> (NMSU).
     </p>
   
     <a name="References"></a>
@@ -63,8 +65,8 @@ $about=<<<C
     <p class="title">Acknowledgements</p>
 
     <p>
-      $BHMcalc is possible thanks to the support and the direct and
-      indirect participation of several institutions and
+      $BHMcalc is made possible thanks to the support and the direct
+      as well as indirect participation of several institutions and
       colleagues.<br/><br/>
 
       Firstly we thank to <b>W. Welsh</b>, <b>N. Haghighapor</b>, <b>G. Torres</b>,
@@ -76,12 +78,12 @@ $about=<<<C
 
       Jorge I. Zuluaga thanks the <b>Harvard-Smithsonian Center for
       Astrophysics</b> for their hospitality during a 5 months stay in
-      the winter 2014-2015 where most of the major improvements of the
-      Calculator were achieved.  Thanks to <b>Prof. Dimitar
+      the fall/winter 2014-2015 where most of the major improvements
+      of the calculator were achieved.  Thanks to <b>Prof. Dimitar
       Sasselov</b> for the invitation.<br/><br/>
 
       The Calculator has been developed under the financial support
-      of: <b>Fulbright Commision, Colombia</b>, the <b>Vicerrectoria
+      of: <b>Fulbright Commission, Colombia</b>, the <b>Vicerrectoria
       de Docencia / Facultad de Ciencias Exactas y Naturales /
       Instituto de Fisica</b> of the University of Antioquia and the
       program of <b>Sostenibilidad/CODI/UdeA</b>.<br/><br/>

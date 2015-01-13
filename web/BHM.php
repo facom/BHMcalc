@@ -142,7 +142,7 @@ $DATETIME=$DATE."-".$TIME;
 //CSS
 //////////////////////////////////////////////////////////////
 if(!file_exists($CSSFILE) or isset($GENCSS)){
-  echo "Generating CSS $CSSFILE...";
+  //echo "Generating CSS $CSSFILE...";
   include_once($DIR."/web/BHMcss.php");
   $fc=fopen($CSSFILE,"w");
   fwrite($fc,$CSS);

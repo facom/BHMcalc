@@ -143,7 +143,7 @@ for t in ts:
     routnr=np.array([loutnr*cos(noutnr*t),loutnr*sin(noutnr*t)])
 
     reeq=np.array([leeq*cos(neeq*t),leeq*sin(neeq*t)])
-
+     
     insol=[]
     for r in rp,reeq,rinwd,routwd,rinnr,routnr:
         #RELATIVE POSITIONS
@@ -178,6 +178,14 @@ pstats=stack(5)
 for i in range(1,12,2):
     fstats+=[statsArray(insolation[:,i])]
     pstats+=[statsArray(insolation[:,i+1])]
+
+###################################################
+#INSOLATION AND PPFD FOR SINGLE PRIMARY
+###################################################
+leeqs=star1.lsun
+dis=(star1.Rins*RSUN/(leeqs*AU))**2
+ihz.fluxs=power1*dis
+ihz.ppfds=photons1*dis
 
 ###################################################
 #CALCULATE BINARY HABITABLE ZONE EVOLUTION
@@ -264,10 +272,12 @@ ini_outnr = "%s"
 
 #FLUX AND PHOTON DENSITY
 insolation=%s
+fluxs=%.17e #W m^-2
+ppfds=%.17e #m^-2 s^-1
 
 #FLUX AND PHOTON DENSITY STATS
 #COLS:mean,min,max,range,st.dev.
-#ROWS:planet,Earth-equivalent,inner(wide),outer(wide),inner(narrow),outer(narrow)
+#ROWS:planet,Earth-equivalent,inner(wide),outer(wide),inner(narrow),outer(narrow),single primary
 fstats=%s
 pstats=%s
 
@@ -284,6 +294,7 @@ shz=%s
      clin,clout,loutmax,
      ini_inwd,ini_outwd,ini_innr,ini_outnr,
      array2str(insolation),
+     ihz.fluxs,ihz.ppfds,
      array2str(fstats.array),
      array2str(pstats.array),
      array2str(hz),

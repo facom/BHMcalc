@@ -2482,6 +2482,240 @@ def binaryHZPanels():
     #//////////////////////////////////////////////////
     saveFig("figures/BinaryHZ",watermark="")
 
+def compareInsolation():
+
+    fig=plt.figure(figsize=(8,8))
+
+    axd=fig.add_axes([0.12,0.08,0.8,0.25])
+    axa=fig.add_axes([0.12,0.35,0.8,0.60])
+
+    DATADIR=FIGDIR+"InsoPPFD/"
+    inso=loadResults(DATADIR)
+    ihz=inso.hz
+    planet=inso.planet
+
+    fac=0.99
+    SOLAR_CONSTANT=ihz.fluxs*fac
+    PPFD_EARTH=ihz.ppfds*fac
+    
+    insolation=ihz.insolation
+    fstats=ihz.fstats
+    pstats=ihz.pstats
+    ts=insolation[:,0]
+    
+    axa.plot(ts/planet.Porb,insolation[:,1]/SOLAR_CONSTANT,
+            color='b',linestyle='-',linewidth=2,
+            label=r"Insolation")
+    axa.plot(ts/planet.Porb,insolation[:,2]/PPFD_EARTH,
+             color='g',linestyle='-',linewidth=2,
+             label=r"PPFD")
+
+    axa.axhline(ihz.fstats[0,0]/SOLAR_CONSTANT,color='b',linestyle='--',
+               linewidth=2)
+
+    axa.axhline(ihz.pstats[0,0]/PPFD_EARTH,color='g',linestyle='--',
+               linewidth=2)
+
+    axd.plot(ts/planet.Porb,insolation[:,2]/PPFD_EARTH-insolation[:,1]/SOLAR_CONSTANT,
+             color='g',linewidth=2)
+
+    axa.plot([],[],'k--',label='Average')
+
+    for ax in axa,axd:
+        ax.set_xlim((0.0,1.0))
+
+    axd.set_xlabel('orbital phase',fontsize=12)
+    axa.set_ylabel('Insolation, PPFD (PEL)',fontsize=12)
+
+    axd.set_yticks(axd.get_yticks()[:-1])
+    axa.legend(loc='best',prop=dict(size=12))
+
+    axd.set_ylabel(r"$\Delta {\rm PPFD}$")
+    axa.set_xticklabels([])
+
+    saveFig("figures/CompareInsolation.png",watermark="")
+
+def stellarActivity():
+    DATADIR=FIGDIR+"CompSolar/"
+    nominal=loadResults(DATADIR+"nominal/")
+    star=nominal.star1
+    
+    Ni=5
+    fig=plt.figure(figsize=(8,4*(Ni-1)))
+    b=0.05
+    l=0.1;dh=0.02;h=(1.0-2*b-(Ni-1)*dh)/Ni;w=1.0-1.5*l
+    
+    ax_R=fig.add_axes([l,b,w,h])
+    b+=h+dh
+    ax_f=fig.add_axes([l,b,w,h])
+    b+=h+dh
+    ax_B=fig.add_axes([l,b,w,h])
+    b+=h+dh
+    ax_L=fig.add_axes([l,b,w,h])
+    b+=h+dh
+    ax_ML=fig.add_axes([l,b,w,h])
+    
+    ts=star.activity[:,0]
+    f=star.activity[:,2]
+    B=star.activity[:,4]
+    R=star.activity[:,6]
+    Ml=star.activity[:,7]
+    L=star.activity[:,13]/(LXSUN/1E7)
+
+    axs=[ax_R,ax_f,ax_B,ax_ML,ax_L]
+    
+    args=dict(color='b')
+
+    ax_R.plot(ts,R,**args)
+    ax_R.set_ylabel("Rossby Number")
+    ax_R.axhline(0.13,linestyle='--',color='r',linewidth=2,label='Saturation Level')
+    ax_R.text(4.56,ROSUN,r"$\odot$",
+               horizontalalignment='center',verticalalignment='center',
+               fontsize=24)
+    
+    ax_f.plot(ts,f,**args)
+    ax_f.set_ylabel("Filling factor, $f_\star$")
+    ax_f.errorbar(4.56,5E-3,yerr=4E-3,color='k',linewidth=2)
+
+    ax_B.plot(ts,B,**args)
+    ax_B.set_ylabel("Photospheric field, $B_\star$")
+    ax_B.set_ylim((1e3,2.5e3))
+    ax_B.text(4.56,1400,r"$\odot$",
+               horizontalalignment='center',verticalalignment='center',
+               fontsize=24)
+
+    ax_ML.plot(ts,Ml,**args)
+    ax_ML.set_ylabel("Mass-loss, $\dot M$")
+    ax_ML.text(4.56,MSTSUN*YEAR/MSUN,r"$\odot$",
+               horizontalalignment='center',verticalalignment='center',
+               fontsize=24)
+
+    ax_L.plot(ts,L,**args)
+    ax_L.set_ylabel(r"$L_{\rm X}/L_{\rm X,\odot}$")
+    ax_L.text(4.56,1.0,r"$\odot$",
+               horizontalalignment='center',verticalalignment='center',
+               fontsize=24)
+
+    ax_R.legend(loc='best',prop=dict(size=12))
+    for ax in axs:
+        ax.set_xscale("log")
+        ax.set_yscale("log")
+        ax.set_xlim((TAU_ZAMS,6))
+        ax.grid(which='both')
+
+    axs[0].set_xlabel(r"$\tau$ (Gyr)")
+
+    for ax in axs[1:]:
+        ax.set_xticklabels([])
+
+    saveFig("figures/StellarActivity.png",watermark="")
+
+def plotRX():
+    
+    ############################################################
+    #READ DATA
+    ############################################################
+
+    #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    #SOLAR NOMINAL
+    #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    DATADIR=FIGDIR+"CompSolar/"
+    nominal=loadResults(DATADIR+"nominal/")
+    star=nominal.star1
+
+    #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    #ROTXRAYCAT
+    #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    lines=open("BHM/data/Stars/ROTXRAYCAT.dat")
+    n=0
+    Xcat=stack(6)
+    for line in lines:
+        if "#" in line:continue
+        entry=line.strip("")
+        fields=entry.split(",")
+        M=float(fields[8])
+        logRX=float(fields[5])
+        Prot=float(fields[6])
+        X=float(fields[7])
+        if X<=3.5:logtauc=0.73+0.22*X
+        else:logtauc=-2.16+1.50*X-0.13*X**2
+        logRo=np.log10(Prot)-logtauc
+        if n==0:ROSUN=10**logRo
+        Xcat+=[logRX,Prot,X,logtauc,logRo,M]
+        n+=1
+    Xcat=Xcat.array
+    print "Objects read: ",n
+
+    ############################################################
+    #PLOT RX VS ROSSBY
+    ############################################################
+    #RX VS. ROSSBY
+    fig=plt.figure()
+    ax=fig.add_axes([0.12,0.12,0.8,0.8])
+
+    Ms=Xcat[:,5]
+    Ros=10**Xcat[:,4]
+    RXs=10**Xcat[:,0]
+
+    msize=4
+    style=dict(markersize=4,markeredgecolor='none')
+
+    ax.plot([],[],'ok',markersize=2,label=r"${\rm\tt ROTXRAYCAT}$ (Wright et al., 2011)")
+    
+    Mmin=0.1;Mmax=0.4
+    cond=(Ms>=Mmin)*(Ms<Mmax)
+    nstar=len(Ms[cond])
+    print "Plotting %d stars with %.2f < M < %.2f..."%(nstar,Mmin,Mmax)
+    ax.plot(Ros[cond],RXs[cond],'or',label=r"$M\in[%.1f,%.2f)$"%(Mmin,Mmax),**style)
+
+    Mmin=0.4;Mmax=0.8
+    cond=(Ms>=Mmin)*(Ms<Mmax)
+    nstar=len(Ms[cond])
+    print "Plotting %d stars with %.2f < M < %.2f..."%(nstar,Mmin,Mmax)
+    ax.plot(Ros[cond],RXs[cond],'^g',label=r"$M\in[%.1f,%.2f)$"%(Mmin,Mmax),**style)
+
+    Mmin=0.8;Mmax=1.2
+    cond=(Ms>=Mmin)*(Ms<Mmax)
+    nstar=len(Ms[cond])
+    print "Plotting %d stars with %.2f < M < %.2f..."%(nstar,Mmin,Mmax)
+    ax.plot(Ros[cond],RXs[cond],'sb',label=r"$M\in[%.1f,%.2f)$"%(Mmin,Mmax),**style)
+
+    Romin=Ros.min()
+    Romax=Ros.max()
+    RXmin=RXs.min()
+    RXmax=RXs.max()
+
+    Ros=np.logspace(np.log10(Romin),np.log10(Romax))
+
+    tRXs=[starRX(Ro) for Ro in Ros]
+    tRXs1=[starRX(Ro,regime='high') for Ro in Ros]
+    tRXs2=[starRX(Ro,regime='low') for Ro in Ros]
+    ax.fill_between(Ros,tRXs1,tRXs2,color='b',alpha=0.3)
+    ax.plot([],[],'b-',linewidth=10,alpha=0.3,label="Empirical Fit")
+
+    ax.text(ROSUN,(LXSUN/1E7/LSUN),r"$\odot$",
+            horizontalalignment='center',verticalalignment='center',
+            fontsize=24)
+
+    ts=star.activity[:,0]
+    R=star.activity[:,6]
+    LX=star.activity[:,13]
+    L=np.interp(ts,star.evotrack[:,0],star.evotrack[:,4])*LSUN
+    ax.plot(R,LX/L,'k-',markersize=2,markeredgecolor='none',label="Solar model")
+
+    ax.set_xscale("log")
+    ax.set_yscale("log")
+    ax.set_xlim((Romin,Romax))
+    ax.set_ylim((RXmin,RXmax))
+
+    ax.legend(loc='lower left',prop=dict(size=12))
+
+    ax.set_xlabel(r"${\rm Ro}$",fontsize=14)
+    ax.set_ylabel(r"$R_{\rm X}$",fontsize=14)
+
+    saveFig("figures/RX.png",watermark="")
+
+
 #plotAllMoIs()
 #compareMoIs()
 #evolutionaryTracks()
@@ -2493,4 +2727,7 @@ def binaryHZPanels():
 #acritPlot()
 #plotBinarySpectrum()
 #ocompareRotationEvolution()
-binaryHZPanels()
+#binaryHZPanels()
+#compareInsolation()
+#stellarActivity()
+plotRX()

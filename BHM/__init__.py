@@ -185,6 +185,8 @@ YSUN=0.275556
 #SOLAR LXUV
 LXSUN=10**27.35 #ergs s^-1 Mamajek 2011
 RXSUN=LXSUN/1E7/LSUN
+#ROSSBY (Wright et al., 2011, Catalogue: http://heasarc.gsfc.nasa.gov/W3Browse/all/rotxraycat.html)
+ROSUN=2.182
 LEUVSUN=26.7*1E-3*1E7/1E4/5.3*4*np.pi*(AU*1E2)**2 #Tian2008, Pag. 14
 LXUVSUN=LXSUN+LEUVSUN
 #RATE OF MASS LOSS FOR THE SUN
