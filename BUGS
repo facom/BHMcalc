@@ -13,8 +13,12 @@
 
 Knwon bugs:
 
-- Period is not showing in the Niche.
+- Period is not showing when set to 0.
 
-- Check why summary is not updating.
+- Sometimes summary is not updating with the results in the rest of tabs.
 
-- Consistency among the lines in both the instantaneous and continuous
+- There is no consistency among the lines in both the instantaneous
+  and continuous HZ diagrams.
+
+
+

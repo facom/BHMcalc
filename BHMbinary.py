@@ -76,16 +76,26 @@ binary.hash=binary_hash
 ###################################################
 #CALCULATE BASIC PROPERTIES OF BINARY
 ###################################################
-#ORBITAL PARAMETERS
-if binary.Pbin>0:
-    binary.nbin=2*np.pi/binary.Pbin
+if binary.abin==0 and binary.Pbin>0:
     binary.abin=aKepler(binary.Pbin,star1.M,star2.M)
-elif binary.abin>0:
+
+if binary.Pbin==0 and binary.abin>0:
     binary.Pbin=PKepler(binary.abin,star1.M,star2.M)
-    binary.nbin=2*np.pi/binary.Pbin
-else:
-    PRINTERR("Stars are in contact: Pbin = %e, abin = %e"%(binary.Pbin,binary.abin))
-    errorCode("PARAMETER_ERROR")
+
+if binary.Pbin>0 and binary.abin>0:
+    Pbint=PKepler(binary.abin,star1.M,star2.M)
+    abint=aKepler(binary.Pbin,star1.M,star2.M)
+    if abs(Pbint-binary.Pbin)/binary.Pbin>1E-2 or abs(abint-binary.abin)/binary.abin>1E-2:
+        PRINTERR("You have provided simultaneously a semimajor axis (abin=%e) and period (Pbin=%e) but they are not compatible.  The right pair will be (a,P)=(%e,%e) or (a,P)=(%e,%e)."%(binary.abin,
+                                                                                                                                                                                            binary.Pbin,
+                                                                                                                                                                                            binary.abin,
+                                                                                                                                                                                            Pbint,
+                                                                                                                                                                                            abint,
+                                                                                                                                                                                            binary.Pbin))
+        errorCode("PARAMETER_ERROR")
+
+binary.nbin=2*np.pi/binary.Pbin
+
 
 #OTHER PARAMETERS
 binary.M=star1.M+star2.M

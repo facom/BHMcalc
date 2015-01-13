@@ -262,22 +262,36 @@ else:
 if len(planet.str_PlanetID)>0:pltitle="%s: "%planet.str_PlanetID.replace("'","")
 else:pltitle=""
 
-planet.orbit=r"%s$a_{\\rm orb}$=%.2f AU, $e_{\\rm orb}$=%.2f, $P_{\\rm orb}$=%.2f days, $\omega_{\\rm orb}=%.1f^{\\rm o}$"%(pltitle,planet.aorb,planet.eorb,planet.Porb,planet.worb)
-
 ###################################################
 #PLANETARY ORBIT
 ###################################################
 #ORBITAL PARAMETERS
-if planet.Porb>0:
-    planet.norb=2*np.pi/planet.Porb
+if planet.aorb==0 and planet.Porb>0:
     planet.aorb=aKepler(planet.Porb,planet.M*MEARTH/MSUN,planet.Morb)
-elif planet.aorb>0:
+
+if planet.Porb==0 and planet.aorb>0:
     planet.Porb=PKepler(planet.aorb,planet.M*MEARTH/MSUN,planet.Morb)
-    planet.norb=2*np.pi/planet.Porb
-else:
+
+if planet.Porb>0 and planet.aorb>0:
+    Porbt=PKepler(planet.aorb,planet.M*MEARTH/MSUN,planet.Morb)
+    aorbt=aKepler(planet.Porb,planet.M*MEARTH/MSUN,planet.Morb)
+    if abs(Porbt-planet.Porb)/planet.Porb>1E-2 or abs(aorbt-planet.aorb)/planet.aorb>1E-2:
+        PRINTERR("You have provided simultaneously a semimajor axis (aorb=%e) and period (Porb=%e) but they are not compatible.  The right pair will be (a,P)=(%e,%e) or (a,P)=(%e,%e)."%(planet.aorb,
+                                                                                                                                                                                            planet.Porb,
+                                                                                                                                                                                            planet.aorb,
+                                                                                                                                                                                            Porbt,
+                                                                                                                                                                                            aorbt,
+                                                                                                                                                                                            planet.Porb))
+        errorCode("PARAMETER_ERROR")
+
+if planet.Porb==0 and planet.aorb==0:
     PRINTERR("Planet is inside star: Porb = %e, aorb = %e"%(planet.Porb,
                                                              planet.aorb))
     errorCode("PARAMETER_ERROR")
+
+
+planet.norb=2*np.pi/planet.Porb
+planet.orbit=r"%s$a_{\\rm orb}$=%.2f AU, $e_{\\rm orb}$=%.2f, $P_{\\rm orb}$=%.2f days, $\omega_{\\rm orb}=%.1f^{\\rm o}$"%(pltitle,planet.aorb,planet.eorb,planet.Porb,planet.worb)
 
 ###################################################
 #EPHEMERIS
