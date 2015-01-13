@@ -1,0 +1,20 @@
+################################################################################
+  ____  _    _ __  __           _      
+ |  _ \| |  | |  \/  |         | |     
+ | |_) | |__| | \  / | ___ __ _| | ___ 
+ |  _ <|  __  | |\/| |/ __/ _` | |/ __|
+ | |_) | |  | | |  | | (_| (_| | | (__ 
+ |____/|_|  |_|_|  |_|\___\__,_|_|\___|
+
+ The Binary Habitability Mechanism Calculator
+ The Playground of Planetary Astronomers
+ 2014 [)] Jorge Zuluaga - Viva la BHM!
+################################################################################
+
+Knwon bugs:
+
+- Period is not showing in the Niche.
+
+- Check why summary is not updating.
+
+- Consistency among the lines in both the instantaneous and continuous
