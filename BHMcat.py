@@ -25,6 +25,7 @@ Usage=\
 Usage:
    python %s <cat_dir> [<recalculate>] [<sort_field>] [<sort_order>] 
                        [<display_level>] [<filter>] [<catalogue_id>] [<output>]
+                       [<environment>]
 
    <cat_dir>: location of the catalogue
 
@@ -42,14 +43,24 @@ Usage:
 
    <output>: kind of output (plain, html)
 
+   <environment>: type of environment where the script is ran (console,web)
+
+Example:
+
+   $ python BHMcat.py tmp/ 1 No 0 2 -- -- html console
 
 """%argv[0]
 
-catdir,recalculate,sortfield,sortorder,displaylevel,catfilter,catid,output=\
+catdir,recalculate,sortfield,sortorder,displaylevel,\
+catfilter,catid,output,environment=\
     readArgs(argv,
-             ["str","int","str","int","int","str","str","str"],
-             [".","1","BHMCatS","0","1","binary_Pbin>0","","html"],
+             ["str","int","str","int","int","str","str","str","str"],
+             [".","1","BHMCatS","0","1","binary_Pbin>0","","html","web"],
              Usage=Usage)
+
+print "catdir,recalculate,sortfield,sortorder,displaylevel,\
+catfilter,catid,output,environment:",catdir,recalculate,sortfield,sortorder,displaylevel,\
+catfilter,catid,output,environment
 
 ###################################################
 #CATALOGUE LOCATION
@@ -330,6 +341,7 @@ table+="</tr>\n"
 i=0
 PRINTOUT("Generating table sorting by field '%s'..."%sortfield)
 fk=open("%s/BHMcat.keys"%catdir,"w")
+if environment=="console":fc=open("%s/BHMrun.sh"%catdir,"w")
 for system in sortCatalogue(systems,sortfield,reverse=sortorder):
     #========================================
     #BAN POTENTIAL SYSTEMS: OTHER CATALOGUES
@@ -406,11 +418,17 @@ for system in sortCatalogue(systems,sortfield,reverse=sortorder):
                                                                                                           qstring,
                                                                                                           plid))
 
+        syscmd="""#GENERATING PLANET %s
+python BHMrun.py BHMinteraction.py %s \"LOADCONFIG&Modes=Interaction&%s\" 0 2
+
+"""%(planet["planet_str_PlanetID"],catdir,qstring)
         exec("cond=%s"%catfilter)
         if cond:
             table+=row
+            if environment=="console":fc.write("%s"%syscmd)
             i+=1
 
+if environment=="console":fc.close()
 fk.close()
 table+="</table>"
 table+="<p>Number of objects: <b>%d</b></p>"%i
