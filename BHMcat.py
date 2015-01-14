@@ -423,8 +423,8 @@ for system in sortCatalogue(systems,sortfield,reverse=sortorder):
             querystr=querystr.replace(" ","%20")
             querystr=querystr.replace("'","%27")
             str_sys=MD5STR(querystr)
-            System("echo '%s' > /tmp/qstr2"%querystr)
-            System("echo '%s' > /tmp/md5str2"%str_sys)
+            System("echo '%s' > /tmp/qstr2-%s"%(querystr,planet["planet_str_PlanetID"]))
+            System("echo '%s' > /tmp/md5str2-%s"%(str_sys,planet["planet_str_PlanetID"]))
             syscmd="""#GENERATING PLANET %s
 python BHMrun.py BHMinteraction.py %s \"%s\" 0 2
 

@@ -32,7 +32,7 @@ if(isset($LOADCONFIG)){
   //echo "Session directory: $SESSDIR...";
   $stdout="BHMrun-load-$SESSID";
   $stderr="BHMrun-load-$SESSID";
-  //shell_exec("echo '$QUERY_STRING' > /tmp/qstr");
+  shell_exec("echo '$QUERY_STRING' > /tmp/qstr");
   $cmd="$PYTHONCMD BHMrun.py - $SESSDIR \"$QUERY_STRING\"";
   $out=shell_exec($cmd." 2> $TMPDIR/$stderr |tee $TMPDIR/$stdout");
   $header=mainHeader("1","?Modes=$Modes");
