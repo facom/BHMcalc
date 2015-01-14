@@ -524,7 +524,27 @@ fh.write("""\
 <head>
   <link rel="stylesheet" type="text/css" href="%s/web/BHM.css">
 </head>
+
 <h2>Rotational Evolution in Binary</h2>
+
+<h3>Plots</h3>
+
+<h3>Rotation Evolution</h3>
+<table>
+  <tr><td colspan=2>
+  <a target="_blank" href="%s/rot-evolution.png">
+    <img width=100%% src="%s/rot-evolution.png">
+  </a>
+  <br/>
+  <div class="caption">
+  <i>Rotational Evolution in binary</i>
+  (
+  <a target="_blank" href="%s/rot-evolution.png.txt">data</a>|
+  <a target="_blank" href="%s/BHMreplot.php?dir=%s&plot=rot-evolution.py">replot</a>
+  )
+  </td></tr>
+</table>
+
 <center>
   <a target="_blank" href="%s/rot-evolution.png">
     <img width=60%% src="%s/rot-evolution.png">
@@ -536,11 +556,13 @@ fh.write("""\
   <a target="_blank" href="%s/BHMreplot.php?dir=%s&plot=rot-evolution.py">replot</a>
   )
 </center>
+
 <h3>Input Parameters</h3>
 <table>
   <tr><td>&tau;<sub>int</sub> (Myr):</td><td>%.3f</td></tr>
   <tr><td>f<sub>diss</sub>:</td><td>%.3f</td></tr>
 </table>
+
 <h3>Rotation Evolution</h3>
 <table>
   <tr><td colspan=2>

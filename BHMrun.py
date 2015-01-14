@@ -57,7 +57,10 @@ if sleep_before>0:
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 #CHECK IF CONFIG STRING HAS BEEN PROVIDED
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+#qsignal SIGNAL THE SYSTEM TO FLAG THE OBJECT AFTER BEING EXECUTED FROM LOADCONFIG
+qsignal=False
 if 'LOADCONFIG' in module_conf:
+    qsignal=True
     PRINTOUT("Parsing query string...")
     conf=module_conf
     fields=conf.split("&")
@@ -183,6 +186,7 @@ for depmod in OBJECT_PIPE[module_name]:
         if qover:PRINTOUT("Forcing %s"%depmod_type);
         else:PRINTOUT("Running %s (%s)"%(depmod_type,depmod_hash));
         System("python BHMrun.py BHM%s.py %s %s 0 %d"%(depmod_type,sys_dir,depmod_conf,1),out=False)
+        if qsignal:System("echo -n > %s/.loadconfig"%depmod_dir)
     else:PRINTOUT("%s %s ready."%(depmod_type,depmod_hash));
     
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -198,6 +202,7 @@ if module_stg<10 or qover>=1:
     System("touch %s/.block"%module_dir)
     System("python BHM%s.py %s %s %d"%(module_type,sys_dir,module_conf,qover),out=False)
     System("rm %s/.block"%module_dir)
+    if qsignal:System("echo -n > %s/.loadconfig"%module_dir)
     stage=System("cat %s/.stage"%module_dir,out=True)
     print "Stage:",stage
     if int(stage)<10:

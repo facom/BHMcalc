@@ -14,8 +14,11 @@
 # Web Interface
 ###################################################
 */
-//$QMAINTAINANCE="block";
-$QMAINTAINANCE="none";
+if(file_exists("./.maintainance")){
+    $QMAINTAINANCE="block";
+}else{
+    $QMAINTAINANCE="none";
+}
 include_once("web/BHM.php");
 ?>
 <?PHP
