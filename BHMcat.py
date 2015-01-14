@@ -381,7 +381,7 @@ for system in sortCatalogue(systems,sortfield,reverse=sortorder):
                 if int(prior)>displaylevel:continue
                 row+="<td class='field_cat pri%s'>%s</td>"%(prior,value)
                
-        for key in system["PlanetsModel"][planetcat].keys():
+        for key in sorted(system["PlanetsModel"][planetcat].keys()):
             value=system["PlanetsModel"][planetcat][key]
             qstring+="%s=%s&"%(key,value)
 
