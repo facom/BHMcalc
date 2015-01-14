@@ -124,6 +124,23 @@ rps=interpArray(tp,planephem[:,1:3])
 dt=0.5 #DAYS
 ts=np.arange(0.0,1.5*planet.Porb,dt)
 
+"""
+insolation:
+0:t
+1:inso.@rp
+2:ppfd.@rp
+3:inso.@req
+4:ppfd.@req
+5:inso.@rinwd
+6:ppfd.@rinwd
+7:inso.@routwd
+8:ppfd.@routwd
+9:inso.@rinnr
+10:ppfd.@rinnr
+11:inso.@routnr
+12:ppfd.@routnr
+"""
+
 insolation=stack(12)
 for t in ts:
     #TIMES
@@ -443,58 +460,47 @@ loadConf("%s"+"hz.conf")+\
 loadConf("%s"+"hz.data")
 
 fig=plt.figure(figsize=(8,8))
-axd=fig.add_axes([0.12,0.1,0.8,0.20])
-ax=fig.add_axes([0.12,0.32,0.8,0.60])
+axi=fig.add_axes([0.12,0.10,0.8,0.40])
+axp=fig.add_axes([0.12,0.52,0.8,0.40])
 
 insolation=ihz.insolation
 fstats=ihz.fstats
 pstats=ihz.pstats
 ts=insolation[:,0]
 
-sSOLAR_CONSTANT=ihz.fluxs
-sPPFD_EARTH=ihz.ppfds
-
 #PLANET
-ax.axhline(ihz.fstats[0,0]/sSOLAR_CONSTANT,color='b',linestyle=':',linewidth=2)
-ax.axhline(ihz.pstats[0,0]/sPPFD_EARTH,color='g',linestyle=':',linewidth=2)
-ax.plot(ts/planet.Porb,insolation[:,1]/sSOLAR_CONSTANT,
-color='b',linestyle='-',linewidth=2)
-ax.plot(ts/planet.Porb,insolation[:,2]/sPPFD_EARTH,
-color='g',linestyle='-',linewidth=1)
+axi.axhline(ihz.fstats[0,0]/SOLAR_CONSTANT,color='b',linestyle=':',linewidth=2,label='Average')
+axp.axhline(ihz.pstats[0,0]/PPFD_EARTH,color='r',linestyle=':',linewidth=2,label='Average')
 
-#RANGE HZ INSOLATION
-ax.fill_between(ts/planet.Porb,
-insolation[:,5]/sSOLAR_CONSTANT,
-insolation[:,7]/sSOLAR_CONSTANT,
-color='k',linestyle='-',linewidth=1,alpha=0.2)
+axi.plot(ts/planet.Porb,insolation[:,1]/SOLAR_CONSTANT,color='b',linestyle='-',linewidth=2,label='Instantaneous')
+axp.plot(ts/planet.Porb,insolation[:,2]/PPFD_EARTH,color='r',linestyle='-',linewidth=1,label='Instantaneous')
 
-#EARTH PHOTON LEVEL
-ax.axhline(PPFD_EARTH/sPPFD_EARTH,color='k',linestyle='-',linewidth=2,alpha=0.3,zorder=-2)
-ax.axhline(1.0,color='k',linestyle='--',linewidth=2,alpha=0.5,zorder=-2)
+#RANGE HZ 
+axi.fill_between(ts/planet.Porb,insolation[:,5]/SOLAR_CONSTANT,insolation[:,7]/SOLAR_CONSTANT,
+color='g',linestyle='-',linewidth=1,alpha=0.3)
 
-#DELTA PPFD
-PPFD=insolation[:,2]/sPPFD_EARTH
-PPFDm=PPFD.mean()
-INSO=insolation[:,1]/sSOLAR_CONSTANT
-
-axd.plot(ts/planet.Porb,(PPFD-INSO)/PPFDm*100,'g-')
+axp.fill_between(ts/planet.Porb,insolation[:,6]/PPFD_EARTH,insolation[:,8]/PPFD_EARTH,
+color='g',linestyle='-',linewidth=1,alpha=0.3)
 
 #LABELS
-ax.plot([],[],"b-",label="Insolation")
-ax.plot([],[],"g-",label="PPFD")
-ax.plot([],[],"k-",alpha=0.3,label="Earth PPFD")
 
-ax.set_title(binary.title,position=(0.5,1.02),fontsize=11)
-ax.legend(loc='best',prop=dict(size=10))
-for axt in ax,axd:
-    axt.grid()
-    axt.set_xlim((0.0,1.0))
+axp.set_title(binary.title,position=(0.5,1.02),fontsize=11)
 
-ax.set_yticks(ax.get_yticks()[1:])
-ax.set_xticklabels([])
-axd.set_xlabel('orbital phase',fontsize=12)
-ax.set_ylabel('Normalized Insolation and PPFD',fontsize=12)
-axd.set_ylabel(r'$\\Delta{\\rm PPFD}/{\\rm PPFD}$ (%%)',fontsize=12)
+for ax in axi,axp:
+    ax.plot([],[],"g-",linewidth=10,alpha=0.3,label="BHZ")
+    ax.grid()
+    ax.set_xlim((0.0,1.0))
+    ax.legend(loc='best',prop=dict(size=10))
+
+imin,imax=axi.get_ylim()
+axp.set_ylim((imin,imax))
+
+axp.set_yticks(ax.get_yticks()[1:])
+axp.set_xticklabels([])
+
+axi.set_xlabel('orbital phase',fontsize=12)
+axi.set_ylabel('Insolation (PEL)',fontsize=12)
+axp.set_ylabel(r'PPFD (PEL)',fontsize=12)
 """%(binary_dir,binary_dir,
      planet_dir,planet_dir,
      ihz_dir,ihz_dir
