@@ -418,10 +418,18 @@ for system in sortCatalogue(systems,sortfield,reverse=sortorder):
                                                                                                           qstring,
                                                                                                           plid))
 
-        syscmd="""#GENERATING PLANET %s
-python BHMrun.py BHMinteraction.py %s \"LOADCONFIG&Modes=Interaction&%s\" 0 2
+        if environment=="console":
+            querystr="Modes=Interactions&%s"%qstring
+            querystr=querystr.replace(" ","%20")
+            querystr=querystr.replace("'","%27")
+            str_sys=MD5STR(querystr)
+            System("echo '%s' > /tmp/qstr2"%querystr)
+            System("echo '%s' > /tmp/md5str2"%str_sys)
+            syscmd="""#GENERATING PLANET %s
+python BHMrun.py BHMinteraction.py %s \"%s\" 0 2
 
-"""%(planet["planet_str_PlanetID"],catdir,qstring)
+"""%(planet["planet_str_PlanetID"],catdir,querystr)
+
         exec("cond=%s"%catfilter)
         if cond:
             table+=row

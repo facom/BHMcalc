@@ -62,7 +62,7 @@ if 'LOADCONFIG' in module_conf:
     conf=module_conf
     fields=conf.split("&")
     sys_str=MD5STR(conf)
-
+    System("echo '%s %s' > /tmp/md5str"%(conf,sys_str))
     #LOAD DATA IN QSTRING INTO DICTIONARY
     data=dict()
     PRINTOUT("Loading variables into dictionary...")
