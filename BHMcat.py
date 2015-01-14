@@ -433,7 +433,8 @@ python BHMrun.py BHMinteraction.py %s \"%s\" 0 2
         exec("cond=%s"%catfilter)
         if cond:
             table+=row
-            if environment=="console":fc.write("%s"%syscmd)
+            if environment=="console":
+                fc.write("%s"%syscmd)
             i+=1
 
 if environment=="console":fc.close()
