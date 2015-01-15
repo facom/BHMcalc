@@ -1626,32 +1626,6 @@ $tabs.=<<<F
 	      </tr>
 	      <!-- ---------------------------------------- -->
 	      <tr>
-		<td class="name">Minimum planetary mass for Mass-loss scaling</td>
-		<td class="field">
-		  <input type="text" name="interaction_Mmin" value="$interaction_Mmin">
-		  M<sub>Earth</sub>
-		</td>
-	      </tr>
-	      <tr>
-		<td class="help" colspan=2>
-		  Earth's atmosphere, &mu;<sub>atm</sub>=44 g/mol
-		</td>
-	      </tr>
-	      <!-- ---------------------------------------- -->
-	      <tr>
-		<td class="name">Maximum planetary mass for Mass-loss scaling</td>
-		<td class="field">
-		  <input type="text" name="interaction_Mmax" value="$interaction_Mmax">
-		  M<sub>Earth</sub>
-		</td>
-	      </tr>
-	      <tr>
-		<td class="help" colspan=2>
-		  Earth atmosphere, &mu;<sub>atm</sub>=44 g/mol
-		</td>
-	      </tr>
-	      <!-- ---------------------------------------- -->
-	      <tr>
 		<td class="name" valign="top">
 		  <a class="activelink" 
 		     href="JavaScript:loadAjax('BHMutil.php?ACTION=SaveObject&ObjType=Interaction&NewId='+$('#saveobject_int').val(),'#saveobjectdisp_int');">
