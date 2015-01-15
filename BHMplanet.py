@@ -538,9 +538,12 @@ ax.set_yticklabels([])
 ###################################################
 fh=open(planet_dir+"planet.html","w")
 fh.write("""\
+<!--VERSION:%s-->
+<html>
 <head>
   <link rel="stylesheet" type="text/css" href="%s/web/BHM.css">
 </head>
+<body>
 <h2>Properties of Planet %s</h2>
 
 <h3>Plots</h3>
@@ -653,7 +656,10 @@ fh.write("""\
   <tr><td>a (AU):</td><td>%.2f</td></tr>
   <tr><td>n (rad/day):</td><td>%.2f</td></tr>
 </table>
-"""%(WEB_DIR,
+</body>
+</html>
+"""%(VERSION,
+     WEB_DIR,
      planet.str_PlanetID,
      planet_webdir,planet_webdir,planet_webdir,WEB_DIR,planet_webdir,
      planet_webdir,planet_webdir,planet_webdir,WEB_DIR,planet_webdir,

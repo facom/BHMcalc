@@ -83,6 +83,12 @@ pull:
 	@git reset --hard HEAD	
 	@git pull origin $(BRANCH)
 
+catalogue:
+	@echo "Regenerating BHM catalogue..."
+	@python BHMcat.py tmp/ 1 No 0 2 -- -- html console
+	@cp tmp/BHMcat.* web/template/ 
+	@cp tmp/BHMcat.* sys/template/
+
 seedtemplate:
 	@python BHMrun.py BHMinteraction.py sys/template interaction.conf 
 	@make permissions

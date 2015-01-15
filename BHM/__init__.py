@@ -519,3 +519,4 @@ WEB_DIR=PWD
 for web_dir in WEB_COMMON:
     WEB_DIR=WEB_DIR.replace(web_dir,"")+"/"
 WEB_DIR=WEB_DIR.strip("/")
+VERSION=System("cat VERSION",out=True)

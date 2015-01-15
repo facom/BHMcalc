@@ -159,7 +159,7 @@ for star in stars:
             pyBoreas(M,R,L,Prot,star.FeH)
         
         #X-RAY EMMISION
-        RX=starRX(Rossby)
+        RX=starRX(Rossby,regime='custom',Rosat=star.Rosat,logRXsat=star.logRXsat,beta=star.beta)
         LX=L*RX*LSUN
         LXUV=starLXEUV(LX)
         
@@ -174,6 +174,38 @@ for star in stars:
     i+=1
 
 rot.taumaxrot=min(star1.binactivity[-1,0],star2.binactivity[-1,0])
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+#INSTANTANEOUS STELLAR PROPERTIES
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+PRINTOUT("Calculating instantaneous properties...")
+i=0
+for star in stars:
+    tsrot,rotation=interpMatrix(star.binrotevol)
+    tsact,activity=interpMatrix(star.binactivity)
+
+    star.bomegaconv=rotation[1](star.tau)
+    star.bomegarad=rotation[2](star.tau)
+
+    star.bPconv=2*PI/star.bomegaconv/DAY
+    star.bPrad=2*PI/star.bomegarad/DAY
+    star.bvsurf=2*PI*star.Rins*RSUN/1E3*star.bomegaconv
+    star.bfstar=activity[2](star.tau)
+    star.bBstar=star.bfstar*activity[4](star.tau)
+    star.bRo=activity[6](star.tau)
+    star.bMdot=activity[7](star.tau)
+    star.bRX=activity[11](star.tau)
+    star.bLX=activity[12](star.tau)
+    star.bLXUV=activity[13](star.tau)
+
+    if qtwins:break
+    i+=1
+
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+#INSTANTANEOUS BINARY PROPERTIES
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+binary.LX=star1.bLX+star2.bLX
+binary.LXUV=star1.bLXUV+star2.bLXUV
+binary.Mdot=star1.bMdot+star2.bMdot
 
 ###################################################
 #STORE ROTATIONAL EVOLUTION INFORMATION
@@ -200,6 +232,41 @@ star2_acceleration=%s
 #MASS-LOSS IN BINARY
 star1_binactivity=%s
 star2_binactivity=%s
+
+#INSTANTANEOUS STELLAR PROPERTIES
+
+#STAR 1
+star1_omegaconv=%.17e #s^-1
+star1_omegarad=%.17e #s^-1
+star1_Pconv=%.17e #days
+star1_Prad=%.17e #days
+star1_vsurf=%.17e #km/s
+star1_fstar=%.17e 
+star1_Bstar=%.17e #Gauss
+star1_Ro=%.17e
+star1_Mdot=%.17e #Msun yr^-1
+star1_RX=%.17e 
+star1_LX=%.17e #W
+star1_LXUV=%.17e #W
+
+#STAR 2
+star2_omegaconv=%.17e #s^-1
+star2_omegarad=%.17e #s^-1
+star2_Pconv=%.17e #days
+star2_Prad=%.17e #days
+star2_vsurf=%.17e #km/s
+star2_fstar=%.17e 
+star2_Bstar=%.17e #Gauss
+star2_Ro=%.17e
+star2_Mdot=%.17e #Msun yr^-1
+star2_RX=%.17e 
+star2_LX=%.17e #W
+star2_LXUV=%.17e #W
+
+#BINARY
+binary_LX=%.17e #W
+binary_LXUV=%.17e #W
+binary_Mdot=%.17e #Msun yr^-1
 """%(rot.title,
      rot.taumaxrot,
      array2str(star1.binrotevol),
@@ -207,7 +274,16 @@ star2_binactivity=%s
      array2str(star1.acceleration),
      array2str(star2.acceleration),
      array2str(star1.binactivity),
-     array2str(star2.binactivity)
+     array2str(star2.binactivity),
+     star1.bomegaconv,star1.bomegarad,
+     star1.bPconv,star1.bPrad,star1.bvsurf,
+     star1.bfstar,star1.bBstar,star1.bRo,star1.bMdot,
+     star1.bRX,star1.bLX,star1.bLXUV,
+     star2.bomegaconv,star2.bomegarad,
+     star2.bPconv,star2.bPrad,star2.bvsurf,
+     star2.bfstar,star2.bBstar,star2.bRo,star2.bMdot,
+     star2.bRX,star2.bLX,star2.bLXUV,
+     binary.LX,binary.LXUV,binary.Mdot
      ))
 f.close()
 
@@ -363,10 +439,10 @@ raccel1=rot.star1_acceleration
 raccel2=rot.star2_acceleration
 
 fig=plt.figure(figsize=(8,12))
-l=0.1;w=0.8;b=0.05;dh=0.02;h=(1.0-2*b-dh)/2;
-ax1=fig.add_axes([l,b,w,h])
-b+=h+dh
+l=0.15;w=0.8;b=0.05;dh=0.02;h=(1.0-2*b-dh)/2;
 ax2=fig.add_axes([l,b,w,h])
+b+=h+dh
+ax1=fig.add_axes([l,b,w,h])
 
 scale=1E-21
 ax1.plot(raccel1[:,0],raccel1[:,1]/scale,color='b',linestyle='--',label='Star 1 - Contraction')
@@ -378,7 +454,7 @@ ax1.plot(raccel1[:,0],raccel1[:,5]/scale,color='b',linestyle='-',linewidth=5,zor
 ax2.plot(raccel2[:,0],raccel2[:,1]/scale,color='r',linestyle='--',label='Star 2 - Contraction')
 ax2.plot(raccel2[:,0],raccel2[:,2]/scale,color='r',linestyle='-.',label='Star 2 - Differential Rotation')
 ax2.plot(raccel2[:,0],raccel2[:,3]/scale,color='r',linestyle=':',label='Star 2 - Mass-loss')
-ax1.plot(raccel1[:,0],raccel1[:,4]/scale,color='r',linestyle='-',label='Star 2 - Tides')
+ax2.plot(raccel1[:,0],raccel1[:,4]/scale,color='r',linestyle='-',label='Star 2 - Tides')
 ax2.plot(raccel2[:,0],raccel2[:,5]/scale,color='r',linestyle='-',linewidth=5,zorder=10,alpha=0.2,label='Star 2 - Total')
 
 tmax=min(star1.tau_ms,star2.tau_ms)
@@ -390,9 +466,9 @@ for ax in ax1,ax2:
     ax.legend(loc='best',prop=dict(size=12))
     #ax.grid(which='both')
 
-ax2.set_xticklabels([])
-ax2.set_title(binary.title,position=(0.5,1.02),fontsize=12)
-ax1.set_xlabel(r"$\\tau$ (Gyr)")
+ax1.set_xticklabels([])
+ax1.set_title(binary.title,position=(0.5,1.02),fontsize=12)
+ax2.set_xlabel(r"$\\tau$ (Gyr)")
 """%(rot_dir,rot_dir,
      binary_dir,binary_dir,
      star1_dir,star1_dir,
@@ -521,10 +597,12 @@ ax.legend(loc='lower left',prop=dict(size=10))
 ###################################################
 fh=open(rot_dir+"rotation.html","w")
 fh.write("""\
+<!--VERSION:%s-->
+<html>
 <head>
   <link rel="stylesheet" type="text/css" href="%s/web/BHM.css">
 </head>
-
+<body>
 <h2>Rotational Evolution in Binary</h2>
 
 <h3>Plots</h3>
@@ -542,39 +620,7 @@ fh.write("""\
   <a target="_blank" href="%s/rot-evolution.png.txt">data</a>|
   <a target="_blank" href="%s/BHMreplot.php?dir=%s&plot=rot-evolution.py">replot</a>
   )
-  </td></tr>
-</table>
-
-<center>
-  <a target="_blank" href="%s/rot-evolution.png">
-    <img width=60%% src="%s/rot-evolution.png">
-  </a>
-  <br/>
-  <i>Rotational Evolution</i>
-  (
-  <a target="_blank" href="%s/rot-evolution.png.txt">data</a>|
-  <a target="_blank" href="%s/BHMreplot.php?dir=%s&plot=rot-evolution.py">replot</a>
-  )
-</center>
-
-<h3>Input Parameters</h3>
-<table>
-  <tr><td>&tau;<sub>int</sub> (Myr):</td><td>%.3f</td></tr>
-  <tr><td>f<sub>diss</sub>:</td><td>%.3f</td></tr>
-</table>
-
-<h3>Rotation Evolution</h3>
-<table>
-  <tr><td colspan=2>
-  <a target="_blank" href="%s/rot-evolution.png">
-    <img width=100%% src="%s/rot-evolution.png">
-  </a>
-  <br/>
-  <i>Rotational Evolution in binary</i>
-  (
-  <a target="_blank" href="%s/rot-evolution.png.txt">data</a>|
-  <a target="_blank" href="%s/BHMreplot.php?dir=%s&plot=rot-evolution.py">replot</a>
-  )
+  </div>
   </td></tr>
 
   <tr><td colspan=2>
@@ -582,42 +628,109 @@ fh.write("""\
     <img width=100%% src="%s/rot-acceleration.png">
   </a>
   <br/>
-  <i>Rotational Acceleration in binary</i>
+  <div class="caption">
+  <i>Angular Accelerations</i>
   (
   <a target="_blank" href="%s/rot-acceleration.png.txt">data</a>|
   <a target="_blank" href="%s/BHMreplot.php?dir=%s&plot=rot-acceleration.py">replot</a>
   )
+  </div>
   </td></tr>
+</table>
 
-  <tr><td colspan=2>
+<h3>Activity</h3>
+<table>
+    <tr><td colspan=2>
   <a target="_blank" href="%s/binary-massloss.png">
     <img width=100%% src="%s/binary-massloss.png">
   </a>
   <br/>
-  <i>Mass-loss in binary</i>
+  <div class="caption">
+  <i>Binary Mass-loss</i>
   (
   <a target="_blank" href="%s/binary-massloss.png.txt">data</a>|
   <a target="_blank" href="%s/BHMreplot.php?dir=%s&plot=binary-massloss.py">replot</a>
   )
+  </div>
   </td></tr>
   <tr><td colspan=2>
   <a target="_blank" href="%s/binary-XUV.png">
     <img width=100%% src="%s/binary-XUV.png">
   </a>
   <br/>
+  <div class="caption">
   <i>Binary XUV Luminosity</i>
   (
   <a target="_blank" href="%s/binary-XUV.png.txt">data</a>|
   <a target="_blank" href="%s/BHMreplot.php?dir=%s&plot=binary-XUV.py">replot</a>
   )
+  </div>
   </td></tr>
 </table>
-"""%(WEB_DIR,rot_webdir,rot_webdir,rot_webdir,WEB_DIR,rot_webdir,
+
+<h3>Input Parameters</h3>
+<table>
+  <tr><td>&tau;<sub>int</sub> (Myr):</td><td>%.3f</td></tr>
+  <tr><td>f<sub>diss</sub>:</td><td>%.3f</td></tr>
+</table>
+
+<h3>Binary Properties</h3>
+<table>
+  <tr><td>&tau; (Gyr):</td><td>%.2f</td></tr>
+  <tr><td>dM<sub>bin</sub>/dt (M<sub>Sun</sub>/year):</td><td>%.2e</td></tr>
+  <tr><td>L<sub>X,bin</sub> (W L<sub>X,Sun</sub>):</td><td>%.3e, %.3e</td></tr>
+  <tr><td>L<sub>XUV,bin</sub> (W, L<sub>XUV,Sun</sub>):</td><td>%.3e, %.3e</td></tr>
+</table>
+
+<h3>Stellar Properties in the Binary</h3>
+<table>
+
+  <tr><td colspan=2><b>Star1</b></td></tr>
+  <tr><td>P<sub>conv,1</sub> (days):</td><td>%.2f</td></tr>
+  <tr><td>P<sub>rad,1</sub> (days):</td><td>%.2f</td></tr>
+  <tr><td>v<sub>surf,1</sub> (km/s):</td><td>%.2f</td></tr>
+  <tr><td>f<sub>*,1</sub>:</td><td>%.2e</td></tr>
+  <tr><td>B<sub>*,1</sub> (Gauss):</td><td>%.2f</td></tr>
+  <tr><td>Ro<sub>1</sub>:</td><td>%.2f</td></tr>
+  <tr><td>dM<sub>1</sub>/dt (M<sub>Sun</sub>/year):</td><td>%.2e</td></tr>
+  <tr><td>R<sub>X,1</sub>:</td><td>%.2e</td></tr>
+  <tr><td>L<sub>X,1</sub> (W L<sub>X,Sun</sub>):</td><td>%.3e, %.3e</td></tr>
+  <tr><td>L<sub>XUV,1</sub> (W, L<sub>XUV,Sun</sub>):</td><td>%.3e, %.3e</td></tr>
+
+  <tr><td colspan=2><b>Star2</b></td></tr>
+  <tr><td>P<sub>conv,2</sub> (days):</td><td>%.2f</td></tr>
+  <tr><td>P<sub>rad,2</sub> (days):</td><td>%.2f</td></tr>
+  <tr><td>v<sub>surf,2</sub> (km/s):</td><td>%.2f</td></tr>
+  <tr><td>f<sub>*,2</sub>:</td><td>%.2e</td></tr>
+  <tr><td>B<sub>*,2</sub> (Gauss):</td><td>%.2f</td></tr>
+  <tr><td>Ro<sub>2</sub>:</td><td>%.2f</td></tr>
+  <tr><td>dM<sub>2</sub>/dt (M<sub>Sun</sub>/year):</td><td>%.2e</td></tr>
+  <tr><td>R<sub>X,2</sub>:</td><td>%.2e</td></tr>
+  <tr><td>L<sub>X,2</sub> (W L<sub>X,Sun</sub>):</td><td>%.3e, %.3e</td></tr>
+  <tr><td>L<sub>XUV,2</sub> (W, L<sub>XUV,Sun</sub>):</td><td>%.3e, %.3e</td></tr>
+
+</table>
+
+</body>
+</html>
+"""%(VERSION,
+     WEB_DIR,
+     rot_webdir,rot_webdir,rot_webdir,WEB_DIR,rot_webdir,
+     rot_webdir,rot_webdir,rot_webdir,WEB_DIR,rot_webdir,
+     rot_webdir,rot_webdir,rot_webdir,WEB_DIR,rot_webdir,
+     rot_webdir,rot_webdir,rot_webdir,WEB_DIR,rot_webdir,
      rot.tauint,rot.fdiss,
-     rot_webdir,rot_webdir,rot_webdir,WEB_DIR,rot_webdir,
-     rot_webdir,rot_webdir,rot_webdir,WEB_DIR,rot_webdir,
-     rot_webdir,rot_webdir,rot_webdir,WEB_DIR,rot_webdir,
-     rot_webdir,rot_webdir,rot_webdir,WEB_DIR,rot_webdir
+     star1.tau,
+     binary.Mdot,
+     binary.LX,binary.LX/(LXSUN/1E7),binary.LXUV,binary.LXUV/(LXSUN/1E7),     
+     star1.bPconv,star1.bPrad,
+     star1.bvsurf,
+     star1.bfstar,star1.bBstar,star1.bRo,star1.bMdot,star1.bRX,
+     star1.bLX,star1.bLX/(LXSUN/1E7),star1.bLXUV,star1.bLXUV/(LXSUN/1E7),     
+     star2.bPconv,star2.bPrad,
+     star2.bvsurf,
+     star2.bfstar,star2.bBstar,star2.bRo,star2.bMdot,star2.bRX,
+     star2.bLX,star2.bLX/(LXSUN/1E7),star2.bLXUV,star2.bLXUV/(LXSUN/1E7),     
      ))
 fh.close()
        

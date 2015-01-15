@@ -58,9 +58,9 @@ catfilter,catid,output,environment=\
              [".","1","BHMCatS","0","1","binary_Pbin>0","","html","web"],
              Usage=Usage)
 
-print "catdir,recalculate,sortfield,sortorder,displaylevel,\
-catfilter,catid,output,environment:",catdir,recalculate,sortfield,sortorder,displaylevel,\
-catfilter,catid,output,environment
+#print "catdir,recalculate,sortfield,sortorder,displaylevel,\
+#catfilter,catid,output,environment:",catdir,recalculate,sortfield,sortorder,displaylevel,\
+#catfilter,catid,output,environment
 
 ###################################################
 #CATALOGUE LOCATION
@@ -427,6 +427,7 @@ for system in sortCatalogue(systems,sortfield,reverse=sortorder):
             System("echo '%s' > /tmp/md5str2-%s"%(str_sys,planet["planet_str_PlanetID"]))
             syscmd="""#GENERATING PLANET %s
 python BHMrun.py BHMinteraction.py %s \"%s\" 0 2
+exit 0
 
 """%(planet["planet_str_PlanetID"],catdir,querystr)
 

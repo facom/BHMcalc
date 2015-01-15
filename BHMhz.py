@@ -574,9 +574,12 @@ ax.legend(loc='best',prop=dict(size=12))
 ###################################################
 fh=open(ihz_dir+"hz.html","w")
 fh.write("""\
+<!--VERSION:%s-->
+<html>
 <head>
   <link rel="stylesheet" type="text/css" href="%s/web/BHM.css">
 </head>
+<body>
 
 <h2>BHZ of %s</h2>
 
@@ -661,7 +664,10 @@ fh.write("""\
   <tr><td>&lt;S(Planet,a=%.2f,e=%.2f)&gt; [W/m<sup>2</sup>,S<sub>Sun</sub>]:</td><td>%.3f, %.3f</td></tr>
   <tr><td>S(Planet)/S<sub>Sun</sub>(min,max,range,std):</td><td>%.3f,%.3f,%.3f,%.3f</td></tr>
 </table>
-"""%(WEB_DIR,
+</body>
+</html>
+"""%(VERSION,
+     WEB_DIR,
      binary.str_SysID,
      ihz_webdir,ihz_webdir,ihz_webdir,WEB_DIR,ihz_webdir,
      ihz_webdir,ihz_webdir,ihz_webdir,WEB_DIR,ihz_webdir,

@@ -430,7 +430,17 @@ $tabs.=<<<F
 	      <!-- ---------------------------------------- -->
 	      <tr><td class="name">Field geometry exponent, n:</td><td class="field"><input type="text" name="star1_n" value="$star1_n"></td></tr>
 	      <tr><td class="help" colspan=2>Exponent of field geometry decay, n = 3/7 for dipolar field.  Normally n is taken as 1.5.</td></tr>
-
+	      <!-- ====================== XUV LUMINOSITY =========================== -->
+	      <tr><td colspan=2 class="section">XUV Luminosity</td></tr>
+	      <!-- ---------------------------------------- -->
+	      <tr><td class="name">Ro<sub>sat</sub>:</td><td class="field"><input type="text" name="star1_Rosat" value="$star1_Rosat"></td></tr>
+	      <tr><td class="help" colspan=2>Saturation value for the Rossby number.  Solar 0.16, Range (Wright et al. 2011): 0.11 to 0.15.</td></tr>
+	      <!-- ---------------------------------------- -->
+	      <tr><td class="name">log(RX<sub>sat</sub>):</td><td class="field"><input type="text" name="star1_logRXsat" value="$star1_logRXsat"></td></tr>
+	      <tr><td class="help" colspan=2>Value of RX at saturation.  Solar: -3.13.  Range (Wright et al. 2011): -3.21 to -3.05.</td></tr>
+	      <!-- ---------------------------------------- -->
+	      <tr><td class="name">&beta;</td><td class="field"><input type="text" name="star1_beta" value="$star1_beta"></td></tr>
+	      <tr><td class="help" colspan=2>Scaling explonent.  Solar: -2.70.  Range (Wright et al. 2011): -2.83 to -2.57.</td></tr>
 	      <!-- ====================== OBSERVED =========================== -->
 	      <tr><td colspan=2 class="section">Observed Properties</td></tr>
 	      <div style="display:none">
@@ -491,6 +501,13 @@ $tabs.=<<<F
 	      <input type="hidden" name="star1_str_Stype" value="$star1_str_Stype">
 	      <input type="hidden" name="star1_vsini" value="$star1_vsini">
 	      <input type="hidden" name="star1_vsinierr" value="$star1_vsinierr">
+	      <input type="hidden" name="star1_Extra1" value="$star1_Extra1">
+	      <input type="hidden" name="star1_Extra2" value="$star1_Extra2">
+	      <input type="hidden" name="star1_Extra3" value="$star1_Extra3">
+	      <input type="hidden" name="star1_Extra4" value="$star1_Extra4">
+	      <input type="hidden" name="star1_Extra5" value="$star1_Extra5">
+	      <input type="hidden" name="star1_str_Extra1" value="$star1_str_Extra1">
+	      <input type="hidden" name="star1_str_Extra2" value="$star1_str_Extra2">
 
 	      <!-- ---------------------------------------- -->
 	      <tr>
@@ -711,7 +728,17 @@ $tabs.=<<<F
 	      <!-- ---------------------------------------- -->
 	      <tr><td class="name">Field geometry exponent, n:</td><td class="field"><input type="text" name="star2_n" value="$star2_n"></td></tr>
 	      <tr><td class="help" colspan=2>Exponent of field geometry decay, n = 3/7 for dipolar field.  Normally n is taken as 1.5.</td></tr>
-
+	      <!-- ====================== XUV LUMINOSITY =========================== -->
+	      <tr><td colspan=2 class="section">XUV Luminosity</td></tr>
+	      <!-- ---------------------------------------- -->
+	      <tr><td class="name">Ro<sub>sat</sub>:</td><td class="field"><input type="text" name="star2_Rosat" value="$star2_Rosat"></td></tr>
+	      <tr><td class="help" colspan=2>Saturation value for the Rossby number.  Solar 0.16, Range (Wright et al. 2011): 0.11 to 0.15.</td></tr>
+	      <!-- ---------------------------------------- -->
+	      <tr><td class="name">log(RX<sub>sat</sub>):</td><td class="field"><input type="text" name="star2_logRXsat" value="$star2_logRXsat"></td></tr>
+	      <tr><td class="help" colspan=2>Value of RX at saturation.  Solar: -3.13.  Range (Wright et al. 2011): -3.21 to -3.05.</td></tr>
+	      <!-- ---------------------------------------- -->
+	      <tr><td class="name">&beta;</td><td class="field"><input type="text" name="star2_beta" value="$star2_beta"></td></tr>
+	      <tr><td class="help" colspan=2>Scaling explonent.  Solar: -2.70.  Range (Wright et al. 2011): -2.83 to -2.57.</td></tr>
 	      <!-- ====================== OBSERVED =========================== -->
 	      <tr><td colspan=2 class="section">Observed Properties</td></tr>
 	      <div style="display:none">
@@ -771,6 +798,13 @@ $tabs.=<<<F
 	      <input type="hidden" name="star2_str_Stype" value="$star2_str_Stype">
 	      <input type="hidden" name="star2_vsini" value="$star2_vsini">
 	      <input type="hidden" name="star2_vsinierr" value="$star2_vsinierr">
+	      <input type="hidden" name="star2_Extra1" value="$star2_Extra1">
+	      <input type="hidden" name="star2_Extra2" value="$star2_Extra2">
+	      <input type="hidden" name="star2_Extra3" value="$star2_Extra3">
+	      <input type="hidden" name="star2_Extra4" value="$star2_Extra4">
+	      <input type="hidden" name="star2_Extra5" value="$star2_Extra5">
+	      <input type="hidden" name="star2_str_Extra1" value="$star2_str_Extra1">
+	      <input type="hidden" name="star2_str_Extra2" value="$star2_str_Extra2">
 
 	      <!-- ---------------------------------------- -->
 	      <tr>
@@ -997,6 +1031,13 @@ $tabs.=<<<F
 	      <input type="hidden" name="planet_worberr" value="$planet_worberr">
 	      <input type="hidden" name="planet_Merr" value="$planet_Merr">
 	      <input type="hidden" name="planet_Rerr" value="$planet_Rerr">
+	      <input type="hidden" name="planet_Extra1" value="$planet_Extra1">
+	      <input type="hidden" name="planet_Extra2" value="$planet_Extra2">
+	      <input type="hidden" name="planet_Extra3" value="$planet_Extra3">
+	      <input type="hidden" name="planet_Extra4" value="$planet_Extra4">
+	      <input type="hidden" name="planet_Extra5" value="$planet_Extra5">
+	      <input type="hidden" name="planet_str_Extra1" value="$planet_str_Extra1">
+	      <input type="hidden" name="planet_str_Extra2" value="$planet_str_Extra2">
 
 	    </table>
 	</div>
@@ -1172,6 +1213,13 @@ $tabs.=<<<F
 	      <input type="hidden" name="binary_Zobs" value="$binary_Zobs">
 	      <input type="hidden" name="binary_FeHobs" value="$binary_FeHobs">
 	      <input type="hidden" name="binary_q" value="$binary_q">
+	      <input type="hidden" name="binary_Extra1" value="$binary_Extra1">
+	      <input type="hidden" name="binary_Extra2" value="$binary_Extra2">
+	      <input type="hidden" name="binary_Extra3" value="$binary_Extra3">
+	      <input type="hidden" name="binary_Extra4" value="$binary_Extra4">
+	      <input type="hidden" name="binary_Extra5" value="$binary_Extra5">
+	      <input type="hidden" name="binary_str_Extra1" value="$binary_str_Extra1">
+	      <input type="hidden" name="binary_str_Extra2" value="$binary_str_Extra2">
 	      <!-- ---------------------------------------- -->
 
 	    </table>
@@ -1302,6 +1350,14 @@ $tabs.=<<<F
 		  Pressing the link you will save the object with the name provided in the text box.
 		</td>
 	      </tr>
+	      <!-- ====================== HIDDEN =========================== -->
+	      <input type="hidden" name="hz_Extra1" value="$hz_Extra1">
+	      <input type="hidden" name="hz_Extra2" value="$hz_Extra2">
+	      <input type="hidden" name="hz_Extra3" value="$hz_Extra3">
+	      <input type="hidden" name="hz_Extra4" value="$hz_Extra4">
+	      <input type="hidden" name="hz_Extra5" value="$hz_Extra5">
+	      <input type="hidden" name="hz_str_Extra1" value="$hz_str_Extra1">
+	      <input type="hidden" name="hz_str_Extra2" value="$hz_str_Extra2">
 	      <!-- ---------------------------------------- -->
 	      <tr>
 		<td class="button" colspan=2>
@@ -1416,6 +1472,14 @@ $tabs.=<<<F
 		  Pressing the link you will save the object with the name provided in the text box.
 		</td>
 	      </tr>
+	      <!-- ====================== HIDDEN =========================== -->
+	      <input type="hidden" name="rotation_Extra1" value="$rotation_Extra1">
+	      <input type="hidden" name="rotation_Extra2" value="$rotation_Extra2">
+	      <input type="hidden" name="rotation_Extra3" value="$rotation_Extra3">
+	      <input type="hidden" name="rotation_Extra4" value="$rotation_Extra4">
+	      <input type="hidden" name="rotation_Extra5" value="$rotation_Extra5">
+	      <input type="hidden" name="rotation_str_Extra1" value="$rotation_str_Extra1">
+	      <input type="hidden" name="rotation_str_Extra2" value="$rotation_str_Extra2">
 
 	      <!-- ---------------------------------------- -->
 	      <tr>
@@ -1604,6 +1668,14 @@ $tabs.=<<<F
 		  Pressing the link you will save the object with the name provided in the text box.
 		</td>
 	      </tr>
+	      <!-- ====================== HIDDEN =========================== -->
+	      <input type="hidden" name="interaction_Extra1" value="$interaction_Extra1">
+	      <input type="hidden" name="interaction_Extra2" value="$interaction_Extra2">
+	      <input type="hidden" name="interaction_Extra3" value="$interaction_Extra3">
+	      <input type="hidden" name="interaction_Extra4" value="$interaction_Extra4">
+	      <input type="hidden" name="interaction_Extra5" value="$interaction_Extra5">
+	      <input type="hidden" name="interaction_str_Extra1" value="$interaction_str_Extra1">
+	      <input type="hidden" name="interaction_str_Extra2" value="$interaction_str_Extra2">
 
 	      <!-- ---------------------------------------- -->
 	      <tr>

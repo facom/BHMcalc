@@ -213,11 +213,14 @@ ax.set_yticklabels([])
 ###################################################
 fh=open(binary_dir+"binary.html","w")
 fh.write("""\
+<!--VERSION:%s-->
+<html>
 <head>
   <link rel="stylesheet" type="text/css" href="%s/web/BHM.css">
 </head>
 <h2>Binary Properties</h2>
 
+<body>
 <h3>Plots</h3>
 
 <h4>Orbit</h4>
@@ -257,7 +260,10 @@ fh.write("""\
   <tr><td>n<sub>sync</a> (P<sub>sync</sub>/P<sub>bin</sub>):</td><td>%.3f</td></tr>
   <tr><td>P<sub>sync</a> (days):</td><td>%.3f</td></tr>
 </table>
-"""%(WEB_DIR,
+</body>
+</html>
+"""%(VERSION,
+     WEB_DIR,
      binary_webdir,binary_webdir,binary_webdir,WEB_DIR,binary_webdir,
      binary.M,binary.mu,binary.q,
      binary.Pbin,binary.abin,binary.ebin,

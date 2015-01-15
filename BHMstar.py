@@ -414,7 +414,7 @@ for i in range(0,Nsmoi):
      #print t,tauc,fstar,Bequi,Bphoto,BTR,Rossby,Mdot,Mdot_hot,Mdot_cold,MATR
      
      #X-RAY EMMISION
-     RX=starRX(Rossby,regime='solar')
+     RX=starRX(Rossby,regime='custom',Rosat=star.Rosat,logRXsat=star.logRXsat,beta=star.beta)
      LX=L*RX*LSUN
      LXUV=starLXEUV(LX)
 
@@ -596,6 +596,7 @@ System("cp %s/star.data %s/%s.data"%(star_dir,star_dir,starn))
 ###################################################
 fh=open(star_dir+"star.html","w")
 fh.write("""\
+<!--VERSION:%s-->
 <html>
 <head>
   <link rel="stylesheet" type="text/css" href="%s/web/BHM.css">
@@ -818,7 +819,8 @@ fh.write("""\
 
 </body>
 </html>
-"""%(WEB_DIR,
+"""%(VERSION,
+     WEB_DIR,
      star.str_StarID,
      star_webdir,star_webdir,star_webdir,WEB_DIR,star_webdir,
      star_webdir,star_webdir,star_webdir,WEB_DIR,star_webdir,
@@ -1290,7 +1292,7 @@ star=\
 loadConf("%s"+"star.conf")+\
 loadConf("%s"+"star.data")
 
-Ni=3
+Ni=4
 fig=plt.figure(figsize=(8,6*(Ni-1)))
 l=0.1;b=0.05;dh=0.02;h=(1.0-2*b-(Ni-1)*dh)/Ni;w=1.0-1.5*l
 
@@ -1299,22 +1301,30 @@ b+=h+dh
 ax_f=fig.add_axes([l,b,w,h])
 b+=h+dh
 ax_B=fig.add_axes([l,b,w,h])
+b+=h+dh
+ax_RX=fig.add_axes([l,b,w,h])
 
 ts=star.activity[:,0]
 f=star.activity[:,2]
 B=star.activity[:,4]
 R=star.activity[:,6]
-axs=[ax_R,ax_f,ax_B]
+RX=star.activity[:,11]
+axs=[ax_R,ax_f,ax_B,ax_RX]
 
 args=dict(color='k')
+
 ax_R.plot(ts,R,**args)
 ax_R.set_ylabel("Rossby Number")
-ax_R.axhline(0.13,linestyle='--',linewidth=2,label='Saturation Level')
+ax_R.axhline(0.13,linestyle='--',linewidth=2,color='r',label='Saturation Level')
 
 ax_f.plot(ts,f,**args)
 ax_f.set_ylabel("Filling factor, $f_\star$")
+
 ax_B.plot(ts,B,**args)
 ax_B.set_ylabel("Photospheric field, $B_\star$")
+
+ax_RX.plot(ts,RX,**args)
+ax_RX.set_ylabel(r"$R_{\\rm X}$")
 
 ax_R.legend(loc='best',prop=dict(size=12))
 for ax in axs:

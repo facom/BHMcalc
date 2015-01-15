@@ -1230,29 +1230,37 @@ def convectiveTurnoverTime(Teff):
 TAUCSUN=convectiveTurnoverTime(5770.2)
 WSATSUN=30.0
 
-def starRX(Ro,regime='middle'):
+def starRX(Ro,regime='middle',Rosat=0.16,logRXsat=-3.13,beta=-2.70):
     """
     Lbol: Bolometric Luminosity
     Ro: Rossby number
-    From Wright et al. (2013)
+    From Wright et al. (2011)
     """
     if regime=='middle':
         Rosat=0.13
         RXsat=10**(-3.13)
+        beta=-2.70
     elif regime=='high':
         Rosat=0.13+2*0.02
         RXsat=10**(-3.13+2*0.08)
+        beta=-2.70
     elif regime=='solar':
         Rosat=0.16
         RXsat=10**(-3.13)
+        beta=-2.70
+    elif regime=='custom':
+        #PARAMETERS HAS BEEN PASSED
+        RXsat=10**(logRXsat)
+        pass
     else:
         Rosat=0.13-2*0.02
         RXsat=10**(-3.13-2*0.08)
+        beta=-2.70
         
     if Ro<Rosat:
         RX=RXsat
     else:
-        RX=RXsat*(Ro/Rosat)**(-2.70)
+        RX=RXsat*(Ro/Rosat)**(beta)
     return RX
 
 def starLXEUV(LX):
