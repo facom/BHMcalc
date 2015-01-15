@@ -330,7 +330,7 @@ for j in xrange(9,36):
 intflux=toStack(ts)|toStack(np.transpose(intflux))
 
 #//////////////////////////////
-#MASS-LOSS
+#INSTANTANEOUS MASS-LOSSES
 #//////////////////////////////
 PRINTOUT("Calculating Mass-Loss...")
 facabs=GYR*SWPEL
@@ -340,67 +340,12 @@ influx=np.interp(env.tauref,ts,intflux[:,21])
 ntMlp=massLoss(planet.A,facabs*influx,mu=env.muatm,alpha=env.alpha)
 ntPlp=surfacePressure(ntMlp,planet.M,planet.R)
 
-#MASS-LOSS IN AN ENSAMBLE OF PLANETS
-env.Mmin=1.0
-env.Mmax=1.0
-Mps=np.logspace(np.log10(env.Mmin),np.log10(env.Mmax),30)
-Mps=[1.0]
+exit(0)
 
-"""
-Mass-Loss:
-0:Time
-1:Mlin,2:Plin,3:Mlout,4:Plout
-5:ntMlin,6:ntPlin,7:ntMlout,8:ntPlout,
-9:Mlins,10:Plins,11:Mlouts,12:Plouts,13:Mleeqs,14:Pleeqs
-"""
-massloss=stack(14)
-#Mps=[planet.M]
-for Mp in Mps:
-    #SIMPLIFIED PROPERTIES OF PLANETS
-    Rp=Mp**0.25
-    Ap=4*PI*(Rp*REARTH)**2
-    
-    #MASS LOSS
-    #BINARY
-    influx=np.interp(env.tauref,ts,intflux[:,11])
-    Mlin=massLoss(Ap,facabs*influx,mu=env.muatm,alpha=env.alpha)
-    Plin=surfacePressure(Mlin,Mp,Rp)
-    #print "In:",influx,Mlin,Plin,Ap
+#TIDAL
 
-    influx=np.interp(env.tauref,ts,intflux[:,13])
-    Mlout=massLoss(Ap,facabs*influx,mu=env.muatm,alpha=env.alpha)
-    Plout=surfacePressure(Mlout,Mp,Rp)
+#SINGLE PRIMARY
 
-    #print "Out:",influx,Mlout,Plout,Ap
-    #exit(0)
-
-    #BINARY NO TIDAL
-    influx=np.interp(env.tauref,ts,intflux[:,17])
-    ntMlin=massLoss(Ap,facabs*influx,mu=env.muatm,alpha=env.alpha)
-    ntPlin=surfacePressure(ntMlin,Mp,Rp)
-
-    influx=np.interp(env.tauref,ts,intflux[:,19])
-    ntMlout=massLoss(Ap,facabs*influx,mu=env.muatm,alpha=env.alpha)
-    ntPlout=surfacePressure(ntMlout,Mp,Rp)
-
-    #SINGLE
-    influx=np.interp(env.tauref,ts,intflux[:,23])
-    Mlins=massLoss(Ap,facabs*influx,mu=env.muatm,alpha=env.alpha)
-    Plins=surfacePressure(Mlins,Mp,Rp)
-
-    influx=np.interp(env.tauref,ts,intflux[:,25])
-    Mlouts=massLoss(Ap,facabs*influx,mu=env.muatm,alpha=env.alpha)
-    Plouts=surfacePressure(Mlouts,Mp,Rp)
-
-    influx=np.interp(env.tauref,ts,intflux[:,27])
-    Mleeqs=massLoss(Ap,facabs*influx,mu=env.muatm,alpha=env.alpha)
-    Pleeqs=surfacePressure(Mleeqs,Mp,Rp)
-
-    massloss+=[Mlin,Plin,Mlout,Plout,
-               ntMlin,ntPlin,ntMlout,ntPlout,
-               Mlins,Plins,Mlouts,Plouts,Mleeqs,Pleeqs]
-
-massloss=toStack(Mps)|massloss
 
 #//////////////////////////////
 #MASS-LOSS EVOLUTION GIANTS
