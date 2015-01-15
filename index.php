@@ -1613,7 +1613,7 @@ $tabs.=<<<F
 	      </tr>
 	      <!-- ---------------------------------------- -->
 	      <tr>
-		<td class="name">Atmospheric mean molecular weight</td>
+		<td class="name">Escaping ions mean molecular weight</td>
 		<td class="field">
 		  <input type="text" name="interaction_muatm" value="$interaction_muatm">
 		  g/mol
@@ -1621,7 +1621,8 @@ $tabs.=<<<F
 	      </tr>
 	      <tr>
 		<td class="help" colspan=2>
-		  Earth's atmosphere, &mu;<sub>atm</sub>=44 g/mol
+		  For oxygen ions &mu;<sub>atm</sub>=16 g/mol.
+		  Nitrogen &mu;<sub>atm</sub>=14 g/mol.
 		</td>
 	      </tr>
 	      <!-- ---------------------------------------- -->

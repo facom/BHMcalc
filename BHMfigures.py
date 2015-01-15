@@ -131,13 +131,13 @@ def CompareLuminositiesMassLoss():
     ax=fig.add_axes([0.12,0.12,0.8,0.8])
     
     tsnom=nominal.star1.activity[:,0]
-    LXUVnom=nominal.star1.activity[:,13]/(LXSUN/1E7)
+    LXUVnom=nominal.star1.activity[:,13]/(LXUVSUN/1E7)
 
     tsfast=fast.star1.activity[:,0]
-    LXUVfast=fast.star1.activity[:,13]/(LXSUN/1E7)
+    LXUVfast=fast.star1.activity[:,13]/(LXUVSUN/1E7)
 
     tsslow=slow.star1.activity[:,0]
-    LXUVslow=slow.star1.activity[:,13]/(LXSUN/1E7)
+    LXUVslow=slow.star1.activity[:,13]/(LXUVSUN/1E7)
 
     ax.plot(tsnom,LXUVnom,label="Nominal")
     ax.plot(tsfast,LXUVfast,label="Fast")
@@ -2560,7 +2560,7 @@ def stellarActivity():
     B=star.activity[:,4]
     R=star.activity[:,6]
     Ml=star.activity[:,7]
-    L=star.activity[:,13]/(LXSUN/1E7)
+    L=star.activity[:,13]/(LXUVSUN/1E7)
 
     axs=[ax_R,ax_f,ax_B,ax_ML,ax_L]
     
@@ -2693,7 +2693,7 @@ def plotRX():
     ax.fill_between(Ros,tRXs1,tRXs2,color='b',alpha=0.3)
     ax.plot([],[],'b-',linewidth=10,alpha=0.3,label="Empirical Fit")
 
-    ax.text(ROSUN,(LXSUN/1E7/LSUN),r"$\odot$",
+    ax.text(ROSUN,(LXUVSUN/1E7/LSUN),r"$\odot$",
             horizontalalignment='center',verticalalignment='center',
             fontsize=24)
 

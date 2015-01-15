@@ -416,7 +416,7 @@ for i in range(0,Nsmoi):
      #X-RAY EMMISION
      RX=starRX(Rossby,regime='custom',Rosat=star.Rosat,logRXsat=star.logRXsat,beta=star.beta)
      LX=L*RX*LSUN
-     LXUV=starLXEUV(LX)
+     LXUV=starLXEUV(LX*1E7)/1E7
 
      star.activity+=[tauc,fstar,Bequi,Bphoto,BTR,Rossby,
                      Mdot,Mdot_hot,Mdot_cold,MATR,
@@ -1264,7 +1264,7 @@ ax=fig.add_axes([0.15,0.1,0.8,0.8])
 ts=star.activity[:,0]
 LXUV=star.activity[:,13]
 
-ax.plot(ts,LXUV/(LXSUN/1E7))
+ax.plot(ts,LXUV/(LXUVSUN/1E7))
 
 ax.set_xscale("log")
 ax.set_yscale("log")
@@ -1321,7 +1321,7 @@ ax_f.plot(ts,f,**args)
 ax_f.set_ylabel("Filling factor, $f_\star$")
 
 ax_B.plot(ts,B,**args)
-ax_B.set_ylabel("Photospheric field, $B_\star$")
+ax_B.set_ylabel("Photospheric field (not averaged), $B_\star$ (G)")
 
 ax_RX.plot(ts,RX,**args)
 ax_RX.set_ylabel(r"$R_{\\rm X}$")
@@ -1332,6 +1332,8 @@ for ax in axs:
     ax.set_yscale("log")
     ax.set_xlim((TAU_ZAMS,star.tau_ms))
     ax.grid(which='both')
+
+ax_B.set_yscale("linear")
 
 axs[-1].set_title(star.title,position=(0.5,1.02),fontsize=12)
 axs[0].set_xlabel(r"$\\tau$ (Gyr)")

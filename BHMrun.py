@@ -183,8 +183,8 @@ for depmod in OBJECT_PIPE[module_name]:
     #HASHING OBJECTS
     #========================================
     if depmod_stg<10 or qover==2:
-        if qover:PRINTOUT("Forcing %s"%depmod_type);
-        else:PRINTOUT("Running %s (%s)"%(depmod_type,depmod_hash));
+        if qover:PRINTOUT("Forcing %s by %s"%(depmod_type,module_name));
+        else:PRINTOUT("Running %s (%s) by %s"%(depmod_type,depmod_hash,module_name));
         System("python BHMrun.py BHM%s.py %s %s 0 %d"%(depmod_type,sys_dir,depmod_conf,1),out=False)
         if qsignal:System("echo -n > %s/.loadconfig"%depmod_dir)
     else:PRINTOUT("%s %s ready."%(depmod_type,depmod_hash));

@@ -1146,12 +1146,12 @@ def starLXUV(Ls,t):
     #EUV LUMINOSITY
     #==================================================
     LEUV=10**(4.8+0.86*np.log10(LX))
-    LXUV=(LX+LEUV) #/(Ls*4E33)
-    LXUV=LX #/(Ls*4E33)
+    LXUV=(LX+LEUV)
+    #LXUV=LX
     return LXUV
 
 #XUV Present Earth Level in erg cm^-2 s^-1
-PEL=LXSUN/(4*PI*(1*AU*1E2)**2)
+PEL=LXUVSUN/(4*PI*(1*AU*1E2)**2)
 #XUV IN SI
 PELSI=PEL*(1E-7/(1E-2)**2)
 
@@ -1264,11 +1264,9 @@ def starRX(Ro,regime='middle',Rosat=0.16,logRXsat=-3.13,beta=-2.70):
     return RX
 
 def starLXEUV(LX):
-    """
     LEUV=10**(4.8+0.86*np.log10(LX))
     LXEUV=LX+LEUV
-    """
-    LXEUV=LX
+    #LXEUV=LX
     return LXEUV
 
 def findTrack(model,Z,M,verbose=False):
@@ -1499,6 +1497,8 @@ def binaryWind(M1,R1,M1dot,M2,R2,M2dot,r,vtype='Terminal'):
     v1,n1=stellarWind(M1,R1,M1dot,r,vtype=vtype)
     v2,n2=stellarWind(M2,R2,M2dot,r,vtype=vtype)
     vorb=2*PI*(r*AU)/(PKepler(r,M1,M2)*DAY)
+    v1eff=(v1**2+vorb**2)**0.5
+    v2eff=(v2**2+vorb**2)**0.5
     Psw=0.6*MP*(n1*(v1**2+vorb**2)+n2*(v2**2+vorb**2))
     Fsw=n1*v1+n2*v2
     return Psw,Fsw

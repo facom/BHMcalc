@@ -534,7 +534,7 @@ ax.legend(loc='lower left',prop=dict(size=10))
      star2_dir,star2_dir))
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-#MASS-LOSS
+# XUV
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 plotFigure(rot_dir,"binary-XUV",\
 """
@@ -569,7 +569,7 @@ tmin=max(min(ts1),min(ts2))*1.0001
 tmax=min(max(ts1),max(ts2))*0.9999
 ts=np.logspace(np.log10(tmin),np.log10(tmax),100)
 
-LSUN=LXSUN/1E7
+LSUN=LXUVSUN/1E7
 ax.plot(ts1,LXUV1/LSUN,'b-',label='Star 1 (Tidal)')
 ax.plot(ts1,sLXUV1/LSUN,'b--',label='Star 1 (Free)')
 ax.plot(ts2,LXUV2/LSUN,'r-',label='Star 2 (Tidal)')
@@ -722,15 +722,15 @@ fh.write("""\
      rot.tauint,rot.fdiss,
      star1.tau,
      binary.Mdot,
-     binary.LX,binary.LX/(LXSUN/1E7),binary.LXUV,binary.LXUV/(LXSUN/1E7),     
+     binary.LX,binary.LX/(LXUVSUN/1E7),binary.LXUV,binary.LXUV/(LXUVSUN/1E7),     
      star1.bPconv,star1.bPrad,
      star1.bvsurf,
      star1.bfstar,star1.bBstar,star1.bRo,star1.bMdot,star1.bRX,
-     star1.bLX,star1.bLX/(LXSUN/1E7),star1.bLXUV,star1.bLXUV/(LXSUN/1E7),     
+     star1.bLX,star1.bLX/(LXUVSUN/1E7),star1.bLXUV,star1.bLXUV/(LXUVSUN/1E7),     
      star2.bPconv,star2.bPrad,
      star2.bvsurf,
      star2.bfstar,star2.bBstar,star2.bRo,star2.bMdot,star2.bRX,
-     star2.bLX,star2.bLX/(LXSUN/1E7),star2.bLXUV,star2.bLXUV/(LXSUN/1E7),     
+     star2.bLX,star2.bLX/(LXUVSUN/1E7),star2.bLXUV,star2.bLXUV/(LXUVSUN/1E7),     
      ))
 fh.close()
        
