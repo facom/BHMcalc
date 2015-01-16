@@ -52,6 +52,9 @@ System("mv tmp/Objs/* objs/")
 PRINTOUT("Cleaning temporal...")
 System("rm -rf tmp/*")
 
+PRINTOUT("Cleaning system...")
+System("make cleanall")
+
 ###################################################
 # SETTING PERMISSIONS
 ###################################################

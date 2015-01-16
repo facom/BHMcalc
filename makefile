@@ -52,8 +52,6 @@ cleanall:clean
 	@rm -r sys/*
 	@cp -r web/template sys/
 	@make permissions
-	@touch tmp/seed
-	@rm -r tmp/*
 
 deepclean:
 	@echo "Deep cleaning calculator..."
