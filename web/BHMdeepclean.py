@@ -32,12 +32,25 @@ System("rm -rf links/*")
 System("mv tmp/Links/* links/")
 
 ###################################################
+# CLEAN OBJECTS
+###################################################
+listobj=System("ls -md objs/*",out=True).split(",")
+System("mkdir tmp/Objs")
+PRINTOUT("Preserving blocked objects...")
+for obj in listobj:
+    obj=obj.strip()
+    if not FILEEXISTS("%s/.block"%obj):continue
+    #PRINTOUT("\tObject '%s' saved..."%obj)
+    System("cp -rf %s tmp/Objs/"%obj)
+PRINTOUT("Cleaning objects...")
+System("rm -rf objs/*")
+System("mv tmp/Objs/* objs/")
+
+###################################################
 # CLEAN TEMPORARY
 ###################################################
 PRINTOUT("Cleaning temporal...")
 System("rm -rf tmp/*")
-PRINTOUT("Cleaning objects...")
-System("rm -rf objs/*")
 
 ###################################################
 # SETTING PERMISSIONS

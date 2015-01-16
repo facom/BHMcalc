@@ -544,7 +544,7 @@ ts=env.lumflux[:,0]
 ax.fill_between(tsnom,nominal.interaction.lumflux[:,15],
                    nominal.interaction.lumflux[:,16],color='r',alpha=0.2)
 ax.fill_between(ts,env.lumflux[:,15],env.lumflux[:,16],color='k',alpha=0.2)
-ax.fill_between(tsnom,env.lumflux[:,9],env.lumflux[:,10],color='g',alpha=0.3)
+ax.fill_between(ts,env.lumflux[:,9],env.lumflux[:,10],color='g',alpha=0.3)
 ax.plot([0],[0],color='g',alpha=0.3,linewidth=10,label='BHZ')
 ax.plot([0],[0],color='k',alpha=0.3,linewidth=10,label='Single Primary HZ')
 ax.plot([0],[0],color='r',alpha=0.3,linewidth=10,label='Solar Sytem HZ')
@@ -752,11 +752,11 @@ loadConf("%s"+"rotation.data")
 #LOADING REFERENCE SOLAR SYSTEM
 from BHM.BHMdata import *
 fast=loadResults(DATA_DIR+"SolarSystemReference/fast/")
-tsfast=fast.interaction.lumflux[:,0]
+tsfast=fast.interaction.intflux[:,0]
 slow=loadResults(DATA_DIR+"SolarSystemReference/slow/")
-tsslow=slow.interaction.lumflux[:,0]
+tsslow=slow.interaction.intflux[:,0]
 nominal=loadResults(DATA_DIR+"SolarSystemReference/nominal/")
-tsnom=nominal.interaction.lumflux[:,0]
+tsnom=nominal.interaction.intflux[:,0]
 
 
 fig=plt.figure(figsize=(8,6))
@@ -856,11 +856,11 @@ loadConf("%s"+"rotation.data")
 #LOADING REFERENCE SOLAR SYSTEM
 from BHM.BHMdata import *
 fast=loadResults(DATA_DIR+"SolarSystemReference/fast/")
-tsfast=fast.interaction.lumflux[:,0]
+tsfast=fast.interaction.intflux[:,0]
 slow=loadResults(DATA_DIR+"SolarSystemReference/slow/")
-tsslow=slow.interaction.lumflux[:,0]
+tsslow=slow.interaction.intflux[:,0]
 nominal=loadResults(DATA_DIR+"SolarSystemReference/nominal/")
-tsnom=nominal.interaction.lumflux[:,0]
+tsnom=nominal.interaction.intflux[:,0]
 
 fig=plt.figure(figsize=(8,6))
 ax=fig.add_axes([0.1,0.1,0.80,0.8])

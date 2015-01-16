@@ -180,6 +180,11 @@ rot.taumaxrot=min(star1.binactivity[-1,0],star2.binactivity[-1,0])
 PRINTOUT("Calculating instantaneous properties...")
 i=0
 for star in stars:
+    if star.tau>rot.taumaxrot:
+        PRINTERR("Reported age %e Gyr is larger than maximum rotational age: %e Gyr"%(star.tau,
+                                                                                      rot.taumaxrot))
+        star.tau=rot.taumaxrot
+    
     tsrot,rotation=interpMatrix(star.binrotevol)
     tsact,activity=interpMatrix(star.binactivity)
 

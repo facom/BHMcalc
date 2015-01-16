@@ -282,7 +282,8 @@ if planet.Porb>0 and planet.aorb>0:
                                                                                                                                                                                             Porbt,
                                                                                                                                                                                             aorbt,
                                                                                                                                                                                             planet.Porb))
-        errorCode("PARAMETER_ERROR")
+        PRINTERR("Using the second one.")
+        planet.aorb=aorbt
 
 if planet.Porb==0 and planet.aorb==0:
     PRINTERR("Planet is inside star: Porb = %e, aorb = %e"%(planet.Porb,

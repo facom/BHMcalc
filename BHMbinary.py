@@ -92,7 +92,8 @@ if binary.Pbin>0 and binary.abin>0:
                                                                                                                                                                                             Pbint,
                                                                                                                                                                                             abint,
                                                                                                                                                                                             binary.Pbin))
-        errorCode("PARAMETER_ERROR")
+        PRINTERR("Using the second one.")
+        binary.abin=abint
 
 binary.nbin=2*np.pi/binary.Pbin
 
