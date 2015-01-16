@@ -427,7 +427,7 @@ for system in sortCatalogue(systems,sortfield,reverse=sortorder):
             System("echo '%s' > /tmp/md5str2-%s"%(str_sys,planet["planet_str_PlanetID"]))
             syscmd="""#GENERATING PLANET %s
 python BHMrun.py BHMinteraction.py %s \"%s\" 0 2
-exit 0
+#exit 0
 
 """%(planet["planet_str_PlanetID"],catdir,querystr)
 
