@@ -1352,7 +1352,7 @@ def StandoffDistanceStiff(M,Pdyn,Rp):
     if Rs<1:Rs=1
     return Rs
 
-def massLoss(A,intflux,alpha=0.3):
+def massLoss(A,intflux,alpha=0.3,mu=0):
     Ap=A/2
     ML=alpha*intflux*Ap*0.6*MP    
     return ML

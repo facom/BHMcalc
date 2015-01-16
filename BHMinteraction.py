@@ -525,6 +525,15 @@ rot=\
 loadConf("%s"+"rotation.conf")+\
 loadConf("%s"+"rotation.data")
 
+#LOADING REFERENCE SOLAR SYSTEM
+from BHM.BHMdata import *
+fast=loadResults(DATA_DIR+"SolarSystemReference/fast/")
+tsfast=fast.interaction.lumflux[:,0]
+slow=loadResults(DATA_DIR+"SolarSystemReference/slow/")
+tsslow=slow.interaction.lumflux[:,0]
+nominal=loadResults(DATA_DIR+"SolarSystemReference/nominal/")
+tsnom=nominal.interaction.lumflux[:,0]
+
 fig=plt.figure(figsize=(8,6))
 ax=fig.add_axes([0.1,0.1,0.8,0.8])
 ax2=ax.twinx()
@@ -532,14 +541,18 @@ ax2=ax.twinx()
 ts=env.lumflux[:,0]
 
 #AREAS
+ax.fill_between(ts,nominal.interaction.lumflux[:,15],
+                   nominal.interaction.lumflux[:,16],color='r',alpha=0.2)
 ax.fill_between(ts,env.lumflux[:,15],env.lumflux[:,16],color='k',alpha=0.2)
-ax.fill_between(ts,env.lumflux[:,9],env.lumflux[:,10],color='g',alpha=0.3)
+ax.fill_between(tsnom,env.lumflux[:,9],env.lumflux[:,10],color='g',alpha=0.3)
 ax.plot([0],[0],color='g',alpha=0.3,linewidth=10,label='BHZ')
 ax.plot([0],[0],color='k',alpha=0.3,linewidth=10,label='Single Primary HZ')
+ax.plot([0],[0],color='r',alpha=0.3,linewidth=10,label='Solar Sytem HZ')
 
 #PLANET
 ax.plot(ts,env.lumflux[:,11],'k-',linewidth=2,label=r'Planet $a_{\\rm p}$=%%.2f AU'%%planet.aorb)
 ax.plot(ts,env.lumflux[:,17],'k--',linewidth=2,label='Single Primary Earth Analogue')
+
 
 ax.text(4.56,1.0,r"$\\oplus$",
         horizontalalignment='center',verticalalignment='center',
@@ -595,6 +608,15 @@ rot=\
 loadConf("%s"+"rotation.conf")+\
 loadConf("%s"+"rotation.data")
 
+#LOADING REFERENCE SOLAR SYSTEM
+from BHM.BHMdata import *
+fast=loadResults(DATA_DIR+"SolarSystemReference/fast/")
+tsfast=fast.interaction.lumflux[:,0]
+slow=loadResults(DATA_DIR+"SolarSystemReference/slow/")
+tsslow=slow.interaction.lumflux[:,0]
+nominal=loadResults(DATA_DIR+"SolarSystemReference/nominal/")
+tsnom=nominal.interaction.lumflux[:,0]
+
 fig=plt.figure(figsize=(8,6))
 ax=fig.add_axes([0.1,0.1,0.8,0.8])
 
@@ -603,8 +625,11 @@ ts=env.lumflux[:,0]
 #AREAS
 ax.fill_between(ts,env.lumflux[:,31],env.lumflux[:,33],color='k',alpha=0.2)
 ax.fill_between(ts,env.lumflux[:,19],env.lumflux[:,21],color='g',alpha=0.3)
+ax.fill_between(tsnom,nominal.interaction.lumflux[:,31],
+                      nominal.interaction.lumflux[:,33],color='r',alpha=0.2)
 ax.plot([0],[0],color='g',alpha=0.3,linewidth=10,label='BHZ')
 ax.plot([0],[0],color='k',alpha=0.3,linewidth=10,label='Single Primary HZ')
+ax.plot([0],[0],color='r',alpha=0.3,linewidth=10,label='Solar System HZ')
 
 ax.plot(ts,env.lumflux[:,23],'k-',linewidth=2,label=r'Planet $a_{\\rm p}$=%%.2f AU'%%planet.aorb)
 ax.plot(ts,env.lumflux[:,35],'k--',linewidth=2,label='Single Primary Earth-analogue')
@@ -658,6 +683,15 @@ rot=\
 loadConf("%s"+"rotation.conf")+\
 loadConf("%s"+"rotation.data")
 
+#LOADING REFERENCE SOLAR SYSTEM
+from BHM.BHMdata import *
+fast=loadResults(DATA_DIR+"SolarSystemReference/fast/")
+tsfast=fast.interaction.lumflux[:,0]
+slow=loadResults(DATA_DIR+"SolarSystemReference/slow/")
+tsslow=slow.interaction.lumflux[:,0]
+nominal=loadResults(DATA_DIR+"SolarSystemReference/nominal/")
+tsnom=nominal.interaction.lumflux[:,0]
+
 fig=plt.figure(figsize=(8,6))
 ax=fig.add_axes([0.12,0.1,0.8,0.8])
 
@@ -665,10 +699,17 @@ ts=env.lumflux[:,0]
 
 #AREAS
 fac=1E-9
-ax.fill_between(ts,env.lumflux[:,30]/fac,env.lumflux[:,32]/fac,color='k',alpha=0.2,label='Single Primary HZ')
-ax.fill_between(ts,env.lumflux[:,18]/fac,env.lumflux[:,20]/fac,color='g',alpha=0.3,label='BHZ')
+ax.fill_between(ts,nominal.interaction.lumflux[:,30]/fac,
+                   nominal.interaction.lumflux[:,32]/fac,
+                   color='r',alpha=0.3,label='Solar System HZ')
+ax.fill_between(ts,env.lumflux[:,30]/fac,
+                   env.lumflux[:,32]/fac,color='k',alpha=0.2,label='Single Primary HZ')
+ax.fill_between(ts,env.lumflux[:,18]/fac,
+                   env.lumflux[:,20]/fac,color='g',alpha=0.3,label='BHZ')
+
 ax.plot([0],[0],color='g',alpha=0.3,linewidth=10,label='BHZ')
 ax.plot([0],[0],color='k',alpha=0.3,linewidth=10,label='Single Primary HZ')
+ax.plot([0],[0],color='r',alpha=0.3,linewidth=10,label='Solar System HZ')
 
 ax.plot(ts,env.lumflux[:,22]/fac,'k-',linewidth=2,label=r'Planet $a_{\\rm p}$=%%.2f AU'%%planet.aorb)
 ax.plot(ts,env.lumflux[:,34]/fac,'k--',linewidth=2,label='Single Primary Earth-analogue')
@@ -708,6 +749,16 @@ rot=\
 loadConf("%s"+"rotation.conf")+\
 loadConf("%s"+"rotation.data")
 
+#LOADING REFERENCE SOLAR SYSTEM
+from BHM.BHMdata import *
+fast=loadResults(DATA_DIR+"SolarSystemReference/fast/")
+tsfast=fast.interaction.lumflux[:,0]
+slow=loadResults(DATA_DIR+"SolarSystemReference/slow/")
+tsslow=slow.interaction.lumflux[:,0]
+nominal=loadResults(DATA_DIR+"SolarSystemReference/nominal/")
+tsnom=nominal.interaction.lumflux[:,0]
+
+
 fig=plt.figure(figsize=(8,6))
 ax=fig.add_axes([0.1,0.1,0.80,0.8])
 
@@ -717,14 +768,18 @@ ts=env.intflux[:,0]
 arrs=[]
 facabs=1
 
+arrs+=[facabs*nominal.interaction.intflux[:,7],facabs*nominal.interaction.intflux[:,8]]
+ax.fill_between(ts,facabs*nominal.interaction.intflux[:,7],facabs*nominal.interaction.intflux[:,8],color='r',alpha=0.2,label='Single Primary HZ')
+
 arrs+=[facabs*env.intflux[:,7],facabs*env.intflux[:,8]]
 ax.fill_between(ts,facabs*env.intflux[:,7],facabs*env.intflux[:,8],color='k',alpha=0.2,label='Single Primary HZ')
 
-arrs=[facabs*env.intflux[:,1],facabs*env.intflux[:,2]]
+arrs+=[facabs*env.intflux[:,1],facabs*env.intflux[:,2]]
 ax.fill_between(ts,facabs*env.intflux[:,1],facabs*env.intflux[:,2],color='g',alpha=0.3,label='BHZ')
 
 ax.plot([0],[0],color='g',alpha=0.3,linewidth=10,label='BHZ')
 ax.plot([0],[0],color='k',alpha=0.3,linewidth=10,label='Single Primary HZ')
+ax.plot([0],[0],color='r',alpha=0.3,linewidth=10,label='Solar System HZ')
 
 #PLANET
 arrs+=[facabs*env.intflux[:,3],facabs*env.intflux[:,9]]
@@ -732,6 +787,7 @@ ax.plot(ts,facabs*env.intflux[:,3],'k-',linewidth=2,label=r'Planet $a_{\\rm p}$=
 ax.plot(ts,facabs*env.intflux[:,9],'k--',linewidth=2,label='Single Primary Earth-Analogue')
 
 ymin,ymean,ymax=minmeanmaxArrays(arrs)
+
 expscl=int(np.log10(ymax))
 scl=10**expscl
 
@@ -797,6 +853,15 @@ rot=\
 loadConf("%s"+"rotation.conf")+\
 loadConf("%s"+"rotation.data")
 
+#LOADING REFERENCE SOLAR SYSTEM
+from BHM.BHMdata import *
+fast=loadResults(DATA_DIR+"SolarSystemReference/fast/")
+tsfast=fast.interaction.lumflux[:,0]
+slow=loadResults(DATA_DIR+"SolarSystemReference/slow/")
+tsslow=slow.interaction.lumflux[:,0]
+nominal=loadResults(DATA_DIR+"SolarSystemReference/nominal/")
+tsnom=nominal.interaction.lumflux[:,0]
+
 fig=plt.figure(figsize=(8,6))
 ax=fig.add_axes([0.1,0.1,0.80,0.8])
 
@@ -806,14 +871,18 @@ ts=env.intflux[:,0]
 arrs=[]
 facabs=1
 
+arrs+=[facabs*nominal.interaction.intflux[:,23],facabs*nominal.interaction.intflux[:,25]]
+ax.fill_between(ts,facabs*nominal.interaction.intflux[:,23],facabs*nominal.interaction.intflux[:,25],color='r',alpha=0.2,label='Single Primary HZ')
+
 arrs+=[facabs*env.intflux[:,23],facabs*env.intflux[:,25]]
 ax.fill_between(ts,facabs*env.intflux[:,23],facabs*env.intflux[:,25],color='k',alpha=0.2,label='Single Primary HZ')
 
-arrs=[facabs*env.intflux[:,11],facabs*env.intflux[:,13]]
+arrs+=[facabs*env.intflux[:,11],facabs*env.intflux[:,13]]
 ax.fill_between(ts,facabs*env.intflux[:,11],facabs*env.intflux[:,13],color='g',alpha=0.3,label='BHZ')
 
 ax.plot([0],[0],color='g',alpha=0.3,linewidth=10,label='BHZ')
 ax.plot([0],[0],color='k',alpha=0.3,linewidth=10,label='Single Primary HZ')
+ax.plot([0],[0],color='r',alpha=0.3,linewidth=10,label='Solar System HZ')
 
 #PLANET
 arrs+=[facabs*env.intflux[:,15],facabs*env.intflux[:,27]]
@@ -885,14 +954,26 @@ planet=\
 loadConf("%s"+"planet.conf")+\
 loadConf("%s"+"planet.data")
 
+#LOADING REFERENCE SOLAR SYSTEM
+from BHM.BHMdata import *
+fast=loadResults(DATA_DIR+"SolarSystemReference/fast/")
+tsfast=fast.interaction.lumflux[:,0]
+slow=loadResults(DATA_DIR+"SolarSystemReference/slow/")
+tsslow=slow.interaction.lumflux[:,0]
+nominal=loadResults(DATA_DIR+"SolarSystemReference/nominal/")
+tsnom=nominal.interaction.lumflux[:,0]
+
 fig=plt.figure(figsize=(8,6))
 ax=fig.add_axes([0.1,0.1,0.8,0.8])
 
 ts=env.lumflux[:,0]
 
 ax.plot(ts,env.lumflux[:,36],'k-',label=r"Planet, $R_p$ = %%.2f $R_\\oplus$"%%planet.Rp)
+ax.fill_between(ts,nominal.interaction.lumflux[:,38],
+                   nominal.interaction.lumflux[:,39],color='r',alpha=0.2)
 ax.fill_between(ts,env.lumflux[:,38],env.lumflux[:,39],color='k',alpha=0.2)
 ax.plot([],[],'k-',linewidth=10,alpha=0.2,label='Single Primary HZ')
+ax.plot([],[],'r-',linewidth=10,alpha=0.2,label='Solar System HZ')
 
 ax.text(0.05,0.05,planet.orbit,transform=ax.transAxes)
 ax.set_title(env.title,position=(0.5,1.02),fontsize=12)

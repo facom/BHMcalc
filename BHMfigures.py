@@ -23,6 +23,8 @@ TMIN=1E-3
 #TMIN_INT=7E-1
 TMIN_INT=1E-2
 TMAX=8.0
+#REFERENCE="CompSolar.v1/" #First Paper Submission
+REFERENCE="CompSolar/"
 
 def CompareLuminositiesMassLoss():
     """
@@ -200,7 +202,7 @@ def IntegratedReferenceFluxes():
 
     This calculation has been done in part with BHMcalc2
     """
-    DATADIR=FIGDIR+"CompSolar/"
+    DATADIR=FIGDIR+REFERENCE
     
     """
     Fast rotator:
@@ -428,7 +430,7 @@ def IntegratedReferenceFluxesTini():
 
     This calculation has been done in part with BHMcalc2
     """
-    DATADIR=FIGDIR+"CompSolar/"
+    DATADIR=FIGDIR+REFERENCE
     
     """
     Fast rotator:
@@ -464,6 +466,11 @@ def IntegratedReferenceFluxesTini():
     #PLOT INTEGRATED XUV FLUX
     #############################################################
     fig=plt.figure()
+    ax=fig.add_axes([0.15,0.1,0.8,0.8])
+    axi=fig.add_axes([0.40,0.15,0.52,0.32])
+    for axs in ax,axi:
+        axs.set_xscale("log")
+        axs.set_yscale("log")
     
     tsnom=nominal.interaction.intflux[:,0]
     FiXUVnom_earthf=interp1d(tsnom,nominal.interaction.intflux[:,9],kind='slinear')
@@ -502,10 +509,10 @@ def IntegratedReferenceFluxesTini():
     ax.plot(tsslow,facabs*(FiXUVnom_marsf(tsslow)-FiXUVnom_marsf(tref)),'r-',label='Mars')
     logTickLabels(ax,-2,1,(1,),frm="%.2f",axis='x',notation='sci',fontsize=10)
     ax.set_xlim((tref,1.0))
-    ax.set_ylim((1E12,2E16))
+    ax.set_ylim((1E13,1E17))
     ax.legend(loc='upper left',prop=dict(size=12))
     ax.set_xlabel(r"$\tau$ (Gyr)")
-    ax.set_ylabel(r"$\Phi_{\rm XUV}(\tau\,;\,\tau_{\rm ini})$=$\int_{;\tau_{\rm ini}}\,F_{\rm XUV}(t)\,dt$   [j/m$^2$]")
+    ax.set_ylabel(r"$\Phi_{\rm XUV}(\tau\,;\,\tau_{\rm ini})$=$\int_{\tau_{\rm ini}}\,F_{\rm XUV}(t)\,dt$   [j/m$^2$]")
     ax.grid(which='both')
 
     #PLOT SECONDARY
@@ -530,7 +537,7 @@ def IntegratedReferenceFluxesTini():
     axi.plot(tsslow,facabs*(FiXUVnom_marsf(tsslow)-FiXUVnom_marsf(tref)),'r-',label='Mars')
     logTickLabels(axi,-1,1,(1,),frm="%.2f",axis='x',notation='sci',fontsize=10)
     axi.set_xlim((tref,TMAX))
-    axi.set_ylim((1E12,2E15))
+    axi.set_ylim((1E13,2E16))
     axi.set_title(r"$\tau_{\rm ini}=%.2f$ Gyr"%tref,position=(0.5,1.02))
 
     fig.savefig(DATADIR+"Solar-iXUV-Flux-Sec.png")
@@ -623,7 +630,7 @@ def IntegratedMassLoss():
 
     This calculation has been done in part with BHMcalc2
     """
-    DATADIR=FIGDIR+"CompSolar/"
+    DATADIR=FIGDIR+REFERENCE
     
     """
     Fast rotator:
@@ -769,7 +776,7 @@ def IntegratedMassLoss():
  
 def analyseKeplerSystems():
     #SOLAR REFERENCE
-    DATADIR=FIGDIR+"CompSolar/"
+    DATADIR=FIGDIR+REFERENCE
 
     #SOLAR REFERENCE
     try:argv[1]
@@ -1082,7 +1089,7 @@ def analyseKeplerSystems():
     
 #CompareLuminositiesMassLoss()
 #IntegratedReferenceFluxes()
-#IntegratedMassLoss()
+IntegratedMassLoss()
 #analyseKeplerSystems()
 #IntegratedReferenceFluxesTini()
 
@@ -2536,7 +2543,7 @@ def compareInsolation():
     saveFig("figures/CompareInsolation.png",watermark="")
 
 def stellarActivity():
-    DATADIR=FIGDIR+"CompSolar/"
+    DATADIR=FIGDIR+REFERENCE
     nominal=loadResults(DATADIR+"nominal/")
     star=nominal.star1
     
@@ -2619,7 +2626,7 @@ def plotRX():
     #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     #SOLAR NOMINAL
     #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    DATADIR=FIGDIR+"CompSolar/"
+    DATADIR=FIGDIR+REFERENCE
     nominal=loadResults(DATADIR+"nominal/")
     star=nominal.star1
 
@@ -2693,7 +2700,7 @@ def plotRX():
     ax.fill_between(Ros,tRXs1,tRXs2,color='b',alpha=0.3)
     ax.plot([],[],'b-',linewidth=10,alpha=0.3,label="Empirical Fit")
 
-    ax.text(ROSUN,(LXUVSUN/1E7/LSUN),r"$\odot$",
+    ax.text(ROSUN,(LXSUN/1E7/LSUN),r"$\odot$",
             horizontalalignment='center',verticalalignment='center',
             fontsize=24)
 
@@ -2730,4 +2737,4 @@ def plotRX():
 #binaryHZPanels()
 #compareInsolation()
 #stellarActivity()
-plotRX()
+#plotRX()
