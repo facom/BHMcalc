@@ -55,6 +55,10 @@ cleanall:clean
 	@touch tmp/seed
 	@rm -r tmp/*
 
+deepclean2:
+	@echo "Deep cleaning calculator..."
+	@python -Wi web/BHMdeepclean.py
+
 deepclean:cleanall 
 	@echo "Cleaning temporary directories..."
 	@rm -rf tmp/*
