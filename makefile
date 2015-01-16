@@ -55,17 +55,9 @@ cleanall:clean
 	@touch tmp/seed
 	@rm -r tmp/*
 
-deepclean2:
+deepclean:
 	@echo "Deep cleaning calculator..."
 	@python -Wi web/BHMdeepclean.py
-
-deepclean:cleanall 
-	@echo "Cleaning temporary directories..."
-	@rm -rf tmp/*
-	@touch objs/seed
-	@rm -r objs/*
-	@touch links/seed
-	@rm -r links/*
 
 reset:
 	@echo "Resetting access.log..."
