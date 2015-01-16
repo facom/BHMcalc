@@ -1,5 +1,42 @@
-Changes introduced in the most recent build:
+Changes introduced in the most recent build/version:
 
+<p><b>Version 2.1</b></p>
+
+<ul>
+
+<li>
+
+<li> (Core) LXUV instead of simply LX is calculated now.</li>
+
+<li> (Core) New parameters Rosat and logRXsat and beta to control
+calculated X-ray luminosities have been add to the Star input form.</li>
+
+<li> (Interface) All the information about the objects is displayed in
+a common format: first plots, then numercial information.</li>
+
+<li> (Interface) The information sheet of the modules include as a
+comment the VERSION wich with they were created. </li>
+
+<li> (Interface) Each time the catalogue is generated from scratch it
+creates a script to recreate all the objects in the catalogue.</li>
+
+<li> (Interface) Links for the community configurations are preserved
+after deepclean. </li>
+
+<li> (Interface) We have include a "Community Configurations" section
+in the Summary where configurations saved from other users will be
+permanently available.</li>
+
+<li> (Interface) The 2.0 label in the title has been changed for 2</li>
+
+<li> This is the first minor version change released.  It fixes bugs and several issues in the core.</li>
+
+</ul>
+
+<p><b>Version 2.0</b></p>
+<a href="JavaScript:void(0)" onclick="document.getElementById('2.0').style.display='block';">Show</a>
+
+<div id="2.0" style="display:none">
 <ul>
 
 <li>(Interface) Problems with the display of BHMcat in browsers
@@ -17,3 +54,4 @@ rendered.</li>
 interface now run in the root of the webserver.</li>
 
 </ul>
+</div>
