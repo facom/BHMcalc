@@ -417,7 +417,7 @@ for i in range(0,Nsmoi):
      RX=starRX(Rossby,regime='custom',Rosat=star.Rosat,logRXsat=star.logRXsat,beta=star.beta)
      LX=L*RX*LSUN
      LXUV=starLXEUV(LX)
-     print LX,LXUV
+     #print LX,LXUV
 
      star.activity+=[tauc,fstar,Bequi,Bphoto,BTR,Rossby,
                      Mdot,Mdot_hot,Mdot_cold,MATR,
