@@ -1352,9 +1352,9 @@ def StandoffDistanceStiff(M,Pdyn,Rp):
     if Rs<1:Rs=1
     return Rs
 
-def massLoss(A,intflux,mu=44.0,alpha=0.3):
+def massLoss(A,intflux,alpha=0.3):
     Ap=A/2
-    ML=alpha*intflux*Ap*mu*MP    
+    ML=alpha*intflux*Ap*0.6*MP    
     return ML
 
 def massLossGiant(rho,intXUVflux):
@@ -1374,7 +1374,7 @@ def surfacePressure(Matm,M,R):
     R=R*REARTH
     A=4*np.pi*R**2
     g=GCONST*M/R**2
-    Patm=Matm*g/(2*A)/1E5
+    Patm=Matm*g/A/1E5
     return Patm
 
 ###################################################

@@ -1264,7 +1264,7 @@ def starRX(Ro,regime='middle',Rosat=0.16,logRXsat=-3.13,beta=-2.70):
     return RX
 
 def starLXEUV(LX):
-    LEUV=10**(4.8+0.86*np.log10(LX))
+    LEUV=10**(4.8+0.86*np.log10(LX*1E7))/1E7
     LXEUV=LX+LEUV
     #LXEUV=LX
     return LXEUV
@@ -2359,3 +2359,68 @@ def StellarGTRLTrack(Z,M,t,trackfunc):
         g=T=R=L=-1
     return g,T,R,L
     
+def calibrationFluxes(verbose=False):
+    """
+    This routine can be used to calibrate fluxes formulas.
+    """
+    alpha=0.3
+    muatm=16.0
+
+    #############################################################
+    # ENTRAINMENT
+    #############################################################
+    """
+    #VENUS
+    Rp=RVENUS/REARTH
+    Mp=MVENUS/MEARTH
+    g=GCONST*(Mp*MEARTH)/(Rp*REARTH)**2
+    r=0.723
+    v,n=stellarWind(1.0,1.0,MDOTSUN*YEAR/MSUN,r)
+    flux=v*n/SWPEL
+    #"""
+    
+    #EARTH
+    #"""
+    Rp=1.0
+    Mp=1.0
+    g=GCONST*(Mp*MEARTH)/(Rp*REARTH)**2
+    g=10.0
+    flux=1.0
+    #"""
+
+    A=4*PI*(Rp*REARTH)**2 #m^2
+    
+    influx=0.6*MP*flux*SWPEL #kg m^-2 s^-1
+    dotNl=2*PI*(Rp*REARTH)**2*influx*alpha/(muatm*MP) #ions s^-1
+    dotMl=dotNl*muatm*MP #kg s^-1
+    dotPl=dotMl*g/A/1E5
+    intPl=dotPl*GYR
+    
+    if verbose:
+        print "*"*80
+        print "REFERENCE FLUXES FOR ENTRAINMENT:"
+        print "Stellar wind flux: %e kg m^-2 s^-1"%influx
+        print "Stellar wind flux: %e part m^-2 s^-1"%(influx/(0.6*MP))
+        print "Particle flux: %e ions s^-1"%dotNl
+        print "Mass-loss: %e kg s^-1"%dotMl
+        print "Pressure loss rate: %e bars s^-1"%dotPl
+        print "Pressure loss: %e bars"%(intPl)
+        print "*"*80
+    
+    #############################################################
+    # PHOTOEVAPORATION
+    #############################################################
+    FXUV=1.0*PELSI
+    rho=1E3
+    dotM=3*FXUV/(4*GCONST*rho)
+    intM=dotM*GYR/MEARTH
+
+    if verbose:
+        print "*"*80
+        print "REFERENCE FLUXES FOR PHOTOEVAPORATION:"
+        print "XUV Flux: %e W m^-2"%PELSI
+        print "Mass-loss: %e kg s^-1"%dotM
+        print "Integrated Mass-loss: %e Mearth"%(intM)
+        print "*"*80
+
+    return dotM,intM,dotNl,dotPl,intPl

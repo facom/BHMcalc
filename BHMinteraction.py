@@ -90,9 +90,6 @@ planet,planet_dir,planet_str,planet_hash,planet_liv,planet_stg=\
 planet+=loadConf(planet_dir+"planet.data")
 tp,thermevol=interpMatrix(planet.thermevol)
 
-#print tp,planet.thermevol[0,9],thermevol[9](0.005)
-#exit(0)
-
 ###################################################
 #LOAD ENV OBJECT
 ###################################################
@@ -101,6 +98,7 @@ env,env_str,env_hash,env_dir=\
 env_webdir="/"+WEB_DIR+env_dir
 PRINTOUT("Object hash:%s"%env_hash)
 env.str_refobj=env.str_refobj.replace("'","")
+
 ###################################################
 #CALCULATE ENVIRONMENTAL CONDITIONS
 ###################################################
@@ -120,7 +118,7 @@ LumFlux Data:
 18:PSWin, 19:FSWin, 20:PSWout, 21:FSWout, 22:PSWp, 23:FSWp
 24:ntPSWin, 25:ntFSWin, 26:ntPSWout, 27:ntFSWout, 28:ntPSWp, 29:ntFSWp
 30:PSWins, 31:FSWins, 32:PSWouts, 33:FSWouts, 34:PSWeeqs, 35:FSWeeqs
-36:Rs,37:ntRs
+36:Rs,37:ntRs,38:sinRs,39:soutRs
 """
 
 """
@@ -143,7 +141,7 @@ ts,star2.binactivity_funcs=interpMatrix(rot.star2_binactivity)
 ts=chopArray(rot.star1_binactivity[:,0],env.tauini,rot.taumaxrot)
 PRINTOUT("Calculating radiation and plasma fluxes between %.3f - %.3f Gyr"%(ts[0],ts[-1]))
 
-env.lumflux=stack(37)
+env.lumflux=stack(39)
 for t in ts:
     
     #CUMULATOR
@@ -309,7 +307,14 @@ for t in ts:
     
     ntRs=StandoffDistance(Mdip*MDIPE,ntPSWp,planet.R*REARTH,
                           objref=env.str_refobj,nM=env.nM,nP=env.nP)
-    lumflux+=[Rs,ntRs]
+
+    sinRs=StandoffDistance(Mdip*MDIPE,PSWins,planet.R*REARTH,
+                           objref=env.str_refobj,nM=env.nM,nP=env.nP)
+
+    soutRs=StandoffDistance(Mdip*MDIPE,PSWouts,planet.R*REARTH,
+                           objref=env.str_refobj,nM=env.nM,nP=env.nP)
+
+    lumflux+=[Rs,ntRs,sinRs,soutRs]
 
     env.lumflux+=lumflux
 
@@ -329,82 +334,85 @@ for j in xrange(9,36):
 #ADD TIME COLUMN
 intflux=toStack(ts)|toStack(np.transpose(intflux))
 
-#//////////////////////////////
-#INSTANTANEOUS MASS-LOSSES
-#//////////////////////////////
-PRINTOUT("Calculating Mass-Loss...")
-facabs=GYR*SWPEL
-
-#NO TIDAL
-influx=np.interp(env.tauref,ts,intflux[:,21])
-ntMlp=massLoss(planet.A,facabs*influx,mu=env.muatm,alpha=env.alpha)
-ntPlp=surfacePressure(ntMlp,planet.M,planet.R)
-
-exit(0)
-
-#TIDAL
-
-#SINGLE PRIMARY
-
-
-#//////////////////////////////
-#MASS-LOSS EVOLUTION GIANTS
-#//////////////////////////////
-loadIceGasGiantsGrid(DATA_DIR+"IceGasGiants/",verbose=False)
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+#INSTANTANEOUS VALUES
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+tau=env.tauref
 ts,lumflux_func=interpMatrix(env.lumflux)
 ts,intflux_func=interpMatrix(intflux)
 
-Mc=0.0;
-Mcs='%d'%Mc
-Mcg=Mc*MEARTH/MJUP
-Mgmin=Giants[Mcs].time[0].Mjmin
-Mgmax=Giants[Mcs].time[0].Mjmax
+#XUV FLUX
+env.FXUVin=lumflux_func[9](tau)
+env.FXUVout=lumflux_func[10](tau)
+env.FXUVp=lumflux_func[11](tau)
 
-#GIANT MASSES
-Mgs=np.logspace(np.log10(Mgmin),np.log10(Mgmax),5)
-Mgs[0]=Mgmin
-Mgs[-1]=Mgmax
-Rgs=np.array([Giants[Mcs].Radius(M,env.tauini) for M in Mgs])
-rhogs=Mgs/(Rgs**3)*(MJUP/(4.0*PI/3*RJUP**3))
-Ngs=len(Mgs)
+env.FXUVins=lumflux_func[15](tau)
+env.FXUVouts=lumflux_func[16](tau)
+env.FXUVeeqs=lumflux_func[17](tau)
 
-#print Ngs;print Mgs;print Rgs;print rhogs;exit(0)
-if 'Gas' in planet.type:
-    massloss_gas=stack(Ngs+1)
-else:
-    massloss_gas=stack(Ngs)
+#STELLAR WIND FLUX
+env.FSWin=lumflux_func[19](tau)
+env.FSWout=lumflux_func[21](tau)
+env.FSWp=lumflux_func[23](tau)
 
-for t in ts:
-    i=0
-    #t=1.0
+env.FSWins=lumflux_func[31](tau)
+env.FSWouts=lumflux_func[33](tau)
+env.FSWeeqs=lumflux_func[35](tau)
 
-    mloss=[]
+#STELLAR WIND PRESSURE
+env.PSWin=lumflux_func[18](tau)
+env.PSWout=lumflux_func[20](tau)
+env.PSWp=lumflux_func[22](tau)
 
-    #INTEGRATED XUV FLUX
-    FXUV=lumflux_func[11](t)*PEL
-    intXUVflux=intflux_func[3](t)*GYR*PELSI
-    
-    #TOTAL MASS LOST
-    Mlgs=massLossGiant(rhogs,intXUVflux)
+env.PSWins=lumflux_func[30](tau)
+env.PSWouts=lumflux_func[32](tau)
+env.PSWeeqs=lumflux_func[34](tau)
 
-    #REMAINING MASS
-    Mrgs=Mgs*MJUP-Mlgs
+#CUMULATIVE 
 
-    #IF REMAINING MASS IS BELOW MINIMUM FIX AT MINIMUM
-    cond=Mrgs<Mc*MEARTH
-    Mrgs[cond]=Mc*MEARTH*np.ones_like(Mrgs[cond])
+#XUV FLUX
+env.intFXUVin=intflux_func[1](tau)
+env.intFXUVout=intflux_func[2](tau)
+env.intFXUVp=intflux_func[3](tau)
 
-    mloss+=list(Mlgs/MEARTH)
+env.sintFXUVin=intflux_func[7](tau)
+env.sintFXUVout=intflux_func[8](tau)
+env.sintFXUVeeq=intflux_func[9](tau)
 
-    if 'Gas' in planet.type:
-        Mlp=massLossGiant(planet.rho,intXUVflux)
-        Mrp=planet.Mg*MJUP-Mlp
-        if Mrp<Mc*MEARTH:Mrp=Mc*MEARTH
-        mloss+=[Mlp/MEARTH]
+#STELLAR WIND FLUX
+env.intFSWin=intflux_func[11](tau)
+env.intFSWout=intflux_func[13](tau)
+env.intFSWp=intflux_func[15](tau)
 
-    massloss_gas+=mloss
+env.sintFSWin=intflux_func[23](tau)
+env.sintFSWout=intflux_func[25](tau)
+env.sintFSWp=intflux_func[27](tau)
 
-massloss_gas=toStack(ts)|massloss_gas
+#//////////////////////////////
+#STANDOFF DISTANCE
+#//////////////////////////////
+env.Rs=lumflux_func[36](tau)
+env.sinRs=lumflux_func[38](tau)
+env.soutRs=lumflux_func[39](tau)
+
+#//////////////////////////////
+#FACTORS FOR MASS-LOSS
+#//////////////////////////////
+PRINTOUT("Calculating Mass-Loss...")
+env.dotM,env.intM,env.dotNl,env.dotPl,env.intPl=calibrationFluxes(verbose=True)
+
+#PHOTOEVAPORATION
+env.facM=(1E3/planet.rho)
+env.dotMp=env.dotM*env.facM*env.FXUVp
+env.intMp=env.intM*env.facM*env.intFXUVp
+
+#ENTRAINMENT
+env.facN=(planet.Rp)**2*(env.alpha/0.3)*(env.muatm/16.0)
+env.dotNp=env.dotNl*env.facN*env.FSWp
+env.intNp=env.dotNl*env.facN*env.intFSWp
+env.facP=(planet.g/10)*(env.alpha/0.3)*(env.muatm/16.0)
+env.dotPp=env.dotPl*env.facP*env.FSWp
+env.intPp=env.intPl*env.facP*env.intFSWp
 
 ###################################################
 #STORE ENVIRONMENT EVOLUTION
@@ -419,11 +427,19 @@ from numpy import array
 #TITLE
 title=r"%s"
 
-#PLANETARY MASS-LOSS
-Mlp=%.17e #kg
-Plp=%.17e #bars
-ntMlp=%.17e #kg
-ntPlp=%.17e #bars
+#REFERENCE VALUES
+PEL=%.17e #W m^-2
+SWPEL=%.17e #part m^-2 s^-1 
+
+#NORMALIZATION FACTORS FOR MASS-LOSS
+dotM=%.17e #kg s^-1 / PEL
+intM=%.17e #Mearth / (PEL*GYR)
+dotNl=%.17e #ions s^-1 / SWPEL
+dotPl=%.17e #bars s^-1 / SWPEL
+intPl=%.17e #bars / (SWPEL*GYR)
+facM=%.17e #kg / PEL
+facN=%.17e #ions / SWPEL
+facP=%.17e #bars / SWPEL
 
 #LUMFLUX
 lumflux=%s
@@ -431,29 +447,59 @@ lumflux=%s
 #INTEGRATED FLUXES
 intflux=%s
 
-#MASS LOSS SOLID BODIES
-massloss=%s
+#INSTANTANEOUS FLUXES AND DYNAMIC PRESSURE (AT TAUREF)
+FXUVin=%.17e #PEL
+FXUVout=%.17e #PEL
+FXUVp=%.17e #EPL
 
-#MASS LOSS GAS
-Mc=%.17e
-Mgs=%s
-Rgs=%s
-rhogs=%s
-massloss_gas=%s
+FSWin=%.17e #SWPEL
+FSWout=%.17e #SWPEL
+FSWp=%.17e #SWPEL
 
-Mmin=0.01
-Mmax=10.0
+PSWin=%.17e # Pa
+PSWout=%.17e # Pa
+PFSWp=%.17e # Pa
+
+#INTEGRATED FLUXES AND DYNAMIC PRESSURE (FROM TAUINI TO TAUREF)
+intFXUVin=%.17e #PEL*GYR
+intFXUVout=%.17e #PEL*GYR
+intFXUVp=%.17e #PEL*GYR
+
+intFSWin=%.17e #SWPEL*GYR
+intFSWout=%.17e #SWPEL*GYR
+intFSWp=%.17e #SWPEL*GYR
+
+#STANDOFF DISTANCE
+Rs=%.17e #Rp
+sinRs=%.17e #Rp
+soutRs=%.17e #Rp
+
+#PLANETARY MASS-LOSS
+
+#PHOTO-EVAPORATION
+dotMp=%.17e #kg s^-1
+intMp=%.17e #Mearth
+
+#ENTRAINMENT
+dotNp=%.17e #kg s^-1
+dotPp=%.17e #bars s^-1
+intPp=%.17e #bars
 
 """%(env.title,
-     Mlp,Plp,ntMlp,ntPlp,
+     PELSI,SWPEL,
+     env.dotM,env.intM,
+     env.dotNl,env.dotPl,env.intPl,
+     env.facM,env.facN,env.facP,
      array2str(env.lumflux),
      array2str(intflux),
-     array2str(massloss),
-     Mcg,
-     array2str(Mgs),
-     array2str(Rgs),
-     array2str(rhogs),
-     array2str(massloss_gas)
+     env.FXUVin,env.FXUVout,env.FXUVp,
+     env.FSWin,env.FSWout,env.FSWp,
+     env.PSWin,env.PSWout,env.PSWp,
+     env.intFXUVin,env.intFXUVout,env.intFXUVp,
+     env.intFSWin,env.intFSWout,env.intFSWp,
+     env.Rs,env.sinRs,env.soutRs,
+     env.dotMp,env.intMp,
+     env.dotNp,env.dotPp,env.intPp
      ))
 f.close()
 #### END COMMENT ####
@@ -464,62 +510,9 @@ f.close()
 PRINTERR("Creating plots...")
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-#MASS-LOSS GAS
-#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-plotFigure(env_dir,"mass-loss-gas",\
-"""
-from BHM.BHMstars import *
-env=\
-loadConf("%s"+"interaction.conf")+\
-loadConf("%s"+"interaction.data")
-planet=\
-loadConf("%s"+"planet.conf")+\
-loadConf("%s"+"planet.data")
-rot=\
-loadConf("%s"+"rotation.conf")+\
-loadConf("%s"+"rotation.data")
-
-fig=plt.figure(figsize=(8,6))
-ax=fig.add_axes([0.1,0.1,0.8,0.8])
-
-ts=env.massloss_gas[:,0]
-
-colors=['b','r']
-for i in xrange(len(env.Mgs)):
-    icol=i+1
-    ax.plot(ts,env.massloss_gas[:,icol],linewidth=2*icol/3.0,color=colors[i%%2])
-
-Mgstr=""
-for Mg in env.Mgs:
-    Mgstr+="%%.1f, "%%(Mg*(MJUP/MEARTH))
-
-Mgstr=Mgstr.strip()
-Mgstr=Mgstr.strip(",")
-Mgstr=Mgstr.replace("\\t","\\\\\\\\t")
-ax.text(0.95,0.05,r"$M_{\\rm p}$ = %%s $M_{\\rm Earth}$"%%Mgstr,horizontalalignment='right',fontsize=12,transform=ax.transAxes)
-
-if 'Gas' in planet.type:
-    ax.plot(ts,env.massloss_gas[:,-1],linewidth=2,color='k',label=r'Planet, $M_{\\rm p}$ = %%.2f $M_{\\rm Earth}$'%%planet.M)
-
-ax.set_xscale("log")
-ax.set_yscale("log")
-ax.set_xlim((env.tauini,rot.taumaxrot))
-#ax.set_ylim((env.Mc,env.Mgs[-1]))
-
-ax.set_title(env.title,position=(0.5,1.02),fontsize=12)
-ax.legend(loc='upper right',prop=dict(size=10))
-
-ax.set_xlabel(r"$\\tau$ (Gyr)")
-ax.set_ylabel(r"$M_{\\rm loss,H/He}$ ($M_{\\rm Earth}$)")
-"""%(env_dir,env_dir,
-     planet_dir,planet_dir,
-     rot_dir,rot_dir
-     ),watermarkpos='outer')
-
-#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 #XUV FLUX ABSOLUTE
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-plotFigure(env_dir,"flux-XUV-absolute",\
+plotFigure(env_dir,"flux-XUV",\
 """
 from BHM.BHMstars import *
 env=\
@@ -534,27 +527,49 @@ loadConf("%s"+"rotation.data")
 
 fig=plt.figure(figsize=(8,6))
 ax=fig.add_axes([0.1,0.1,0.8,0.8])
+ax2=ax.twinx()
 
 ts=env.lumflux[:,0]
+
 #AREAS
-ax.fill_between(ts,env.lumflux[:,9],env.lumflux[:,10],color='g',alpha=0.3)
-ax.fill_between(ts,env.lumflux[:,12],env.lumflux[:,13],color='r',alpha=0.3)
 ax.fill_between(ts,env.lumflux[:,15],env.lumflux[:,16],color='k',alpha=0.2)
-ax.plot([0],[0],color='g',alpha=0.3,linewidth=10,label='Tidal')
-ax.plot([0],[0],color='r',alpha=0.3,linewidth=10,label='No Tidal')
-ax.plot([0],[0],color='k',alpha=0.3,linewidth=10,label='Single Primary')
+ax.fill_between(ts,env.lumflux[:,9],env.lumflux[:,10],color='g',alpha=0.3)
+ax.plot([0],[0],color='g',alpha=0.3,linewidth=10,label='BHZ')
+ax.plot([0],[0],color='k',alpha=0.3,linewidth=10,label='Single Primary HZ')
 
 #PLANET
-ax.plot(ts,env.lumflux[:,11],'k-',label=r'Planet $a_{\\rm p}$=%%.2f AU'%%planet.aorb)
-ax.plot(ts,env.lumflux[:,14],'k--',label='Planet (no tidal)')
-ax.plot(ts,env.lumflux[:,17],'k:',label='Earth-analogue single primary')
+ax.plot(ts,env.lumflux[:,11],'k-',linewidth=2,label=r'Planet $a_{\\rm p}$=%%.2f AU'%%planet.aorb)
+ax.plot(ts,env.lumflux[:,17],'k--',linewidth=2,label='Single Primary Earth Analogue')
+
+ax.text(4.56,1.0,r"$\\oplus$",
+        horizontalalignment='center',verticalalignment='center',
+        fontsize=20)
 
 ax.set_xscale("log")
-ax.set_yscale("log")
 ax.set_xlim((env.tauini,rot.taumaxrot))
 
+for axt in ax,ax2:
+   axt.set_yscale("log")
+ymin,ymax=ax.get_ylim()
+ax2.set_ylim((ymin,ymax))
+
+#MASS-LOSS AXIS
+xl=[]
+xt=ax2.get_yticks()
+for x in xt:
+   Ml=x*env.facM*env.dotM
+   lexp=np.floor(np.log10(Ml))
+   mant=Ml/10**lexp
+   xl+=["$10^{%%d}$"%%lexp]
+ax2.set_yticklabels(xl)
+ax.text(1.07,0.5,r"${\\dot M}_{\\rm Photo}$ ($\\times %%.2f\\;{\\rm kg\\cdot\\,s}^{-1}$), $\\rho_p = %%.2f\\;{\\rm g/cm}^3$"%%(mant,planet.rho/1E3),
+        rotation=90,
+        horizontalalignment='left',verticalalignment='center',
+        transform=ax.transAxes)
+
 ax.set_title(env.title,position=(0.5,1.02),fontsize=12)
-ax.legend(loc='upper right',prop=dict(size=10))
+ax.legend(loc='lower left',prop=dict(size=10))
+ax.grid(which="both",zorder=-10)
 
 ax.set_xlabel(r"$\\tau$ (Gyr)")
 ax.set_ylabel(r"$F_{\\rm XUV}$ (PEL)")
@@ -562,12 +577,12 @@ ax.set_ylabel(r"$F_{\\rm XUV}$ (PEL)")
      planet_dir,planet_dir,
      rot_dir,rot_dir
      ),
-           watermarkpos='outer')
+           watermarkpos='inner')
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 #SW FLUX ABSOLUTE
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-plotFigure(env_dir,"flux-SW-absolute",\
+plotFigure(env_dir,"flux-SW",\
 """
 from BHM.BHMstars import *
 env=\
@@ -586,25 +601,91 @@ ax=fig.add_axes([0.1,0.1,0.8,0.8])
 ts=env.lumflux[:,0]
 
 #AREAS
-ax.fill_between(ts,env.lumflux[:,19],env.lumflux[:,21],color='g',alpha=0.3,label='Tidal')
-ax.fill_between(ts,env.lumflux[:,25],env.lumflux[:,27],color='r',alpha=0.3,label='No tidal')
-ax.fill_between(ts,env.lumflux[:,31],env.lumflux[:,33],color='k',alpha=0.2,label='Single Primary')
-ax.plot([0],[0],color='g',alpha=0.3,linewidth=10,label='Tidal')
-ax.plot([0],[0],color='r',alpha=0.3,linewidth=10,label='No Tidal')
-ax.plot([0],[0],color='k',alpha=0.3,linewidth=10,label='Single Primary')
+ax.fill_between(ts,env.lumflux[:,31],env.lumflux[:,33],color='k',alpha=0.2)
+ax.fill_between(ts,env.lumflux[:,19],env.lumflux[:,21],color='g',alpha=0.3)
+ax.plot([0],[0],color='g',alpha=0.3,linewidth=10,label='BHZ')
+ax.plot([0],[0],color='k',alpha=0.3,linewidth=10,label='Single Primary HZ')
 
-ax.plot(ts,env.lumflux[:,23],'k-',label=r'Planet $a_{\\rm p}$=%%.2f AU'%%planet.aorb)
-ax.plot(ts,env.lumflux[:,29],'k--',label='Planet (no tidal)')
-ax.plot(ts,env.lumflux[:,35],'k:',label='Earth-analogue single primary')
+ax.plot(ts,env.lumflux[:,23],'k-',linewidth=2,label=r'Planet $a_{\\rm p}$=%%.2f AU'%%planet.aorb)
+ax.plot(ts,env.lumflux[:,35],'k--',linewidth=2,label='Single Primary Earth-analogue')
+
+ax.text(4.56,1.0,r"$\\oplus$",
+        horizontalalignment='center',verticalalignment='center',
+        fontsize=20)
 
 ax.set_xscale("log")
 ax.set_yscale("log")
 ax.set_xlim((env.tauini,rot.taumaxrot))
 
+#MASS-LOSS AXIS
+xmin,xmax=ax.get_xlim()
+xt=ax.get_yticks()
+for x in xt:
+   Ml=x*env.facN*env.dotNl
+   lexp=np.floor(np.log10(Ml))
+   mant=Ml/10**lexp
+   ax.text(xmax,x,"$10^{%%d}$"%%lexp,verticalalignment='center',transform=offSet(5,0))
+ax.text(1.07,0.5,r"${\\dot N}$ ($\\times %%.2f\;{\\rm ions\\cdot s}^{-1}$), $R_p = %%.2f\,R_\oplus$"%%(mant,planet.Rp),
+        rotation=90,
+        horizontalalignment='left',verticalalignment='center',
+        transform=ax.transAxes)
+
 ax.set_title(env.title,position=(0.5,1.02),fontsize=12)
-ax.legend(loc='upper right',prop=dict(size=10))
+ax.legend(loc='lower left',prop=dict(size=10))
+ax.grid(which="both",zorder=-10)
+
 ax.set_xlabel(r"$\\tau$ (Gyr)")
 ax.set_ylabel(r"$F_{\\rm SW}$ (PEL)")
+"""%(env_dir,env_dir,
+     planet_dir,planet_dir,
+     rot_dir,rot_dir
+     ),
+           watermarkpos='inner')
+
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+#SW FLUX ABSOLUTE
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+plotFigure(env_dir,"flux-PSW",\
+"""
+from BHM.BHMstars import *
+env=\
+loadConf("%s"+"interaction.conf")+\
+loadConf("%s"+"interaction.data")
+planet=\
+loadConf("%s"+"planet.conf")+\
+loadConf("%s"+"planet.data")
+rot=\
+loadConf("%s"+"rotation.conf")+\
+loadConf("%s"+"rotation.data")
+
+fig=plt.figure(figsize=(8,6))
+ax=fig.add_axes([0.12,0.1,0.8,0.8])
+
+ts=env.lumflux[:,0]
+
+#AREAS
+fac=1E-9
+ax.fill_between(ts,env.lumflux[:,30]/fac,env.lumflux[:,32]/fac,color='k',alpha=0.2,label='Single Primary HZ')
+ax.fill_between(ts,env.lumflux[:,18]/fac,env.lumflux[:,20]/fac,color='g',alpha=0.3,label='BHZ')
+ax.plot([0],[0],color='g',alpha=0.3,linewidth=10,label='BHZ')
+ax.plot([0],[0],color='k',alpha=0.3,linewidth=10,label='Single Primary HZ')
+
+ax.plot(ts,env.lumflux[:,22]/fac,'k-',linewidth=2,label=r'Planet $a_{\\rm p}$=%%.2f AU'%%planet.aorb)
+ax.plot(ts,env.lumflux[:,34]/fac,'k--',linewidth=2,label='Single Primary Earth-analogue')
+
+ax.set_xscale("log")
+ax.set_yscale("log")
+ax.set_xlim((env.tauini,rot.taumaxrot))
+
+ax.text(4.56,1.0,r"$\\oplus$",
+        horizontalalignment='center',verticalalignment='center',
+        fontsize=20)
+
+ax.set_title(env.title,position=(0.5,1.02),fontsize=12)
+ax.legend(loc='lower left',prop=dict(size=10))
+ax.grid(which='both')
+ax.set_xlabel(r"$\\tau$ (Gyr)")
+ax.set_ylabel(r"$P_{\\rm SW}$ (${\\rm nPa}$)")
 """%(env_dir,env_dir,
      planet_dir,planet_dir,
      rot_dir,rot_dir
@@ -614,7 +695,7 @@ ax.set_ylabel(r"$F_{\\rm SW}$ (PEL)")
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 #INTEGRATED FXUV
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-plotFigure(env_dir,"int-XUV-absolute",\
+plotFigure(env_dir,"int-XUV",\
 """
 from BHM.BHMstars import *
 env=\
@@ -628,60 +709,82 @@ loadConf("%s"+"rotation.conf")+\
 loadConf("%s"+"rotation.data")
 
 fig=plt.figure(figsize=(8,6))
-ax=fig.add_axes([0.14,0.1,0.80,0.8])
+ax=fig.add_axes([0.1,0.1,0.80,0.8])
 
 ts=env.intflux[:,0]
 
 #RANGES
-facabs=GYR*PELSI
-arrs=[facabs*env.intflux[:,1],facabs*env.intflux[:,2]]
-ax.fill_between(ts,facabs*env.intflux[:,1],facabs*env.intflux[:,2],color='g',alpha=0.3,label='Tidal')
-arrs+=[facabs*env.intflux[:,4],facabs*env.intflux[:,8]]
-ax.fill_between(ts,facabs*env.intflux[:,4],facabs*env.intflux[:,5],color='r',alpha=0.3,label='No tidal')
+arrs=[]
+facabs=1
+
 arrs+=[facabs*env.intflux[:,7],facabs*env.intflux[:,8]]
-ax.fill_between(ts,facabs*env.intflux[:,7],facabs*env.intflux[:,8],color='k',alpha=0.2,label='Single Primary')
-ax.plot([0],[0],color='g',alpha=0.3,linewidth=10,label='Tidal')
-ax.plot([0],[0],color='r',alpha=0.3,linewidth=10,label='No Tidal')
-ax.plot([0],[0],color='k',alpha=0.3,linewidth=10,label='Single Primary')
+ax.fill_between(ts,facabs*env.intflux[:,7],facabs*env.intflux[:,8],color='k',alpha=0.2,label='Single Primary HZ')
+
+arrs=[facabs*env.intflux[:,1],facabs*env.intflux[:,2]]
+ax.fill_between(ts,facabs*env.intflux[:,1],facabs*env.intflux[:,2],color='g',alpha=0.3,label='BHZ')
+
+ax.plot([0],[0],color='g',alpha=0.3,linewidth=10,label='BHZ')
+ax.plot([0],[0],color='k',alpha=0.3,linewidth=10,label='Single Primary HZ')
 
 #PLANET
-arrs+=[facabs*env.intflux[:,3],facabs*env.intflux[:,6]]
-ax.plot(ts,facabs*env.intflux[:,3],'k-',label=r'Planet $a_{\\rm p}$=%%.2f AU'%%planet.aorb)
-ax.plot(ts,facabs*env.intflux[:,6],'k--',label='Planet (no tidal)')
-ax.plot(ts,facabs*env.intflux[:,9],'k:',label='Earth-analogue single primary')
+arrs+=[facabs*env.intflux[:,3],facabs*env.intflux[:,9]]
+ax.plot(ts,facabs*env.intflux[:,3],'k-',linewidth=2,label=r'Planet $a_{\\rm p}$=%%.2f AU'%%planet.aorb)
+ax.plot(ts,facabs*env.intflux[:,9],'k--',linewidth=2,label='Single Primary Earth-Analogue')
 
 ymin,ymean,ymax=minmeanmaxArrays(arrs)
 expscl=int(np.log10(ymax))
 scl=10**expscl
 
 ax.set_xscale("log")
-ax.set_yscale("log")
+ax.set_xlim((env.tauini,rot.taumaxrot))
 
+ax.set_yscale("log")
+ylow=max(ymin,ymean/10)
+ax.set_ylim((ylow,ymax))
+xt=ax.get_yticks()
+logTickLabels(ax,-1,3,(2,),axis="y",frm='%%.0f',fontsize=12)
+xt2=ax.get_yticks()
+
+#MASS-LOSS AXIS
+xmin,xmax=ax.get_xlim()
+for x in xt:
+   if x<ylow or x>ymax:continue
+   Ml=x*env.intM*env.facM
+   lexp=np.floor(np.log10(Ml))
+   mant=Ml/10**lexp
+   ax.text(xmax,x,"$10^{%%d}$"%%lexp,verticalalignment='center',transform=offSet(5,0))
+
+#SECONDARY TICKS
+for x in xt2:
+   if x<ylow or x>ymax:continue
+   Ml=x*env.intM*env.facM
+   lexp=np.floor(np.log10(Ml/mant))
+   val=Ml/10**lexp/mant
+   if np.abs(val-1)<1E-3:continue
+   ax.text(xmax,x,r"$%%.0f\\times$"%%(val),verticalalignment='center',transform=offSet(5,0),fontsize=10)
+
+ax.text(1.07,0.5,r"${\\Delta M}_{\\rm Photo}$ [$\\times %%.2f\;M_\oplus$], $\\rho_p = %%.2f\\;{\\rm g/cm}^3$"%%(mant,planet.rho/1E3),
+        rotation=90,
+        horizontalalignment='left',verticalalignment='center',
+        transform=ax.transAxes)
+
+ax.set_ylim((ylow,ymax))
 ax.set_title(env.title,position=(0.5,1.02),fontsize=12)
+ax.grid(which="both")
 ax.legend(loc='lower right',prop=dict(size=10))
 ax.set_xlabel(r"$\\tau$ (Gyr)")
-ax.set_ylabel(r"$\int_{%%.2f\,{\\rm Gyr}}^{\\tau} F_{\\rm XUV}(t)\,dt$ (${\\rm j/m}^2$)"%%(env.tauini))
-# \\times 10^{%%d}\,
-# yt=ax.get_yticks()
-# yl=[]
-# for y in yt:
-#     iy=np.log10(y/scl) 
-#     if iy==0:yl+=["$1$"]
-#     else:yl+=["$10^{%%d}$"%%(iy)]
-# ax.set_yticklabels(yl)
+ax.set_ylabel(r"$\\Phi_{\\rm XUV}(\\tau\,;\,\\tau_{\\rm ini})$")
 
-ax.set_ylim((max(ymin,ymean/10),ymax))
-ax.set_xlim((env.tauini,rot.taumaxrot))
 """%(env_dir,env_dir,
      planet_dir,planet_dir,
      rot_dir,rot_dir
      ),
-           watermarkpos='outer')
+           watermarkpos='inner')
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-#INTEGRATED SW
+#INTEGRATED FSW
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-plotFigure(env_dir,"int-SW-absolute",\
+plotFigure(env_dir,"int-SW",\
 """
 from BHM.BHMstars import *
 env=\
@@ -695,55 +798,79 @@ loadConf("%s"+"rotation.conf")+\
 loadConf("%s"+"rotation.data")
 
 fig=plt.figure(figsize=(8,6))
-ax=fig.add_axes([0.14,0.1,0.80,0.8])
+ax=fig.add_axes([0.1,0.1,0.80,0.8])
 
 ts=env.intflux[:,0]
-facabs=GYR*SWPEL
 
 #RANGES
-arrs=[facabs*env.intflux[:,11],facabs*env.intflux[:,13]]
-ax.fill_between(ts,facabs*env.intflux[:,11],facabs*env.intflux[:,13],color='g',alpha=0.3,label='Tidal')
-arrs+=[facabs*env.intflux[:,17],facabs*env.intflux[:,19]]
-ax.fill_between(ts,facabs*env.intflux[:,17],facabs*env.intflux[:,19],color='r',alpha=0.3,label='No tidal')
+arrs=[]
+facabs=1
+
 arrs+=[facabs*env.intflux[:,23],facabs*env.intflux[:,25]]
-ax.fill_between(ts,facabs*env.intflux[:,23],facabs*env.intflux[:,25],color='k',alpha=0.2,label='Single Primary')
-ax.plot([0],[0],color='g',alpha=0.3,linewidth=10,label='Tidal')
-ax.plot([0],[0],color='r',alpha=0.3,linewidth=10,label='No Tidal')
-ax.plot([0],[0],color='k',alpha=0.3,linewidth=10,label='Single Primary')
+ax.fill_between(ts,facabs*env.intflux[:,23],facabs*env.intflux[:,25],color='k',alpha=0.2,label='Single Primary HZ')
+
+arrs=[facabs*env.intflux[:,11],facabs*env.intflux[:,13]]
+ax.fill_between(ts,facabs*env.intflux[:,11],facabs*env.intflux[:,13],color='g',alpha=0.3,label='BHZ')
+
+ax.plot([0],[0],color='g',alpha=0.3,linewidth=10,label='BHZ')
+ax.plot([0],[0],color='k',alpha=0.3,linewidth=10,label='Single Primary HZ')
 
 #PLANET
-arrs+=[facabs*env.intflux[:,15],facabs*env.intflux[:,21]]
-ax.plot(ts,facabs*env.intflux[:,15],'k-',label=r'Planet $a_{\\rm p}$=%%.2f AU'%%planet.aorb)
-ax.plot(ts,facabs*env.intflux[:,21],'k--',label='Planet (no tidal)')
-ax.plot(ts,facabs*env.intflux[:,27],'k:',label='Earth-analogue single primary')
+arrs+=[facabs*env.intflux[:,15],facabs*env.intflux[:,27]]
+ax.plot(ts,facabs*env.intflux[:,15],'k-',linewidth=2,label=r'Planet $a_{\\rm p}$=%%.2f AU'%%planet.aorb)
+ax.plot(ts,facabs*env.intflux[:,27],'k--',linewidth=2,label='Single Primary Earth-Analogue')
 
 ymin,ymean,ymax=minmeanmaxArrays(arrs)
 expscl=int(np.log10(ymax))
 scl=10**expscl
 
 ax.set_xscale("log")
-ax.set_yscale("log")
-
-ax.set_title(env.title,position=(0.5,1.02),fontsize=12)
-ax.legend(loc='lower right',prop=dict(size=10))
-ax.set_xlabel(r"$\\tau$ (Gyr)")
-ax.set_ylabel(r"$\int_{%%.2f\,{\\rm Gyr}}^{\\tau} F_{\\rm SW}(t)\,dt$ (${\\rm ions/m}^2$)"%%(env.tauini))
-# $\\times 10^{%%d}\,
-# yt=ax.get_yticks()
-# yl=[]
-# for y in yt:
-#     iy=np.log10(y/scl) 
-#     if iy==0:yl+=["$1$"]
-#     else:yl+=["$10^{%%d}$"%%(iy)]
-# ax.set_yticklabels(yl)
-
-ax.set_ylim((max(ymin,ymean/10),ymax))
 ax.set_xlim((env.tauini,rot.taumaxrot))
+
+ax.set_yscale("log")
+ylow=max(ymin,ymean/10)
+ax.set_ylim((ylow,ymax))
+xt=ax.get_yticks()
+logTickLabels(ax,-1,3,(2,),axis="y",frm='$%%.0f\\times$',notation="sci",fontsize=11)
+xt2=ax.get_yticks()
+
+#MASS-LOSS AXIS
+xmin,xmax=ax.get_xlim()
+#MAIN TICKS
+mant=1.0
+for x in xt:
+   if x<ylow or x>ymax:continue
+   Ml=x*env.intPl*env.facP
+   lexp=np.floor(np.log10(Ml))
+   mant=Ml/10**lexp
+   ax.text(xmax,x,"$10^{%%d}$"%%lexp,verticalalignment='bottom',transform=offSet(5,0))
+
+#SECONDARY TICKS
+for x in xt2:
+   if x<ylow or x>ymax:continue
+   Ml=x*env.intPl*env.facP
+   lexp=np.floor(np.log10(Ml/mant))
+   val=Ml/10**lexp/mant
+   if np.abs(val-1)<1E-3:continue
+   ax.text(xmax,x,r"$%%.0f\\times$"%%(val),verticalalignment='center',transform=offSet(5,0),fontsize=10)
+
+ax.text(1.07,0.5,r"${\\Delta P}_{\\rm Ent}$ [$\\times %%.2f\;{\\rm bars}$], $R_p = %%.2f\,R_\oplus$"%%(mant,planet.Rp),
+        rotation=90,
+        horizontalalignment='left',verticalalignment='center',
+        transform=ax.transAxes)
+
+ax.set_ylim((ylow,ymax))
+ax.set_title(env.title,position=(0.5,1.02),fontsize=12)
+ax.grid(which="both")
+ax.legend(loc='lower right',prop=dict(size=10))
+ax.set_xlabel(r"$\\tau$ [Gyr]")
+ax.set_ylabel(r"$\\Phi_{\\rm SW}(\\tau\,;\,\\tau_{\\rm ini})$ [${\\rm SWPEL\\cdot\\,Gyr}$]")
+
 """%(env_dir,env_dir,
      planet_dir,planet_dir,
      rot_dir,rot_dir
      ),
-           watermarkpos='outer')
+           watermarkpos='inner')
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 #STANDOFF DISTANCE
@@ -763,127 +890,20 @@ ax=fig.add_axes([0.1,0.1,0.8,0.8])
 
 ts=env.lumflux[:,0]
 
-ax.plot(ts,env.lumflux[:,36],'k-',label='Tidal')
-ax.plot(ts,env.lumflux[:,37],'k--',label='No Tidal')
+ax.plot(ts,env.lumflux[:,36],'k-',label=r"Planet, $R_p$ = %%.2f $R_\\oplus$"%%planet.Rp)
+ax.fill_between(ts,env.lumflux[:,38],env.lumflux[:,39],color='k',alpha=0.2)
+ax.plot([],[],'k-',linewidth=10,alpha=0.2,label='Single Primary HZ')
 
 ax.text(0.05,0.05,planet.orbit,transform=ax.transAxes)
 ax.set_title(env.title,position=(0.5,1.02),fontsize=12)
-ax.legend(loc='lower right',prop=dict(size=10))
+ax.legend(loc='upper left',prop=dict(size=12))
 ax.set_xlabel(r"$\\tau$ (Gyr)")
 ax.set_ylabel(r"$R_{\\rm S}/R_{\\rm p}$")
 
+ax.set_xscale("log")
+
 #ymin,ymean,ymax=minmeanmaxArrays(arrs)
 #ax.set_xlim((max(ymin,ymean/10),ymax))
-"""%(env_dir,env_dir,
-     planet_dir,planet_dir),
-           watermarkpos='outer')
-
-#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-#MASS-LOSS (BARS)
-#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-plotFigure(env_dir,"mass-loss-absolute",\
-"""
-from BHM.BHMstars import *
-env=\
-loadConf("%s"+"interaction.conf")+\
-loadConf("%s"+"interaction.data")
-planet=\
-loadConf("%s"+"planet.conf")+\
-loadConf("%s"+"planet.data")
-
-fig=plt.figure(figsize=(8,6))
-ax=fig.add_axes([0.1,0.1,0.8,0.8])
-
-Mps=env.massloss[:,0]
-ax.fill_between(Mps,env.massloss[:,2],env.massloss[:,4],color='g',alpha=0.3)
-ax.fill_between(Mps,env.massloss[:,6],env.massloss[:,8],color='r',alpha=0.3)
-ax.fill_between(Mps,env.massloss[:,10],env.massloss[:,12],color='k',alpha=0.3)
-ax.plot(Mps,env.massloss[:,14],'k:',label="Earth-analogue single primary")
-ax.plot([0],[0],color='g',alpha=0.3,linewidth=10,label='Tidal')
-ax.plot([0],[0],color='r',alpha=0.3,linewidth=10,label='No Tidal')
-ax.plot([0],[0],color='k',alpha=0.3,linewidth=10,label='Single Primary')
-
-#PLANET
-if planet.M<env.Mmax:
-   ax.plot([planet.M],[env.Plp],'o',color='b',markeredgecolor='none',label=r"Planet, $a_{\\rm orb}$=%%.2f"%%(planet.aorb))
-   ax.plot([planet.M],[env.ntPlp],'s',color='r',markeredgecolor='none',label="Planet (No tidal)")
-
-ax.set_title(env.title,position=(0.5,1.02),fontsize=12)
-
-ax.set_xlabel(r"$M_{\\rm p}/M_{\\rm Earth}$")
-ax.set_ylabel(r"$P_{\\rm loss}$ (bars)")
-
-pmass=[MGANYMEDE,MMERCURY,MMARS,MVENUS]
-pnames=["Ganymede","Mercury","Mars","Venus"]
-for Mp,name in zip(pmass,pnames):
-    fp=Mp/MEARTH
-    fpt=(np.log10(fp)+2)/3.0-0.01
-    plt.axvline(fp,color='b')
-    plt.text(fpt,0.02,name,
-             rotation=90,
-             horizontalalignment='right',
-             verticalalignment='bottom',
-             #bbox=dict(fc='w',ec='none'),
-             transform=plt.gca().transAxes)
-
-ax.legend(loc='lower right',prop=dict(size=10))
-ax.set_xscale("log")
-ax.set_yscale("log")
-"""%(env_dir,env_dir,
-     planet_dir,planet_dir),
-           watermarkpos='outer')
-
-#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-#MASS-LOSS (RELATIVE)
-#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-plotFigure(env_dir,"mass-loss-relative",\
-"""
-from BHM.BHMstars import *
-env=\
-loadConf("%s"+"interaction.conf")+\
-loadConf("%s"+"interaction.data")
-planet=\
-loadConf("%s"+"planet.conf")+\
-loadConf("%s"+"planet.data")
-
-fig=plt.figure(figsize=(8,6))
-ax=fig.add_axes([0.1,0.1,0.8,0.8])
-
-Mps=env.massloss[:,0]
-ax.fill_between(Mps,env.massloss[:,1]/MEARTH/Mps,env.massloss[:,3]/MEARTH/Mps,color='g',alpha=0.3)
-ax.fill_between(Mps,env.massloss[:,5]/MEARTH/Mps,env.massloss[:,7]/MEARTH/Mps,color='r',alpha=0.3)
-ax.fill_between(Mps,env.massloss[:,9]/MEARTH/Mps,env.massloss[:,11]/MEARTH/Mps,color='k',alpha=0.3)
-ax.plot(Mps,env.massloss[:,13]/MEARTH/Mps,'k:',label="Earth-analogue single primary")
-ax.plot([0],[0],color='g',alpha=0.3,linewidth=10,label='Tidal')
-ax.plot([0],[0],color='r',alpha=0.3,linewidth=10,label='No Tidal')
-ax.plot([0],[0],color='k',alpha=0.3,linewidth=10,label='Single Primary')
-
-#PLANET
-if planet.M<env.Mmax:
-   ax.plot([planet.M],[env.Mlp/MEARTH/planet.M],'o',color='b',markeredgecolor='none',label=r"Planet, $a_{\\rm orb}$=%%.2f"%%(planet.aorb))
-   ax.plot([planet.M],[env.ntMlp/MEARTH/planet.M],'s',color='r',markeredgecolor='none',label="Planet (No tidal)")
-
-ax.set_title(env.title,position=(0.5,1.02),fontsize=12)
-
-ax.set_xlabel(r"$M_{\\rm p}/M_{\\rm Earth}$")
-ax.set_ylabel(r"$M_{\\rm loss}/M_{\\rm Earth}$")
-
-pmass=[MGANYMEDE,MMERCURY,MMARS,MVENUS]
-pnames=["Ganymede","Mercury","Mars","Venus"]
-for Mp,name in zip(pmass,pnames):
-    fp=Mp/MEARTH
-    fpt=(np.log10(fp)+2)/3.0-0.01
-    plt.axvline(fp,color='b')
-    plt.text(fpt,0.02,name,
-             rotation=90,
-             horizontalalignment='right',
-             verticalalignment='bottom',
-             #bbox=dict(fc='w',ec='none'),
-             transform=plt.gca().transAxes)
-
-ax.legend(loc='upper right',prop=dict(size=10))
-ax.set_xscale("log")
-ax.set_yscale("log")
 """%(env_dir,env_dir,
      planet_dir,planet_dir),
            watermarkpos='outer')
@@ -895,138 +915,173 @@ PRINTERR("Creating html report...")
 
 fh=open(env_dir+"interaction.html","w")
 fh.write("""\
+<!--VERSION:%s-->
 <head>
   <link rel="stylesheet" type="text/css" href="%s/web/BHM.css">
 </head>
-<h2>Binary-Planet Interaction</h2>
-<center>
-  <a target="_blank" href="%s/flux-XUV-absolute.png">
-    <img width=60%% src="%s/flux-XUV-absolute.png">
-  </a>
-  <br/>
-  <i>Evolution of XUV flux</i>
-  (
-  <a target="_blank" href="%s/flux-XUV-absolute.png.txt">data</a>|
-  <a target="_blank" href="%s/BHMreplot.php?dir=%s&plot=flux-XUV-absolute.py">replot</a>
-  )
-</center>
-<h3>XUV Flux</h3>
+
+<h2>Stars-Planet Interaction</h2>
+
+<h3>Plots</h3>
+
+<h3>Fluxes and Mass-loss Rates</h3>
+
 <table>
+
   <tr><td>
-      <a href="%s/flux-XUV-absolute.png" target="_blank">
-	<img width=100%% src="%s/flux-XUV-absolute.png">
+      <a href="%s/flux-XUV.png" target="_blank">
+	<img width=100%% src="%s/flux-XUV.png">
       </a>
       <br/>
-      <i>XUV Flux (absolute)</i>
+      <div class="caption">
+      <i>XUV Flux / Photoevaporation Mass-loss Rate</i>
 	(
-	<a href="%s/flux-XUV-absolute.png.txt" target="_blank">data</a>|
-	<a href="%s/BHMreplot.php?dir=%s&plot=flux-XUV-absolute.py" target="_blank">replot</a>
+	<a href="%s/flux-XUV.png.txt" target="_blank">data</a>|
+	<a href="%s/BHMreplot.php?dir=%s&plot=flux-XUV.py" target="_blank">replot</a>
 	)
+      </div>
   </td></tr>
+
   <tr><td>
-      <a href="%s/int-XUV-absolute.png" target="_blank">
-	<img width=100%% src="%s/int-XUV-absolute.png">
+      <a href="%s/flux-SW.png" target="_blank">
+	<img width=100%% src="%s/flux-SW.png">
       </a>
       <br/>
-      <i>Integrated XUV Flux (absolute)</i>
+      <div class="caption">
+      <i>SW Flux / Entrainment Particle-loss Rate</i>
 	(
-	<a href="%s/int-XUV-absolute.png.txt" target="_blank">data</a>|
-	<a href="%s/BHMreplot.php?dir=%s&plot=int-XUV-absolute.py" target="_blank">replot</a>
+	<a href="%s/flux-SW.png.txt" target="_blank">data</a>|
+	<a href="%s/BHMreplot.php?dir=%s&plot=flux-SW.py" target="_blank">replot</a>
 	)
+      </div>
   </td></tr>
+
 </table>
-<h3>Stellar Wind Flux</h3>
+
+<h3>Integrated Fluxes and Total Mass-losses</h3>
+
 <table>
+
   <tr><td>
-      <a href="%s/flux-SW-absolute.png" target="_blank">
-	<img width=100%% src="%s/flux-SW-absolute.png">
+      <a href="%s/int-XUV.png" target="_blank">
+	<img width=100%% src="%s/int-XUV.png">
       </a>
       <br/>
-      <i>SW Flux (absolute)</i>
+      <div class="caption">
+      <i>Integrated XUV Flux / Photoevaporation Total Mass-loss</i>
 	(
-	<a href="%s/flux-SW-absolute.png.txt" target="_blank">data</a>|
-	<a href="%s/BHMreplot.php?dir=%s&plot=flux-SW-absolute.py" target="_blank">replot</a>
+	<a href="%s/int-XUV.png.txt" target="_blank">data</a>|
+	<a href="%s/BHMreplot.php?dir=%s&plot=int-XUV.py" target="_blank">replot</a>
 	)
+      </div>
   </td></tr>
+
   <tr><td>
-      <a href="%s/int-SW-absolute.png" target="_blank">
-	<img width=100%% src="%s/int-SW-absolute.png">
+      <a href="%s/int-SW.png" target="_blank">
+	<img width=100%% src="%s/int-SW.png">
       </a>
       <br/>
-      <i>Integrated SW Flux (absolute)</i>
+      <div class="caption">
+      <i>Integrated SW Flux / Entrainment Total Particle-loss Rate</i>
 	(
-	<a href="%s/int-SW-absolute.png.txt" target="_blank">data</a>|
-	<a href="%s/BHMreplot.php?dir=%s&plot=int-SW-absolute.py" target="_blank">replot</a>
+	<a href="%s/int-SW.png.txt" target="_blank">data</a>|
+	<a href="%s/BHMreplot.php?dir=%s&plot=int-SW.py" target="_blank">replot</a>
 	)
+      </div>
   </td></tr>
+
 </table>
-<h3>Standoff distance</h3>
+
+<h3>Dynamic Pressure and Standoff Distance</h3>
+
 <table>
+
+  <tr><td>
+      <a href="%s/flux-PSW.png" target="_blank">
+	<img width=100%% src="%s/flux-PSW.png">
+      </a>
+      <br/>
+      <div class="caption">
+      <i>Dynamic Pressure</i>
+	(
+	<a href="%s/flux-PSW.png.txt" target="_blank">data</a>|
+	<a href="%s/BHMreplot.php?dir=%s&plot=flux-PSW.py" target="_blank">replot</a>
+	)
+      </div>
+  </td></tr>
+
   <tr><td>
       <a href="%s/standoff-distance.png" target="_blank">
 	<img width=100%% src="%s/standoff-distance.png">
       </a>
       <br/>
+      <div class="caption">
       <i>Standoff Distance</i>
 	(
 	<a href="%s/standoff-distance.png.txt" target="_blank">data</a>|
 	<a href="%s/BHMreplot.php?dir=%s&plot=standoff-distance.py" target="_blank">replot</a>
 	)
+      </div>
   </td></tr>
 </table>
-<h3>Mass-loss (solid objects)</h3>
+
+<h3>Input Parameters</h3>
 <table>
-  <tr><td>M<sub>loss,planet</sub> (Tidal, kg):</td><td>%.3e</td></tr>
-  <tr><td>P<sub>loss,planet</sub> (Tidal, bars):</td><td>%.3f</td></tr>
-  <tr><td>M<sub>loss,planet</sub> (No tidal, kg):</td><td>%.3e</td></tr>
-  <tr><td>P<sub>loss,planet</sub> (No tidal, bars):</td><td>%.3f</td></tr>
-  <tr><td colspan=2>
-      <a href="%s/mass-loss-absolute.png" target="_blank">
-	<img width=100%% src="%s/mass-loss-absolute.png">
-      </a>
-      <br/>
-      <i>Mass-loss (absolute)</i>
-	(
-	<a href="%s/mass-loss-absolute.png.txt" target="_blank">data</a>|
-	<a href="%s/BHMreplot.php?dir=%s&plot=mass-loss-absolute.py" target="_blank">replot</a>
-	)
-  </td></tr>
-  <tr><td colspan=2>
-      <a href="%s/mass-loss-relative.png" target="_blank">
-	<img width=100%% src="%s/mass-loss-relative.png">
-      </a>
-      <br/>
-      <i>Mass-loss (absolute)</i>
-	(
-	<a href="%s/mass-loss-relative.png.txt" target="_blank">data</a>|
-	<a href="%s/BHMreplot.php?dir=%s&plot=mass-loss-relative.py" target="_blank">replot</a>
-	)
-  </td></tr>
+  <tr><td colspan=2><b>Times</b></td></tr>
+  <tr><td>&tau;<sub>ini</sub> (Gyr)</td><td>%.3f</td></tr>
+  <tr><td>&tau;<sub>ref</sub> (Gyr)</td><td>%.3f</td></tr>
+  <tr><td colspan=2><b>Entrainment Parameters</b></td></tr>
+  <tr><td>&alpha;</td><td>%.3f</td></tr>
+  <tr><td>&mu;<sub>atm</sub></td><td>%.3f</td></tr>
+  <tr><td colspan=2><b>Magnetospheres</b></td></tr>
+  <tr><td>Reference Object</td><td>%s</td></tr>
+  <tr><td>n<sub>M</sub></td><td>%.1f</td></tr>
+  <tr><td>n<sub>P</sub></td><td>%.1f</td></tr>
 </table>
-<h3>Mass-loss (ice/gas planets)</h3>
+
+<h3>Reference Values</h3>
 <table>
-  <tr><td colspan=2>
-      <a href="%s/mass-loss-gas.png" target="_blank">
-	<img width=100%% src="%s/mass-loss-gas.png">
-      </a>
-      <br/>
-      <i>Mass-loss for giant planets</i>
-	(
-	<a href="%s/mass-loss-gas.png.txt" target="_blank">data</a>|
-	<a href="%s/BHMreplot.php?dir=%s&plot=mass-loss-gas.py" target="_blank">replot</a>
-	)
-  </td></tr>
+  <tr><td>PEL (W m<sup>-2</sup>)</td><td>%.3f</td></tr>
+  <tr><td>SWPEL (part m<sup>-2</sup> s<sup>-1</sup>)</td><td>%.3e</td></tr>
 </table>
-"""%(WEB_DIR,env_webdir,env_webdir,env_webdir,WEB_DIR,env_webdir,#FLUX XUV ABSOLUTE (INTRO)
-     env_webdir,env_webdir,env_webdir,WEB_DIR,env_webdir,#FLUX XUV ABSOLUTE
-     env_webdir,env_webdir,env_webdir,WEB_DIR,env_webdir,#INT XUV ABSOLUTE
-     env_webdir,env_webdir,env_webdir,WEB_DIR,env_webdir,#FLUX SW ABSOLUTE
-     env_webdir,env_webdir,env_webdir,WEB_DIR,env_webdir,#INT SW ABSOLUTE
-     env_webdir,env_webdir,env_webdir,WEB_DIR,env_webdir,#STANDOFF DISTANCE
-     Mlp,Plp,ntMlp,ntPlp,
-     env_webdir,env_webdir,env_webdir,WEB_DIR,env_webdir,#MASS-LOSS ABSOLUTE
-     env_webdir,env_webdir,env_webdir,WEB_DIR,env_webdir,#MASS-LOSS RELATIVE
-     env_webdir,env_webdir,env_webdir,WEB_DIR,env_webdir,#MASS-LOSS GAS
+
+<h3>Instantaneous values (&tau;=%.2f Gyr)</h3>
+<table>
+  <tr><td colspan=2><b>Fluxes</b></td></tr>
+  <tr><td>F<sub>XUV</sub> (in,out,planet) [PEL]</td><td>%.2f,%.2f,<b>%.2f</b></td></tr>
+  <tr><td>&Phi;<sub>XUV</sub> (in,out,planet) [SWPEL]</td><td>%.2e,%.2e,<b>%.2e</b></td></tr>
+  <tr><td>F<sub>SW</sub> (in,out,planet) [SWPEL]</td><td>%.2f,%.2f,<b>%.2f</b></td></tr>
+  <tr><td>&Phi;<sub>SW</sub> (in,out,planet) [SWPEL]</td><td>%.2e,%.2e,<b>%.2e</b></td></tr>
+  <tr><td colspan=2><b>Standoff Distance</b></td></tr>
+  <tr><td>P<sub>SW</sub> (in,out,planet) [SWPEL]</td><td>%.2e,%.2e,<b>%.2e</b></td></tr>
+  <tr><td>R<sub>s</sub> [R<sub>p</sub>] (single in, out)</td><td>%.2f (%.2f, %.2f)</td></tr>
+  <tr><td colspan=2><b>Mass-loss rates</b></td></tr>
+  <tr><td>Photo evaporation, dM/dt [kg s<sup>-1</sup>]</td><td>%.2e</td></tr>
+  <tr><td>Photo evaporation, &Delta;M [M<sub>Earth</sub>]</td><td>%.2e</td></tr>
+  <tr><td>Entrainment, dN/dt [s<sup>-1</sup>]</td><td>%.2e</td></tr>
+  <tr><td>Entrainment, dP/dt [bar s<sup>-1</sup>]</td><td>%.2e</td></tr>
+  <tr><td>Entrainment, &Delta;P [bar]</td><td>%.2e</td></tr>
+</table>
+"""%(VERSION,
+     WEB_DIR,
+     env_webdir,env_webdir,env_webdir,WEB_DIR,env_webdir,
+     env_webdir,env_webdir,env_webdir,WEB_DIR,env_webdir,
+     env_webdir,env_webdir,env_webdir,WEB_DIR,env_webdir,
+     env_webdir,env_webdir,env_webdir,WEB_DIR,env_webdir,
+     env_webdir,env_webdir,env_webdir,WEB_DIR,env_webdir,
+     env_webdir,env_webdir,env_webdir,WEB_DIR,env_webdir,
+     env.tauini,env.tauref,env.alpha,env.muatm,
+     env.str_refobj,env.nM,env.nP,
+     PEL,SWPEL,
+     env.tauref,
+     env.FXUVin,env.FXUVout,env.FXUVp,
+     env.intFXUVin,env.intFXUVout,env.intFXUVp,
+     env.FSWin,env.FSWout,env.FSWp,
+     env.intFSWin,env.intFSWout,env.intFSWp,
+     env.PSWin,env.PSWout,env.PSWp,
+     env.Rs,env.sinRs,env.soutRs,
+     env.dotMp,env.intMp,
+     env.dotNp,env.dotPp,env.intPp
      ))
 fh.close()
 

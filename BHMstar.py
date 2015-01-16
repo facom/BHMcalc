@@ -416,7 +416,8 @@ for i in range(0,Nsmoi):
      #X-RAY EMMISION
      RX=starRX(Rossby,regime='custom',Rosat=star.Rosat,logRXsat=star.logRXsat,beta=star.beta)
      LX=L*RX*LSUN
-     LXUV=starLXEUV(LX*1E7)/1E7
+     LXUV=starLXEUV(LX)
+     print LX,LXUV
 
      star.activity+=[tauc,fstar,Bequi,Bphoto,BTR,Rossby,
                      Mdot,Mdot_hot,Mdot_cold,MATR,
@@ -1235,6 +1236,10 @@ ts=star.activity[:,0]
 Ml=star.activity[:,7]
 
 ax.plot(ts,Ml)
+
+ax.text(4.56,MDOTSUN*YEAR/MSUN,r"$\\odot$",
+        horizontalalignment='center',verticalalignment='center',
+        fontsize=20)
 
 ax.set_xscale("log")
 ax.set_yscale("log")
