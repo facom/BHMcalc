@@ -541,7 +541,7 @@ ax2=ax.twinx()
 ts=env.lumflux[:,0]
 
 #AREAS
-ax.fill_between(ts,nominal.interaction.lumflux[:,15],
+ax.fill_between(tsnom,nominal.interaction.lumflux[:,15],
                    nominal.interaction.lumflux[:,16],color='r',alpha=0.2)
 ax.fill_between(ts,env.lumflux[:,15],env.lumflux[:,16],color='k',alpha=0.2)
 ax.fill_between(tsnom,env.lumflux[:,9],env.lumflux[:,10],color='g',alpha=0.3)
@@ -699,7 +699,7 @@ ts=env.lumflux[:,0]
 
 #AREAS
 fac=1E-9
-ax.fill_between(ts,nominal.interaction.lumflux[:,30]/fac,
+ax.fill_between(tsnom,nominal.interaction.lumflux[:,30]/fac,
                    nominal.interaction.lumflux[:,32]/fac,
                    color='r',alpha=0.3,label='Solar System HZ')
 ax.fill_between(ts,env.lumflux[:,30]/fac,
@@ -769,7 +769,7 @@ arrs=[]
 facabs=1
 
 arrs+=[facabs*nominal.interaction.intflux[:,7],facabs*nominal.interaction.intflux[:,8]]
-ax.fill_between(ts,facabs*nominal.interaction.intflux[:,7],facabs*nominal.interaction.intflux[:,8],color='r',alpha=0.2,label='Single Primary HZ')
+ax.fill_between(tsnom,facabs*nominal.interaction.intflux[:,7],facabs*nominal.interaction.intflux[:,8],color='r',alpha=0.2,label='Single Primary HZ')
 
 arrs+=[facabs*env.intflux[:,7],facabs*env.intflux[:,8]]
 ax.fill_between(ts,facabs*env.intflux[:,7],facabs*env.intflux[:,8],color='k',alpha=0.2,label='Single Primary HZ')
@@ -872,7 +872,7 @@ arrs=[]
 facabs=1
 
 arrs+=[facabs*nominal.interaction.intflux[:,23],facabs*nominal.interaction.intflux[:,25]]
-ax.fill_between(ts,facabs*nominal.interaction.intflux[:,23],facabs*nominal.interaction.intflux[:,25],color='r',alpha=0.2,label='Single Primary HZ')
+ax.fill_between(tsnom,facabs*nominal.interaction.intflux[:,23],facabs*nominal.interaction.intflux[:,25],color='r',alpha=0.2,label='Single Primary HZ')
 
 arrs+=[facabs*env.intflux[:,23],facabs*env.intflux[:,25]]
 ax.fill_between(ts,facabs*env.intflux[:,23],facabs*env.intflux[:,25],color='k',alpha=0.2,label='Single Primary HZ')
@@ -969,7 +969,7 @@ ax=fig.add_axes([0.1,0.1,0.8,0.8])
 ts=env.lumflux[:,0]
 
 ax.plot(ts,env.lumflux[:,36],'k-',label=r"Planet, $R_p$ = %%.2f $R_\\oplus$"%%planet.Rp)
-ax.fill_between(ts,nominal.interaction.lumflux[:,38],
+ax.fill_between(tsnom,nominal.interaction.lumflux[:,38],
                    nominal.interaction.lumflux[:,39],color='r',alpha=0.2)
 ax.fill_between(ts,env.lumflux[:,38],env.lumflux[:,39],color='k',alpha=0.2)
 ax.plot([],[],'k-',linewidth=10,alpha=0.2,label='Single Primary HZ')
