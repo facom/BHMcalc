@@ -1731,6 +1731,7 @@ $bug_report=<<<B
 B;
 
 if($QCALCMODE){
+$comfile="$SYSDIR/template/configurations.html";
 $cfile="$SESSDIR/configurations.html";
 $ofile="$SESSDIR/objects.html";
 if(is_file($ofile)){
@@ -1738,6 +1739,14 @@ if(is_file($ofile)){
 }else{
   $objects="<i>No objects saved yet.</i>";
 }
+if(is_file($comfile)){
+  $comconfigurations=shell_exec("cat $comfile");
+  $comdownlink=<<<D
+<a href="$wSYSDIR/template/configurations.html" target="_blank" style="font-size:10px">
+  Download Configuration
+</a>
+D;
+}else{$comconfigurations="";$comdownlink="";}
 if(is_file($cfile)){
   $configurations=shell_exec("cat $cfile");
   $downlink=<<<D
@@ -1801,12 +1810,20 @@ $summary=<<<F
 	      <div class="listconfig" id="saveconfiguration"><ul>$configurations</ul></div>
 	      $downlink
 	    </li>
+
 	    <li class="summaryitem">
 	      Saved Objects:
 	      <div class="listconfig" id="saveobjects">
 		<ul>$objects</ul>
 	      </div>
 	    </li>
+
+	    <li class="summaryitem">
+		Community Configurations
+	      <div class="listconfig"><ul>$comconfigurations</ul></div>
+	      $comdownlink
+	    </li>
+
 	  </ul>
 	</div>
 	<div id="summary_results_panel" class="results">

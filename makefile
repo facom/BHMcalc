@@ -93,6 +93,17 @@ seedtemplate:
 	@python BHMrun.py BHMinteraction.py sys/template interaction.conf 
 	@make permissions
 
+packdata:
+	@echo "Packing data..."
+	@cd BHM/data && bash packdata.sh 
+	@echo "Done."
+
+unpackdata:
+	@echo "Unpacking data..."
+	@rm BHM/data/.lock
+	@bash BHM/BHMinstall.sh
+	@echo "Done."
+
 decrypt:
 	@echo "Decrypting Developer Guide..."
 	@openssl enc -d -aes-256-cbc -in docs/DEVELOPER.enc -out docs/DEVELOPER.txt
