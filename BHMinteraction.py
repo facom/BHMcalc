@@ -791,7 +791,8 @@ expscl=int(np.log10(ymax))
 scl=10**expscl
 
 ax.set_xscale("log")
-ax.set_xlim((env.tauini,rot.taumaxrot))
+#ax.set_xlim((env.tauini,rot.taumaxrot))
+ax.set_xlim((env.tauini,env.tauref))
 
 ax.set_yscale("log")
 ylow=max(ymin,ymean/10)
@@ -893,7 +894,8 @@ expscl=int(np.log10(ymax))
 scl=10**expscl
 
 ax.set_xscale("log")
-ax.set_xlim((env.tauini,rot.taumaxrot))
+#ax.set_xlim((env.tauini,rot.taumaxrot))
+ax.set_xlim((env.tauini,env.tauref))
 
 ax.set_yscale("log")
 ylow=max(ymin,ymean/10)
