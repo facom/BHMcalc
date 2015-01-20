@@ -4,7 +4,23 @@ Changes introduced in the most recent build/version:
 
 <ul>
 
-<li>
+<li> (Core) Insolation diagrams in the Habitability module have been
+considerably improved to be more readable.</li>
+
+<li> (Core) Solar reference model has been calculated and include into
+the data in the site.  Solar reference value now appear in the
+interaction plots.</li>
+
+<li> (Core) Bugs with the dependency tree of the modules have been
+corrected.</li>
+
+<li> (Core) Mass-loss is now calculated and include along the
+secondary y-axis in fluxes plots.  </li>
+
+<li> (Interface) The same as below for the interaction module. </li>
+
+<li> (Interface) Rotational evolution results have been better
+organized and instantaneous properties are now shown.</li>
 
 <li> (Core) LXUV instead of simply LX is calculated now.</li>
 

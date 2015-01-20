@@ -545,7 +545,7 @@ ax.axhline(binary.acrit,color='k',linewidth=2,linestyle='--',label=r'$a_{\\rm cr
 ax.axhline(planet.aorb,color='k',linewidth=2,label='Planet')
 
 #DECORATION
-ax.set_xlim((0.0,ihz.taums))
+ax.set_xlim((0.0,min(1.1*ihz.taums,ihz.ts[-1])))
 ax.set_ylim((min(ihz.shz[:,1]),ihz.loutmax))
 
 ax.set_xlabel(r"$\\tau$ (Gyr)",fontsize=12)

@@ -14,6 +14,9 @@
 To Do
 =====
 
+- Put the values of the factor to multiply fluxes in order to have
+  mass-losses.
+
 - When regenerating the BHMcat create: a recalculation script able to
   recalculate all the objects in the calculator from the command line.
 
