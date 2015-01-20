@@ -563,6 +563,7 @@ ax.text(0.05,rchz,"%%.2f AU"%%(ihz.clout),fontsize=10,
 horizontalalignment='center',verticalalignment='top',transform=ax.transAxes)
 ax.text(0.05,rihz,"%%.2f AU"%%(ihz.clin),fontsize=10,
 horizontalalignment='center',verticalalignment='bottom',transform=ax.transAxes)
+ax.grid(which="both")
 ax.legend(loc='best',prop=dict(size=12))
 """%(binary_dir,binary_dir,
      planet_dir,planet_dir,
