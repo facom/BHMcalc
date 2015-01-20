@@ -763,27 +763,31 @@ ax=fig.add_axes([0.1,0.1,0.80,0.8])
 
 ts=env.intflux[:,0]
 
+for tvec in 'ts','tsnom','tsfast','tsslow':
+    exec("cond=%%s<env.tauref"%%tvec)
+    exec("%%s=%%s[cond]"%%(tvec,tvec))
+
 #RANGES
 arrs=[]
 facabs=1
 
-arrs+=[facabs*nominal.interaction.intflux[:,7],facabs*nominal.interaction.intflux[:,8]]
-ax.fill_between(tsnom,facabs*nominal.interaction.intflux[:,7],facabs*nominal.interaction.intflux[:,8],color='r',alpha=0.2,label='Single Primary HZ')
+arrs+=[facabs*nominal.interaction.intflux[cond,7],facabs*nominal.interaction.intflux[cond,8]]
+ax.fill_between(tsnom,facabs*nominal.interaction.intflux[cond,7],facabs*nominal.interaction.intflux[cond,8],color='r',alpha=0.2,label='Single Primary HZ')
 
-arrs+=[facabs*env.intflux[:,7],facabs*env.intflux[:,8]]
-ax.fill_between(ts,facabs*env.intflux[:,7],facabs*env.intflux[:,8],color='k',alpha=0.2,label='Single Primary HZ')
+arrs+=[facabs*env.intflux[cond,7],facabs*env.intflux[cond,8]]
+ax.fill_between(ts,facabs*env.intflux[cond,7],facabs*env.intflux[cond,8],color='k',alpha=0.2,label='Single Primary HZ')
 
-arrs+=[facabs*env.intflux[:,1],facabs*env.intflux[:,2]]
-ax.fill_between(ts,facabs*env.intflux[:,1],facabs*env.intflux[:,2],color='g',alpha=0.3,label='BHZ')
+arrs+=[facabs*env.intflux[cond,1],facabs*env.intflux[cond,2]]
+ax.fill_between(ts,facabs*env.intflux[cond,1],facabs*env.intflux[cond,2],color='g',alpha=0.3,label='BHZ')
 
 ax.plot([0],[0],color='g',alpha=0.3,linewidth=10,label='BHZ')
 ax.plot([0],[0],color='k',alpha=0.3,linewidth=10,label='Single Primary HZ')
 ax.plot([0],[0],color='r',alpha=0.3,linewidth=10,label='Solar System HZ')
 
 #PLANET
-arrs+=[facabs*env.intflux[:,3],facabs*env.intflux[:,9]]
-ax.plot(ts,facabs*env.intflux[:,3],'k-',linewidth=2,label=r'Planet $a_{\\rm p}$=%%.2f AU'%%planet.aorb)
-#ax.plot(ts,facabs*env.intflux[:,9],'k--',linewidth=2,label='Single Primary Earth-Analogue')
+arrs+=[facabs*env.intflux[cond,3],facabs*env.intflux[cond,9]]
+ax.plot(ts,facabs*env.intflux[cond,3],'k-',linewidth=2,label=r'Planet $a_{\\rm p}$=%%.2f AU'%%planet.aorb)
+#ax.plot(ts,facabs*env.intflux[cond,9],'k--',linewidth=2,label='Single Primary Earth-Analogue')
 
 ymin,ymean,ymax=minmeanmaxArrays(arrs)
 
@@ -866,28 +870,31 @@ fig=plt.figure(figsize=(8,6))
 ax=fig.add_axes([0.1,0.1,0.80,0.8])
 
 ts=env.intflux[:,0]
+for tvec in 'ts','tsnom','tsfast','tsslow':
+    exec("cond=%%s<env.tauref"%%tvec)
+    exec("%%s=%%s[cond]"%%(tvec,tvec))
 
 #RANGES
 arrs=[]
 facabs=1
 
-arrs+=[facabs*nominal.interaction.intflux[:,23],facabs*nominal.interaction.intflux[:,25]]
-ax.fill_between(tsnom,facabs*nominal.interaction.intflux[:,23],facabs*nominal.interaction.intflux[:,25],color='r',alpha=0.2,label='Single Primary HZ')
+arrs+=[facabs*nominal.interaction.intflux[cond,23],facabs*nominal.interaction.intflux[cond,25]]
+ax.fill_between(tsnom,facabs*nominal.interaction.intflux[cond,23],facabs*nominal.interaction.intflux[cond,25],color='r',alpha=0.2,label='Single Primary HZ')
 
-arrs+=[facabs*env.intflux[:,23],facabs*env.intflux[:,25]]
-ax.fill_between(ts,facabs*env.intflux[:,23],facabs*env.intflux[:,25],color='k',alpha=0.2,label='Single Primary HZ')
+arrs+=[facabs*env.intflux[cond,23],facabs*env.intflux[cond,25]]
+ax.fill_between(ts,facabs*env.intflux[cond,23],facabs*env.intflux[cond,25],color='k',alpha=0.2,label='Single Primary HZ')
 
-arrs+=[facabs*env.intflux[:,11],facabs*env.intflux[:,13]]
-ax.fill_between(ts,facabs*env.intflux[:,11],facabs*env.intflux[:,13],color='g',alpha=0.3,label='BHZ')
+arrs+=[facabs*env.intflux[cond,11],facabs*env.intflux[cond,13]]
+ax.fill_between(ts,facabs*env.intflux[cond,11],facabs*env.intflux[cond,13],color='g',alpha=0.3,label='BHZ')
 
 ax.plot([0],[0],color='g',alpha=0.3,linewidth=10,label='BHZ')
 ax.plot([0],[0],color='k',alpha=0.3,linewidth=10,label='Single Primary HZ')
 ax.plot([0],[0],color='r',alpha=0.3,linewidth=10,label='Solar System HZ')
 
 #PLANET
-arrs+=[facabs*env.intflux[:,15],facabs*env.intflux[:,27]]
-ax.plot(ts,facabs*env.intflux[:,15],'k-',linewidth=2,label=r'Planet $a_{\\rm p}$=%%.2f AU'%%planet.aorb)
-#ax.plot(ts,facabs*env.intflux[:,27],'k--',linewidth=2,label='Single Primary Earth-Analogue')
+arrs+=[facabs*env.intflux[cond,15],facabs*env.intflux[cond,27]]
+ax.plot(ts,facabs*env.intflux[cond,15],'k-',linewidth=2,label=r'Planet $a_{\\rm p}$=%%.2f AU'%%planet.aorb)
+#ax.plot(ts,facabs*env.intflux[cond,27],'k--',linewidth=2,label='Single Primary Earth-Analogue')
 
 ymin,ymean,ymax=minmeanmaxArrays(arrs)
 expscl=int(np.log10(ymax))
