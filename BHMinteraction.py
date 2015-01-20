@@ -551,8 +551,7 @@ ax.plot([0],[0],color='r',alpha=0.3,linewidth=10,label='Solar Sytem HZ')
 
 #PLANET
 ax.plot(ts,env.lumflux[:,11],'k-',linewidth=2,label=r'Planet $a_{\\rm p}$=%%.2f AU'%%planet.aorb)
-ax.plot(ts,env.lumflux[:,17],'k--',linewidth=2,label='Single Primary Earth Analogue')
-
+#ax.plot(ts,env.lumflux[:,17],'k--',linewidth=2,label='Single Primary Earth Analogue')
 
 ax.text(4.56,1.0,r"$\\oplus$",
         horizontalalignment='center',verticalalignment='center',
@@ -632,7 +631,7 @@ ax.plot([0],[0],color='k',alpha=0.3,linewidth=10,label='Single Primary HZ')
 ax.plot([0],[0],color='r',alpha=0.3,linewidth=10,label='Solar System HZ')
 
 ax.plot(ts,env.lumflux[:,23],'k-',linewidth=2,label=r'Planet $a_{\\rm p}$=%%.2f AU'%%planet.aorb)
-ax.plot(ts,env.lumflux[:,35],'k--',linewidth=2,label='Single Primary Earth-analogue')
+#ax.plot(ts,env.lumflux[:,35],'k--',linewidth=2,label='Single Primary Earth-analogue')
 
 ax.text(4.56,1.0,r"$\\oplus$",
         horizontalalignment='center',verticalalignment='center',
@@ -712,7 +711,7 @@ ax.plot([0],[0],color='k',alpha=0.3,linewidth=10,label='Single Primary HZ')
 ax.plot([0],[0],color='r',alpha=0.3,linewidth=10,label='Solar System HZ')
 
 ax.plot(ts,env.lumflux[:,22]/fac,'k-',linewidth=2,label=r'Planet $a_{\\rm p}$=%%.2f AU'%%planet.aorb)
-ax.plot(ts,env.lumflux[:,34]/fac,'k--',linewidth=2,label='Single Primary Earth-analogue')
+#ax.plot(ts,env.lumflux[:,34]/fac,'k--',linewidth=2,label='Single Primary Earth-analogue')
 
 ax.set_xscale("log")
 ax.set_yscale("log")
@@ -784,7 +783,7 @@ ax.plot([0],[0],color='r',alpha=0.3,linewidth=10,label='Solar System HZ')
 #PLANET
 arrs+=[facabs*env.intflux[:,3],facabs*env.intflux[:,9]]
 ax.plot(ts,facabs*env.intflux[:,3],'k-',linewidth=2,label=r'Planet $a_{\\rm p}$=%%.2f AU'%%planet.aorb)
-ax.plot(ts,facabs*env.intflux[:,9],'k--',linewidth=2,label='Single Primary Earth-Analogue')
+#ax.plot(ts,facabs*env.intflux[:,9],'k--',linewidth=2,label='Single Primary Earth-Analogue')
 
 ymin,ymean,ymax=minmeanmaxArrays(arrs)
 
@@ -887,7 +886,7 @@ ax.plot([0],[0],color='r',alpha=0.3,linewidth=10,label='Solar System HZ')
 #PLANET
 arrs+=[facabs*env.intflux[:,15],facabs*env.intflux[:,27]]
 ax.plot(ts,facabs*env.intflux[:,15],'k-',linewidth=2,label=r'Planet $a_{\\rm p}$=%%.2f AU'%%planet.aorb)
-ax.plot(ts,facabs*env.intflux[:,27],'k--',linewidth=2,label='Single Primary Earth-Analogue')
+#ax.plot(ts,facabs*env.intflux[:,27],'k--',linewidth=2,label='Single Primary Earth-Analogue')
 
 ymin,ymean,ymax=minmeanmaxArrays(arrs)
 expscl=int(np.log10(ymax))
