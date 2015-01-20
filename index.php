@@ -1767,39 +1767,46 @@ $summary=<<<F
 	  <button class="update" id="summary_Update">Update</button> 
 	  $ajaxform_summary_Update
 	  <ul>
-	    <li class="summaryitem">
+	    <!--<li class="summaryitem">
 	      <a class="activelink" 
 		 href="JavaScript:loadAjax('BHMutil.php?ACTION=DownloadConfig&Modes=$oModes','#download_config');">
 		Download configuration files.
 	      </a>
 	      <div class="target" id="download_config"></div>
-	    </li>
+	    </li>-->
 	    <li class="summaryitem">
 	      <a class="activelink" 
 		 href="JavaScript:loadAjax('BHMutil.php?ACTION=DownloadData&Modes=$oModes','#download_datafiles');">
 		Download data files.
-	      </a>
+	      </a><br/>
+	      <i style="font-size:10px">Download only configuration
+	      and data files for this system.</i>
 	      <div class="target" id="download_datafiles"></div>
 	    </li>
 	    <li class="summaryitem">
 	      <a class="activelink" 
 		 href="JavaScript:loadAjax('BHMutil.php?ACTION=DownloadAll&Modes=$oModes','#download_allfiles');">
 		Download all files.
-	      </a>
+	      </a><br/>
+	      <i style="font-size:10px">Download all files including images and BHM python scripts.</i>
 	      <div class="target" id="download_allfiles"></div>
 	    </li>
 	    <li class="summaryitem">
 	      <a class="activelink" 
 		 href="JavaScript:loadAjax('BHMutil.php?ACTION=MasterLink&Modes=$oModes','#systemlink');">
-		Generate system link.</a>
+		Generate system link.</a><br/>
+	      <i style="font-size:10px">Generate a short link that you
+	      can save or share the present configuration with others.
+	      Copy and paste this link in an e-mail or in other
+	      browser window to recover the same configuration.</i>
 	      <div class="target" id="systemlink"></div>
 	    </li>
-	    <li class="summaryitem">
+	    <!--<li class="summaryitem">
 	      <a class="activelink" 
 		 href="JavaScript:loadAjax('BHMutil.php?ACTION=CommandLine&Modes=$oModes','#commandline');">
 		Generate command line.</a>
 	      <div class="target" id="commandline"></div>
-	    </li>
+	    </li>-->
 	    <li class="summaryitem">
 	      <a class="activelink" 
 		 href="JavaScript:loadAjax('BHMutil.php?ACTION=SaveConfiguration&Modes=$oModes','#saveconfiguration');">

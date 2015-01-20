@@ -591,7 +591,7 @@ fh.write("""\
 <table>
   <tr><td colspan=2>
       <a target="_blank" href="%s/iHZ.png">
-	<img width=100%% src="%s/iHZ.png">
+	<img width=100%% src="%s/iHZ.png?%s">
       </a>
       <br/>
       <div class="caption">
@@ -609,7 +609,7 @@ fh.write("""\
 <table>
   <tr><td colspan=2>
       <a target="_blank" href="%s/insolation.png">
-	<img width=100%% src="%s/insolation.png">
+	<img width=100%% src="%s/insolation.png?%s">
       </a>
       <br/>
       <div class="caption">
@@ -627,7 +627,7 @@ fh.write("""\
 <table>
   <tr><td colspan=2>
       <a target="_blank" href="%s/hz-evolution.png">
-	<img width=100%% src="%s/hz-evolution.png">
+	<img width=100%% src="%s/hz-evolution.png?%s">
       </a>
       <br/>
       <div class="caption">
@@ -670,9 +670,9 @@ fh.write("""\
 """%(VERSION,
      WEB_DIR,
      binary.str_SysID,
-     ihz_webdir,ihz_webdir,ihz_webdir,WEB_DIR,ihz_webdir,
-     ihz_webdir,ihz_webdir,ihz_webdir,WEB_DIR,ihz_webdir,
-     ihz_webdir,ihz_webdir,ihz_webdir,WEB_DIR,ihz_webdir,
+     ihz_webdir,ihz_webdir,ihz_hash,ihz_webdir,WEB_DIR,ihz_webdir,
+     ihz_webdir,ihz_webdir,ihz_hash,ihz_webdir,WEB_DIR,ihz_webdir,
+     ihz_webdir,ihz_webdir,ihz_hash,ihz_webdir,WEB_DIR,ihz_webdir,
      ihz.tau,
      leeq,
      ini_inwd,linwd,ini_outwd,loutwd,
