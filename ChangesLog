@@ -4,6 +4,9 @@ Changes introduced in the most recent build/version:
 
 <ul>
 
+<li> (Interface) Caching is disabled to allow the proper upload of
+results after changing some parameter.</li>
+
 <li> (Core) Insolation diagrams in the Habitability module have been
 considerably improved to be more readable.</li>
 
