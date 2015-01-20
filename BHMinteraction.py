@@ -1019,7 +1019,7 @@ fh.write("""\
 
   <tr><td>
       <a href="%s/flux-XUV.png" target="_blank">
-	<img width=100%% src="%s/flux-XUV.png">
+	<img width=100%% src="%s/flux-XUV.png?%s">
       </a>
       <br/>
       <div class="caption">
@@ -1033,7 +1033,7 @@ fh.write("""\
 
   <tr><td>
       <a href="%s/flux-SW.png" target="_blank">
-	<img width=100%% src="%s/flux-SW.png">
+	<img width=100%% src="%s/flux-SW.png?%s">
       </a>
       <br/>
       <div class="caption">
@@ -1053,7 +1053,7 @@ fh.write("""\
 
   <tr><td>
       <a href="%s/int-XUV.png" target="_blank">
-	<img width=100%% src="%s/int-XUV.png">
+	<img width=100%% src="%s/int-XUV.png?%s">
       </a>
       <br/>
       <div class="caption">
@@ -1067,7 +1067,7 @@ fh.write("""\
 
   <tr><td>
       <a href="%s/int-SW.png" target="_blank">
-	<img width=100%% src="%s/int-SW.png">
+	<img width=100%% src="%s/int-SW.png?%s">
       </a>
       <br/>
       <div class="caption">
@@ -1087,7 +1087,7 @@ fh.write("""\
 
   <tr><td>
       <a href="%s/flux-PSW.png" target="_blank">
-	<img width=100%% src="%s/flux-PSW.png">
+	<img width=100%% src="%s/flux-PSW.png?%s">
       </a>
       <br/>
       <div class="caption">
@@ -1101,7 +1101,7 @@ fh.write("""\
 
   <tr><td>
       <a href="%s/standoff-distance.png" target="_blank">
-	<img width=100%% src="%s/standoff-distance.png">
+	<img width=100%% src="%s/standoff-distance.png?%s">
       </a>
       <br/>
       <div class="caption">
@@ -1153,12 +1153,12 @@ fh.write("""\
 </table>
 """%(VERSION,
      WEB_DIR,
-     env_webdir,env_webdir,env_webdir,WEB_DIR,env_webdir,
-     env_webdir,env_webdir,env_webdir,WEB_DIR,env_webdir,
-     env_webdir,env_webdir,env_webdir,WEB_DIR,env_webdir,
-     env_webdir,env_webdir,env_webdir,WEB_DIR,env_webdir,
-     env_webdir,env_webdir,env_webdir,WEB_DIR,env_webdir,
-     env_webdir,env_webdir,env_webdir,WEB_DIR,env_webdir,
+     env_webdir,env_webdir,env_hash,env_webdir,WEB_DIR,env_webdir,
+     env_webdir,env_webdir,env_hash,env_webdir,WEB_DIR,env_webdir,
+     env_webdir,env_webdir,env_hash,env_webdir,WEB_DIR,env_webdir,
+     env_webdir,env_webdir,env_hash,env_webdir,WEB_DIR,env_webdir,
+     env_webdir,env_webdir,env_hash,env_webdir,WEB_DIR,env_webdir,
+     env_webdir,env_webdir,env_hash,env_webdir,WEB_DIR,env_webdir,
      env.tauini,env.tauref,env.alpha,env.muatm,
      env.str_refobj,env.nM,env.nP,
      PEL,SWPEL,

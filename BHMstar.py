@@ -609,7 +609,7 @@ fh.write("""\
 <table>
 <tr><td>
     <a href="%s/radius-schematic.png" target="_blank">
-      <img width=100%% src="%s/radius-schematic.png">
+      <img width=100%% src="%s/radius-schematic.png?%s">
     </a>
     <br/>
     <div class="caption">
@@ -627,7 +627,7 @@ fh.write("""\
 <table>
 <tr><td>
     <a href="%s/stellar-props.png" target="_blank">
-      <img width=100%% src="%s/stellar-props.png">
+      <img width=100%% src="%s/stellar-props.png?%s">
     </a>
     <br/>
     <div class="caption">
@@ -641,7 +641,7 @@ fh.write("""\
 
 <tr><td>
     <a href="%s/evol-radius.png" target="_blank">
-      <img width=100%% src="%s/evol-radius.png">
+      <img width=100%% src="%s/evol-radius.png?%s">
     </a>
     <br/>
     <div class="caption">
@@ -655,7 +655,7 @@ fh.write("""\
 
 <tr><td>
     <a href="%s/evol-logg.png" target="_blank">
-      <img width=100%% src="%s/evol-logg.png">
+      <img width=100%% src="%s/evol-logg.png?%s">
     </a>
     <br/>
     <div class="caption">
@@ -669,7 +669,7 @@ fh.write("""\
 
 <tr><td>
     <a href="%s/evol-moi.png" target="_blank">
-      <img width=100%% src="%s/evol-moi.png">
+      <img width=100%% src="%s/evol-moi.png?%s">
     </a>
     <br/>
     <div class="caption">
@@ -688,7 +688,7 @@ fh.write("""\
 
 <tr><td>
     <a href="%s/stellar-rotation.png" target="_blank">
-      <img width=100%% src="%s/stellar-rotation.png">
+      <img width=100%% src="%s/stellar-rotation.png?%s">
     </a>
     <br/>
     <div class="caption">
@@ -702,7 +702,7 @@ fh.write("""\
 
 <tr><td>
     <a href="%s/stellar-massloss.png" target="_blank">
-      <img width=100%% src="%s/stellar-massloss.png">
+      <img width=100%% src="%s/stellar-massloss.png?%s">
     </a>
     <br/>
     <div class="caption">
@@ -716,7 +716,7 @@ fh.write("""\
 
 <tr><td>
     <a href="%s/stellar-LXUV.png" target="_blank">
-      <img width=100%% src="%s/stellar-LXUV.png">
+      <img width=100%% src="%s/stellar-LXUV.png?%s">
     </a>
     <br/>
     <div class="caption">
@@ -730,7 +730,7 @@ fh.write("""\
 
 <tr><td>
     <a href="%s/stellar-activity.png" target="_blank">
-      <img width=100%% src="%s/stellar-activity.png">
+      <img width=100%% src="%s/stellar-activity.png?%s">
     </a>
     <br/>
     <div class="caption">
@@ -823,15 +823,15 @@ fh.write("""\
 """%(VERSION,
      WEB_DIR,
      star.str_StarID,
-     star_webdir,star_webdir,star_webdir,WEB_DIR,star_webdir,
-     star_webdir,star_webdir,star_webdir,WEB_DIR,star_webdir,
-     star_webdir,star_webdir,star_webdir,WEB_DIR,star_webdir,
-     star_webdir,star_webdir,star_webdir,WEB_DIR,star_webdir,
-     star_webdir,star_webdir,star_webdir,WEB_DIR,star_webdir,
-     star_webdir,star_webdir,star_webdir,WEB_DIR,star_webdir,
-     star_webdir,star_webdir,star_webdir,WEB_DIR,star_webdir,
-     star_webdir,star_webdir,star_webdir,WEB_DIR,star_webdir,
-     star_webdir,star_webdir,star_webdir,WEB_DIR,star_webdir,
+     star_webdir,star_webdir,star_hash,star_webdir,WEB_DIR,star_webdir,
+     star_webdir,star_webdir,star_hash,star_webdir,WEB_DIR,star_webdir,
+     star_webdir,star_webdir,star_hash,star_webdir,WEB_DIR,star_webdir,
+     star_webdir,star_webdir,star_hash,star_webdir,WEB_DIR,star_webdir,
+     star_webdir,star_webdir,star_hash,star_webdir,WEB_DIR,star_webdir,
+     star_webdir,star_webdir,star_hash,star_webdir,WEB_DIR,star_webdir,
+     star_webdir,star_webdir,star_hash,star_webdir,WEB_DIR,star_webdir,
+     star_webdir,star_webdir,star_hash,star_webdir,WEB_DIR,star_webdir,
+     star_webdir,star_webdir,star_hash,star_webdir,WEB_DIR,star_webdir,
      star.M,star.Yuse,star.Zuse,star.A,star.FeH,
      star.tau,
      star.hash,

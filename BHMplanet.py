@@ -552,7 +552,7 @@ fh.write("""\
 <table>
 <tr><td>
     <a href="%s/planet-schematic.png" target="_blank">
-      <img width=100%% src="%s/planet-schematic.png">
+      <img width=100%% src="%s/planet-schematic.png?%s">
     </a>
     <br/>
     <div class="caption">
@@ -569,7 +569,7 @@ fh.write("""\
 <table>
   <tr><td>
       <a target="_blank" href="%s/thermal-evolution.png">
-	<img width=100%% src="%s/thermal-evolution.png">
+	<img width=100%% src="%s/thermal-evolution.png?%s">
       </a>
       <br/>
       <div class="caption">
@@ -586,7 +586,7 @@ fh.write("""\
 <table>
   <tr><td colspan=2>
       <a target="_blank" href="%s/planet-orbit.png">
-	<img width=100%% src="%s/planet-orbit.png">
+	<img width=100%% src="%s/planet-orbit.png?%s">
       </a>
       <br/>
       <div class="caption">
@@ -662,9 +662,9 @@ fh.write("""\
 """%(VERSION,
      WEB_DIR,
      planet.str_PlanetID,
-     planet_webdir,planet_webdir,planet_webdir,WEB_DIR,planet_webdir,
-     planet_webdir,planet_webdir,planet_webdir,WEB_DIR,planet_webdir,
-     planet_webdir,planet_webdir,planet_webdir,WEB_DIR,planet_webdir,
+     planet_webdir,planet_webdir,planet_hash,planet_webdir,WEB_DIR,planet_webdir,
+     planet_webdir,planet_webdir,planet_hash,planet_webdir,WEB_DIR,planet_webdir,
+     planet_webdir,planet_webdir,planet_hash,planet_webdir,WEB_DIR,planet_webdir,
      planet.Mp,planet.Mg,
      planet.tau,planet.CMF,planet.fHHe,planet.Prot,
      tableValue(planet.R,"%.4f",">0","-"),tableValue(planet.Rerr,"%.4f",">0","-"),

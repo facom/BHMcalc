@@ -616,7 +616,7 @@ fh.write("""\
 <table>
   <tr><td colspan=2>
   <a target="_blank" href="%s/rot-evolution.png">
-    <img width=100%% src="%s/rot-evolution.png">
+    <img width=100%% src="%s/rot-evolution.png?%s">
   </a>
   <br/>
   <div class="caption">
@@ -630,7 +630,7 @@ fh.write("""\
 
   <tr><td colspan=2>
   <a target="_blank" href="%s/rot-acceleration.png">
-    <img width=100%% src="%s/rot-acceleration.png">
+    <img width=100%% src="%s/rot-acceleration.png?%s">
   </a>
   <br/>
   <div class="caption">
@@ -647,7 +647,7 @@ fh.write("""\
 <table>
     <tr><td colspan=2>
   <a target="_blank" href="%s/binary-massloss.png">
-    <img width=100%% src="%s/binary-massloss.png">
+    <img width=100%% src="%s/binary-massloss.png?%s">
   </a>
   <br/>
   <div class="caption">
@@ -660,7 +660,7 @@ fh.write("""\
   </td></tr>
   <tr><td colspan=2>
   <a target="_blank" href="%s/binary-XUV.png">
-    <img width=100%% src="%s/binary-XUV.png">
+    <img width=100%% src="%s/binary-XUV.png?%s">
   </a>
   <br/>
   <div class="caption">
@@ -720,10 +720,10 @@ fh.write("""\
 </html>
 """%(VERSION,
      WEB_DIR,
-     rot_webdir,rot_webdir,rot_webdir,WEB_DIR,rot_webdir,
-     rot_webdir,rot_webdir,rot_webdir,WEB_DIR,rot_webdir,
-     rot_webdir,rot_webdir,rot_webdir,WEB_DIR,rot_webdir,
-     rot_webdir,rot_webdir,rot_webdir,WEB_DIR,rot_webdir,
+     rot_webdir,rot_webdir,rot_hash,rot_webdir,WEB_DIR,rot_webdir,
+     rot_webdir,rot_webdir,rot_hash,rot_webdir,WEB_DIR,rot_webdir,
+     rot_webdir,rot_webdir,rot_hash,rot_webdir,WEB_DIR,rot_webdir,
+     rot_webdir,rot_webdir,rot_hash,rot_webdir,WEB_DIR,rot_webdir,
      rot.tauint,rot.fdiss,
      star1.tau,
      binary.Mdot,

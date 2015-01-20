@@ -230,7 +230,7 @@ fh.write("""\
   <tr><td>
       <center>
 	<a target="_blank" href="%s/binary-orbit.png">
-	  <img width=100%% src="%s/binary-orbit.png">
+	  <img width=100%% src="%s/binary-orbit.png?%s">
 	</a>
 	<br/>
 	<div class="caption">
@@ -265,7 +265,7 @@ fh.write("""\
 </html>
 """%(VERSION,
      WEB_DIR,
-     binary_webdir,binary_webdir,binary_webdir,WEB_DIR,binary_webdir,
+     binary_webdir,binary_webdir,binary_hash,binary_webdir,WEB_DIR,binary_webdir,
      binary.M,binary.mu,binary.q,
      binary.Pbin,binary.abin,binary.ebin,
      binary.acrit,binary.nsync,binary.Psync
