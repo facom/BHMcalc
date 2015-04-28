@@ -14,11 +14,14 @@
 To Do
 =====
 
+- Change the name of the figures in the replot feature to reload them
+  properly.
+
+- Avoid to change the original catalogue when a user has just entered
+  the site.
+
 - Put the values of the factor to multiply fluxes in order to have
   mass-losses.
-
-- When regenerating the BHMcat create: a recalculation script able to
-  recalculate all the objects in the calculator from the command line.
 
 - PDF figures
 
@@ -40,13 +43,7 @@ To Do
 
 - Make a single star binary
 
-- Clarify f*B*
-
 - Allow single systems
-
-- Correct link of Zuluaga+2015 paper.
-
-- Check other browsers (see Catalogue table).
 
 - Hide extra parameters from input forms to avoid confusion.
 
@@ -57,19 +54,7 @@ To Do
 - Allow to update automatically an object accoding to a give request
   (e.g. see the HZ of a system for illustration purposes).
 
-- Compile information about each module as it was done with Star.
-
-- Add a "News" or "Changeslog" section in the "About" page.
-
-- Add a bug report floating form to report issues with given
-  configurations.
-
 - Correct catalogue according to findings using the calculator.
-
-- Remove link to "Download Configuration Files".  Only useful for
-  advanced users and redundant with "Download All Files".
-
-- Hide generate command line or restrict it only for admin users.
 
 - Create an administrator mode.
 
@@ -78,20 +63,38 @@ To Do
 - Interpolate planetary properties taking into account differences in
   innercore formation.
 
-- Double check BHM Catalogue display when browser session is new.
-
-- Logarithmic scale in the thermal and magnetic evolution of planets.
-
 - Include a complete list of other references in the About tab.
 
 - Make a list of references for each physical model used in the
   calculator.
 
-- Report problems with the calculator.
-
-
 Done
 ====
+
+- When regenerating the BHMcat create: a recalculation script able to
+  recalculate all the objects in the calculator from the command line.
+
+- Clarify f*B*
+
+- Correct link of Zuluaga+2015 paper.
+
+- Check other browsers (see Catalogue table).
+
+- Compile information about each module as it was done with Star.
+
+- Add a "News" or "Changeslog" section in the "About" page.
+
+- Add a bug report floating form to report issues with given
+  configurations.
+
+- Remove link to "Download Configuration Files".  Only useful for
+  advanced users and redundant with "Download All Files".
+
+- Hide generate command line or restrict it only for admin users.
+
+- Double check BHM Catalogue display when browser session is new.
+
+- Logarithmic scale in the thermal and magnetic evolution of planets.
 
 - Upload all the objects in the calculator tabs if they have been
   already calculated.
