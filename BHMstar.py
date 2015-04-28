@@ -90,6 +90,14 @@ def StellarGTRL(Z,M,t):
      return g,T,R,L
 
 ###################################################
+#CHECK AGE
+###################################################
+qins=False
+if star.tau<0:
+     star.tau=abs(star.tau)
+     qins=True
+
+###################################################
 #CALCULATE EVOLUTIONARY TRACK
 ###################################################
 ts=trackarr.ts/1E9
@@ -431,7 +439,13 @@ tacts,activity_funcs=interpMatrix(star.activity)
 #CALCULATE DERIVATIVE INSTANTANEOUS PROPERTIES
 ###################################################
 #BASIC PROPERTIES
-g,Teff,R,L=StellarGTRL(star.Z,star.M,star.tau)
+if not qins:
+     g,Teff,R,L=StellarGTRL(star.Z,star.M,star.tau)
+else:
+     g=10**star.logg
+     Teff=star.T
+     R=star.R
+     L=R**2*(Teff/TSUN)**4
 
 #HABITABLE ZONE LIMITS
 PRINTOUT("Calculating HZ...")

@@ -1801,12 +1801,12 @@ $summary=<<<F
 	      browser window to recover the same configuration.</i>
 	      <div class="target" id="systemlink"></div>
 	    </li>
-	    <!--<li class="summaryitem">
+	    <li class="summaryitem">
 	      <a class="activelink" 
 		 href="JavaScript:loadAjax('BHMutil.php?ACTION=CommandLine&Modes=$oModes','#commandline');">
 		Generate command line.</a>
 	      <div class="target" id="commandline"></div>
-	    </li>-->
+	    </li>
 	    <li class="summaryitem">
 	      <a class="activelink" 
 		 href="JavaScript:loadAjax('BHMutil.php?ACTION=SaveConfiguration&Modes=$oModes','#saveconfiguration');">
