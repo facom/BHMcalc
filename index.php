@@ -477,7 +477,9 @@ $tabs.=<<<F
 	      <!-- ---------------------------------------- -->
 	      <tr><td class="name">Surface Gravity (error):</td><td class="field"><input type="text" name="star1_loggerr" value="$star1_loggerr"> dex (cm s<sup>-2</sup>)</td></tr>
 	      <tr><td class="help" colspan=2>Help.</td></tr>
-
+	      <!-- ---------------------------------------- -->
+	      <tr><td class="name">Bolometric luminosity:</td><td class="field"><input type="text" name="star1_Extra1" value="$star1_Extra1"> L<sub>Sun</sub></td></tr>
+	      <tr><td class="help" colspan=2>If equal to 0 it is calculated from R and T as provided before.</td></tr>
 	      <!-- ---------------------------------------- -->
 	      <tr>
 		<td class="name" valign="top">
@@ -498,10 +500,10 @@ $tabs.=<<<F
 	      </tr>
 
 	      <!-- ====================== HIDDEN =========================== -->
+	      <!-- COMMENT EACH OF THESE LINES WHEN THIS FIELDS ARE USED -->
 	      <input type="hidden" name="star1_str_Stype" value="$star1_str_Stype">
 	      <input type="hidden" name="star1_vsini" value="$star1_vsini">
 	      <input type="hidden" name="star1_vsinierr" value="$star1_vsinierr">
-	      <input type="hidden" name="star1_Extra1" value="$star1_Extra1">
 	      <input type="hidden" name="star1_Extra2" value="$star1_Extra2">
 	      <input type="hidden" name="star1_Extra3" value="$star1_Extra3">
 	      <input type="hidden" name="star1_Extra4" value="$star1_Extra4">
@@ -776,6 +778,9 @@ $tabs.=<<<F
 	      <tr><td class="name">Surface Gravity (error):</td><td class="field"><input type="text" name="star2_loggerr" value="$star2_loggerr"> dex (cm s<sup>-2</sup>)</td></tr>
 	      <tr><td class="help" colspan=2>Help.</td></tr>
 	      <!-- ---------------------------------------- -->
+	      <tr><td class="name">Bolometric luminosity:</td><td class="field"><input type="text" name="star2_Extra1" value="$star2_Extra1"> L<sub>Sun</sub></td></tr>
+	      <tr><td class="help" colspan=2>If equal to 0 it is calculated from R and T as provided before.</td></tr>
+	      <!-- ---------------------------------------- -->
 	      <tr>
 		<td class="name" valign="top">
 		  <a class="activelink" 
@@ -798,7 +803,6 @@ $tabs.=<<<F
 	      <input type="hidden" name="star2_str_Stype" value="$star2_str_Stype">
 	      <input type="hidden" name="star2_vsini" value="$star2_vsini">
 	      <input type="hidden" name="star2_vsinierr" value="$star2_vsinierr">
-	      <input type="hidden" name="star2_Extra1" value="$star2_Extra1">
 	      <input type="hidden" name="star2_Extra2" value="$star2_Extra2">
 	      <input type="hidden" name="star2_Extra3" value="$star2_Extra3">
 	      <input type="hidden" name="star2_Extra4" value="$star2_Extra4">

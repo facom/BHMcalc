@@ -19,6 +19,10 @@ createSessionDir("Run");
 ?>
 
 <?PHP
+shell_exec("rm $LOGDIR/variables.log");
+foreach(array_keys($_GET) as $key){
+  shell_exec("echo $key = ".$_GET[$key]." >> $LOGDIR/variables.log");
+}
 //////////////////////////////////////////////////////////////
 //CREATE CONFIGURATION FILE
 //////////////////////////////////////////////////////////////

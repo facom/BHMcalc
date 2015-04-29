@@ -445,7 +445,12 @@ else:
      g=10**star.logg
      Teff=star.T
      R=star.R
-     L=R**2*(Teff/TSUN)**4
+     if star.Extra1==0:
+          L=R**2*(Teff/TSUN)**4
+     else:
+          L=star.Extra1
+
+PRINTOUT("Properties used: Extra1=%e,g=%e,Teff=%e,R=%e,L=%e"%(star.Extra1,g,Teff,R,L))
 
 #HABITABLE ZONE LIMITS
 PRINTOUT("Calculating HZ...")
