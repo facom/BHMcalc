@@ -21,6 +21,7 @@
 //////////////////////////////////////////////////////////////
 $CONTENT="";
 $SERVER=shell_exec("hostname");
+$BHMcalc="<b style='font-family:Courier;color:red'>BHMcalc</b>";
 
 //==============================
 //EXCLUDED IPs
@@ -239,9 +240,7 @@ function accessLog($action="browse"){
   $datetime=$GLOBALS["DATETIME"];
   $agent=$_SERVER["HTTP_USER_AGENT"];
   $remote=$_SERVER["REMOTE_ADDR"];
-  //echo "Remote: $remote<br/>";
   foreach($EXCLUDED_IPS as $addr){
-    //echo "ADDRS:$addr<br/>";
     if($remote==$addr){return;}
   }
   $self=$_SERVER["PHP_SELF"];

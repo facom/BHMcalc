@@ -14,23 +14,23 @@
 # Web Interface
 ###################################################
 */
+include_once("web/BHM.php");
+
+//$$$$$$$$$$$$$$$$$$$$
+//PART 1
+//$$$$$$$$$$$$$$$$$$$$
 if(file_exists("./.maintainance")){$QMAINTAINANCE="block";}else{$QMAINTAINANCE="none";}
 if(file_exists("./.nostat")){$QSTAT=0;}else{$QSTAT=1;}
 
-include_once("web/BHM.php");
-?>
-<?PHP
-//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-//COMMON CONTENT
-//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-$BHMcalc="<b style='font-family:Courier;color:red'>BHMcalc</b>";
+//$$$$$$$$$$$$$$$$$$$$
+//PART 2
+//$$$$$$$$$$$$$$$$$$$$
 
 //////////////////////////////////////////////////////////////////////////////////
 //LOAD A CONFIGURATION
 //////////////////////////////////////////////////////////////////////////////////
 if(isset($LOADCONFIG)){
   createSessionDir("Load config");
-  //echo "Session directory: $SESSDIR...";
   $stdout="BHMrun-load-$SESSID";
   $stderr="BHMrun-load-$SESSID";
   shell_exec("echo '$QUERY_STRING' > /tmp/qstr");
@@ -42,6 +42,10 @@ if(isset($LOADCONFIG)){
 }
 accessLog("browse");
 
+//$$$$$$$$$$$$$$$$$$$$
+//PART 3
+//$$$$$$$$$$$$$$$$$$$$
+
 //////////////////////////////////////////////////////////////////////////////////
 //INTERFACE SELECTION
 //////////////////////////////////////////////////////////////////////////////////
@@ -52,6 +56,7 @@ $tabs="";
 $main="";
 $help="";
 $summary="";
+
 if(!isset($Modes)){
   $Modes="Basic";
 }else if(!preg_match("/Catalogue/",$Modes)){
@@ -61,6 +66,10 @@ $oModes=$Modes;
 if($Modes=="Binary"){$Modes="Star1:Star2:Planet:$Modes";}
 if($Modes=="Habitability"){$Modes="Star1:Star2:Planet:Binary:$Modes";}
 if($Modes=="Interactions"){$Modes="Star1:Star2:Planet:Binary:Habitability:$Modes";}
+
+//$$$$$$$$$$$$$$$$$$$$
+//PART 4
+//$$$$$$$$$$$$$$$$$$$$
 
 //////////////////////////////////////////////////////////////////////////////////
 //SESSION DIRECTORY
@@ -77,6 +86,10 @@ if(!is_dir($SESSIONDIR)){
   if(!isset($TABID)){$TABID=2;}
 }
 
+//$$$$$$$$$$$$$$$$$$$$
+//PART 5
+//$$$$$$$$$$$$$$$$$$$$
+
 //////////////////////////////////////////////////////////////////////////////////
 //ACTIVE CODE
 //////////////////////////////////////////////////////////////////////////////////
@@ -84,7 +97,6 @@ if(!is_dir($SESSIONDIR)){
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 //READING CONFIGURATION FILES
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-//*
 loadConfiguration("$source_dir/star1.conf","star1");
 loadConfiguration("$source_dir/star2.conf","star2");
 loadConfiguration("$source_dir/binary.conf","binary");
@@ -92,12 +104,15 @@ loadConfiguration("$source_dir/hz.conf","hz");
 loadConfiguration("$source_dir/rotation.conf","rotation");
 loadConfiguration("$source_dir/planet.conf","planet");
 loadConfiguration("$source_dir/interaction.conf","interaction");
-//*/
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 //ADJUST VALUES
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 $planet_Morb=$star1_M+$star2_M;
+
+//$$$$$$$$$$$$$$$$$$$$
+//PART 6
+//$$$$$$$$$$$$$$$$$$$$
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 //AJAX FORM

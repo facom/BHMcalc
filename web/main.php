@@ -24,6 +24,9 @@ $main=<<<C
 
     <div style="text-align:center">
     <form action="$wDIR" method="post">
+      <button class="mode" name="Modes" value="Intro" style="border-color:red">
+      Basic
+      </button><br/>
       <button class="mode" name="Modes" value="Catalogue">
 	Catalogue
       </button>
