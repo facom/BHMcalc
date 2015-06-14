@@ -48,7 +48,7 @@ accessLog("run $module $pipepos $qover");
 
 //COMMAND
 $cmd="$PYTHONCMD BHMrun.py BHM${module}.py $SESSDIR $object.conf $pipepos $qover";
-
+shell_exec("echo '$cmd' > $TMPDIR/command-$SESSID-${module}.txt");
 //OUTPUT
 $stdout="BHMrun-stdout-$SESSID-${module}";
 $stderr="BHMrun-stderr-$SESSID-${module}";

@@ -84,6 +84,7 @@ catalogue:
 	@cp tmp/BHMcat.* sys/template/
 
 seedtemplate:
+	@echo "Seeding the template directory..."
 	@python BHMrun.py BHMinteraction.py sys/template interaction.conf 
 	@make permissions
 

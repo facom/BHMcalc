@@ -166,7 +166,7 @@ if(!is_dir($SESSDIR)){
 //////////////////////////////////////////////////////////////
 //ROUTINES
 //////////////////////////////////////////////////////////////
-function mainHeader($refresh="",$options="?")
+function mainHeader($refresh="",$options="?",$qstat=1)
 {
   global $CSS;
   $refreshcode="";
@@ -191,15 +191,23 @@ function changePlanetMorb(){
   <script type="text/javascript">
   //setInterval("refreshiFrames()",2000);  
   </script>
-<script>
-  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+HEADER;
 
-  ga('create', 'UA-58223004-1', 'auto');
-  ga('send', 'pageview');
-</script>
+  if($qstat){
+$HEADER.=<<<HEADER
+  <script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+    
+    ga('create', 'UA-58223004-1', 'auto');
+    ga('send', 'pageview');
+  </script>
+HEADER;
+  }
+
+$HEADER.=<<<HEADER
 </head>
 HEADER;
  return $HEADER;

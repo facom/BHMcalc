@@ -14,11 +14,9 @@
 # Web Interface
 ###################################################
 */
-if(file_exists("./.maintainance")){
-    $QMAINTAINANCE="block";
-}else{
-    $QMAINTAINANCE="none";
-}
+if(file_exists("./.maintainance")){$QMAINTAINANCE="block";}else{$QMAINTAINANCE="none";}
+if(file_exists("./.nostat")){$QSTAT=0;}else{$QSTAT=1;}
+
 include_once("web/BHM.php");
 ?>
 <?PHP
@@ -38,7 +36,7 @@ if(isset($LOADCONFIG)){
   shell_exec("echo '$QUERY_STRING' > /tmp/qstr");
   $cmd="$PYTHONCMD BHMrun.py - $SESSDIR \"$QUERY_STRING\"";
   $out=shell_exec($cmd." 2> $TMPDIR/$stderr |tee $TMPDIR/$stdout");
-  $header=mainHeader("1","?Modes=$Modes");
+  $header=mainHeader("1","?Modes=$Modes",$QSTAT);
   echo "$header<body>Loading data into calculator...</body>";
   return;
 }
@@ -176,7 +174,6 @@ C;
 //////////////////////////////////////////////////////////////////////////////////
 //MODES
 //////////////////////////////////////////////////////////////////////////////////
-
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 //CATALOGUE MODE
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1856,7 +1853,6 @@ F;
 $TABID=1;
 }
 
-
 //////////////////////////////////////////////////////////////////////////////////
 //BASIC CONTENT
 //////////////////////////////////////////////////////////////////////////////////
@@ -1884,7 +1880,8 @@ MSG;
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 //HEADER
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-$header=mainHeader();
+$header=mainHeader("","?",$QSTAT);
+
 echo<<<HEAD
 <html>
 $header
@@ -1908,6 +1905,8 @@ $header
 	 </div>
        </center>
 HEAD;
+//echo "Listo: $Modes.";
+//return;
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 //VERBOSE INFORMATION

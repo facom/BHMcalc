@@ -767,6 +767,8 @@ for tvec in 'ts','tsnom','tsfast','tsslow':
     exec("cond=%%s<env.tauref"%%tvec)
     exec("%%s=%%s[cond]"%%(tvec,tvec))
 
+ts=env.intflux[cond,0]
+
 #RANGES
 arrs=[]
 facabs=1
@@ -873,6 +875,8 @@ ts=env.intflux[:,0]
 for tvec in 'ts','tsnom','tsfast','tsslow':
     exec("cond=%%s<env.tauref"%%tvec)
     exec("%%s=%%s[cond]"%%(tvec,tvec))
+
+ts=env.intflux[cond,0]
 
 #RANGES
 arrs=[]
