@@ -65,7 +65,7 @@ site, you need to know that presently are two versions of the
 software.  The first (and more primitive version) located in the trunk
 of this project (master branch).  And the newest (experimental but
 more flexible and faster) version which is presently located in the
-`BHMcalc2_1` branch.
+`BHMCalc2_1` branch.
 
 For getting the lattest version please follow the instructions below.
 
@@ -78,7 +78,7 @@ Getting a copy
 To get a copy of the newest version of this project just execute:
 
 ```
-$ git clone --branch BHMcalc2_1 http://github.com/facom/BHMcalc.git
+$ git clone --branch BHMCalc2_1 http://github.com/facom/BHMcalc.git
 ```
 
 For the oldest version just remove the `--branch` option.
@@ -109,10 +109,10 @@ Instructions for the contirbutor
    $ git clone git@github.com:facom/BHMcalc.git
    ```
 
-5. Checkout the branch you are interested in (e.g. BHMcalc2_1):
+5. Checkout the branch you are interested in (e.g. BHMCalc2_1):
 
    ```
-   $ git checkout -b BHMcalc2_1 origin/BHMcalc2_1
+   $ git checkout -b BHMCalc2_1 origin/BHMCalc2_1
    ```
 
 6. Checkout back into the master:
@@ -130,4 +130,5 @@ Version 2] (http://www.gnu.org/licenses/gpl-2.0.html).
 The symbol `[)]` means that it has been developed under the principles
 of the [copyleft philosophy](http://en.wikipedia.org/wiki/Copyleft).
 
-All wrongs reserved to [Jorge I. Zuluaga](mailto:zuluagajorge@gmail.com).
+All wrongs reserved to [Jorge
+I. Zuluaga](mailto:jorge.zuluaga@udea.edu.co).
