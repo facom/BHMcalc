@@ -100,6 +100,11 @@ PRINTOUT("Object hash:%s"%env_hash)
 env.str_refobj=env.str_refobj.replace("'","")
 
 ###################################################
+#OPEN OBJECT
+###################################################
+openObject(env_dir)
+
+###################################################
 #CALCULATE ENVIRONMENTAL CONDITIONS
 ###################################################
 

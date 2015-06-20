@@ -79,6 +79,11 @@ ihz_webdir="/"+WEB_DIR+ihz_dir
 ihz.hash=ihz_hash
 
 ###################################################
+#OPEN OBJECT
+###################################################
+openObject(ihz_dir)
+
+###################################################
 #CALCULATE BINARY HABITABLE ZONE AT TAU
 ###################################################
 ihz.tau=star1.tau
@@ -208,7 +213,16 @@ ihz.ppfds=photons1*dis
 #CALCULATE BINARY HABITABLE ZONE EVOLUTION
 ###################################################
 taumax=min(star1.tau_max,star2.tau_max)
-ts=star1.evotrack[:,0]
+ts1=star1.evotrack[:,0]
+tmin=ts1[0];tmax=ts1[-1]
+ts2=star2.evotrack[:,0]
+
+# Make both vectors be in the same range
+if ts2[0]>ts1[0]:tmin=ts2[0]
+if ts2[-1]<ts1[-1]:tmax=ts2[-1]
+cond=(ts1>=tmin)*(ts1<=tmax)
+ts=ts1[cond]
+
 hz=stack(3)
 shz=stack(3)
 for tau in ts:

@@ -82,6 +82,11 @@ rot_webdir="/"+WEB_DIR+rot_dir
 PRINTOUT("Object hash:%s"%rot_hash)
 
 ###################################################
+#OPEN OBJECT
+###################################################
+openObject(rot_dir)
+
+###################################################
 #CALCULATE ROTATIONAL EVOLUTION
 ###################################################
 stars=star1,star2

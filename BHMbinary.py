@@ -74,6 +74,11 @@ binary_webdir="/"+WEB_DIR+binary_dir
 binary.hash=binary_hash
 
 ###################################################
+#OPEN OBJECT
+###################################################
+openObject(binary_dir)
+
+###################################################
 #CALCULATE BASIC PROPERTIES OF BINARY
 ###################################################
 if binary.abin==0 and binary.Pbin>0:

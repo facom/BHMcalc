@@ -22,6 +22,7 @@
 $CONTENT="";
 $SERVER=shell_exec("hostname");
 $BHMcalc="<b style='font-family:Courier;color:red'>BHMcalc</b>";
+$FIELDS=array();
 
 //==============================
 //EXCLUDED IPs
@@ -125,6 +126,8 @@ $HZOUTMODELS=array("'early mars'"=>"Early Mars",
 
 $REFOBJS=array("'Earth'"=>"Earth",
 	       "'Saturn'"=>"Saturn");
+
+$OBJECTS=array("star1","star2","planet","binary","hz","rotation","interaction");
 
 //////////////////////////////////////////////////////////////
 //DATE
@@ -275,6 +278,7 @@ function loadConfiguration($file,$prefix)
     $value=$conf[$key];
     $GLOBALS["PARSE_STRING"].="$varname=$value&";
     $GLOBALS[$varname]=$value;
+    $GLOBALS["FIELDS"]["$varname"]=1;
   }
 }
 

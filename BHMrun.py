@@ -54,6 +54,7 @@ if sleep_before>0:
 ###################################################
 #PRELIMINARY VERIFICATIONS
 ###################################################
+
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 #CHECK IF CONFIG STRING HAS BEEN PROVIDED
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -122,6 +123,7 @@ if not FILEEXISTS(module_file):
 ###################################################
 #RUN MODULE
 ###################################################
+
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 #HASH MODULE
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -140,6 +142,7 @@ module_type=module_type.replace("2","")
 module,module_dir,module_str,module_hash,module_liv,module_stg=\
     signObject(module_type,sys_dir+"/"+module_conf)
 PRINTOUT("Module type: %s"%module_type)
+PRINTOUT("Initial object hash: %s"%module_hash)
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 #CHECK IF MODULES DEPENDING ON THIS ARE RUNNING
@@ -154,19 +157,23 @@ for depmod in OBJECT_EPIP[module_name]:
     depmod_type=depmod_type.replace("2","")
     depmod,depmod_dir,depmod_str,depmod_hash,depmod_liv,depmod_stg=\
         signObject(depmod_type,sys_dir+"/"+depmod_conf)
-    trials=0
     fblock=depmod_dir+".block"
     PRINTOUT("\tLooking for blocking file: %s"%fblock)
+    trials=0
     while FILEEXISTS(fblock) and trials<MAXTRIALS:
         PRINTOUT("Waiting for %s to finish (trial %d)..."%(depmod_name,trials))
         sleep(1.0)
         trials+=1
+    if not trials:
+        PRINTOUT("\tNo blocking file: %s"%fblock)
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 #CHECK-OUT MODULES ON WHICH IT DEPENDS
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 depseed="";
 PRINTOUT("Objects to precheck:"+str(OBJECT_PIPE[module_name]))
+qprecheck=0
+hashadd="%s"%module_hash
 for depmod in OBJECT_PIPE[module_name]:
     #========================================
     #HASHING OBJECTS
@@ -177,6 +184,7 @@ for depmod in OBJECT_PIPE[module_name]:
     depmod_type=depmod_type.replace("2","")
     depmod,depmod_dir,depmod_str,depmod_hash,depmod_liv,depmod_stg=\
         signObject(depmod_type,sys_dir+"/"+depmod_conf)
+    hashadd+="-%s"%depmod_hash
     depseed+=depmod_hash;
 
     #========================================
@@ -186,15 +194,24 @@ for depmod in OBJECT_PIPE[module_name]:
         if qover:PRINTOUT("Forcing %s by %s"%(depmod_type,module_name));
         else:PRINTOUT("Running %s (%s) by %s"%(depmod_type,depmod_hash,module_name));
         System("python BHMrun.py BHM%s.py %s %s 0 %d"%(depmod_type,sys_dir,depmod_conf,1),out=False)
+        qprecheck=1
         if qsignal:System("echo -n > %s/.loadconfig"%depmod_dir)
     else:PRINTOUT("%s %s ready."%(depmod_type,depmod_hash));
-    
+
+# CHECK AGAIN STAGE
+stagefile="%s/.stage"%module_dir
+if qprecheck:
+    if FILEEXISTS(stagefile):module_stg=int(System("cat "+stagefile,out=True))
+    else:module_stg=-1
+    PRINTOUT("AFTER CHECK MODULE %s: "%module_conf+str(module_stg))
+
+PRINTOUT("Module stage: %s"%module_stg)
+
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 #EXECUTING MODULE
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 PRINTOUT("V"*60)
 if module_stg<10 or qover>=1:
-    stagefile="%s/.stage"%module_dir
     if FILEEXISTS(stagefile):stage=System("cat "+stagefile,out=True)
     else:stage=0
     if qover:PRINTOUT("Forcing %s"%module_type);
@@ -205,9 +222,10 @@ if module_stg<10 or qover>=1:
     if qsignal:System("echo -n > %s/.loadconfig"%module_dir)
     stage=System("cat %s/.stage"%module_dir,out=True)
     print "Stage:",stage
+    qupdate=True
     if int(stage)<10:
         PRINTOUT("Task has ended with an error.")
-    qupdate=True
+        qupdate=False
 else:
     qupdate=False
     PRINTOUT("%s ready."%module_type);
@@ -216,15 +234,20 @@ else:
 #TAG MODULES DEPENDING ON THIS FOR RECAL
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 if qupdate:
+    PRINTOUT("Depending modules: "+str(OBJECT_EPIP[module_name]))
     for depmod in OBJECT_EPIP[module_name]:
-        PRINTOUT("Signaling %s."%depmod)
+        depmod_name=depmod
         depmod_conf="%s.conf"%depmod
         depmod_type=depmod
         depmod_type=depmod_type.replace("1","")
         depmod_type=depmod_type.replace("2","")
         depmod,depmod_dir,depmod_str,depmod_hash,depmod_liv,depmod_stg=\
             signObject(depmod_type,sys_dir+"/"+depmod_conf)
-        System("echo -1 > %s/.stage"%depmod_dir)
+        if DIREXISTS(depmod_dir):
+            PRINTOUT("Signaling %s."%depmod_name)
+            System("echo -1 > %s/.stage"%depmod_dir)
+        else:
+            PRINTOUT("Object %s does not exist yet."%depmod_name)
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 #OUTPUT

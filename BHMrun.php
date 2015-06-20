@@ -26,20 +26,51 @@ foreach(array_keys($_GET) as $key){
 //////////////////////////////////////////////////////////////
 //CREATE CONFIGURATION FILE
 //////////////////////////////////////////////////////////////
-$confile=$SESSDIR."/$object.conf";
-$fc=fopen($confile,"w");
-foreach(array_keys($_GET) as $key){
-  if(!preg_match("/${object}_(.+)/",$key,$matches)){continue;}
-  $var=$matches[1];
-  $val=$$key;
-  if(preg_match('/str_/',$key)){
-    preg_match('/([^\'^\"]+)/',$val,$matches);
-    $string=$matches[1];
-    $val="\"'$string'\"";
+if(preg_match("/sys/",$module)){
+  shell_exec("echo 'sys' > /tmp/sys");
+  $module="hz";
+  $object="hz";
+  foreach($OBJECTS as $obj){
+    $confile=$SESSDIR."/$obj.conf";
+    $fname="f${obj}";
+    $$fname=fopen($confile,"w");
   }
-  fwrite($fc,"$var = $val\n");
+  foreach(array_keys($_GET) as $key){
+    if(!preg_match("/([^_]+)_(.+)/",$key,$matches)){continue;}
+    $obj=$matches[1];
+    $var=$matches[2];
+    $val=$$key;
+    shell_exec("echo '$key,$obj,$var,$val' >> /tmp/sys.log");
+    if(preg_match('/str_/',$key)){
+      preg_match('/([^\'^\"]+)/',$val,$matches);
+      $string=$matches[1];
+      shell_exec("echo '$string' >> /tmp/sys.log");
+      $val="\"'$string'\"";
+    }
+    $fname="f${obj}";
+    fwrite($$fname,"$var = $val\n");
+  }
+  foreach($OBJECTS as $obj){
+    $confile=$SESSDIR."/$obj.conf";
+    $fname="f${obj}";
+    fclose($$fname);
+  }
+}else{
+  $confile=$SESSDIR."/$object.conf";
+  $fc=fopen($confile,"w");
+  foreach(array_keys($_GET) as $key){
+    if(!preg_match("/${object}_(.+)/",$key,$matches)){continue;}
+    $var=$matches[1];
+    $val=$$key;
+    if(preg_match('/str_/',$key)){
+      preg_match('/([^\'^\"]+)/',$val,$matches);
+      $string=$matches[1];
+      $val="\"'$string'\"";
+    }
+    fwrite($fc,"$var = $val\n");
+  }
+  fclose($fc);
 }
-fclose($fc);
 
 //////////////////////////////////////////////////////////////
 //SUBMIT EXECUTION
@@ -49,6 +80,7 @@ accessLog("run $module $pipepos $qover");
 //COMMAND
 $cmd="$PYTHONCMD BHMrun.py BHM${module}.py $SESSDIR $object.conf $pipepos $qover";
 shell_exec("echo '$cmd' > $TMPDIR/command-$SESSID-${module}.txt");
+
 //OUTPUT
 $stdout="BHMrun-stdout-$SESSID-${module}";
 $stderr="BHMrun-stderr-$SESSID-${module}";

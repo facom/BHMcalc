@@ -63,9 +63,20 @@ if(!isset($Modes)){
   createSessionDir("New mode $Modes");
 }
 $oModes=$Modes;
+$tabberclass="tabbertab";
+$hidedisplay="style='display:block'";
+$qcalcmode=1;
 if($Modes=="Binary"){$Modes="Star1:Star2:Planet:$Modes";}
 if($Modes=="Habitability"){$Modes="Star1:Star2:Planet:Binary:$Modes";}
 if($Modes=="Interactions"){$Modes="Star1:Star2:Planet:Binary:Habitability:$Modes";}
+if($Modes=="Introductory"){
+  $Modes="$Modes";
+  $tabberclass="tabberhide";
+  $hidedisplay="style='display:none'";
+  $qcalcmode=0;
+}
+$tabberclass="tabbertab";
+$hidedisplay="style='display:block'";
 
 //$$$$$$$$$$$$$$$$$$$$
 //PART 4
@@ -120,6 +131,10 @@ $planet_Morb=$star1_M+$star2_M;
 //CATALOGUE
 $codecat=ajaxMultipleForm(array("cat"),"cat_form");
 $ajaxform_cat_Update=ajaxFromCode($codecat,"'#cat_Update'","click");
+
+//STAR1
+$code=ajaxMultipleForm(array("sys"),"sys_form");
+$ajaxform_sys_Update=ajaxFromCode($code,"'#sys_Update'","click");
 
 //STAR1
 $code=ajaxMultipleForm(array("star1"),"star1_form");
@@ -186,9 +201,172 @@ $document_load=<<<C
 </script>
 C;
 
+//$$$$$$$$$$$$$$$$$$$$
+//PART 7
+//$$$$$$$$$$$$$$$$$$$$
+
 //////////////////////////////////////////////////////////////////////////////////
 //MODES
 //////////////////////////////////////////////////////////////////////////////////
+
+//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+//INTRODUCTORY MODE
+//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+if(preg_match("/Introductory/",$Modes)){
+  $TABID=1;
+  $QCALCMODE=0;
+  $tabberclass="tabbertab";
+
+  $hiddenfs="";
+  $nohidden=array("binary_str_SysID","star1_tau","star1_FeH","star1_M",
+		  "star2_M","binary_Pbin","binary_ebin","planet_aorb",
+		  "planet_eorb");
+
+  foreach(array_keys($GLOBALS["FIELDS"]) as $varname){
+    $qnohidden=0;
+    foreach($nohidden as $field){
+      if(preg_match("/$varname/",$field)){
+	$qnohidden=1;
+	break;
+      }
+    }
+    if($qnohidden){continue;}
+    $value=$$varname;
+    $hiddenfs.="<input type='hidden' name='$varname' value=\"$value\">\n";
+  }
+
+$tabs.=<<<F
+  <!-- //////////////////////////////////////////////////////////// -->
+  <!-- SYSTEM -->
+  <!-- //////////////////////////////////////////////////////////// -->
+  <div class="$tabberclass" id="sys" title="System">
+    <div class="tabcontent" $hidedisplay>
+      <div class="wrapper">
+	<form id="sys_form" action="BHMrun.php">
+	  $hiddenfs
+	  <div class="formarea">
+	    <div><center class="title">Input Form</center><hr width="90%"/></div>
+	    <input type="hidden" name="module" value="sys">
+	    <input type="hidden" name="object" value="sys">
+
+	    <table border=0px width=100%>
+
+	      <!-- ---------------------------------------- -->
+	      <tr>
+		<td class="name">System ID:</td>
+		<td class="field">
+		  <input type="text" name="binary_str_SysID" value="$binary_str_SysID" >
+		</td>
+	      </tr>
+	      
+	      <!-- ====================== STELLAR PROPERTIES =========================== -->
+  	      <tr><td colspan=2 class="section">Stellar Properties</td></tr>
+  
+	      <!-- ---------------------------------------- -->
+	      <tr>
+		<td class="name">Age:</td>
+		<td class="field">
+		  <input id="ini" type="text" name="star1_tau" value="$star1_tau">
+		  Gyr
+		</td>
+	      </tr>
+	      <!-- ---------------------------------------- -->
+	      <tr>
+		<td class="name">Metallicity, [Fe/H]:</td>
+		<td class="field">
+		  <input type="text" name="star1_FeH" value="$star1_FeH">
+		  dex
+		</td>
+	      </tr>
+	      <!-- ---------------------------------------- -->
+	      <tr>
+		<td class="name">Star 1 Mass:</td>
+		<td class="field">
+		  <input type="text" name="star1_M" value="$star1_M">
+		  M<sub>Sun</sub>
+		</td>
+	      </tr>
+	      <!-- ---------------------------------------- -->
+	      <tr>
+		<td class="name">Star 2 Mass:</td>
+		<td class="field">
+		  <input type="text" name="star2_M" value="$star2_M">
+		  M<sub>Sun</sub>
+		</td>
+	      </tr>
+
+	      <!-- ====================== BINARY PROPERTIES =========================== -->
+  	      <tr><td colspan=2 class="section">Binary Properties</td></tr>
+	      
+	      <!-- ---------------------------------------- -->
+	      <tr>
+		<td class="name">Binary period:</td>
+		<td class="field">
+		  <input type="text" name="binary_Pbin" value="$binary_Pbin">
+		  days
+		</td>
+	      </tr>
+	      <!-- ---------------------------------------- -->
+	      <tr>
+		<td class="name">Binary Eccentricity:</td>
+		<td class="field">
+		  <input type="text" name="binary_ebin" value="$binary_ebin">
+		</td>
+	      </tr>
+	      <!-- ---------------------------------------- -->
+		<td class="name">Planetary semimajor axis:</td>
+	      <td class="field">
+		  <input type="text" name="planet_aorb" value="$planet_aorb">
+		  AU
+		</td>
+	      </tr>
+
+	      <!-- ---------------------------------------- -->
+		<td class="name">Planetary eccentricity:</td>
+		<td class="field">
+		  <input type="text" name="planet_eorb" value="$planet_eorb">
+		</td>
+	      </tr>
+
+	    </table>
+
+	  </div>
+	  <!-- END OF INPUT FORM -->
+
+	  <button class="update" id="sys_Update">Update</button>
+	  $ajaxform_sys_Update
+	  $force_update
+	  <div id="sys_results_panel" class="results">
+	    <div><center class="title">Results</center><hr width="90%"/></div>
+	    
+	    <div class="stdout" id="sys_stdout">
+	      <a href="tmp/BHMrun-stdout-$SESSID-hz" target="_blank">
+		stdout
+	      </a> | 
+	      <a href="tmp/BHMrun-stderr-$SESSID-hz" target="_blank">
+		stderr
+	      </a>
+	    </div>
+	    
+	    <div class="download" id="sys_download"></div>
+	    <div id="sys_results_status_loader" style="background-color:white;">
+	      <div id="sys_results_status" style="background-color:white;">
+		<iframe class="iframe" id="sys_results_frame" src="web/blank.html"
+			scrolling="yes" onload="adjustiFrame(this);">
+		</iframe>
+	      </div>
+	    </div>
+	  </div>
+	  <!-- END OF RESULTS -->
+
+	</form>
+      </div>
+    </div>
+  </div>
+F;
+
+}
+
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 //CATALOGUE MODE
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -266,8 +444,8 @@ C;
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 if(preg_match("/Star1/",$Modes)){
   $TABID=1;
-  $QCALCMODE=1;
-
+  $QCALCMODE=$qcalcmode;
+ 
   $star1_str_model_sel=selectFunction("star1_str_model",$MODELS,$star1_str_model,
 				      $options="class='sensitive' onchange='idSystem();'");
 
@@ -276,16 +454,17 @@ if(preg_match("/Star1/",$Modes)){
 
   if($Modes!="Star1"){$NumStar="1";}
   else{$NumStar="";}
+
 $tabs.=<<<F
   <!-- //////////////////////////////////////////////////////////// -->
   <!-- STAR 1 -->
   <!-- //////////////////////////////////////////////////////////// -->
-  <div class="tabbertab" id="star1" title="Star $NumStar">
-    <form id="star1_form" action="BHMrun.php">
-    <div class="tabcontent">
+  <div class="$tabberclass" id="star1" title="Star $NumStar">
+    <div class="tabcontent" $hidedisplay>
       <div class="wrapper">
-	<div class="formarea">
-	  <div><center class="title">Input Form</center><hr width="90%"/></div>
+	<form id="star1_form" action="BHMrun.php">
+	  <div class="formarea">
+	    <div><center class="title">Input Form</center><hr width="90%"/></div>
 	    <input type="hidden" name="module" value="star">
 	    <input type="hidden" name="object" value="star1">
 	    <table border=0px>
@@ -364,6 +543,7 @@ $tabs.=<<<F
 		</td>
 	      </tr>
 	      <!-- ---------------------------------------- -->
+	      <tr>
 		<td class="name">Age:</td>
 		<td class="field">
 		  <input id="ini" type="text" class="star_tau sensitive" name="star1_tau" value="$star1_tau" onchange="changeValues(['.star_tau'],this);idSystem();">
@@ -455,7 +635,6 @@ $tabs.=<<<F
 	      <tr><td class="help" colspan=2>Scaling explonent.  Solar: -2.70.  Range (Wright et al. 2011): -2.83 to -2.57.</td></tr>
 	      <!-- ====================== OBSERVED =========================== -->
 	      <tr><td colspan=2 class="section">Observed Properties</td></tr>
-	      <div style="display:none">
 	      <!-- ---------------------------------------- -->
 	      <tr><td class="name">Mass (error):</td><td class="field"><input type="text" name="star1_Merr" value="$star1_Merr"> M<sub>Sun</sub></td></tr>
 	      <tr><td class="help" colspan=2>Help.</td></tr>
@@ -478,7 +657,7 @@ $tabs.=<<<F
 	      <tr><td class="name">Radius (error):</td><td class="field"><input type="text" name="star1_Rerr" value="$star1_Rerr"> R<sub>Sun</sub></td></tr>
 	      <tr><td class="help" colspan=2>Help.</td></tr>
 	      <!-- ---------------------------------------- -->
-	      <tr><td class="name">Effective Temperature:</td><td class="field"><input type="text" name="star1_T" value="$star1_T"> K</sub></td></tr>
+	      <tr><td class="name">Effective Temperature:</td><td class="field"><input type="text" name="star1_T" value="$star1_T"> K</td></tr>
 	      <tr><td class="help" colspan=2>Help.</td></tr>
 	      <!-- ---------------------------------------- -->
 	      <tr><td class="name">Effective Temperature (error):</td><td class="field"><input type="text" name="star1_Terr" value="$star1_Terr"> K</td></tr>
@@ -493,11 +672,11 @@ $tabs.=<<<F
 	      <tr><td class="name">Bolometric luminosity:</td><td class="field"><input type="text" name="star1_Extra1" value="$star1_Extra1"> L<sub>Sun</sub></td></tr>
 	      <tr><td class="help" colspan=2>If equal to 0 it is calculated from R and T as provided before.</td></tr>
 	      <!-- ---------------------------------------- -->
-	      <tr>
+              <tr>
 		<td class="name" valign="top">
 		  <a class="activelink" 
 		     href="JavaScript:loadAjax('BHMutil.php?ACTION=SaveObject&ObjType=Star&NewId='+$('#saveobject_star1').val(),'#saveobjectdisp_star1');">
-		  Save this object:
+		    Save this object:
 		  </a>
 		</td>
 		<td class="field">
@@ -533,31 +712,34 @@ $tabs.=<<<F
 	      </tr>
 	      <!-- ---------------------------------------- -->
 	    </table>
-	</div>
-	<div id="star1_results_panel" class="results">
-	  <div><center class="title">Results</center><hr width="90%"/></div>
-
-	  <div class="stdout" id="star1_stdout">
-	    <a href="tmp/BHMrun-stdout-$SESSID-star" target="_blank">
-	      stdout
-	    </a> | 
-	    <a href="tmp/BHMrun-stderr-$SESSID-star" target="_blank">
-	      stderr
-	    </a>
 	  </div>
+	  <!-- END OF INPUT FORM -->
 
-	  <div class="download" id="star1_download"></div>
-	  <div id="star1_results_status_loader" style="background-color:white;">
-	    <div id="star1_results_status" style="background-color:white;">
-	      <iframe class="iframe" id="star1_results_frame" src="web/blank.html"
-		      scrolling="yes" onload="adjustiFrame(this);">
-	      </iframe>
+	  <div id="star1_results_panel" class="results">
+	    <div><center class="title">Results</center><hr width="90%"/></div>
+	    
+	    <div class="stdout" id="star1_stdout">
+	      <a href="tmp/BHMrun-stdout-$SESSID-star" target="_blank">
+		stdout
+	      </a> | 
+	      <a href="tmp/BHMrun-stderr-$SESSID-star" target="_blank">
+		stderr
+	      </a>
+	    </div>
+	    
+	    <div class="download" id="star1_download"></div>
+	    <div id="star1_results_status_loader" style="background-color:white;">
+	      <div id="star1_results_status" style="background-color:white;">
+		<iframe class="iframe" id="star1_results_frame" src="web/blank.html"
+			scrolling="yes" onload="adjustiFrame(this);">
+		</iframe>
+	      </div>
 	    </div>
 	  </div>
-	</div>
+	  <!-- END OF RESULTS -->
+	</form>
       </div>
     </div>
-   </form>
   </div>
 F;
 }
@@ -567,7 +749,7 @@ F;
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 if(preg_match("/Star2/",$Modes)){
   $TABID=3;
-  $QCALCMODE=1;
+  $QCALCMODE=$qcalcmode;
 
   $star2_str_model_sel=selectFunction("star2_str_model",$MODELS,$star2_str_model,
 				      $options="class='sensitive' onchange='idSystem();'");
@@ -580,11 +762,11 @@ $tabs.=<<<F
   <!-- //////////////////////////////////////////////////////////// -->
   <!-- STAR 2 -->
   <!-- //////////////////////////////////////////////////////////// -->
-  <div class="tabbertab" id="star2" title="Star 2">
-    <form id="star2_form" action="BHMrun.php">
-    <div class="tabcontent">
+  <div class="$tabberclass" id="star2" title="Star 2">
+    <div class="tabcontent" $hidedisplay>
       <div class="wrapper">
 	<div class="formarea">
+	  <form id="star2_form" action="BHMrun.php">
 	  <div><center class="title">Input Form</center><hr width="90%"/></div>
 	    <input type="hidden" name="module" value="star">
 	    <input type="hidden" name="object" value="star2">
@@ -664,6 +846,7 @@ $tabs.=<<<F
 		</td>
 	      </tr>
 	      <!-- ---------------------------------------- -->
+	      <tr>
 		<td class="name">Age:</td>
 		<td class="field">
 		  <input id="ini" type="text" class="star_tau sensitive" name="star2_tau" value="$star2_tau" onchange="changeValues(['.star_tau'],this);idSystem();">
@@ -755,7 +938,6 @@ $tabs.=<<<F
 	      <tr><td class="help" colspan=2>Scaling explonent.  Solar: -2.70.  Range (Wright et al. 2011): -2.83 to -2.57.</td></tr>
 	      <!-- ====================== OBSERVED =========================== -->
 	      <tr><td colspan=2 class="section">Observed Properties</td></tr>
-	      <div style="display:none">
 	      <!-- ---------------------------------------- -->
 	      <tr><td class="name">Mass (error):</td><td class="field"><input type="text" name="star2_Merr" value="$star2_Merr"> M<sub>Sun</sub></td></tr>
 	      <tr><td class="help" colspan=2>Help.</td></tr>
@@ -778,7 +960,7 @@ $tabs.=<<<F
 	      <tr><td class="name">Radius (error):</td><td class="field"><input type="text" name="star2_Rerr" value="$star2_Rerr"> R<sub>Sun</sub></td></tr>
 	      <tr><td class="help" colspan=2>Help.</td></tr>
 	      <!-- ---------------------------------------- -->
-	      <tr><td class="name">Effective Temperature:</td><td class="field"><input type="text" name="star2_T" value="$star2_T"> K</sub></td></tr>
+	      <tr><td class="name">Effective Temperature:</td><td class="field"><input type="text" name="star2_T" value="$star2_T"> K</td></tr>
 	      <tr><td class="help" colspan=2>Help.</td></tr>
 	      <!-- ---------------------------------------- -->
 	      <tr><td class="name">Effective Temperature (error):</td><td class="field"><input type="text" name="star2_Terr" value="$star2_Terr"> K</td></tr>
@@ -797,7 +979,7 @@ $tabs.=<<<F
 		<td class="name" valign="top">
 		  <a class="activelink" 
 		     href="JavaScript:loadAjax('BHMutil.php?ACTION=SaveObject&ObjType=Star&NewId='+$('#saveobject_star2').val(),'#saveobjectdisp_star2');">
-		  Save this object:
+		    Save this object:
 		  </a>
 		</td>
 		<td class="field">
@@ -844,7 +1026,7 @@ $tabs.=<<<F
 	      stderr
 	    </a>
 	  </div>
-
+	  
 	  <div class="download" id="star2_download"></div>
 	  <div id="star2_results_status_loader" style="background-color:white;">
 	    <div id="star2_results_status" style="background-color:white;">
@@ -856,7 +1038,7 @@ $tabs.=<<<F
 	</div>
       </div>
     </div>
-   </form>
+    </form>
   </div>
 F;
 }
@@ -866,12 +1048,12 @@ F;
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 if(preg_match("/Planet/",$Modes)){
   $TABID=1;
-  $QCALCMODE=1;
+  $QCALCMODE=$qcalcmode;
 
 $tabs.=<<<F
-  <div class="tabbertab" id="planet" title="Planet">
+  <div class="$tabberclass" id="planet" title="Planet">
   <form id="planet_form" action="BHMrun.php">
-    <div class="tabcontent">
+    <div class="tabcontent" $hidedisplay>
       <div class="wrapper">
 	<div id="planet_form" class="formarea">
 	  <div><center class="title">Input Form</center><hr width="90%"/></div>
@@ -1091,12 +1273,12 @@ F;
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 if(preg_match("/Binary/",$Modes)){
   $TABID=4;
-  $QCALCMODE=1;
+  $QCALCMODE=$qcalcmode;
 
 $tabs.=<<<F
-  <div class="tabbertab" id="binary" title="Binary">
+  <div class="$tabberclass" id="binary" title="Binary">
   <form id="binary_form" action="BHMrun.php">
-    <div class="tabcontent">
+    <div class="tabcontent" $hidedisplay>
       <div class="wrapper">
 	<div id="binary_form" class="formarea">
 	  <div><center class="title">Input Form</center><hr width="90%"/></div>
@@ -1275,7 +1457,7 @@ F;
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 if(preg_match("/Habitability/",$Modes)){
   $TABID=5;
-  $QCALCMODE=1;
+  $QCALCMODE=$qcalcmode;
 
   $hz_str_incrit_wd_sel=selectFunction("hz_str_incrit_wd",$HZINMODELS,$hz_str_incrit_wd,
 				       $options="");
@@ -1286,9 +1468,9 @@ if(preg_match("/Habitability/",$Modes)){
   $hz_str_outcrit_nr_sel=selectFunction("hz_str_outcrit_nr",$HZOUTMODELS,$hz_str_outcrit_nr,
 					$options="");
 $tabs.=<<<F
-  <div class="tabbertab" id="hz" title="Habitable Zone">
+  <div class="$tabberclass" id="hz" title="Habitable Zone">
   <form id="hz_form" action="BHMrun.php">
-    <div class="tabcontent">
+    <div class="tabcontent" $hidedisplay>
       <div class="wrapper">
 	<div id="hz_form" class="formarea">
 	  <div><center class="title">Input Form</center><hr width="90%"/></div>
@@ -1420,7 +1602,7 @@ F;
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 if(preg_match("/Interactions/",$Modes)){
   $TABID=7;
-  $QCALCMODE=1;
+  $QCALCMODE=$qcalcmode;
 
 $updateall=<<<F
 $ajax_all_Update
@@ -1434,9 +1616,9 @@ F;
 
 $tabs.=<<<F
   $ajax_all_Update	    
-  <div class="tabbertab" id="rotation" title="Rotation and Activity">
+  <div class="$tabberclass" id="rotation" title="Rotation and Activity">
   <form id="rotation_form" action="BHMrun.php">
-    <div class="tabcontent">
+    <div class="tabcontent" $hidedisplay>
       <div class="wrapper">
 	<div id="rotation_form" class="formarea">
 	  <div><center class="title">Input Form</center><hr width="90%"/></div>
@@ -1541,9 +1723,9 @@ $interaction_str_refobj_sel=selectFunction("interaction_str_refobj",$REFOBJS,
 					   $interaction_str_refobj,
 					   $options="");
 $tabs.=<<<F
-  <div class="tabbertab" id="summary" title="Binary-Planet Interaction">
+  <div class="$tabberclass" id="summary" title="Binary-Planet Interaction">
   <form id="interaction_form" action="BHMrun.php">
-    <div class="tabcontent">
+    <div class="tabcontent" $hidedisplay>
       <div class="wrapper">
 	<div id="interaction_form" class="formarea">
 	  <div><center class="title">Input Form</center><hr width="90%"/></div>
@@ -1704,10 +1886,13 @@ $tabs.=<<<F
     </div>
     <input class="sys_input" type="hidden" name="interaction_str_sys" value="$interaction_str_sys">
    </form>
-   <input class="sys_input" type="hidden" name="interaction_str_sys" value="$interaction_str_sys">
   </div>
 F;
 }
+
+//$$$$$$$$$$$$$$$$$$$$
+//PART 8
+//$$$$$$$$$$$$$$$$$$$$
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 //BUG REPORT
@@ -1746,6 +1931,10 @@ $bug_report=<<<B
 </div>
 B;
 
+//$$$$$$$$$$$$$$$$$$$$
+//PART 9
+//$$$$$$$$$$$$$$$$$$$$
+
 if($QCALCMODE){
 $comfile="$SYSDIR/template/configurations.html";
 $cfile="$SESSDIR/configurations.html";
@@ -1771,10 +1960,11 @@ if(is_file($cfile)){
 </a>
 D;
 }else{$configurations="";$downlink="";}
+
 $summary=<<<F
   $ajax_summary_Load
-  <div class="tabbertab" id="summary" title="Summary">
-    <form id="summary_form" action="BHMsummary.php">
+<div class="tabbertab" id="summary" title="Summary">
+  <form id="summary_form" action="BHMsummary.php">
     <input type="hidden" name="Mode" value="$oModes">
     <div class="tabcontent">
       <div class="wrapper">
@@ -1796,7 +1986,7 @@ $summary=<<<F
 		Download data files.
 	      </a><br/>
 	      <i style="font-size:10px">Download only configuration
-	      and data files for this system.</i>
+		and data files for this system.</i>
 	      <div class="target" id="download_datafiles"></div>
 	    </li>
 	    <li class="summaryitem">
@@ -1829,7 +2019,7 @@ $summary=<<<F
 		Save Configuration</a> |
 	      <a class="activelink" 
 		 href="JavaScript:loadAjax('BHMutil.php?ACTION=CleanConfiguration&Modes=$oModes','#saveconfiguration');">
-		Clear Configuration</a> 
+		Clear Configurations</a> 
 	      <div class="listconfig" id="saveconfiguration"><ul>$configurations</ul></div>
 	      $downlink
 	    </li>
@@ -1862,8 +2052,8 @@ $summary=<<<F
 	</div>
       </div>
     </div>
-    </form>
-  </div>
+  </form>
+</div>
 F;
 $TABID=1;
 }
@@ -1871,9 +2061,18 @@ $TABID=1;
 //////////////////////////////////////////////////////////////////////////////////
 //BASIC CONTENT
 //////////////////////////////////////////////////////////////////////////////////
+
+//$$$$$$$$$$$$$$$$$$$$
+//PART 10
+//$$$$$$$$$$$$$$$$$$$$
+
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-//CHECK BORWSER
+//CHECKINGS
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+//&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+//CHECK BROWSER
+//&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
 $agent=$_SERVER["HTTP_USER_AGENT"];
 $qchrome=0;
 if(preg_match("/chrome/i",$agent)){$qchrome=1;}
@@ -1891,6 +2090,10 @@ $(document).ready(function(){
 </div>
 MSG;
 }
+
+//$$$$$$$$$$$$$$$$$$$$
+//PART 11
+//$$$$$$$$$$$$$$$$$$$$
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 //HEADER
@@ -1948,6 +2151,10 @@ $CONTENT.=<<<C
 </h1>
 C;
 
+//$$$$$$$$$$$$$$$$$$$$
+//PART 12
+//$$$$$$$$$$$$$$$$$$$$
+
 //////////////////////////////////////////////////////////////////////////////////
 //CHOOSE CONTENT
 //////////////////////////////////////////////////////////////////////////////////
@@ -1994,6 +2201,10 @@ C;
 //////////////////////////////////////////////////////////////////////////////////
 if(isset($ABOUT)){$TABID=1;}
 if(isset($HELP)){$TABID=2;}
+
+//$$$$$$$$$$$$$$$$$$$$
+//PART 13
+//$$$$$$$$$$$$$$$$$$$$
 
 //////////////////////////////////////////////////////////////////////////////////
 //CREATE CONTENT

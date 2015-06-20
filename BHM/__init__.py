@@ -338,19 +338,22 @@ def hashObject(obj):
     """
     obj_str=obj.type+"-"
     for key in obj.hashable.keys():
+        if 'ID' in key:continue
         exec("obj_str+='%s_%s-'%%(%s)"%(
                 key,
                 obj.hashable[key],
                 obj.__dict__[key]))
     obj_str=obj_str.strip("-")
+    #print obj_str;exit(0)
     obj_hash=MD5STR(obj_str)
     return obj_str,obj_hash
 
-def signObject(obj_type,obj_conf):
+def signObject2(obj_type,obj_conf,force_hash=""):
+    obj_name=obj_conf.split(".")[0].split("/")[-1]
     obj=loadConf(obj_conf)
     obj.type=obj_type
-    try:
-        obj.__dict__["hashable"]=OBJECT_HASHABLES[obj_type]
+
+    try:obj.__dict__["hashable"]=OBJECT_HASHABLES[obj_type]
     except KeyError:
         PRINTERR("Object type %s does not exist."%obj_type)
         errorCode("KEY_ERROR")
@@ -364,12 +367,53 @@ def signObject(obj_type,obj_conf):
     else:obj_liv=0
     return obj,obj_dir,obj_str,obj_hash,obj_liv,obj_stg
 
+def signObject(obj_type,obj_conf,force_hash=""):
+    obj_name=obj_conf.split(".")[0].split("/")[-1]
+    sys_dir="/".join(obj_conf.split(".")[0].split("/")[0:-1])
+
+    # PRINTOUT("Signing: "+obj_conf)
+    # PRINTOUT("System dir: "+sys_dir)
+    obj=loadConf(obj_conf)
+    obj.type=obj_type
+
+    try:obj.__dict__["hashable"]=OBJECT_HASHABLES[obj_type]
+    except KeyError:
+        PRINTERR("Object type %s does not exist."%obj_type)
+        errorCode("KEY_ERROR")
+
+    obj_str,obj_hash=hashObject(obj)
+
+    hashadd="%s"%obj_hash;
+    qdep=0
+    for depmod in OBJECT_PIPE[obj_name]:
+        qdep+=1
+        depmod_conf="%s.conf"%depmod
+        depmod_type=depmod
+        depmod_type=depmod_type.replace("1","")
+        depmod_type=depmod_type.replace("2","")
+        depmod,depmod_dir,depmod_str,depmod_hash,depmod_liv,depmod_stg=\
+            signObject(depmod_type,sys_dir+"/"+depmod_conf)
+        hashadd+="-%s"%depmod_hash
+    if qdep:
+        obj_hash=MD5STR(hashadd)
+        # PRINTOUT("Cumulative hash for %s:"%obj_name+hashadd)
+
+    obj_dir=OBJ_DIR+"%s-%s/"%(obj.type,obj_hash)
+    obj_stg=0
+    if DIREXISTS(obj_dir):
+        obj_liv=1
+        obj_stg=int(System("cat %s/.stage"%obj_dir))
+    else:obj_liv=0
+    return obj,obj_dir,obj_str,obj_hash,obj_liv,obj_stg
+
 def openObject(obj_dir):
+    PRINTOUT("Openning object in %s"%obj_dir)
     system("if [ -e '%s/.close' ];then rm '%s/.close';fi"%(obj_dir,obj_dir))
     system("echo > %s/.open"%obj_dir)
     system("echo 0 > %s/.stage"%obj_dir)
 
 def closeObject(obj_dir):
+    PRINTOUT("Closing object in %s"%obj_dir)
     system("if [ -e '%s/.open' ];then rm '%s/.open';fi"%(obj_dir,obj_dir))
     system("echo > %s/.close"%obj_dir)
     system("echo 10 > %s/.stage"%obj_dir)
