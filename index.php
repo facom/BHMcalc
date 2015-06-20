@@ -21,6 +21,8 @@ include_once("web/BHM.php");
 //$$$$$$$$$$$$$$$$$$$$
 if(file_exists("./.maintainance")){$QMAINTAINANCE="block";}else{$QMAINTAINANCE="none";}
 if(file_exists("./.nostat")){$QSTAT=0;}else{$QSTAT=1;}
+if(isset($_COOKIE["ADMIN"])){$QADMIN=1;}else{$QADMIN=0;}
+$message="";
 
 //$$$$$$$$$$$$$$$$$$$$
 //PART 2
@@ -208,6 +210,32 @@ C;
 //////////////////////////////////////////////////////////////////////////////////
 //MODES
 //////////////////////////////////////////////////////////////////////////////////
+$stdouterr="";
+$refdown="";
+
+if($QADMIN){
+
+$message=<<<ADMIN
+<div id="message" style="background:pink;padding:10px;width:20%;font-size:12px;">
+  Administrator mode.
+</div>
+ADMIN;
+
+$stdouterr=<<<OUTERR
+  <div class="stdout" id="sys_stdout">
+  <a href="tmp/BHMrun-stdout-$SESSID-hz" target="_blank">
+  stdout
+  </a> | 
+  <a href="tmp/BHMrun-stderr-$SESSID-hz" target="_blank">
+  stderr
+  </a>
+  </div>
+OUTERR;
+
+$refdown=<<<REFDOWN
+X
+REFDOWN;
+}
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 //INTRODUCTORY MODE
@@ -218,13 +246,10 @@ if(preg_match("/Introductory/",$Modes)){
   $tabberclass="tabbertab";
 
   $hiddenfs="";
-  $nohidden=array("binary_str_SysID","star1_tau","star1_FeH","star1_M",
-		  "star2_M","binary_Pbin","binary_ebin","planet_aorb",
-		  "planet_eorb");
 
   foreach(array_keys($GLOBALS["FIELDS"]) as $varname){
     $qnohidden=0;
-    foreach($nohidden as $field){
+    foreach(array_keys($NOHIDDEN) as $field){
       if(preg_match("/$varname/",$field)){
 	$qnohidden=1;
 	break;
@@ -251,50 +276,6 @@ $tabs.=<<<F
 
 	    <table border=0px width=100%>
 
-	      <!-- ---------------------------------------- -->
-	      <tr>
-		<td class="name">System ID:</td>
-		<td class="field">
-		  <input type="text" name="binary_str_SysID" value="$binary_str_SysID" >
-		</td>
-	      </tr>
-	      
-	      <!-- ====================== STELLAR PROPERTIES =========================== -->
-  	      <tr><td colspan=2 class="section">Stellar Properties</td></tr>
-  
-	      <!-- ---------------------------------------- -->
-	      <tr>
-		<td class="name">Age:</td>
-		<td class="field">
-		  <input id="ini" type="text" name="star1_tau" value="$star1_tau">
-		  Gyr
-		</td>
-	      </tr>
-	      <!-- ---------------------------------------- -->
-	      <tr>
-		<td class="name">Metallicity, [Fe/H]:</td>
-		<td class="field">
-		  <input type="text" name="star1_FeH" value="$star1_FeH">
-		  dex
-		</td>
-	      </tr>
-	      <!-- ---------------------------------------- -->
-	      <tr>
-		<td class="name">Star 1 Mass:</td>
-		<td class="field">
-		  <input type="text" name="star1_M" value="$star1_M">
-		  M<sub>Sun</sub>
-		</td>
-	      </tr>
-	      <!-- ---------------------------------------- -->
-	      <tr>
-		<td class="name">Star 2 Mass:</td>
-		<td class="field">
-		  <input type="text" name="star2_M" value="$star2_M">
-		  M<sub>Sun</sub>
-		</td>
-	      </tr>
-
 	      <!-- ====================== BINARY PROPERTIES =========================== -->
   	      <tr><td colspan=2 class="section">Binary Properties</td></tr>
 	      
@@ -313,6 +294,101 @@ $tabs.=<<<F
 		  <input type="text" name="binary_ebin" value="$binary_ebin">
 		</td>
 	      </tr>
+
+	      <!-- ====================== STELLAR PROPERTIES =========================== -->
+  	      <tr><td colspan=2 class="section">Stellar Properties</td></tr>
+	      <!-- ---------------------------------------- -->
+	      <tr>
+		<td class="name">Star 1 Mass:</td>
+		<td class="field">
+		  <input type="text" name="star1_M" value="$star1_M" onchange="changePlanetMorb();">
+		  M<sub>Sun</sub>
+		</td>
+	      </tr>
+	      <!-- ---------------------------------------- -->
+	      <tr>
+		<td class="name">Star 2 Mass:</td>
+		<td class="field">
+		  <input type="text" name="star2_M" value="$star2_M" onchange="changePlanetMorb();">
+		  M<sub>Sun</sub>
+		</td>
+	      </tr>
+	      <!-- ---------------------------------------- -->
+	      <tr>
+		<td class="name">Metallicity, [Fe/H]:</td>
+		<td class="field">
+		  <input type="text" name="star1_FeH" value="$star1_FeH">
+		  dex
+		</td>
+	      </tr>
+	      <!-- ---------------------------------------- -->
+	      <tr class="showrow">
+		<td class="name">Age:</td>
+		<td class="field">
+		  <input type="text" name="star1_tau" value="$star1_tau" onchange="$('.age').attr('value',this.value);">
+		  Gyr
+		</td>
+	      </tr>
+
+	      <!-- ---------------------------------------- -->
+	      <tr class="showrow">
+		<td colspan=2>
+		  <center>
+		    <a href="JavaScript:void(0)" style="font-size:10px" 
+		       onclick="$('.hiderow').toggle('fast',null);$('.showrow').toggle('fast',null);$('input[name=star1_tau]').attr('value',-1.0);">
+		      Click to use your own luminosities and effective temperatures.
+		    </a>
+		</center>
+		</td>
+	      </tr>
+
+	      <tr class="hiderow">
+		<td colspan=2>
+		  <center>
+		    <a href="JavaScript:void(0)" style="font-size:10px" 
+		       onclick="$('.hiderow').toggle('fast',null);$('.showrow').toggle('fast',null);$('input[name=star1_tau]').attr('value',4.56);">
+		      Click to enter age and calculate luminosities and temperatures from models.
+		    </a>
+		  </center>
+		</td>
+	      </tr>
+
+	      <!-- ---------------------------------------- -->
+	      <tr class="hiderow">
+		<td class="name">Star 1 Teff:</td>
+		<td class="field">
+		  <input id="ini" type="text" name="star1_T" value="$star1_T">
+		  K
+		</td>
+	      </tr>
+	      <!-- ---------------------------------------- -->
+	      <tr class="hiderow">
+		<td class="name">Star 1 Luminosity:</td>
+		<td class="field">
+		  <input id="ini" type="text" name="star1_Extra1" value="$star1_Extra1">
+		  Solar radii
+		</td>
+	      </tr>
+	      <!-- ---------------------------------------- -->
+	      <tr class="hiderow">
+		<td class="name">Star 2 Teff:</td>
+		<td class="field">
+		  <input id="ini" type="text" name="star2_T" value="$star2_T">
+		  K
+		</td>
+	      </tr>
+	      <!-- ---------------------------------------- -->
+	      <tr class="hiderow">
+		<td class="name">Star 2 Luminosity:</td>
+		<td class="field">
+		  <input id="ini" type="text" name="star2_Extra1" value="$star2_Extra1">
+		  Solar radii
+		</td>
+	      </tr>
+
+	      <!-- ====================== ORBITAL PROPERTIES =========================== -->
+  	      <tr><td colspan=2 class="section">Orbital Properties</td></tr>
+
 	      <!-- ---------------------------------------- -->
 		<td class="name">Planetary semimajor axis:</td>
 	      <td class="field">
@@ -338,15 +414,8 @@ $tabs.=<<<F
 	  $force_update
 	  <div id="sys_results_panel" class="results">
 	    <div><center class="title">Results</center><hr width="90%"/></div>
-	    
-	    <div class="stdout" id="sys_stdout">
-	      <a href="tmp/BHMrun-stdout-$SESSID-hz" target="_blank">
-		stdout
-	      </a> | 
-	      <a href="tmp/BHMrun-stderr-$SESSID-hz" target="_blank">
-		stderr
-	      </a>
-	    </div>
+
+	    $stdouterr
 	    
 	    <div class="download" id="sys_download"></div>
 	    <div id="sys_results_status_loader" style="background-color:white;">
@@ -2099,7 +2168,6 @@ MSG;
 //HEADER
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 $header=mainHeader("","?",$QSTAT);
-$message="";
 echo<<<HEAD
 <html>
 $header
@@ -2173,6 +2241,7 @@ include_once("web/about.php");
 //##############################
 //FOOTER
 //##############################
+if($QADMIN){$admintxt="Administrator.";}else{$admintxt="";}
 $footer=<<<C
 <p></p>
 <div class="footer">
@@ -2180,7 +2249,7 @@ $footer=<<<C
   <img src="web/copyleft.jpg" width=10px> 2014,
   Viva la BHM!, 
   Session ID: $SESSID.
-  Server: $SERVER.
+  Server: $SERVER. $admintxt
 </div>
 C;
 

@@ -35,6 +35,16 @@ $about=<<<C
 	</li>
 
 	<br/>
+
+	<li>
+	  <a href="http://adsabs.harvard.edu/abs/2014arXiv1408.5163M" target="_blank">[Mason+2014]</a>
+	  Mason, P. A., Zuluaga, J. I., Cuartas-Restrepo, P. A., &
+	  Clark, J. M. (2014). Circumbinary Habitability
+	  Niches. <b>International Journal of Astrobiology</b>.  (ADS:
+	  2014arXiv1408.5163M, <a href="http://arxiv.org/abs/1408.5163" target="_blank">arXiv:1408.5163</a>)
+	</li>
+	<br/>
+
 	<li>
 	  <a href="http://adsabs.harvard.edu/abs/2013ApJ...774L..26M" target="_blank">[Mason+2013]</a>
 	  Mason, P. A., Zuluaga, J. I., Clark, J. M., &
@@ -44,14 +54,7 @@ $about=<<<C
 	  774(2), L26. (ADS:
 	  2013ApJ...774L..26M, <a href="http://arxiv.org/abs/1307.4624" target="_blank">arXiv:1307.4624</a>)
 	</li>
-	<br/>
-	<li>
-	  <a href="http://adsabs.harvard.edu/abs/2014arXiv1408.5163M" target="_blank">[Mason+2014]</a>
-	  Mason, P. A., Zuluaga, J. I., Cuartas-Restrepo, P. A., &
-	  Clark, J. M. (2014). Circumbinary Habitability
-	  Niches. <b>International Journal of Astrobiology</b>.  (ADS:
-	  2014arXiv1408.5163M, <a href="http://arxiv.org/abs/1408.5163" target="_blank">arXiv:1408.5163</a>)
-	</li>
+
       </ul>	  
     </p>
     

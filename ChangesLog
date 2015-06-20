@@ -1,6 +1,30 @@
 Changes introduced in the most recent build/version:
 
+<p><b>Version 3.0</b></p>
+
+<!--<a href="JavaScript:void(0)" 
+       onclick="document.getElementById('2.1').style.display='block';">Show</a>-->
+
+<div id="3.0" style="display:block">
+
+<ul>
+
+<li> (Core) We have improved the algorithm to evaluate the
+interdependencies between the modules.</li>
+
+<li> (Interface) We created a "Get started!" mode that make the
+interface MUCH MORE SIMPLER.  This is specially intended for not
+advanced users.</li>
+
+</ul>
+
+</div>
+
 <p><b>Version 2.1</b></p>
+
+<a href="JavaScript:void(0)" onclick="document.getElementById('2.1').style.display='block';">Show</a>
+
+<div id="2.1" style="display:none">
 
 <ul>
 
@@ -52,7 +76,10 @@ permanently available.</li>
 
 </ul>
 
+</div>
+
 <p><b>Version 2.0</b></p>
+
 <a href="JavaScript:void(0)" onclick="document.getElementById('2.0').style.display='block';">Show</a>
 
 <div id="2.0" style="display:none">

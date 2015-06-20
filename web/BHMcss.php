@@ -398,6 +398,11 @@ div.decoration{
  width:30%;
  padding:10px;
 }
+
+tr.hiderow{
+ display:none;
+}
+
 </style>
 CSS;
 ?>

@@ -129,6 +129,21 @@ $REFOBJS=array("'Earth'"=>"Earth",
 
 $OBJECTS=array("star1","star2","planet","binary","hz","rotation","interaction");
 
+$NOHIDDEN=array(
+		"star1_tau"=>array(4.56),
+		"star1_FeH"=>array(0.0),
+		"star1_M"=>array(1.0),
+		"star1_T"=>array(1.0),
+		"star1_Extra1"=>array(1.0),
+		"star2_M"=>array(1.0),
+		"star2_T"=>array(1.0),
+		"star2_Extra1"=>array(1.0),
+		"binary_Pbin"=>array(15.0),
+		"binary_ebin"=>array(0.3),
+		"planet_aorb"=>array(1.0),
+		"planet_eorb"=>array(0.3)
+		);
+
 //////////////////////////////////////////////////////////////
 //DATE
 //////////////////////////////////////////////////////////////
@@ -157,6 +172,15 @@ if(!file_exists($CSSFILE) or isset($GENCSS)){
 //SESSION ID
 //////////////////////////////////////////////////////////////
 if(!isset($_SESSION)){session_start();}
+if(isset($_GET["ADMIN"])){
+  $time=60*60*24*60+time();
+  setcookie("ADMIN","1",$time);
+}
+if(isset($_GET["UNADMIN"])){
+  unset($_COOKIE["ADMIN"]);
+  setcookie("ADMIN", "", time()-3600);
+}
+
 $SESSID=session_id();
 $wSESSDIR=$wSYSDIR."/$SESSID";
 $SESSDIR=$ROOTDIR.$wSESSDIR;

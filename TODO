@@ -14,8 +14,15 @@
 To Do
 =====
 
-- Change the name of the figures in the replot feature to reload them
-  properly.
+- Generate random CBPS.
+
+- Make a "single-star binary".
+
+- Hide extra parameters from input forms to avoid confusion.
+
+- Create an administrator mode.
+
+- Include plot of range of composition and masses for giant planet models
 
 - Avoid to change the original catalogue when a user has just entered
   the site.
@@ -27,38 +34,21 @@ To Do
 
 - Copy to clipboard
 
-- Create a simplified mode where all the system be simulated with a
-  single form. 
-
-- When a single binary be simulated does not show the Star 2 and
+- When a "single-star binary" be simulated does not show the Star 2 and
   Binary tabs.
 
 - Increase resolution in metallicity 
 
-- Generate random CBPS.
-
-- Include plot of range of composition and masses for giant planet models
-
 - Include help windows pop-up
-
-- Make a single star binary
-
-- Allow single systems
-
-- Hide extra parameters from input forms to avoid confusion.
 
 - Record a video explaining the usage of the calculator.
 
 - Fast links to interesting results.
 
-- Allow to update automatically an object accoding to a give request
+- Allow to update automatically an object accoding to a given request
   (e.g. see the HZ of a system for illustration purposes).
 
 - Correct catalogue according to findings using the calculator.
-
-- Create an administrator mode.
-
-- Creat a dummy mode.
 
 - Interpolate planetary properties taking into account differences in
   innercore formation.
@@ -71,8 +61,14 @@ To Do
 Done
 ====
 
+- Change the name of the figures in the replot feature to reload them
+  properly.
+
 - When regenerating the BHMcat create: a recalculation script able to
   recalculate all the objects in the calculator from the command line.
+
+- Create a simplified mode where all the system be simulated with a
+  single form. 
 
 - Clarify f*B*
 
