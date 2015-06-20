@@ -2099,7 +2099,7 @@ MSG;
 //HEADER
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 $header=mainHeader("","?",$QSTAT);
-
+$message="";
 echo<<<HEAD
 <html>
 $header
