@@ -144,6 +144,7 @@ module,module_dir,module_str,module_hash,module_liv,module_stg=\
 PRINTOUT("Module type: %s"%module_type)
 PRINTOUT("Initial object hash: %s"%module_hash)
 
+
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 #CHECK IF MODULES DEPENDING ON THIS ARE RUNNING
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
