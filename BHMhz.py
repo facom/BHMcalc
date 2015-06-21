@@ -110,6 +110,8 @@ ihz.leeq=leeq
 ###################################################
 #CALCULATE INSOLATION AND PHOTON FLUXES
 ###################################################
+PRINTOUT("Calculating instellation.");
+
 #EMISSION
 power1=planckPower(LAMB0,LAMBINF,star1.Tins)
 photons1=planckPhotons(LAMB1,LAMB2,star1.Tins)
@@ -239,9 +241,18 @@ shz=toStack(ts)|shz
 
 #CONTINUOUS HABITABLE ZONE
 tms=star1.tau_ms
-cond=ts>=0.1
+
+if ihz.Extra1>0:tmax=ihz.Extra1
+else:tmax=0.1
+cond=ts>=tmax
 clout=min(hz[cond,3])
-clin=np.interp(tms,ts,hz[:,1])
+
+if ihz.Extra2>0:tmin=ihz.Extra2
+else:tmin=tms
+clin=np.interp(tmin,ts,hz[:,1])
+
+PRINTOUT("Times: tmin,tmax")
+
 if clin<binary.acrit:
     clin=binary.acrit
 
@@ -688,7 +699,7 @@ fh.write("""\
      ihz_webdir,ihz_webdir,ihz_hash,ihz_webdir,WEB_DIR,ihz_webdir,
      ihz_webdir,ihz_webdir,ihz_hash,ihz_webdir,WEB_DIR,ihz_webdir,
      ihz.tau,
-     leeq,
+     ihz.leeq,
      ini_inwd,linwd,ini_outwd,loutwd,
      ini_innr,linnr,ini_outnr,loutnr,
      tms,texit,

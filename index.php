@@ -270,7 +270,7 @@ $tabs.=<<<F
 	<form id="sys_form" action="BHMrun.php">
 	  $hiddenfs
 	  <div class="formarea">
-	    <div><center class="title">Input Form</center><hr width="90%"/></div>
+	    <div><center class="title">System properties</center><hr width="90%"/></div>
 	    <input type="hidden" name="module" value="sys">
 	    <input type="hidden" name="object" value="sys">
 
@@ -330,6 +330,11 @@ $tabs.=<<<F
 		</td>
 	      </tr>
 
+	      <tr class="showrow"><td class="help" colspan=2>If the
+	      age is "-1" the program will use the instantaneous
+	      properties provided by the user (see link
+	      below).</td></tr>
+
 	      <!-- ---------------------------------------- -->
 	      <tr class="showrow">
 		<td colspan=2>
@@ -387,7 +392,7 @@ $tabs.=<<<F
 	      </tr>
 
 	      <!-- ====================== ORBITAL PROPERTIES =========================== -->
-  	      <tr><td colspan=2 class="section">Orbital Properties</td></tr>
+  	      <tr><td colspan=2 class="section">Planetary Orbital Properties</td></tr>
 
 	      <!-- ---------------------------------------- -->
 		<td class="name">Planetary semimajor axis:</td>
@@ -413,7 +418,7 @@ $tabs.=<<<F
 	  $ajaxform_sys_Update
 	  $force_update
 	  <div id="sys_results_panel" class="results">
-	    <div><center class="title">Results</center><hr width="90%"/></div>
+	    <div><center class="title">Cicumbinary Habitable Zone</center><hr width="90%"/></div>
 
 	    $stdouterr
 	    
@@ -1555,10 +1560,6 @@ $tabs.=<<<F
 		</td>
 	      </tr>
 	      <tr>
-		<td class="help" colspan=2>
-		  Available: 'recent venus', 'moist greenhouse',
-		  'runaway greenhouse' (sustained lowercase)
-		</td>
 	      </tr>
 	      <!-- ---------------------------------------- -->
 		<td class="name">Outer edge (wider HZ):</td>
@@ -1568,9 +1569,6 @@ $tabs.=<<<F
 		</td>
 	      </tr>
 	      <tr>
-		<td class="help" colspan=2>
-		  Available: 'maximum greenhouse', 'early mars' (sustained lowercase)
-		</td>
 	      </tr>
 	      <tr>
 		<!-- ---------------------------------------- -->
@@ -1581,10 +1579,6 @@ $tabs.=<<<F
 		</td>
 	      </tr>
 	      <tr>
-		<td class="help" colspan=2>
-		  Available: 'recent venus', 'moist greenhouse',
-		  'runaway greenhouse' (sustained lowercase)
-		</td>
 	      </tr>
 	      <!-- ---------------------------------------- -->
 	      <tr>
@@ -1595,8 +1589,37 @@ $tabs.=<<<F
 		</td>
 	      </tr>
 	      <tr>
+	      </tr>
+	      <!-- ---------------------------------------- -->
+	      <tr>
+		<td class="name">Maximum time for a cold habitability start:</td>
+		<td class="field">
+		  <input class="sensitive" type="text" name="hz_Extra1" value="$hz_Extra1"> Gyr
+		</td>
+	      </tr>
+	      <tr>
 		<td class="help" colspan=2>
-		  Available: 'maximum greenhouse', 'early mars' (sustained lowercase)
+		  This is the maximum time allowed for a planet to
+		  enter the habitable zone after formation and be
+		  considered habitable.  If set to zero the planet
+		  should be in the habitable zone since formation.
+		</td>
+		
+	      </tr>
+	      <!-- ---------------------------------------- -->
+	      <tr>
+		<td class="name">Minimum habitability time:</td>
+		<td class="field">
+		  <input class="sensitive" type="text" name="hz_Extra2" value="$hz_Extra2"> Gyr
+		</td>
+	      </tr>
+	      <tr>
+		<td class="help" colspan=2>
+		  This is the minimum time during which a planet
+		  should stay in the Habitable Zone to be considered
+		  "continuously" habitable. If set to zero it will be
+		  assumed as equal to the Main Sequence time of the
+		  primary star.
 		</td>
 	      </tr>
 	      <!-- ---------------------------------------- -->
@@ -1618,8 +1641,6 @@ $tabs.=<<<F
 		</td>
 	      </tr>
 	      <!-- ====================== HIDDEN =========================== -->
-	      <input type="hidden" name="hz_Extra1" value="$hz_Extra1">
-	      <input type="hidden" name="hz_Extra2" value="$hz_Extra2">
 	      <input type="hidden" name="hz_Extra3" value="$hz_Extra3">
 	      <input type="hidden" name="hz_Extra4" value="$hz_Extra4">
 	      <input type="hidden" name="hz_Extra5" value="$hz_Extra5">

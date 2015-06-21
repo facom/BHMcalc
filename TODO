@@ -16,11 +16,12 @@ To Do
 
 - Generate random CBPS.
 
+- When a "single-star binary" be simulated does not show the Star 2 and
+  Binary tabs.
+
 - Make a "single-star binary".
 
 - Hide extra parameters from input forms to avoid confusion.
-
-- Create an administrator mode.
 
 - Include plot of range of composition and masses for giant planet models
 
@@ -33,9 +34,6 @@ To Do
 - PDF figures
 
 - Copy to clipboard
-
-- When a "single-star binary" be simulated does not show the Star 2 and
-  Binary tabs.
 
 - Increase resolution in metallicity 
 
@@ -55,11 +53,15 @@ To Do
 
 - Include a complete list of other references in the About tab.
 
+- Reference other calculators.
+
 - Make a list of references for each physical model used in the
   calculator.
 
 Done
 ====
+
+- Create an administrator mode.
 
 - Change the name of the figures in the replot feature to reload them
   properly.

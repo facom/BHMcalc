@@ -49,7 +49,7 @@ foreach($objects as $object){
   else{$src_content="";}
 
   if(isBlank($src_content)){
-    $src_content="<i>No result calculated so far.</i>";
+    $src_content="<i>No result has been calculated so far for this system.</i>";
   }
   //WRITE OUTPUT
 $tgt_content.=<<<C
