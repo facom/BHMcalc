@@ -400,7 +400,7 @@ div.decoration{
 }
 
 tr.hiderow{
- display:none;
+ visibility:hidden;
 }
 
 </style>
