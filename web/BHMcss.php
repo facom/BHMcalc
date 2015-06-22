@@ -405,6 +405,12 @@ tr.hiderow{
  visibility:hidden;
 }
 
+tr.showrow{
+  -webkit-backface-visibility: visible;
+  -moz-backface-visibility: visible;
+ visibility:visible;
+}
+
 </style>
 CSS;
 ?>
