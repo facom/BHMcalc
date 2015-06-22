@@ -141,6 +141,7 @@ $NOHIDDEN=array(
 		"binary_Pbin"=>array(15.0),
 		"binary_ebin"=>array(0.3),
 		"planet_aorb"=>array(1.0),
+		"planet_Porb"=>array(0.0),
 		"planet_eorb"=>array(0.3)
 		);
 

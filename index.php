@@ -395,11 +395,12 @@ $tabs.=<<<F
   	      <tr><td colspan=2 class="section">Planetary Orbital Properties</td></tr>
 
 	      <!-- ---------------------------------------- -->
-		<td class="name">Planetary semimajor axis:</td>
+	      <td class="name">Planetary semimajor axis:</td>
 	      <td class="field">
-		  <input type="text" name="planet_aorb" value="$planet_aorb">
-		  AU
-		</td>
+		<input type="hidden" name="planet_Porb" value="0.0">
+		<input type="text" name="planet_aorb" value="$planet_aorb">
+		AU
+	      </td>
 	      </tr>
 
 	      <!-- ---------------------------------------- -->
