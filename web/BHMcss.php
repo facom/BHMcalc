@@ -400,6 +400,8 @@ div.decoration{
 }
 
 tr.hiderow{
+  -webkit-backface-visibility: hidden;
+  -moz-backface-visibility: hidden;
  visibility:hidden;
 }
 
