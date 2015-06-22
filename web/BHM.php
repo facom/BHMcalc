@@ -130,19 +130,21 @@ $REFOBJS=array("'Earth'"=>"Earth",
 $OBJECTS=array("star1","star2","planet","binary","hz","rotation","interaction");
 
 $NOHIDDEN=array(
-		"star1_tau"=>array(4.56),
-		"star1_FeH"=>array(0.0),
-		"star1_M"=>array(1.0),
-		"star1_T"=>array(1.0),
-		"star1_Extra1"=>array(1.0),
-		"star2_M"=>array(1.0),
-		"star2_T"=>array(1.0),
-		"star2_Extra1"=>array(1.0),
-		"binary_Pbin"=>array(15.0),
-		"binary_ebin"=>array(0.3),
-		"planet_aorb"=>array(1.0),
-		"planet_Porb"=>array(0.0),
-		"planet_eorb"=>array(0.3)
+		"star1_tau"=>array(4.56,0.5,5.0),
+		"star1_FeH"=>array(0.0,-0.3,0.3),
+		"star1_M"=>array(1.0,0.1,1.5),
+		"star1_T"=>array(1.0,0.0,0.0),
+		"star1_Extra1"=>array(1.0,0.0,0.0),
+		"star2_M"=>array(1.0,0.0,0.0),
+		"star2_T"=>array(1.0,0.0,0.0),
+		"star2_Extra1"=>array(1.0,0.0),
+		"binary_Pbin"=>array(15.0,5.0,40.0),
+		"binary_ebin"=>array(0.3,0.0,0.5),
+		"planet_aorb"=>array(1.0,1.0,3.0),
+		"planet_eorb"=>array(0.3,0.0,0.5),
+		"planet_Morb"=>array(2.0,0.0,0.0),
+		"hz_Extra2"=>array(2.5,0.0,0.0),
+		"binary_str_SysID"=>array("","","")
 		);
 
 //////////////////////////////////////////////////////////////
@@ -572,6 +574,12 @@ function createSessionDir($string){
   }else{
     //echo "Session directory already existing...<br/>";
   }
+}
+
+function randomNum($min,$max){
+  $u=(float)rand()/(float)getrandmax();
+  $number=$min+($max-$min)*$u;
+  return $number;
 }
 
 ?>

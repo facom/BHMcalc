@@ -337,8 +337,10 @@ def hashObject(obj):
     Calculate the hash of an object
     """
     obj_str=obj.type+"-"
+    print obj.hashable.keys()
     for key in obj.hashable.keys():
         if 'ID' in key:continue
+        print key
         exec("obj_str+='%s_%s-'%%(%s)"%(
                 key,
                 obj.hashable[key],

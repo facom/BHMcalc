@@ -68,10 +68,14 @@ $oModes=$Modes;
 $tabberclass="tabbertab";
 $hidedisplay="style='display:block'";
 $qcalcmode=1;
+$qrandom=0;
+if($Modes=="Random"){$Modes="Introductory";$qrandom=1;}
 if($Modes=="Binary"){$Modes="Star1:Star2:Planet:$Modes";}
 if($Modes=="Habitability"){$Modes="Star1:Star2:Planet:Binary:$Modes";}
 if($Modes=="Interactions"){$Modes="Star1:Star2:Planet:Binary:Habitability:$Modes";}
 if($Modes=="Introductory"){
+  //Reset values to template
+  shell_exec("cp $SYSDIR/template/*.conf $SESSDIR");
   $Modes="$Modes";
   $tabberclass="tabberhide";
   $hidedisplay="style='display:none'";
@@ -249,16 +253,37 @@ if(preg_match("/Introductory/",$Modes)){
 
   foreach(array_keys($GLOBALS["FIELDS"]) as $varname){
     $qnohidden=0;
+    $class="";
+    if(preg_match("/_tau$/",$varname)){
+      $class="class='age'";
+    }
     foreach(array_keys($NOHIDDEN) as $field){
-      if(preg_match("/$varname/",$field)){
+      if($field==$varname){
 	$qnohidden=1;
 	break;
       }
     }
     if($qnohidden){continue;}
     $value=$$varname;
-    $hiddenfs.="<input type='hidden' name='$varname' value=\"$value\">\n";
+    $hiddenfs.="<input $class type='hidden' name='$varname' value=\"$value\">\n";
   }
+
+  // GENERATE A RANDOM SYSTEM
+  if($qrandom){
+    foreach(array_keys($NOHIDDEN) as $field){
+      $parameters=$NOHIDDEN[$field];
+      $min=$parameters[1];
+      $max=$parameters[2];
+      if($min==$max){
+	//echo "No random for $field.<br/>";
+      }else{
+	$$field=round(randomNum($min,$max),2);
+	//echo "Random value for $field: ".$$field."<br/>";
+      }
+    }
+    $star2_M=round(randomNum(0.1,$star1_M),2);
+  }
+
 
 $tabs.=<<<F
   <!-- //////////////////////////////////////////////////////////// -->
@@ -278,7 +303,15 @@ $tabs.=<<<F
 
 	      <!-- ====================== BINARY PROPERTIES =========================== -->
   	      <tr><td colspan=2 class="section">Binary Properties</td></tr>
-	      
+
+	      <!-- ---------------------------------------- -->
+	      <tr>
+		<td class="name">Name of the System:</td>
+		<td class="field">
+		  <input type="text" name="binary_str_SysID" value="$binary_str_SysID">
+		</td>
+	      </tr>
+	      <tr><td class="help" colspan=2>Apostrophes are mandatory, e.g. 'My binary'</td></tr>
 	      <!-- ---------------------------------------- -->
 	      <tr>
 		<td class="name">Binary period:</td>
@@ -311,13 +344,15 @@ $tabs.=<<<F
 		<td class="field">
 		  <input type="text" name="star2_M" value="$star2_M" onchange="changePlanetMorb();">
 		  M<sub>Sun</sub>
+		  <input type="hidden" name="planet_Morb" value="$planet_Morb">
 		</td>
 	      </tr>
 	      <!-- ---------------------------------------- -->
 	      <tr>
 		<td class="name">Metallicity, [Fe/H]:</td>
 		<td class="field">
-		  <input type="text" name="star1_FeH" value="$star1_FeH">
+		  <input type="hidden" name="star1_Z" value="$star1_Z">
+		  <input type="text" name="star1_FeH" value="$star1_FeH"  onchange="$('input[name=star2_FeH').attr('value',this.value);">
 		  dex
 		</td>
 	      </tr>
@@ -392,18 +427,28 @@ $tabs.=<<<F
 	      </tr>
 
 	      <!-- ====================== ORBITAL PROPERTIES =========================== -->
-  	      <tr><td colspan=2 class="section">Planetary Orbital Properties</td></tr>
+  	      <tr><td colspan=2 class="section">Planetary properties</td></tr>
 
 	      <!-- ---------------------------------------- -->
-	      <td class="name">Planetary semimajor axis:</td>
-	      <td class="field">
-		<input type="hidden" name="planet_Porb" value="0.0">
-		<input type="text" name="planet_aorb" value="$planet_aorb">
-		AU
-	      </td>
+	      <tr>
+		<td class="name">Minimum habitability:</td>
+		<td class="field">
+		  <input type="text" name="hz_Extra2" value="$hz_Extra2">
+		  Gyr
+		</td>
+	      </tr>
+	      
+	      <!-- ---------------------------------------- -->
+	      <tr>
+		<td class="name">Planetary semimajor axis:</td>
+		<td class="field">
+		  <input type="text" name="planet_aorb" value="$planet_aorb">
+		  AU
+		</td>
 	      </tr>
 
 	      <!-- ---------------------------------------- -->
+	      <tr>
 		<td class="name">Planetary eccentricity:</td>
 		<td class="field">
 		  <input type="text" name="planet_eorb" value="$planet_eorb">
