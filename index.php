@@ -297,7 +297,7 @@ $tabs.=<<<F
 	  <div class="formarea">
 	    <div><center class="title">System properties</center><hr width="90%"/></div>
 	    <center>
-	      <a href=?Modes=Random style="font-size:12px">Get new random properties</a>
+	      <a href=?Modes=Random style="font-size:12px;">Get new random properties</a>
 	    </center>
 	    <input type="hidden" name="module" value="sys">
 	    <input type="hidden" name="object" value="sys">
