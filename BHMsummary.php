@@ -24,6 +24,7 @@ accessLog("summary $Mode");
 //////////////////////////////////////////////////////////////
 //COMMAND
 $cmd="$PYTHONCMD BHMsummary.py $SESSDIR $Mode";
+shell_exec("echo '$cmd' > $TMPDIR/cmdsummary-$SESSID-${module}.txt");
 
 //OUTPUT
 $stdout="BHMsummary-output-$SESSID";
