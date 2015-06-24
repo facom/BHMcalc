@@ -47,7 +47,7 @@ PRINTOUT("Object directory '%s' created"%star_dir)
 star_webdir="/"+WEB_DIR+star_dir
 
 if star.M==0:
-     print "Null mass."
+     PRINTOUT("NULL MASS STAR.")
      System("cp sys/template/star-null.data "+star_dir+"/star.data")
      System("cp sys/template/star-null.html "+star_dir+"/star.html")
      closeObject(star_dir)
