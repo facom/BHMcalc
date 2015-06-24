@@ -75,7 +75,7 @@ star2_conf="star2.conf"
 star2,star2_dir,star2_str,star2_hash,star2_liv,star2_stg=\
     signObject("star",sys_dir+"/"+star2_conf)
 star2+=loadConf(star2_dir+"star.data")
-evoInterpFunctions(star2)
+if star2.M>0:evoInterpFunctions(star2)
 #==================================================
 #LOADING BINARY
 binary_conf="binary.conf"
@@ -154,7 +154,8 @@ for t in ts:
 
     #STELLAR PROPERTIES AT t
     R1=star1.Rfunc(t)
-    R2=star2.Rfunc(t)
+    if star2.M>0:R2=star2.Rfunc(t)
+    else:R2=0
 
     Mdot1=star1.binactivity_funcs[7](t)
     Mdot2=star2.binactivity_funcs[7](t)
@@ -177,12 +178,12 @@ for t in ts:
     ntLXUV2=star2.activity_funcs[13](t)
     ntLXUV=ntLXUV1+ntLXUV2
     lumflux+=[ntLXUV1,ntLXUV2,ntLXUV]
-    
+
     #CORRECTING FACTORS
     facnt=ntLXUV/LXUV
     facsn=LXUVs/LXUV
     lumflux+=[facnt,facsn]
-    
+
     #//////////////////////////////
     #XUV FLUXES
     #//////////////////////////////

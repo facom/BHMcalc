@@ -407,7 +407,7 @@ def scaledZ(FeH,A=1.0):
 def evoFunctions(evodata):
     ts=evodata[:,0]
     logrho_func=interp1d(np.log10(ts),
-                      np.log10(evodata[:,RHO_COL]),
+                         np.log10(evodata[:,RHO_COL]),
                       kind='slinear')
     Teff_func=interp1d(np.log10(ts),
                        evodata[:,TEFF_COL],
@@ -1471,6 +1471,9 @@ def stellarWind(M,R,Mdot,r,vtype="Terminal"):
     """
     Mdot in solar masses per year
     """
+
+    if M*R==0:
+        return 0,0
     
     #MDOT AND r IN SI
     MdotSI=Mdot*MSUN/YEAR
@@ -1497,9 +1500,11 @@ def stellarWind(M,R,Mdot,r,vtype="Terminal"):
 def binaryWind(M1,R1,M1dot,M2,R2,M2dot,r,vtype='Terminal'):
     v1,n1=stellarWind(M1,R1,M1dot,r,vtype=vtype)
     v2,n2=stellarWind(M2,R2,M2dot,r,vtype=vtype)
+
     vorb=2*PI*(r*AU)/(PKepler(r,M1,M2)*DAY)
     v1eff=(v1**2+vorb**2)**0.5
     v2eff=(v2**2+vorb**2)**0.5
+    
     Psw=0.6*MP*(n1*(v1**2+vorb**2)+n2*(v2**2+vorb**2))
     Fsw=n1*v1+n2*v2
     return Psw,Fsw
@@ -2069,7 +2074,7 @@ def betaCoupling(M):
     beta=2./3*(Rradmax**2*Mdotmax)/(Iradmax*dIradmax)
     return beta
 
-def rotationalTorques(Omega,t,params,full=False,verbose=False):
+def rotationalTorques(Omega,t,params,full=False,verbose=False,notidal=False):
     """
     This calculates the rotational acceleration experienced by the
     convective envelope and radiative core of a star.
@@ -2128,6 +2133,19 @@ def rotationalTorques(Omega,t,params,full=False,verbose=False):
           
       If full is True each component will be returned
     """
+    
+    ###################################################
+    #INPUT PARAMETERS
+    ###################################################
+    if notidal:
+        if full:
+            return np.zeros_like(Omega),\
+                np.zeros_like(Omega),\
+                np.zeros_like(Omega),\
+                np.zeros_like(Omega),\
+                np.zeros_like(Omega),
+        else:
+            return np.zeros_like(Omega)
     
     ###################################################
     #INPUT PARAMETERS

@@ -47,6 +47,7 @@ star1_conf="star1.conf"
 star1,star1_dir,star1_str,star1_hash,star1_liv,star1_stg=\
     signObject("star",sys_dir+"/"+star1_conf)
 star1+=loadConf(star1_dir+"star.data")
+star1.tau=np.abs(star1.tau)
 evoInterpFunctions(star1)
 #==================================================
 #LOADING STAR 2
@@ -54,7 +55,8 @@ star2_conf="star2.conf"
 star2,star2_dir,star2_str,star2_hash,star2_liv,star2_stg=\
     signObject("star",sys_dir+"/"+star2_conf)
 star2+=loadConf(star2_dir+"star.data")
-evoInterpFunctions(star2)
+star2.tau=np.abs(star2.tau)
+if star2.M>0:evoInterpFunctions(star2)
 #==================================================
 #LOADING BINARY
 binary_conf="binary.conf"
@@ -89,8 +91,12 @@ openObject(rot_dir)
 ###################################################
 #CALCULATE ROTATIONAL EVOLUTION
 ###################################################
-stars=star1,star2
-i=0
+if star2.M==0:
+    stars=star1,
+    facbin=2.0
+else:
+    facbin=1.0
+    stars=star1,star2
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 #INTEGRATION
@@ -105,18 +111,27 @@ for star in stars:
     #ROTATIONAL EVOLUTION
     #==============================
     tsmoi=10**star.Ievo[:,0]/GIGA
-    star.taudisk=rot.tauint/1000
-    rotpars=dict(\
-        star=star,
-        starf=stars[NEXT(i,2)],
-        binary=binary,
-        taucont=TAU_CONT,
-        fdiss=rot.fdiss
-        )
-    wini=2*PI/(star.Pini*DAY)
-    Omega_ini=np.array([wini,wini])
-    star.binrotevol=odeint(rotationalTorques,Omega_ini,tsmoi*GYR,args=(rotpars,))
-    star.binrotevol=toStack(tsmoi)|toStack(star.binrotevol)
+
+    if star2.M>0:
+        star.taudisk=rot.tauint/1000
+        wini=2*PI/(star.Pini*DAY)
+        Omega_ini=np.array([wini,wini])
+
+        rotpars=dict(\
+            star=star,
+            starf=stars[NEXT(i,2)],
+            binary=binary,
+            taucont=TAU_CONT,
+            fdiss=rot.fdiss
+            )
+        star.binrotevol=odeint(rotationalTorques,Omega_ini,tsmoi*GYR,args=(rotpars,))
+        star.binrotevol=toStack(tsmoi)|toStack(star.binrotevol)
+
+        notidal=False
+    else:
+        rotpars=dict()
+        star.binrotevol=star.rotevol
+        notidal=True
 
     #==============================
     #COMBINED MASS-LOSS
@@ -155,7 +170,7 @@ for star in stars:
         Prot=2*PI/w/DAY
              
         #ROTATIONAL ACCELERATION
-        accels=rotationalTorques(np.array([w,w]),t*GYR,rotpars,full=True)
+        accels=rotationalTorques(np.array([w,w]),t*GYR,rotpars,full=True,notidal=notidal)
         star.acceleration+=[accel[0] for accel in accels]
         #print t,[accel[0] for accel in accels]
 
@@ -178,7 +193,16 @@ for star in stars:
     if qtwins:break
     i+=1
 
+if star2.M==0:
+    star2.binrotevol=1*star1.binrotevol
+    star2.binrotevol[:,1:]*=0
+    star2.binactivity=1*star1.binactivity
+    star2.binactivity[:,1:]*=0
+    star2.acceleration=1*star1.acceleration
+    star2.acceleration[:,1:]*=0
+
 rot.taumaxrot=min(star1.binactivity[-1,0],star2.binactivity[-1,0])
+
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 #INSTANTANEOUS STELLAR PROPERTIES
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -209,6 +233,21 @@ for star in stars:
 
     if qtwins:break
     i+=1
+
+if star2.M==0:
+    star=star2
+    star.bomegaconv=0
+    star.bomegarad=0
+    star.bPconv=0
+    star.bPrad=0
+    star.bvsurf=0
+    star.bfstar=0
+    star.bBstar=0
+    star.bRo=0
+    star.bMdot=0
+    star.bRX=0
+    star.bLX=0
+    star.bLXUV=0
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 #INSTANTANEOUS BINARY PROPERTIES
@@ -340,8 +379,9 @@ w2=revol2[:,1]
 ax.plot(sts1,sw1/OMEGASUN,'b--',label='Star 1 (Free)')
 ax.plot(ts1,w1/OMEGASUN,'b-',label='Star 1 (Tidal)')
 
-ax.plot(sts2,sw2/OMEGASUN,'r--',label='Star 2 (Free)')
-ax.plot(ts2,w2/OMEGASUN,'r-',label='Star 2 (Tidal)')
+if star2.M>0:
+    ax.plot(sts2,sw2/OMEGASUN,'r--',label='Star 2 (Free)')
+    ax.plot(ts2,w2/OMEGASUN,'r-',label='Star 2 (Tidal)')
 
 ax.axhline(PSUN/DAY/binary.Psync,color='k',label=r"$P_{\\rm sync}=P_{\\rm bin}/%%.2f$"%%binary.nsync)
 ax.axhline(PSUN/DAY/binary.Pbin,color='k',linestyle='--',label=r"$P_{\\rm bin}$")
@@ -370,7 +410,7 @@ if star1.Protv>0:
      else:
          ax.axhspan(wmin1,wmax1,color='c',alpha=0.3)
 
-if star2.Prot>0:
+if star2.M>0 and star2.Prot>0:
      Prot=star2.Prot;
      Proterr=max(star2.Proterr,0.0);
      wmax2=PSUN/DAY/(Prot-Proterr);wmin2=PSUN/DAY/(Prot+Proterr);
@@ -380,7 +420,7 @@ if star2.Prot>0:
      else:
          ax.axhspan(wmin2,wmax2,color='r',alpha=0.3)
 
-if star2.Protv>0:
+if star2.M>0 and star2.Protv>0:
      Protv=star2.Protv;
      Protverr=max(star2.Protverr,0.0);
      wmax2=PSUN/DAY/(Protv-Protverr);wmin2=PSUN/DAY/(Protv+Protverr);
@@ -523,9 +563,11 @@ ts=np.logspace(np.log10(tmin),np.log10(tmax),100)
 
 ax.plot(ts1,Ml1,'b-',label='Star 1 (Tidal)')
 ax.plot(ts1,sMl1,'b--',label='Star 1 (Free)')
-ax.plot(ts2,Ml2,'r-',label='Star 2 (Tidal)')
-ax.plot(ts2,sMl2,'r--',label='Star 2 (Free)')
-ax.plot(ts,Ml1_func(ts)+Ml2_func(ts),'k-',linewidth=2,label='Total (Tidal)')
+
+if star2.M>0:
+    ax.plot(ts2,Ml2,'r-',label='Star 2 (Tidal)')
+    ax.plot(ts2,sMl2,'r--',label='Star 2 (Free)')
+    ax.plot(ts,Ml1_func(ts)+Ml2_func(ts),'k-',linewidth=2,label='Total (Tidal)')
 
 ax.set_xscale("log")
 ax.set_yscale("log")
@@ -582,9 +624,11 @@ ts=np.logspace(np.log10(tmin),np.log10(tmax),100)
 LSUN=LXUVSUN/1E7
 ax.plot(ts1,LXUV1/LSUN,'b-',label='Star 1 (Tidal)')
 ax.plot(ts1,sLXUV1/LSUN,'b--',label='Star 1 (Free)')
-ax.plot(ts2,LXUV2/LSUN,'r-',label='Star 2 (Tidal)')
-ax.plot(ts2,sLXUV2/LSUN,'r--',label='Star 2 (Free)')
-ax.plot(ts,(LXUV1_func(ts)+LXUV2_func(ts))/LSUN,'k-',linewidth=2,label='Total (Tidal)')
+
+if star2.M>0:
+    ax.plot(ts2,LXUV2/LSUN,'r-',label='Star 2 (Tidal)')
+    ax.plot(ts2,sLXUV2/LSUN,'r--',label='Star 2 (Free)')
+    ax.plot(ts,(LXUV1_func(ts)+LXUV2_func(ts))/LSUN,'k-',linewidth=2,label='Total (Tidal)')
 
 ax.set_xscale("log")
 ax.set_yscale("log")

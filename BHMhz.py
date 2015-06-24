@@ -115,8 +115,12 @@ PRINTOUT("Calculating instellation.");
 #EMISSION
 power1=planckPower(LAMB0,LAMBINF,star1.Tins)
 photons1=planckPhotons(LAMB1,LAMB2,star1.Tins)
-power2=planckPower(LAMB0,LAMBINF,star2.Tins)
-photons2=planckPhotons(LAMB1,LAMB2,star2.Tins)
+if star2.M>0:
+    power2=planckPower(LAMB0,LAMBINF,star2.Tins)
+    photons2=planckPhotons(LAMB1,LAMB2,star2.Tins)
+else:
+    power2=0
+    photons2=0
 
 #EPHEMERIS
 binephem=binary.ephemeris

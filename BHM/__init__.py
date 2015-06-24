@@ -352,7 +352,6 @@ def signObject2(obj_type,obj_conf,force_hash=""):
     obj_name=obj_conf.split(".")[0].split("/")[-1]
     obj=loadConf(obj_conf)
     obj.type=obj_type
-
     try:obj.__dict__["hashable"]=OBJECT_HASHABLES[obj_type]
     except KeyError:
         PRINTERR("Object type %s does not exist."%obj_type)
@@ -380,7 +379,6 @@ def signObject(obj_type,obj_conf,force_hash=""):
     except KeyError:
         PRINTERR("Object type %s does not exist."%obj_type)
         errorCode("KEY_ERROR")
-
     obj_str,obj_hash=hashObject(obj)
 
     hashadd="%s"%obj_hash;
