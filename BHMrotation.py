@@ -57,6 +57,7 @@ star2,star2_dir,star2_str,star2_hash,star2_liv,star2_stg=\
 star2+=loadConf(star2_dir+"star.data")
 star2.tau=np.abs(star2.tau)
 if star2.M>0:evoInterpFunctions(star2)
+
 #==================================================
 #LOADING BINARY
 binary_conf="binary.conf"
