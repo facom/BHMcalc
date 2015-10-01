@@ -370,4 +370,14 @@ div.decoration{
  width:30%;
  padding:10px;
 }
+
+tr.hiderow{
+  /*
+ visibility:hidden;
+  -webkit-backface-visibility: hidden;
+  -moz-backface-visibility: hidden;
+  */
+ display:none;
+}
+
 </style>
