@@ -22,4 +22,5 @@ rm data_*
 split -b 1000000 data.tgz data_
 rm data.tgz
 cd -
+git add -f $DATADIR/data_*
 echo "Done."
