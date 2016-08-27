@@ -70,8 +70,8 @@ permissions:
 
 commit:
 	@echo "Committing changes to branch $(BRANCH)..."
-	@git commit -am "Commit"
-	@git push origin $(BRANCH)
+	@-git commit -am "Commit"
+	@-git push origin $(BRANCH)
 
 pull:
 	@echo "Getting the lattest changes from branch $(BRANCH)..."
