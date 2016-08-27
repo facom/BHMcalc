@@ -180,7 +180,7 @@ def StellarProperty(prop,Z,Ms,tau):
     return val
 
 def loadIsochroneSet(Zs=ZSVEC_full,
-                     verbose=False):
+                     verbose=False,diriso=DATA_DIR):
     global SMset,Zset
     Zset=Zs
 
@@ -189,7 +189,7 @@ def loadIsochroneSet(Zs=ZSVEC_full,
     for Z in Zs:
         if verbose:print "\tLoading Isochrone for Z = %f..."%Z
         SMiso=dict2obj(dict())
-        Stars='BHM/data/Stars/Isochrones/Padova-Z%.4f.dat'%Z
+        Stars=diriso+'/Stars/Isochrones/Padova-Z%.4f.dat'%Z
         Mmin=0.1
         Mmax=2.0
         try:
@@ -1950,11 +1950,11 @@ def tradFormation(M):
         logtMyr=-1.16949*M+7.35288136
     return 10**logtMyr
 
-def interpolMoI(M,verbose=False):
+def interpolMoI(M,verbose=False,diriso=DATA_DIR):
 
     #Mvec=np.array([0.4,0.6,0.8,1.0])
     #dirmoi="BHM/data/Stars/MomentsOfInertia"
-    dirmoi="BHM/data/Stars/MomentsOfInertia/Baraffe2014"
+    dirmoi=diriso+"/Stars/MomentsOfInertia/Baraffe2014"
     Mvec=np.arange(0.2,1.3,0.1)
     #Mvec=np.arange(0.2,1.3,0.2)
     
